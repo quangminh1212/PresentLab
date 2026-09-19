@@ -10,6 +10,7 @@ The repository also ships an MCP server, a Codex-compatible skill/plugin, reusab
 - Chromium rendering for pixel-faithful PNG and print-quality PDF output.
 - PPTX export that places each rendered slide as a full-bleed image, preserving HTML fidelity across PowerPoint viewers.
 - Catalog generation as HTML and PDF.
+- An eight-style template gallery with 56 sample slides. Each folder contains `deck.html`, `deck.pdf`, and `deck.pptx`.
 - MCP tools, resources, and prompts for validation, rendering, catalogs, templates, and deck design guidance.
 - A repo-local `presentlab-ai` plugin with a reusable design skill.
 - Strict TypeScript, unit tests, integration smoke tests, formatting, linting, security boundaries, and GitHub Actions CI.
@@ -22,12 +23,30 @@ Requirements: Node.js 22 or newer and npm 10.9 or newer.
 npm ci
 npx playwright install chromium
 npm run verify:all
+npm run gallery:build
 npm run build
 node dist/cli.js render --input examples/aurora/deck.html --output .artifacts/aurora --format png,pdf,pptx
 node dist/cli.js catalog --input examples/aurora/deck.html --output .artifacts/aurora-catalog --format html,pdf
 ```
 
 The generated artifact directories are intentionally ignored by Git.
+
+## Template gallery
+
+The checked-in gallery lives under [`templates/`](templates/). It is organized by visual direction:
+
+| Folder        | Style                |
+| ------------- | -------------------- |
+| `aurora`      | Light editorial      |
+| `midnight`    | Dark cinematic       |
+| `swiss`       | Swiss grid           |
+| `brutalist`   | Neo-brutalist        |
+| `organic`     | Organic studio       |
+| `datanoir`    | Terminal / data noir |
+| `luxury`      | Quiet luxury         |
+| `retrofuture` | Neon retro-future    |
+
+Each folder is a portable handoff unit. Edit `deck.html`, then regenerate its PDF/PPTX outputs with `npm run gallery:build`. The generator is deterministic and the gallery checker enforces seven slides plus the exact three-file folder contract. See [docs/template-gallery.md](docs/template-gallery.md) for the authoring rules.
 
 ## HTML contract
 
@@ -74,4 +93,4 @@ The repo-local plugin lives at `plugins/presentlab-ai`. Host-specific examples a
 
 The default PPTX mode is fidelity-first: slide text remains selectable in the source HTML/PDF, while the PPTX contains a full-slide image. This is deliberate because arbitrary HTML/CSS cannot be losslessly translated into editable PowerPoint shapes. The artifact manifest records the renderer inputs and output files for reproducibility.
 
-See [docs/architecture.md](docs/architecture.md), [docs/html-contract.md](docs/html-contract.md), [docs/mcp.md](docs/mcp.md), [docs/release.md](docs/release.md), [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and [CHANGELOG.md](CHANGELOG.md) for release and threat-model guidance.
+See [docs/architecture.md](docs/architecture.md), [docs/html-contract.md](docs/html-contract.md), [docs/template-gallery.md](docs/template-gallery.md), [docs/mcp.md](docs/mcp.md), [docs/release.md](docs/release.md), [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and [CHANGELOG.md](CHANGELOG.md) for release and threat-model guidance.
