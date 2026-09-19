@@ -26,7 +26,7 @@ HTML + local resources
 - `src/core/render.ts` creates slide images, PDF, PPTX, and a reproducibility manifest.
 - `src/core/catalog.ts` creates a browsable HTML contact sheet and A4 landscape PDF.
 - `src/mcp/server.ts` exposes the same core operations through MCP tools, resources, and prompts.
-- `resources/` contains reusable design tokens, themes, and starter templates.
+- `resources/` contains reusable design tokens, themes, and MCP indexes; the 100-template gallery is consumed from the private `PresentTemplate` Git submodule at `templates/`.
 - `plugins/presentlab-ai/` packages the MCP registration and agent workflow as a Codex plugin/skill.
 
 ## Deliberate format trade-off

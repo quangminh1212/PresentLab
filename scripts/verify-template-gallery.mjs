@@ -7,7 +7,7 @@ const root = resolve(import.meta.dirname, "..");
 const templatesRoot = join(root, "templates");
 const index = JSON.parse(await readFile(join(templatesRoot, "index.json"), "utf8"));
 const expectedTemplateCount = 100;
-const expectedSlideCount = 7;
+const expectedMinimumSlideCount = 12;
 const templateDirectories = (await readdir(templatesRoot, { withFileTypes: true })).filter(
   (entry) => entry.isDirectory(),
 );
@@ -36,6 +36,9 @@ if (!Array.isArray(themeIndex) || themeIndex.length !== expectedTemplateCount) {
 }
 
 for (const entry of index) {
+  if (entry.path !== `${entry.name}/deck.html`) {
+    throw new Error(`${entry.name} must expose a repository-relative deck.html path.`);
+  }
   const templateDir = join(templatesRoot, entry.name);
   const names = (await readdir(templateDir)).sort();
   const expectedNames = ["deck.html", "deck.pdf", "deck.pptx"];
@@ -44,8 +47,8 @@ for (const entry of index) {
   }
 
   const htmlPath = join(templateDir, "deck.html");
-  const { inspection } = await inspectDeckFile(htmlPath, 10);
-  if (inspection.errors.length > 0 || inspection.slides.length !== expectedSlideCount) {
+  const { inspection } = await inspectDeckFile(htmlPath, 100);
+  if (inspection.errors.length > 0 || inspection.slides.length < expectedMinimumSlideCount) {
     throw new Error(
       `${entry.name} HTML is invalid or has the wrong slide count: ${inspection.errors.join("; ")}`,
     );

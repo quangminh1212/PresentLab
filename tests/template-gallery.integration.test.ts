@@ -8,7 +8,7 @@ import { renderDeck } from "../src/core/render.js";
 const root = resolve(".");
 
 describe("template gallery browser render", () => {
-  it("renders every gallery source to seven PNG pages, a PDF, and a PPTX", async () => {
+  it("renders every gallery source to at least twelve PNG pages, a PDF, and a PPTX", async () => {
     const index = JSON.parse(
       await readFile(join(root, "templates", "index.json"), "utf8"),
     ) as Array<{ name: string }>;
@@ -23,8 +23,10 @@ describe("template gallery browser render", () => {
       });
 
       expect(result.inspection.errors).toEqual([]);
-      expect(result.inspection.slides).toHaveLength(7);
-      expect(result.artifacts.filter((artifact) => artifact.format === "png")).toHaveLength(7);
+      expect(result.inspection.slides.length).toBeGreaterThanOrEqual(12);
+      expect(
+        result.artifacts.filter((artifact) => artifact.format === "png").length,
+      ).toBeGreaterThanOrEqual(12);
       for (const artifact of result.artifacts) {
         expect((await stat(artifact.path)).size).toBeGreaterThan(100);
       }

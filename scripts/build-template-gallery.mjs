@@ -1,4 +1,4 @@
-import { copyFile, mkdir, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, rm, writeFile } from "node:fs/promises";
 import { execFileSync } from "node:child_process";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -690,7 +690,7 @@ function commonSlides(name, label) {
     ),
     slide(
       "metrics",
-      `<div class="section-head"><div><p class="kicker">02 / Evidence</p><h1 class="section-title">A small set of metrics can anchor a large idea.</h1><p class="section-lede">The same component can present a scorecard, a benchmark, or a design-system health check.</p></div><span class="page-no">03</span></div><div class="stat-grid"><article class="stat"><span class="value">100</span><span class="label">distinct visual systems in this gallery</span></article><article class="stat"><span class="value">700</span><span class="label">sample slides rendered from HTML sources</span></article><article class="stat"><span class="value">3</span><span class="label">handoff formats per template folder</span></article></div><div class="bar-layout"><div class="bar-chart"><div class="bar"><i style="height: 42%"></i><span>Brief</span></div><div class="bar"><i style="height: 66%"></i><span>Design</span></div><div class="bar"><i style="height: 84%"></i><span>Render</span></div><div class="bar"><i style="height: 100%"></i><span>Review</span></div></div><p class="bar-note">The workflow gets stronger when validation and visual review happen before delivery.</p></div><p class="footer">03 / Metric board</p>`,
+      `<div class="section-head"><div><p class="kicker">02 / Evidence</p><h1 class="section-title">A small set of metrics can anchor a large idea.</h1><p class="section-lede">The same component can present a scorecard, a benchmark, or a design-system health check.</p></div><span class="page-no">03</span></div><div class="stat-grid"><article class="stat"><span class="value">100</span><span class="label">distinct visual systems in this gallery</span></article><article class="stat"><span class="value">1200</span><span class="label">sample slides rendered from HTML sources</span></article><article class="stat"><span class="value">3</span><span class="label">handoff formats per template folder</span></article></div><div class="bar-layout"><div class="bar-chart"><div class="bar"><i style="height: 42%"></i><span>Brief</span></div><div class="bar"><i style="height: 66%"></i><span>Design</span></div><div class="bar"><i style="height: 84%"></i><span>Render</span></div><div class="bar"><i style="height: 100%"></i><span>Review</span></div></div><p class="bar-note">The workflow gets stronger when validation and visual review happen before delivery.</p></div><p class="footer">03 / Metric board</p>`,
     ),
     slide(
       "comparison",
@@ -701,19 +701,54 @@ function commonSlides(name, label) {
       `<div class="section-head"><div><p class="kicker">04 / Workflow</p><h1 class="section-title">From brief to handoff, the system stays inspectable.</h1><p class="section-lede">The template gives an AI agent a stable surface for content while the renderer protects output quality.</p></div><span class="page-no">05</span></div><div class="steps"><article class="step"><span class="number">01</span><h2>Frame</h2><p>Choose a style and write a direct narrative outline.</p></article><article class="step"><span class="number">02</span><h2>Compose</h2><p>Place content into an HTML slide contract with local tokens.</p></article><article class="step"><span class="number">03</span><h2>Validate</h2><p>Check metadata, ids, readability, and image accessibility.</p></article><article class="step"><span class="number">04</span><h2>Deliver</h2><p>Render PDF and PPTX, then review the actual pages.</p></article></div><p class="footer">05 / Four-step workflow</p>`,
     ),
     slide(
+      "audience",
+      `<div class="section-head"><div><p class="kicker">05 / Audience</p><h1 class="section-title">A system can feel distinctive without becoming difficult to use.</h1><p class="section-lede">The gallery gives both decision-makers and makers a shared visual language for moving from idea to action.</p></div><span class="page-no">06</span></div><div class="hero-grid"><article class="panel"><span class="label">For decision-makers</span><h2>Scan the signal</h2><p>Strong hierarchy makes the recommendation, risk, or opportunity visible before the detail asks for attention.</p><ul class="list"><li>Clear claim at the top</li><li>Evidence grouped by meaning</li><li>Next action easy to find</li></ul></article><article class="panel"><span class="label">For builders</span><h2>Reuse the structure</h2><p>Stable HTML sections let an AI agent vary the voice and palette while preserving the page contract.</p><ul class="list"><li>Named slide patterns</li><li>Predictable local tokens</li><li>Portable source and exports</li></ul></article></div><p class="footer">06 / Audience alignment</p>`,
+    ),
+    slide(
+      "system",
+      `<div class="section-head"><div><p class="kicker">06 / System</p><h1 class="section-title">Tokens carry the visual logic across every page.</h1><p class="section-lede">A template becomes reusable when typography, spacing, color, and shape are explicit enough for an agent to preserve.</p></div><span class="page-no">07</span></div><div class="stat-grid"><article class="stat"><span class="value">08</span><span class="label">structural families for different narrative moods</span></article><article class="stat"><span class="value">12</span><span class="label">pages that form a complete sample story</span></article><article class="stat"><span class="value">01</span><span class="label">source of truth for each generated handoff</span></article></div><div class="hero-grid"><article class="panel"><span class="label">Palette</span><h2>Make contrast intentional</h2><p>Use one primary accent, one supporting surface, and a readable muted tone so content remains the loudest element.</p></article><article class="panel"><span class="label">Type</span><h2>Make hierarchy predictable</h2><p>Keep the title, section lead, body, and metadata at stable levels so a new page still feels like part of the same system.</p></article></div><p class="footer">07 / Design tokens</p>`,
+    ),
+    slide(
+      "roadmap",
+      `<div class="section-head"><div><p class="kicker">07 / Roadmap</p><h1 class="section-title">Move from a good first draft to a dependable release.</h1><p class="section-lede">The same four checkpoints work for an AI-generated presentation, catalog, or printable report.</p></div><span class="page-no">08</span></div><div class="steps"><article class="step"><span class="number">01</span><h2>Discover</h2><p>Choose the family, palette, and narrative job for the deck.</p></article><article class="step"><span class="number">02</span><h2>Compose</h2><p>Write semantic HTML with stable ids and meaningful headings.</p></article><article class="step"><span class="number">03</span><h2>Review</h2><p>Inspect the rendered pages for rhythm, contrast, and overflow.</p></article><article class="step"><span class="number">04</span><h2>Ship</h2><p>Commit the source and handoff formats as one portable unit.</p></article></div><p class="footer">08 / Release roadmap</p>`,
+    ),
+    slide(
+      "quality",
+      `<div class="section-head"><div><p class="kicker">08 / Quality</p><h1 class="section-title">Quality is visible in the small details.</h1><p class="section-lede">Automated checks protect the contract; visual review protects the experience that the audience actually receives.</p></div><span class="page-no">09</span></div><div class="compare"><article class="panel"><span class="label">Contract checks</span><h2>Make it inspectable</h2><p>Every generated deck should be easy for a toolchain to understand and safe for an agent to extend.</p><ul class="list"><li>Metadata and format are declared</li><li>Slide ids are unique and stable</li><li>Assets stay local and deterministic</li></ul></article><article class="panel"><span class="label">Visual checks</span><h2>Make it believable</h2><p>Rendered pages should hold together at a glance and remain useful when exported to PDF or PowerPoint.</p><ul class="list"><li>Contrast and spacing remain calm</li><li>Headlines do not collide or wrap badly</li><li>All handoff formats contain every page</li></ul></article></div><p class="footer">09 / Quality review</p>`,
+    ),
+    slide(
       "voice",
       `<div class="section-head"><div><p class="kicker">05 / Voice</p><h1 class="section-title">Good design makes precise writing easier to trust.</h1></div><span class="page-no">06</span></div><div class="quote-layout"><blockquote class="quote"><span class="quote-mark">“</span><p>When each slide has one job, the audience spends less time decoding the layout and more time considering the idea.</p><cite>PresentLab design principle</cite></blockquote><aside class="quote-aside"><span class="value">1 job</span><p>per slide keeps the narrative legible and gives the next slide room to move.</p></aside></div><p class="footer">06 / Editorial quote</p>`,
     ),
     slide(
+      "handoff",
+      `<div class="section-head"><div><p class="kicker">10 / Handoff</p><h1 class="section-title">A template becomes useful when the next person can pick it up.</h1><p class="section-lede">Keep the editable source and the rendered examples together so an agent, designer, or reviewer can continue the work without guessing.</p></div><span class="page-no">11</span></div><div class="hero-grid"><article class="panel"><span class="label">Source</span><h2>deck.html</h2><p>Semantic markup, local styles, metadata, and named slide ids make the starting point inspectable and adaptable.</p><ul class="list"><li>Easy to diff and review</li><li>Safe for deterministic rendering</li><li>Ready for agent composition</li></ul></article><article class="panel"><span class="label">Handoff</span><h2>deck.pdf + deck.pptx</h2><p>Rendered artifacts show exactly how the source behaves when shared, printed, or opened in a presentation viewer.</p><ul class="list"><li>One folder, three portable files</li><li>Same page order in every format</li><li>Fast visual comparison</li></ul></article></div><p class="footer">11 / Portable handoff</p>`,
+    ),
+    slide(
       "close",
-      `<div class="cover-copy"><p class="kicker">PresentLab / Handoff</p><h1 class="title">Choose a style.<br /><em>Keep the story clear.</em></h1><p class="lede">Every folder in this gallery contains the HTML source plus rendered PDF and PPTX outputs for a fast, inspectable starting point.</p><div class="meta-line"><span>Validate first</span><span>Review every page</span></div></div><p class="footer">07 / Closing frame</p>`,
+      `<div class="cover-copy"><p class="kicker">PresentLab / Handoff</p><h1 class="title">Choose a style.<br /><em>Keep the story clear.</em></h1><p class="lede">Every folder in this gallery contains the HTML source plus rendered PDF and PPTX outputs for a fast, inspectable starting point.</p><div class="meta-line"><span>Validate first</span><span>Review every page</span></div></div><p class="footer">12 / Closing frame</p>`,
     ),
   ];
 }
 
 function htmlForTemplate(template) {
-  const title = `PresentLab ${template.label} template gallery`;
-  const slides = commonSlides(template.name, template.visualLabel ?? template.label).join("\n");
+  const normalizeDisplayText = (value) =>
+    value
+      .replaceAll(String.fromCodePoint(0xc2, 0xb7), " / ")
+      .replaceAll(String.fromCodePoint(0xe2, 0x20ac, 0x153), "&ldquo;");
+  const title = `PresentLab ${normalizeDisplayText(template.label)} template gallery`;
+  const slides = commonSlides(
+    template.name,
+    normalizeDisplayText(template.visualLabel ?? template.label),
+  )
+    .join("\n")
+    .replaceAll("05 / Voice", "09 / Voice")
+    .replace(
+      '<span class="page-no">06</span></div><div class="quote-layout">',
+      '<span class="page-no">10</span></div><div class="quote-layout">',
+    )
+    .replaceAll("06 / Editorial quote", "10 / Editorial quote")
+    .replaceAll(String.fromCodePoint(0xe2, 0x20ac, 0x153), "&ldquo;");
   return `<!doctype html>
 <html lang="en" data-pl-format="16:9" data-pl-title="${title}" data-pl-theme="${template.name}">
 <head>
@@ -780,6 +815,7 @@ for (const template of templates) {
   const templateDir = join(templatesRoot, template.name);
   const artifactDir = join(artifactsRoot, template.name);
   await mkdir(templateDir, { recursive: true });
+  await rm(artifactDir, { recursive: true, force: true });
   await mkdir(artifactDir, { recursive: true });
   const htmlPath = join(templateDir, "deck.html");
   const formattedHtml = await prettier.format(htmlForTemplate(template), {
@@ -821,9 +857,20 @@ const templateIndex = templates.map(({ name, label, description, family, palette
   modifier,
   path: "templates/" + name + "/deck.html",
 }));
+const repositoryTemplateIndex = templateIndex.map(
+  ({ name, title, description, family, palette, modifier }) => ({
+    name,
+    title,
+    description,
+    family,
+    palette,
+    modifier,
+    path: name + "/deck.html",
+  }),
+);
 await writeFile(
   join(templatesRoot, "index.json"),
-  `${JSON.stringify(templateIndex, null, 2)}\n`,
+  `${JSON.stringify(repositoryTemplateIndex, null, 2)}\n`,
   "utf8",
 );
 await writeFile(

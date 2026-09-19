@@ -1,0 +1,4 @@
+[submodule "templates"]
+	path = templates
+	url = https://github.com/quangminh1212/PresentTemplate.git
+	branch = main

@@ -14,6 +14,11 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        with:
+          # The gallery is a private cross-repository submodule. Configure
+          # PRESENTTEMPLATE_TOKEN with read access to quangminh1212/PresentTemplate.
+          token: ${{ secrets.PRESENTTEMPLATE_TOKEN || github.token }}
+          submodules: recursive
       - uses: actions/setup-node@v4
         with:
           node-version: 22

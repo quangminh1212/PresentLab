@@ -10,16 +10,18 @@ The repository also ships an MCP server, a Codex-compatible skill/plugin, reusab
 - Chromium rendering for pixel-faithful PNG and print-quality PDF output.
 - PPTX export that places each rendered slide as a full-bleed image, preserving HTML fidelity across PowerPoint viewers.
 - Catalog generation as HTML and PDF.
-- A 100-template gallery with 700 sample slides. Each folder contains `deck.html`, `deck.pdf`, and `deck.pptx`.
+- A 100-template gallery with 1,200 sample slides. Each folder contains `deck.html`, `deck.pdf`, and `deck.pptx`.
 - MCP tools, resources, and prompts for validation, rendering, catalogs, templates, and deck design guidance.
 - A repo-local `presentlab-ai` plugin with a reusable design skill.
 - Strict TypeScript, unit tests, integration smoke tests, formatting, linting, security boundaries, and GitHub Actions CI.
 
 ## Quick start
 
-Requirements: Node.js 22 or newer and npm 10.9 or newer.
+Requirements: Node.js 22 or newer and npm 10.9 or newer. The template gallery is stored in the private `PresentTemplate` repository and is consumed here as the `templates/` submodule. Use a GitHub identity/token with read access to that repository.
 
 ```powershell
+git clone --recurse-submodules https://github.com/quangminh1212/PresentLab.git
+cd PresentLab
 npm ci
 npx playwright install chromium
 npm run verify:all
@@ -31,9 +33,15 @@ node dist/cli.js catalog --input examples/aurora/deck.html --output .artifacts/a
 
 The generated artifact directories are intentionally ignored by Git.
 
+If the repository was cloned without submodules, initialize the private gallery before running the checks:
+
+```powershell
+git submodule update --init --recursive
+```
+
 ## Template gallery
 
-The checked-in gallery lives under [`templates/`](templates/). It contains eight structural families and 92 palette/layout variants:
+The gallery is mounted at [`templates/`](templates/) from the private [`PresentTemplate`](https://github.com/quangminh1212/PresentTemplate) repository. It contains eight structural families and 92 palette/layout variants:
 
 | Folder        | Style                |
 | ------------- | -------------------- |
@@ -48,7 +56,7 @@ The checked-in gallery lives under [`templates/`](templates/). It contains eight
 
 Variant folders combine these structural families with curated palettes such as Cobalt, Coral, Forest, Saffron, Plum, Ocean, Sand, Mono, Mint, Copper, Violet, and Ice. The generated index records each template's `family`, `palette`, and `modifier` so an AI agent can select by visual intent.
 
-Each folder is a portable handoff unit. Edit `deck.html`, then regenerate its PDF/PPTX outputs with `npm run gallery:build`. The generator is deterministic and the gallery checker enforces seven slides plus the exact three-file folder contract across all 100 folders. See [docs/template-gallery.md](docs/template-gallery.md) for the authoring rules.
+Each folder is a portable handoff unit. Edit `deck.html`, then regenerate its PDF/PPTX outputs with `npm run gallery:build`. The generator is deterministic and the gallery checker enforces a minimum of twelve slides plus the exact three-file folder contract across all 100 folders. Template changes are committed and pushed in `PresentTemplate`; the resulting submodule pointer is then committed in this repository. See [docs/template-gallery.md](docs/template-gallery.md) for the authoring rules.
 
 ## HTML contract
 
