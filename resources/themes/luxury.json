@@ -1,0 +1,13 @@
+{
+  "name": "luxury",
+  "title": "Luxury",
+  "description": "Quiet luxury system with ivory paper, hairline rules, serif typography, and restrained gold.",
+  "format": "16:9",
+  "tokens": {
+    "paper": "#f6f0e6",
+    "ink": "#27231e",
+    "accent": "#a3824f",
+    "muted": "#756c5f",
+    "radius": "2px"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "datanoir",
+  "title": "Data Noir",
+  "description": "Terminal-inspired dark system for product, engineering, and operational narratives.",
+  "format": "16:9",
+  "tokens": {
+    "paper": "#07100c",
+    "ink": "#d4f7d5",
+    "accent": "#b6f36a",
+    "muted": "#8dad91",
+    "radius": "4px"
+  }
+}

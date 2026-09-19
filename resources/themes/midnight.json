@@ -1,0 +1,13 @@
+{
+  "name": "midnight",
+  "title": "Midnight",
+  "description": "Dark cinematic system with luminous cyan highlights, grid structure, and contrast-led storytelling.",
+  "format": "16:9",
+  "tokens": {
+    "paper": "#080b14",
+    "ink": "#f3f6ff",
+    "accent": "#6ce5dc",
+    "muted": "#aab4ca",
+    "radius": "18px"
+  }
+}

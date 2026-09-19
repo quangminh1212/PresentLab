@@ -1,0 +1,13 @@
+{
+  "name": "retrofuture",
+  "title": "Retro Future",
+  "description": "Neon retro-future system with synthwave gradients, luminous grids, and energetic pacing.",
+  "format": "16:9",
+  "tokens": {
+    "paper": "#12072b",
+    "ink": "#fbf7ff",
+    "accent": "#ff5bc8",
+    "muted": "#c0b3de",
+    "radius": "18px"
+  }
+}

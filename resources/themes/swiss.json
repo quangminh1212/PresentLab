@@ -1,0 +1,13 @@
+{
+  "name": "swiss",
+  "title": "Swiss",
+  "description": "Swiss-inspired grid with hard edges, red signal color, and disciplined information hierarchy.",
+  "format": "16:9",
+  "tokens": {
+    "paper": "#f2efe9",
+    "ink": "#121212",
+    "accent": "#ef4e3f",
+    "muted": "#56534e",
+    "radius": "0px"
+  }
+}

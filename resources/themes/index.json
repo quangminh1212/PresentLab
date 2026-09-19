@@ -2,7 +2,49 @@
   {
     "name": "aurora",
     "title": "Aurora",
-    "description": "Light editorial canvas with indigo accents, rounded cards, and restrained depth.",
+    "description": "Light editorial system with spacious cards, indigo accents, and calm narrative pacing.",
     "path": "resources/themes/aurora.json"
+  },
+  {
+    "name": "midnight",
+    "title": "Midnight",
+    "description": "Dark cinematic system with luminous cyan highlights, grid structure, and contrast-led storytelling.",
+    "path": "resources/themes/midnight.json"
+  },
+  {
+    "name": "swiss",
+    "title": "Swiss",
+    "description": "Swiss-inspired grid with hard edges, red signal color, and disciplined information hierarchy.",
+    "path": "resources/themes/swiss.json"
+  },
+  {
+    "name": "brutalist",
+    "title": "Brutalist",
+    "description": "Neo-brutalist system with yellow canvas, ink borders, offset shadows, and playful emphasis.",
+    "path": "resources/themes/brutalist.json"
+  },
+  {
+    "name": "organic",
+    "title": "Organic",
+    "description": "Warm studio system with earthy colors, serif headlines, and soft organic geometry.",
+    "path": "resources/themes/organic.json"
+  },
+  {
+    "name": "datanoir",
+    "title": "Data Noir",
+    "description": "Terminal-inspired dark system for product, engineering, and operational narratives.",
+    "path": "resources/themes/datanoir.json"
+  },
+  {
+    "name": "luxury",
+    "title": "Luxury",
+    "description": "Quiet luxury system with ivory paper, hairline rules, serif typography, and restrained gold.",
+    "path": "resources/themes/luxury.json"
+  },
+  {
+    "name": "retrofuture",
+    "title": "Retro Future",
+    "description": "Neon retro-future system with synthwave gradients, luminous grids, and energetic pacing.",
+    "path": "resources/themes/retrofuture.json"
   }
 ]

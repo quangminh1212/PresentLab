@@ -1,0 +1,13 @@
+{
+  "name": "organic",
+  "title": "Organic",
+  "description": "Warm studio system with earthy colors, serif headlines, and soft organic geometry.",
+  "format": "16:9",
+  "tokens": {
+    "paper": "#f3ecdf",
+    "ink": "#26372e",
+    "accent": "#c96545",
+    "muted": "#687066",
+    "radius": "38px"
+  }
+}

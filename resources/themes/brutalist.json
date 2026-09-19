@@ -1,0 +1,13 @@
+{
+  "name": "brutalist",
+  "title": "Brutalist",
+  "description": "Neo-brutalist system with yellow canvas, ink borders, offset shadows, and playful emphasis.",
+  "format": "16:9",
+  "tokens": {
+    "paper": "#f4e94c",
+    "ink": "#111111",
+    "accent": "#f15bb5",
+    "muted": "#333333",
+    "radius": "0px"
+  }
+}

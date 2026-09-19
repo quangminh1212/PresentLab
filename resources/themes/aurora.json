@@ -1,14 +1,13 @@
 {
   "name": "aurora",
   "title": "Aurora",
-  "description": "Light editorial canvas with indigo accents, rounded cards, and restrained depth.",
+  "description": "Light editorial system with spacious cards, indigo accents, and calm narrative pacing.",
+  "format": "16:9",
   "tokens": {
-    "ink": "#172033",
-    "muted": "#647086",
     "paper": "#f7f8fc",
-    "card": "#ffffff",
+    "ink": "#172033",
     "accent": "#5b6cf2",
-    "accentSoft": "#dfe4ff",
-    "border": "rgb(23 32 51 / 14%)"
+    "muted": "#647086",
+    "radius": "28px"
   }
 }
