@@ -1,0 +1,27 @@
+{
+  "name": "brutalist-cobalt",
+  "title": "Brutalist / Cobalt / Poster",
+  "description": "Clear blue product palette for confident strategy and technology stories. Neo-brutalist system with yellow canvas, ink borders, offset shadows, and playful emphasis. Poster-like capitalization and borders for campaigns and bold announcements.",
+  "format": "16:9",
+  "tokens": {
+    "paper": "#f4f7ff",
+    "ink": "#14213d",
+    "accent": "#315efb",
+    "muted": "#5c6a83",
+    "radius": "24px",
+    "accentDeep": "#2340b4",
+    "accentSoft": "#dbe5ff",
+    "line": "rgb(20 33 61 / 16%)",
+    "lineStrong": "rgb(20 33 61 / 28%)",
+    "panel": "#ffffff",
+    "artOne": "#b5c6ff",
+    "artTwo": "#ffb29c",
+    "quoteInk": "#ffffff",
+    "quoteMark": "#c9d5ff",
+    "artLabel": "#5c6a83",
+    "overlay": "radial-gradient(circle at 92% 8%, #dbe5ff 0 14%, var(--paper) 15%)",
+    "family": "brutalist",
+    "palette": "cobalt",
+    "modifier": "poster"
+  }
+}

@@ -3,48 +3,900 @@
     "name": "aurora",
     "title": "Aurora template",
     "description": "Light editorial system with spacious cards, indigo accents, and calm narrative pacing.",
+    "family": "aurora",
+    "palette": "base",
+    "modifier": "base",
     "path": "templates/aurora/deck.html"
   },
   {
     "name": "midnight",
     "title": "Midnight template",
     "description": "Dark cinematic system with luminous cyan highlights, grid structure, and contrast-led storytelling.",
+    "family": "midnight",
+    "palette": "base",
+    "modifier": "base",
     "path": "templates/midnight/deck.html"
   },
   {
     "name": "swiss",
     "title": "Swiss template",
     "description": "Swiss-inspired grid with hard edges, red signal color, and disciplined information hierarchy.",
+    "family": "swiss",
+    "palette": "base",
+    "modifier": "base",
     "path": "templates/swiss/deck.html"
   },
   {
     "name": "brutalist",
     "title": "Brutalist template",
     "description": "Neo-brutalist system with yellow canvas, ink borders, offset shadows, and playful emphasis.",
+    "family": "brutalist",
+    "palette": "base",
+    "modifier": "base",
     "path": "templates/brutalist/deck.html"
   },
   {
     "name": "organic",
     "title": "Organic template",
     "description": "Warm studio system with earthy colors, serif headlines, and soft organic geometry.",
+    "family": "organic",
+    "palette": "base",
+    "modifier": "base",
     "path": "templates/organic/deck.html"
   },
   {
     "name": "datanoir",
     "title": "Data Noir template",
     "description": "Terminal-inspired dark system for product, engineering, and operational narratives.",
+    "family": "datanoir",
+    "palette": "base",
+    "modifier": "base",
     "path": "templates/datanoir/deck.html"
   },
   {
     "name": "luxury",
     "title": "Luxury template",
     "description": "Quiet luxury system with ivory paper, hairline rules, serif typography, and restrained gold.",
+    "family": "luxury",
+    "palette": "base",
+    "modifier": "base",
     "path": "templates/luxury/deck.html"
   },
   {
     "name": "retrofuture",
     "title": "Retro Future template",
     "description": "Neon retro-future system with synthwave gradients, luminous grids, and energetic pacing.",
+    "family": "retrofuture",
+    "palette": "base",
+    "modifier": "base",
     "path": "templates/retrofuture/deck.html"
+  },
+  {
+    "name": "aurora-cobalt",
+    "title": "Aurora / Cobalt / Airy template",
+    "description": "Clear blue product palette for confident strategy and technology stories. Light editorial system with spacious cards, indigo accents, and calm narrative pacing. More breathing room and a quieter surface for reflective narratives.",
+    "family": "aurora",
+    "palette": "cobalt",
+    "modifier": "airy",
+    "path": "templates/aurora-cobalt/deck.html"
+  },
+  {
+    "name": "midnight-cobalt",
+    "title": "Midnight / Cobalt / Signal template",
+    "description": "Clear blue product palette for confident strategy and technology stories. Dark cinematic system with luminous cyan highlights, grid structure, and contrast-led storytelling. Larger type and stronger labels for high-attention executive moments.",
+    "family": "midnight",
+    "palette": "cobalt",
+    "modifier": "signal",
+    "path": "templates/midnight-cobalt/deck.html"
+  },
+  {
+    "name": "swiss-cobalt",
+    "title": "Swiss / Cobalt / Grid template",
+    "description": "Clear blue product palette for confident strategy and technology stories. Swiss-inspired grid with hard edges, red signal color, and disciplined information hierarchy. A visible modular grid for systems thinking and operational storytelling.",
+    "family": "swiss",
+    "palette": "cobalt",
+    "modifier": "grid",
+    "path": "templates/swiss-cobalt/deck.html"
+  },
+  {
+    "name": "brutalist-cobalt",
+    "title": "Brutalist / Cobalt / Poster template",
+    "description": "Clear blue product palette for confident strategy and technology stories. Neo-brutalist system with yellow canvas, ink borders, offset shadows, and playful emphasis. Poster-like capitalization and borders for campaigns and bold announcements.",
+    "family": "brutalist",
+    "palette": "cobalt",
+    "modifier": "poster",
+    "path": "templates/brutalist-cobalt/deck.html"
+  },
+  {
+    "name": "organic-cobalt",
+    "title": "Organic / Cobalt / Soft template",
+    "description": "Clear blue product palette for confident strategy and technology stories. Warm studio system with earthy colors, serif headlines, and soft organic geometry. Rounded surfaces and translucent panels for friendly collaborative work.",
+    "family": "organic",
+    "palette": "cobalt",
+    "modifier": "soft",
+    "path": "templates/organic-cobalt/deck.html"
+  },
+  {
+    "name": "datanoir-cobalt",
+    "title": "Data Noir / Cobalt / Frame template",
+    "description": "Clear blue product palette for confident strategy and technology stories. Terminal-inspired dark system for product, engineering, and operational narratives. A strong outer frame that gives every page a distinct poster boundary.",
+    "family": "datanoir",
+    "palette": "cobalt",
+    "modifier": "frame",
+    "path": "templates/datanoir-cobalt/deck.html"
+  },
+  {
+    "name": "luxury-cobalt",
+    "title": "Luxury / Cobalt / Mono template",
+    "description": "Clear blue product palette for confident strategy and technology stories. Quiet luxury system with ivory paper, hairline rules, serif typography, and restrained gold. Monospace-led typography for technical, analytical, and product narratives.",
+    "family": "luxury",
+    "palette": "cobalt",
+    "modifier": "mono",
+    "path": "templates/luxury-cobalt/deck.html"
+  },
+  {
+    "name": "retrofuture-cobalt",
+    "title": "Retro Future / Cobalt / Glow template",
+    "description": "Clear blue product palette for confident strategy and technology stories. Neon retro-future system with synthwave gradients, luminous grids, and energetic pacing. A luminous accent treatment for launches, demos, and future-facing concepts.",
+    "family": "retrofuture",
+    "palette": "cobalt",
+    "modifier": "glow",
+    "path": "templates/retrofuture-cobalt/deck.html"
+  },
+  {
+    "name": "aurora-coral",
+    "title": "Aurora / Coral / Editorial template",
+    "description": "Warm coral palette for human-centered launches, brands, and community narratives. Light editorial system with spacious cards, indigo accents, and calm narrative pacing. Serif-led hierarchy for essays, research, portfolios, and considered proposals.",
+    "family": "aurora",
+    "palette": "coral",
+    "modifier": "editorial",
+    "path": "templates/aurora-coral/deck.html"
+  },
+  {
+    "name": "midnight-coral",
+    "title": "Midnight / Coral / Compact template",
+    "description": "Warm coral palette for human-centered launches, brands, and community narratives. Dark cinematic system with luminous cyan highlights, grid structure, and contrast-led storytelling. Denser spacing for information-rich reviews where every page must carry more detail.",
+    "family": "midnight",
+    "palette": "coral",
+    "modifier": "compact",
+    "path": "templates/midnight-coral/deck.html"
+  },
+  {
+    "name": "swiss-coral",
+    "title": "Swiss / Coral / Airy template",
+    "description": "Warm coral palette for human-centered launches, brands, and community narratives. Swiss-inspired grid with hard edges, red signal color, and disciplined information hierarchy. More breathing room and a quieter surface for reflective narratives.",
+    "family": "swiss",
+    "palette": "coral",
+    "modifier": "airy",
+    "path": "templates/swiss-coral/deck.html"
+  },
+  {
+    "name": "brutalist-coral",
+    "title": "Brutalist / Coral / Signal template",
+    "description": "Warm coral palette for human-centered launches, brands, and community narratives. Neo-brutalist system with yellow canvas, ink borders, offset shadows, and playful emphasis. Larger type and stronger labels for high-attention executive moments.",
+    "family": "brutalist",
+    "palette": "coral",
+    "modifier": "signal",
+    "path": "templates/brutalist-coral/deck.html"
+  },
+  {
+    "name": "organic-coral",
+    "title": "Organic / Coral / Grid template",
+    "description": "Warm coral palette for human-centered launches, brands, and community narratives. Warm studio system with earthy colors, serif headlines, and soft organic geometry. A visible modular grid for systems thinking and operational storytelling.",
+    "family": "organic",
+    "palette": "coral",
+    "modifier": "grid",
+    "path": "templates/organic-coral/deck.html"
+  },
+  {
+    "name": "datanoir-coral",
+    "title": "Data Noir / Coral / Poster template",
+    "description": "Warm coral palette for human-centered launches, brands, and community narratives. Terminal-inspired dark system for product, engineering, and operational narratives. Poster-like capitalization and borders for campaigns and bold announcements.",
+    "family": "datanoir",
+    "palette": "coral",
+    "modifier": "poster",
+    "path": "templates/datanoir-coral/deck.html"
+  },
+  {
+    "name": "luxury-coral",
+    "title": "Luxury / Coral / Soft template",
+    "description": "Warm coral palette for human-centered launches, brands, and community narratives. Quiet luxury system with ivory paper, hairline rules, serif typography, and restrained gold. Rounded surfaces and translucent panels for friendly collaborative work.",
+    "family": "luxury",
+    "palette": "coral",
+    "modifier": "soft",
+    "path": "templates/luxury-coral/deck.html"
+  },
+  {
+    "name": "retrofuture-coral",
+    "title": "Retro Future / Coral / Frame template",
+    "description": "Warm coral palette for human-centered launches, brands, and community narratives. Neon retro-future system with synthwave gradients, luminous grids, and energetic pacing. A strong outer frame that gives every page a distinct poster boundary.",
+    "family": "retrofuture",
+    "palette": "coral",
+    "modifier": "frame",
+    "path": "templates/retrofuture-coral/deck.html"
+  },
+  {
+    "name": "aurora-forest",
+    "title": "Aurora / Forest / Mono template",
+    "description": "Grounded green palette for sustainability, operations, and long-term growth stories. Light editorial system with spacious cards, indigo accents, and calm narrative pacing. Monospace-led typography for technical, analytical, and product narratives.",
+    "family": "aurora",
+    "palette": "forest",
+    "modifier": "mono",
+    "path": "templates/aurora-forest/deck.html"
+  },
+  {
+    "name": "midnight-forest",
+    "title": "Midnight / Forest / Glow template",
+    "description": "Grounded green palette for sustainability, operations, and long-term growth stories. Dark cinematic system with luminous cyan highlights, grid structure, and contrast-led storytelling. A luminous accent treatment for launches, demos, and future-facing concepts.",
+    "family": "midnight",
+    "palette": "forest",
+    "modifier": "glow",
+    "path": "templates/midnight-forest/deck.html"
+  },
+  {
+    "name": "swiss-forest",
+    "title": "Swiss / Forest / Editorial template",
+    "description": "Grounded green palette for sustainability, operations, and long-term growth stories. Swiss-inspired grid with hard edges, red signal color, and disciplined information hierarchy. Serif-led hierarchy for essays, research, portfolios, and considered proposals.",
+    "family": "swiss",
+    "palette": "forest",
+    "modifier": "editorial",
+    "path": "templates/swiss-forest/deck.html"
+  },
+  {
+    "name": "brutalist-forest",
+    "title": "Brutalist / Forest / Compact template",
+    "description": "Grounded green palette for sustainability, operations, and long-term growth stories. Neo-brutalist system with yellow canvas, ink borders, offset shadows, and playful emphasis. Denser spacing for information-rich reviews where every page must carry more detail.",
+    "family": "brutalist",
+    "palette": "forest",
+    "modifier": "compact",
+    "path": "templates/brutalist-forest/deck.html"
+  },
+  {
+    "name": "organic-forest",
+    "title": "Organic / Forest / Airy template",
+    "description": "Grounded green palette for sustainability, operations, and long-term growth stories. Warm studio system with earthy colors, serif headlines, and soft organic geometry. More breathing room and a quieter surface for reflective narratives.",
+    "family": "organic",
+    "palette": "forest",
+    "modifier": "airy",
+    "path": "templates/organic-forest/deck.html"
+  },
+  {
+    "name": "datanoir-forest",
+    "title": "Data Noir / Forest / Signal template",
+    "description": "Grounded green palette for sustainability, operations, and long-term growth stories. Terminal-inspired dark system for product, engineering, and operational narratives. Larger type and stronger labels for high-attention executive moments.",
+    "family": "datanoir",
+    "palette": "forest",
+    "modifier": "signal",
+    "path": "templates/datanoir-forest/deck.html"
+  },
+  {
+    "name": "luxury-forest",
+    "title": "Luxury / Forest / Grid template",
+    "description": "Grounded green palette for sustainability, operations, and long-term growth stories. Quiet luxury system with ivory paper, hairline rules, serif typography, and restrained gold. A visible modular grid for systems thinking and operational storytelling.",
+    "family": "luxury",
+    "palette": "forest",
+    "modifier": "grid",
+    "path": "templates/luxury-forest/deck.html"
+  },
+  {
+    "name": "retrofuture-forest",
+    "title": "Retro Future / Forest / Poster template",
+    "description": "Grounded green palette for sustainability, operations, and long-term growth stories. Neon retro-future system with synthwave gradients, luminous grids, and energetic pacing. Poster-like capitalization and borders for campaigns and bold announcements.",
+    "family": "retrofuture",
+    "palette": "forest",
+    "modifier": "poster",
+    "path": "templates/retrofuture-forest/deck.html"
+  },
+  {
+    "name": "aurora-saffron",
+    "title": "Aurora / Saffron / Soft template",
+    "description": "Optimistic golden palette for education, change management, and opportunity maps. Light editorial system with spacious cards, indigo accents, and calm narrative pacing. Rounded surfaces and translucent panels for friendly collaborative work.",
+    "family": "aurora",
+    "palette": "saffron",
+    "modifier": "soft",
+    "path": "templates/aurora-saffron/deck.html"
+  },
+  {
+    "name": "midnight-saffron",
+    "title": "Midnight / Saffron / Frame template",
+    "description": "Optimistic golden palette for education, change management, and opportunity maps. Dark cinematic system with luminous cyan highlights, grid structure, and contrast-led storytelling. A strong outer frame that gives every page a distinct poster boundary.",
+    "family": "midnight",
+    "palette": "saffron",
+    "modifier": "frame",
+    "path": "templates/midnight-saffron/deck.html"
+  },
+  {
+    "name": "swiss-saffron",
+    "title": "Swiss / Saffron / Mono template",
+    "description": "Optimistic golden palette for education, change management, and opportunity maps. Swiss-inspired grid with hard edges, red signal color, and disciplined information hierarchy. Monospace-led typography for technical, analytical, and product narratives.",
+    "family": "swiss",
+    "palette": "saffron",
+    "modifier": "mono",
+    "path": "templates/swiss-saffron/deck.html"
+  },
+  {
+    "name": "brutalist-saffron",
+    "title": "Brutalist / Saffron / Glow template",
+    "description": "Optimistic golden palette for education, change management, and opportunity maps. Neo-brutalist system with yellow canvas, ink borders, offset shadows, and playful emphasis. A luminous accent treatment for launches, demos, and future-facing concepts.",
+    "family": "brutalist",
+    "palette": "saffron",
+    "modifier": "glow",
+    "path": "templates/brutalist-saffron/deck.html"
+  },
+  {
+    "name": "organic-saffron",
+    "title": "Organic / Saffron / Editorial template",
+    "description": "Optimistic golden palette for education, change management, and opportunity maps. Warm studio system with earthy colors, serif headlines, and soft organic geometry. Serif-led hierarchy for essays, research, portfolios, and considered proposals.",
+    "family": "organic",
+    "palette": "saffron",
+    "modifier": "editorial",
+    "path": "templates/organic-saffron/deck.html"
+  },
+  {
+    "name": "datanoir-saffron",
+    "title": "Data Noir / Saffron / Compact template",
+    "description": "Optimistic golden palette for education, change management, and opportunity maps. Terminal-inspired dark system for product, engineering, and operational narratives. Denser spacing for information-rich reviews where every page must carry more detail.",
+    "family": "datanoir",
+    "palette": "saffron",
+    "modifier": "compact",
+    "path": "templates/datanoir-saffron/deck.html"
+  },
+  {
+    "name": "luxury-saffron",
+    "title": "Luxury / Saffron / Airy template",
+    "description": "Optimistic golden palette for education, change management, and opportunity maps. Quiet luxury system with ivory paper, hairline rules, serif typography, and restrained gold. More breathing room and a quieter surface for reflective narratives.",
+    "family": "luxury",
+    "palette": "saffron",
+    "modifier": "airy",
+    "path": "templates/luxury-saffron/deck.html"
+  },
+  {
+    "name": "retrofuture-saffron",
+    "title": "Retro Future / Saffron / Signal template",
+    "description": "Optimistic golden palette for education, change management, and opportunity maps. Neon retro-future system with synthwave gradients, luminous grids, and energetic pacing. Larger type and stronger labels for high-attention executive moments.",
+    "family": "retrofuture",
+    "palette": "saffron",
+    "modifier": "signal",
+    "path": "templates/retrofuture-saffron/deck.html"
+  },
+  {
+    "name": "aurora-plum",
+    "title": "Aurora / Plum / Grid template",
+    "description": "Expressive plum palette for culture, editorial, and premium creative work. Light editorial system with spacious cards, indigo accents, and calm narrative pacing. A visible modular grid for systems thinking and operational storytelling.",
+    "family": "aurora",
+    "palette": "plum",
+    "modifier": "grid",
+    "path": "templates/aurora-plum/deck.html"
+  },
+  {
+    "name": "midnight-plum",
+    "title": "Midnight / Plum / Poster template",
+    "description": "Expressive plum palette for culture, editorial, and premium creative work. Dark cinematic system with luminous cyan highlights, grid structure, and contrast-led storytelling. Poster-like capitalization and borders for campaigns and bold announcements.",
+    "family": "midnight",
+    "palette": "plum",
+    "modifier": "poster",
+    "path": "templates/midnight-plum/deck.html"
+  },
+  {
+    "name": "swiss-plum",
+    "title": "Swiss / Plum / Soft template",
+    "description": "Expressive plum palette for culture, editorial, and premium creative work. Swiss-inspired grid with hard edges, red signal color, and disciplined information hierarchy. Rounded surfaces and translucent panels for friendly collaborative work.",
+    "family": "swiss",
+    "palette": "plum",
+    "modifier": "soft",
+    "path": "templates/swiss-plum/deck.html"
+  },
+  {
+    "name": "brutalist-plum",
+    "title": "Brutalist / Plum / Frame template",
+    "description": "Expressive plum palette for culture, editorial, and premium creative work. Neo-brutalist system with yellow canvas, ink borders, offset shadows, and playful emphasis. A strong outer frame that gives every page a distinct poster boundary.",
+    "family": "brutalist",
+    "palette": "plum",
+    "modifier": "frame",
+    "path": "templates/brutalist-plum/deck.html"
+  },
+  {
+    "name": "organic-plum",
+    "title": "Organic / Plum / Mono template",
+    "description": "Expressive plum palette for culture, editorial, and premium creative work. Warm studio system with earthy colors, serif headlines, and soft organic geometry. Monospace-led typography for technical, analytical, and product narratives.",
+    "family": "organic",
+    "palette": "plum",
+    "modifier": "mono",
+    "path": "templates/organic-plum/deck.html"
+  },
+  {
+    "name": "datanoir-plum",
+    "title": "Data Noir / Plum / Glow template",
+    "description": "Expressive plum palette for culture, editorial, and premium creative work. Terminal-inspired dark system for product, engineering, and operational narratives. A luminous accent treatment for launches, demos, and future-facing concepts.",
+    "family": "datanoir",
+    "palette": "plum",
+    "modifier": "glow",
+    "path": "templates/datanoir-plum/deck.html"
+  },
+  {
+    "name": "luxury-plum",
+    "title": "Luxury / Plum / Editorial template",
+    "description": "Expressive plum palette for culture, editorial, and premium creative work. Quiet luxury system with ivory paper, hairline rules, serif typography, and restrained gold. Serif-led hierarchy for essays, research, portfolios, and considered proposals.",
+    "family": "luxury",
+    "palette": "plum",
+    "modifier": "editorial",
+    "path": "templates/luxury-plum/deck.html"
+  },
+  {
+    "name": "retrofuture-plum",
+    "title": "Retro Future / Plum / Compact template",
+    "description": "Expressive plum palette for culture, editorial, and premium creative work. Neon retro-future system with synthwave gradients, luminous grids, and energetic pacing. Denser spacing for information-rich reviews where every page must carry more detail.",
+    "family": "retrofuture",
+    "palette": "plum",
+    "modifier": "compact",
+    "path": "templates/retrofuture-plum/deck.html"
+  },
+  {
+    "name": "aurora-ocean",
+    "title": "Aurora / Ocean / Airy template",
+    "description": "Fresh cyan palette for research, customer insight, and service design narratives. Light editorial system with spacious cards, indigo accents, and calm narrative pacing. More breathing room and a quieter surface for reflective narratives.",
+    "family": "aurora",
+    "palette": "ocean",
+    "modifier": "airy",
+    "path": "templates/aurora-ocean/deck.html"
+  },
+  {
+    "name": "midnight-ocean",
+    "title": "Midnight / Ocean / Signal template",
+    "description": "Fresh cyan palette for research, customer insight, and service design narratives. Dark cinematic system with luminous cyan highlights, grid structure, and contrast-led storytelling. Larger type and stronger labels for high-attention executive moments.",
+    "family": "midnight",
+    "palette": "ocean",
+    "modifier": "signal",
+    "path": "templates/midnight-ocean/deck.html"
+  },
+  {
+    "name": "swiss-ocean",
+    "title": "Swiss / Ocean / Grid template",
+    "description": "Fresh cyan palette for research, customer insight, and service design narratives. Swiss-inspired grid with hard edges, red signal color, and disciplined information hierarchy. A visible modular grid for systems thinking and operational storytelling.",
+    "family": "swiss",
+    "palette": "ocean",
+    "modifier": "grid",
+    "path": "templates/swiss-ocean/deck.html"
+  },
+  {
+    "name": "brutalist-ocean",
+    "title": "Brutalist / Ocean / Poster template",
+    "description": "Fresh cyan palette for research, customer insight, and service design narratives. Neo-brutalist system with yellow canvas, ink borders, offset shadows, and playful emphasis. Poster-like capitalization and borders for campaigns and bold announcements.",
+    "family": "brutalist",
+    "palette": "ocean",
+    "modifier": "poster",
+    "path": "templates/brutalist-ocean/deck.html"
+  },
+  {
+    "name": "organic-ocean",
+    "title": "Organic / Ocean / Soft template",
+    "description": "Fresh cyan palette for research, customer insight, and service design narratives. Warm studio system with earthy colors, serif headlines, and soft organic geometry. Rounded surfaces and translucent panels for friendly collaborative work.",
+    "family": "organic",
+    "palette": "ocean",
+    "modifier": "soft",
+    "path": "templates/organic-ocean/deck.html"
+  },
+  {
+    "name": "datanoir-ocean",
+    "title": "Data Noir / Ocean / Frame template",
+    "description": "Fresh cyan palette for research, customer insight, and service design narratives. Terminal-inspired dark system for product, engineering, and operational narratives. A strong outer frame that gives every page a distinct poster boundary.",
+    "family": "datanoir",
+    "palette": "ocean",
+    "modifier": "frame",
+    "path": "templates/datanoir-ocean/deck.html"
+  },
+  {
+    "name": "luxury-ocean",
+    "title": "Luxury / Ocean / Mono template",
+    "description": "Fresh cyan palette for research, customer insight, and service design narratives. Quiet luxury system with ivory paper, hairline rules, serif typography, and restrained gold. Monospace-led typography for technical, analytical, and product narratives.",
+    "family": "luxury",
+    "palette": "ocean",
+    "modifier": "mono",
+    "path": "templates/luxury-ocean/deck.html"
+  },
+  {
+    "name": "retrofuture-ocean",
+    "title": "Retro Future / Ocean / Glow template",
+    "description": "Fresh cyan palette for research, customer insight, and service design narratives. Neon retro-future system with synthwave gradients, luminous grids, and energetic pacing. A luminous accent treatment for launches, demos, and future-facing concepts.",
+    "family": "retrofuture",
+    "palette": "ocean",
+    "modifier": "glow",
+    "path": "templates/retrofuture-ocean/deck.html"
+  },
+  {
+    "name": "aurora-sand",
+    "title": "Aurora / Sand / Editorial template",
+    "description": "Natural terracotta palette for consulting, hospitality, and considered brand stories. Light editorial system with spacious cards, indigo accents, and calm narrative pacing. Serif-led hierarchy for essays, research, portfolios, and considered proposals.",
+    "family": "aurora",
+    "palette": "sand",
+    "modifier": "editorial",
+    "path": "templates/aurora-sand/deck.html"
+  },
+  {
+    "name": "midnight-sand",
+    "title": "Midnight / Sand / Compact template",
+    "description": "Natural terracotta palette for consulting, hospitality, and considered brand stories. Dark cinematic system with luminous cyan highlights, grid structure, and contrast-led storytelling. Denser spacing for information-rich reviews where every page must carry more detail.",
+    "family": "midnight",
+    "palette": "sand",
+    "modifier": "compact",
+    "path": "templates/midnight-sand/deck.html"
+  },
+  {
+    "name": "swiss-sand",
+    "title": "Swiss / Sand / Airy template",
+    "description": "Natural terracotta palette for consulting, hospitality, and considered brand stories. Swiss-inspired grid with hard edges, red signal color, and disciplined information hierarchy. More breathing room and a quieter surface for reflective narratives.",
+    "family": "swiss",
+    "palette": "sand",
+    "modifier": "airy",
+    "path": "templates/swiss-sand/deck.html"
+  },
+  {
+    "name": "brutalist-sand",
+    "title": "Brutalist / Sand / Signal template",
+    "description": "Natural terracotta palette for consulting, hospitality, and considered brand stories. Neo-brutalist system with yellow canvas, ink borders, offset shadows, and playful emphasis. Larger type and stronger labels for high-attention executive moments.",
+    "family": "brutalist",
+    "palette": "sand",
+    "modifier": "signal",
+    "path": "templates/brutalist-sand/deck.html"
+  },
+  {
+    "name": "organic-sand",
+    "title": "Organic / Sand / Grid template",
+    "description": "Natural terracotta palette for consulting, hospitality, and considered brand stories. Warm studio system with earthy colors, serif headlines, and soft organic geometry. A visible modular grid for systems thinking and operational storytelling.",
+    "family": "organic",
+    "palette": "sand",
+    "modifier": "grid",
+    "path": "templates/organic-sand/deck.html"
+  },
+  {
+    "name": "datanoir-sand",
+    "title": "Data Noir / Sand / Poster template",
+    "description": "Natural terracotta palette for consulting, hospitality, and considered brand stories. Terminal-inspired dark system for product, engineering, and operational narratives. Poster-like capitalization and borders for campaigns and bold announcements.",
+    "family": "datanoir",
+    "palette": "sand",
+    "modifier": "poster",
+    "path": "templates/datanoir-sand/deck.html"
+  },
+  {
+    "name": "luxury-sand",
+    "title": "Luxury / Sand / Soft template",
+    "description": "Natural terracotta palette for consulting, hospitality, and considered brand stories. Quiet luxury system with ivory paper, hairline rules, serif typography, and restrained gold. Rounded surfaces and translucent panels for friendly collaborative work.",
+    "family": "luxury",
+    "palette": "sand",
+    "modifier": "soft",
+    "path": "templates/luxury-sand/deck.html"
+  },
+  {
+    "name": "retrofuture-sand",
+    "title": "Retro Future / Sand / Frame template",
+    "description": "Natural terracotta palette for consulting, hospitality, and considered brand stories. Neon retro-future system with synthwave gradients, luminous grids, and energetic pacing. A strong outer frame that gives every page a distinct poster boundary.",
+    "family": "retrofuture",
+    "palette": "sand",
+    "modifier": "frame",
+    "path": "templates/retrofuture-sand/deck.html"
+  },
+  {
+    "name": "aurora-mono",
+    "title": "Aurora / Mono / Mono template",
+    "description": "Neutral monochrome palette for legal, finance, and highly focused information design. Light editorial system with spacious cards, indigo accents, and calm narrative pacing. Monospace-led typography for technical, analytical, and product narratives.",
+    "family": "aurora",
+    "palette": "mono",
+    "modifier": "mono",
+    "path": "templates/aurora-mono/deck.html"
+  },
+  {
+    "name": "midnight-mono",
+    "title": "Midnight / Mono / Glow template",
+    "description": "Neutral monochrome palette for legal, finance, and highly focused information design. Dark cinematic system with luminous cyan highlights, grid structure, and contrast-led storytelling. A luminous accent treatment for launches, demos, and future-facing concepts.",
+    "family": "midnight",
+    "palette": "mono",
+    "modifier": "glow",
+    "path": "templates/midnight-mono/deck.html"
+  },
+  {
+    "name": "swiss-mono",
+    "title": "Swiss / Mono / Editorial template",
+    "description": "Neutral monochrome palette for legal, finance, and highly focused information design. Swiss-inspired grid with hard edges, red signal color, and disciplined information hierarchy. Serif-led hierarchy for essays, research, portfolios, and considered proposals.",
+    "family": "swiss",
+    "palette": "mono",
+    "modifier": "editorial",
+    "path": "templates/swiss-mono/deck.html"
+  },
+  {
+    "name": "brutalist-mono",
+    "title": "Brutalist / Mono / Compact template",
+    "description": "Neutral monochrome palette for legal, finance, and highly focused information design. Neo-brutalist system with yellow canvas, ink borders, offset shadows, and playful emphasis. Denser spacing for information-rich reviews where every page must carry more detail.",
+    "family": "brutalist",
+    "palette": "mono",
+    "modifier": "compact",
+    "path": "templates/brutalist-mono/deck.html"
+  },
+  {
+    "name": "organic-mono",
+    "title": "Organic / Mono / Airy template",
+    "description": "Neutral monochrome palette for legal, finance, and highly focused information design. Warm studio system with earthy colors, serif headlines, and soft organic geometry. More breathing room and a quieter surface for reflective narratives.",
+    "family": "organic",
+    "palette": "mono",
+    "modifier": "airy",
+    "path": "templates/organic-mono/deck.html"
+  },
+  {
+    "name": "datanoir-mono",
+    "title": "Data Noir / Mono / Signal template",
+    "description": "Neutral monochrome palette for legal, finance, and highly focused information design. Terminal-inspired dark system for product, engineering, and operational narratives. Larger type and stronger labels for high-attention executive moments.",
+    "family": "datanoir",
+    "palette": "mono",
+    "modifier": "signal",
+    "path": "templates/datanoir-mono/deck.html"
+  },
+  {
+    "name": "luxury-mono",
+    "title": "Luxury / Mono / Grid template",
+    "description": "Neutral monochrome palette for legal, finance, and highly focused information design. Quiet luxury system with ivory paper, hairline rules, serif typography, and restrained gold. A visible modular grid for systems thinking and operational storytelling.",
+    "family": "luxury",
+    "palette": "mono",
+    "modifier": "grid",
+    "path": "templates/luxury-mono/deck.html"
+  },
+  {
+    "name": "retrofuture-mono",
+    "title": "Retro Future / Mono / Poster template",
+    "description": "Neutral monochrome palette for legal, finance, and highly focused information design. Neon retro-future system with synthwave gradients, luminous grids, and energetic pacing. Poster-like capitalization and borders for campaigns and bold announcements.",
+    "family": "retrofuture",
+    "palette": "mono",
+    "modifier": "poster",
+    "path": "templates/retrofuture-mono/deck.html"
+  },
+  {
+    "name": "aurora-mint",
+    "title": "Aurora / Mint / Soft template",
+    "description": "Bright mint palette for product growth, wellness, and collaborative planning. Light editorial system with spacious cards, indigo accents, and calm narrative pacing. Rounded surfaces and translucent panels for friendly collaborative work.",
+    "family": "aurora",
+    "palette": "mint",
+    "modifier": "soft",
+    "path": "templates/aurora-mint/deck.html"
+  },
+  {
+    "name": "midnight-mint",
+    "title": "Midnight / Mint / Frame template",
+    "description": "Bright mint palette for product growth, wellness, and collaborative planning. Dark cinematic system with luminous cyan highlights, grid structure, and contrast-led storytelling. A strong outer frame that gives every page a distinct poster boundary.",
+    "family": "midnight",
+    "palette": "mint",
+    "modifier": "frame",
+    "path": "templates/midnight-mint/deck.html"
+  },
+  {
+    "name": "swiss-mint",
+    "title": "Swiss / Mint / Mono template",
+    "description": "Bright mint palette for product growth, wellness, and collaborative planning. Swiss-inspired grid with hard edges, red signal color, and disciplined information hierarchy. Monospace-led typography for technical, analytical, and product narratives.",
+    "family": "swiss",
+    "palette": "mint",
+    "modifier": "mono",
+    "path": "templates/swiss-mint/deck.html"
+  },
+  {
+    "name": "brutalist-mint",
+    "title": "Brutalist / Mint / Glow template",
+    "description": "Bright mint palette for product growth, wellness, and collaborative planning. Neo-brutalist system with yellow canvas, ink borders, offset shadows, and playful emphasis. A luminous accent treatment for launches, demos, and future-facing concepts.",
+    "family": "brutalist",
+    "palette": "mint",
+    "modifier": "glow",
+    "path": "templates/brutalist-mint/deck.html"
+  },
+  {
+    "name": "organic-mint",
+    "title": "Organic / Mint / Editorial template",
+    "description": "Bright mint palette for product growth, wellness, and collaborative planning. Warm studio system with earthy colors, serif headlines, and soft organic geometry. Serif-led hierarchy for essays, research, portfolios, and considered proposals.",
+    "family": "organic",
+    "palette": "mint",
+    "modifier": "editorial",
+    "path": "templates/organic-mint/deck.html"
+  },
+  {
+    "name": "datanoir-mint",
+    "title": "Data Noir / Mint / Compact template",
+    "description": "Bright mint palette for product growth, wellness, and collaborative planning. Terminal-inspired dark system for product, engineering, and operational narratives. Denser spacing for information-rich reviews where every page must carry more detail.",
+    "family": "datanoir",
+    "palette": "mint",
+    "modifier": "compact",
+    "path": "templates/datanoir-mint/deck.html"
+  },
+  {
+    "name": "luxury-mint",
+    "title": "Luxury / Mint / Airy template",
+    "description": "Bright mint palette for product growth, wellness, and collaborative planning. Quiet luxury system with ivory paper, hairline rules, serif typography, and restrained gold. More breathing room and a quieter surface for reflective narratives.",
+    "family": "luxury",
+    "palette": "mint",
+    "modifier": "airy",
+    "path": "templates/luxury-mint/deck.html"
+  },
+  {
+    "name": "retrofuture-mint",
+    "title": "Retro Future / Mint / Signal template",
+    "description": "Bright mint palette for product growth, wellness, and collaborative planning. Neon retro-future system with synthwave gradients, luminous grids, and energetic pacing. Larger type and stronger labels for high-attention executive moments.",
+    "family": "retrofuture",
+    "palette": "mint",
+    "modifier": "signal",
+    "path": "templates/retrofuture-mint/deck.html"
+  },
+  {
+    "name": "aurora-copper",
+    "title": "Aurora / Copper / Grid template",
+    "description": "Confident copper palette for architecture, craft, and product storytelling. Light editorial system with spacious cards, indigo accents, and calm narrative pacing. A visible modular grid for systems thinking and operational storytelling.",
+    "family": "aurora",
+    "palette": "copper",
+    "modifier": "grid",
+    "path": "templates/aurora-copper/deck.html"
+  },
+  {
+    "name": "midnight-copper",
+    "title": "Midnight / Copper / Poster template",
+    "description": "Confident copper palette for architecture, craft, and product storytelling. Dark cinematic system with luminous cyan highlights, grid structure, and contrast-led storytelling. Poster-like capitalization and borders for campaigns and bold announcements.",
+    "family": "midnight",
+    "palette": "copper",
+    "modifier": "poster",
+    "path": "templates/midnight-copper/deck.html"
+  },
+  {
+    "name": "swiss-copper",
+    "title": "Swiss / Copper / Soft template",
+    "description": "Confident copper palette for architecture, craft, and product storytelling. Swiss-inspired grid with hard edges, red signal color, and disciplined information hierarchy. Rounded surfaces and translucent panels for friendly collaborative work.",
+    "family": "swiss",
+    "palette": "copper",
+    "modifier": "soft",
+    "path": "templates/swiss-copper/deck.html"
+  },
+  {
+    "name": "brutalist-copper",
+    "title": "Brutalist / Copper / Frame template",
+    "description": "Confident copper palette for architecture, craft, and product storytelling. Neo-brutalist system with yellow canvas, ink borders, offset shadows, and playful emphasis. A strong outer frame that gives every page a distinct poster boundary.",
+    "family": "brutalist",
+    "palette": "copper",
+    "modifier": "frame",
+    "path": "templates/brutalist-copper/deck.html"
+  },
+  {
+    "name": "organic-copper",
+    "title": "Organic / Copper / Mono template",
+    "description": "Confident copper palette for architecture, craft, and product storytelling. Warm studio system with earthy colors, serif headlines, and soft organic geometry. Monospace-led typography for technical, analytical, and product narratives.",
+    "family": "organic",
+    "palette": "copper",
+    "modifier": "mono",
+    "path": "templates/organic-copper/deck.html"
+  },
+  {
+    "name": "datanoir-copper",
+    "title": "Data Noir / Copper / Glow template",
+    "description": "Confident copper palette for architecture, craft, and product storytelling. Terminal-inspired dark system for product, engineering, and operational narratives. A luminous accent treatment for launches, demos, and future-facing concepts.",
+    "family": "datanoir",
+    "palette": "copper",
+    "modifier": "glow",
+    "path": "templates/datanoir-copper/deck.html"
+  },
+  {
+    "name": "luxury-copper",
+    "title": "Luxury / Copper / Editorial template",
+    "description": "Confident copper palette for architecture, craft, and product storytelling. Quiet luxury system with ivory paper, hairline rules, serif typography, and restrained gold. Serif-led hierarchy for essays, research, portfolios, and considered proposals.",
+    "family": "luxury",
+    "palette": "copper",
+    "modifier": "editorial",
+    "path": "templates/luxury-copper/deck.html"
+  },
+  {
+    "name": "retrofuture-copper",
+    "title": "Retro Future / Copper / Compact template",
+    "description": "Confident copper palette for architecture, craft, and product storytelling. Neon retro-future system with synthwave gradients, luminous grids, and energetic pacing. Denser spacing for information-rich reviews where every page must carry more detail.",
+    "family": "retrofuture",
+    "palette": "copper",
+    "modifier": "compact",
+    "path": "templates/retrofuture-copper/deck.html"
+  },
+  {
+    "name": "aurora-violet",
+    "title": "Aurora / Violet / Airy template",
+    "description": "Modern violet palette for AI, innovation, and future-facing product narratives. Light editorial system with spacious cards, indigo accents, and calm narrative pacing. More breathing room and a quieter surface for reflective narratives.",
+    "family": "aurora",
+    "palette": "violet",
+    "modifier": "airy",
+    "path": "templates/aurora-violet/deck.html"
+  },
+  {
+    "name": "midnight-violet",
+    "title": "Midnight / Violet / Signal template",
+    "description": "Modern violet palette for AI, innovation, and future-facing product narratives. Dark cinematic system with luminous cyan highlights, grid structure, and contrast-led storytelling. Larger type and stronger labels for high-attention executive moments.",
+    "family": "midnight",
+    "palette": "violet",
+    "modifier": "signal",
+    "path": "templates/midnight-violet/deck.html"
+  },
+  {
+    "name": "swiss-violet",
+    "title": "Swiss / Violet / Grid template",
+    "description": "Modern violet palette for AI, innovation, and future-facing product narratives. Swiss-inspired grid with hard edges, red signal color, and disciplined information hierarchy. A visible modular grid for systems thinking and operational storytelling.",
+    "family": "swiss",
+    "palette": "violet",
+    "modifier": "grid",
+    "path": "templates/swiss-violet/deck.html"
+  },
+  {
+    "name": "brutalist-violet",
+    "title": "Brutalist / Violet / Poster template",
+    "description": "Modern violet palette for AI, innovation, and future-facing product narratives. Neo-brutalist system with yellow canvas, ink borders, offset shadows, and playful emphasis. Poster-like capitalization and borders for campaigns and bold announcements.",
+    "family": "brutalist",
+    "palette": "violet",
+    "modifier": "poster",
+    "path": "templates/brutalist-violet/deck.html"
+  },
+  {
+    "name": "organic-violet",
+    "title": "Organic / Violet / Soft template",
+    "description": "Modern violet palette for AI, innovation, and future-facing product narratives. Warm studio system with earthy colors, serif headlines, and soft organic geometry. Rounded surfaces and translucent panels for friendly collaborative work.",
+    "family": "organic",
+    "palette": "violet",
+    "modifier": "soft",
+    "path": "templates/organic-violet/deck.html"
+  },
+  {
+    "name": "datanoir-violet",
+    "title": "Data Noir / Violet / Frame template",
+    "description": "Modern violet palette for AI, innovation, and future-facing product narratives. Terminal-inspired dark system for product, engineering, and operational narratives. A strong outer frame that gives every page a distinct poster boundary.",
+    "family": "datanoir",
+    "palette": "violet",
+    "modifier": "frame",
+    "path": "templates/datanoir-violet/deck.html"
+  },
+  {
+    "name": "luxury-violet",
+    "title": "Luxury / Violet / Mono template",
+    "description": "Modern violet palette for AI, innovation, and future-facing product narratives. Quiet luxury system with ivory paper, hairline rules, serif typography, and restrained gold. Monospace-led typography for technical, analytical, and product narratives.",
+    "family": "luxury",
+    "palette": "violet",
+    "modifier": "mono",
+    "path": "templates/luxury-violet/deck.html"
+  },
+  {
+    "name": "retrofuture-violet",
+    "title": "Retro Future / Violet / Glow template",
+    "description": "Modern violet palette for AI, innovation, and future-facing product narratives. Neon retro-future system with synthwave gradients, luminous grids, and energetic pacing. A luminous accent treatment for launches, demos, and future-facing concepts.",
+    "family": "retrofuture",
+    "palette": "violet",
+    "modifier": "glow",
+    "path": "templates/retrofuture-violet/deck.html"
+  },
+  {
+    "name": "aurora-ice",
+    "title": "Aurora / Ice / Editorial template",
+    "description": "Cool blue-grey palette for enterprise, governance, and evidence-led decisions. Light editorial system with spacious cards, indigo accents, and calm narrative pacing. Serif-led hierarchy for essays, research, portfolios, and considered proposals.",
+    "family": "aurora",
+    "palette": "ice",
+    "modifier": "editorial",
+    "path": "templates/aurora-ice/deck.html"
+  },
+  {
+    "name": "midnight-ice",
+    "title": "Midnight / Ice / Compact template",
+    "description": "Cool blue-grey palette for enterprise, governance, and evidence-led decisions. Dark cinematic system with luminous cyan highlights, grid structure, and contrast-led storytelling. Denser spacing for information-rich reviews where every page must carry more detail.",
+    "family": "midnight",
+    "palette": "ice",
+    "modifier": "compact",
+    "path": "templates/midnight-ice/deck.html"
+  },
+  {
+    "name": "swiss-ice",
+    "title": "Swiss / Ice / Airy template",
+    "description": "Cool blue-grey palette for enterprise, governance, and evidence-led decisions. Swiss-inspired grid with hard edges, red signal color, and disciplined information hierarchy. More breathing room and a quieter surface for reflective narratives.",
+    "family": "swiss",
+    "palette": "ice",
+    "modifier": "airy",
+    "path": "templates/swiss-ice/deck.html"
+  },
+  {
+    "name": "brutalist-ice",
+    "title": "Brutalist / Ice / Signal template",
+    "description": "Cool blue-grey palette for enterprise, governance, and evidence-led decisions. Neo-brutalist system with yellow canvas, ink borders, offset shadows, and playful emphasis. Larger type and stronger labels for high-attention executive moments.",
+    "family": "brutalist",
+    "palette": "ice",
+    "modifier": "signal",
+    "path": "templates/brutalist-ice/deck.html"
   }
 ]

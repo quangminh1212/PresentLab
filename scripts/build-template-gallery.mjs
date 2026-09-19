@@ -255,6 +255,424 @@ const themeTokens = {
   },
 };
 
+const paletteVariants = [
+  {
+    name: "cobalt",
+    label: "Cobalt",
+    description: "Clear blue product palette for confident strategy and technology stories.",
+    tokens: {
+      paper: "#f4f7ff",
+      ink: "#14213d",
+      muted: "#5c6a83",
+      accent: "#315efb",
+      accentDeep: "#2340b4",
+      accentSoft: "#dbe5ff",
+      line: "rgb(20 33 61 / 16%)",
+      lineStrong: "rgb(20 33 61 / 28%)",
+      panel: "#ffffff",
+      radius: "24px",
+      artOne: "#b5c6ff",
+      artTwo: "#ffb29c",
+      quoteInk: "#ffffff",
+      quoteMark: "#c9d5ff",
+      artLabel: "#5c6a83",
+      overlay: "radial-gradient(circle at 92% 8%, #dbe5ff 0 14%, var(--paper) 15%)",
+    },
+  },
+  {
+    name: "coral",
+    label: "Coral",
+    description:
+      "Warm coral palette for human-centered launches, brands, and community narratives.",
+    tokens: {
+      paper: "#fff7f4",
+      ink: "#321c24",
+      muted: "#735861",
+      accent: "#ed5d52",
+      accentDeep: "#b73a34",
+      accentSoft: "#ffd7d1",
+      line: "rgb(50 28 36 / 15%)",
+      lineStrong: "rgb(50 28 36 / 28%)",
+      panel: "#ffffff",
+      radius: "30px",
+      artOne: "#ffc2b8",
+      artTwo: "#f5b45f",
+      quoteInk: "#ffffff",
+      quoteMark: "#ffe6de",
+      artLabel: "#735861",
+      overlay: "radial-gradient(circle at 92% 8%, #ffd7d1 0 14%, var(--paper) 15%)",
+    },
+  },
+  {
+    name: "forest",
+    label: "Forest",
+    description:
+      "Grounded green palette for sustainability, operations, and long-term growth stories.",
+    tokens: {
+      paper: "#f2f7f1",
+      ink: "#1b3327",
+      muted: "#5e7264",
+      accent: "#1f8a62",
+      accentDeep: "#126044",
+      accentSoft: "#cae8d7",
+      line: "rgb(27 51 39 / 16%)",
+      lineStrong: "rgb(27 51 39 / 28%)",
+      panel: "#fbfffc",
+      radius: "26px",
+      artOne: "#a5cdb3",
+      artTwo: "#e7ae77",
+      quoteInk: "#ffffff",
+      quoteMark: "#bfe7cc",
+      artLabel: "#5e7264",
+      overlay: "radial-gradient(circle at 92% 8%, #cae8d7 0 14%, var(--paper) 15%)",
+    },
+  },
+  {
+    name: "saffron",
+    label: "Saffron",
+    description:
+      "Optimistic golden palette for education, change management, and opportunity maps.",
+    tokens: {
+      paper: "#fff9e8",
+      ink: "#3b2a14",
+      muted: "#806d4e",
+      accent: "#e3a316",
+      accentDeep: "#9d6b05",
+      accentSoft: "#f9e5a8",
+      line: "rgb(59 42 20 / 16%)",
+      lineStrong: "rgb(59 42 20 / 28%)",
+      panel: "#fffdf6",
+      radius: "20px",
+      artOne: "#f7cf68",
+      artTwo: "#e57b52",
+      quoteInk: "#261a0c",
+      quoteMark: "#fff1b9",
+      artLabel: "#806d4e",
+      overlay: "radial-gradient(circle at 92% 8%, #f9e5a8 0 14%, var(--paper) 15%)",
+    },
+  },
+  {
+    name: "plum",
+    label: "Plum",
+    description: "Expressive plum palette for culture, editorial, and premium creative work.",
+    tokens: {
+      paper: "#fbf7fc",
+      ink: "#291a33",
+      muted: "#745e7f",
+      accent: "#9c4fd4",
+      accentDeep: "#6e2e9f",
+      accentSoft: "#ead8f7",
+      line: "rgb(41 26 51 / 16%)",
+      lineStrong: "rgb(41 26 51 / 28%)",
+      panel: "#ffffff",
+      radius: "32px",
+      artOne: "#d3a9ee",
+      artTwo: "#f6b5cc",
+      quoteInk: "#ffffff",
+      quoteMark: "#f1dfff",
+      artLabel: "#745e7f",
+      overlay: "radial-gradient(circle at 92% 8%, #ead8f7 0 14%, var(--paper) 15%)",
+    },
+  },
+  {
+    name: "ocean",
+    label: "Ocean",
+    description:
+      "Fresh cyan palette for research, customer insight, and service design narratives.",
+    tokens: {
+      paper: "#eefaff",
+      ink: "#12303e",
+      muted: "#5e7782",
+      accent: "#0f9ec7",
+      accentDeep: "#057493",
+      accentSoft: "#c8f0fa",
+      line: "rgb(18 48 62 / 16%)",
+      lineStrong: "rgb(18 48 62 / 28%)",
+      panel: "#faffff",
+      radius: "24px",
+      artOne: "#a8dfea",
+      artTwo: "#ffcc9b",
+      quoteInk: "#05303c",
+      quoteMark: "#d8f8ff",
+      artLabel: "#5e7782",
+      overlay: "radial-gradient(circle at 92% 8%, #c8f0fa 0 14%, var(--paper) 15%)",
+    },
+  },
+  {
+    name: "sand",
+    label: "Sand",
+    description:
+      "Natural terracotta palette for consulting, hospitality, and considered brand stories.",
+    tokens: {
+      paper: "#f7f0e5",
+      ink: "#3d3125",
+      muted: "#796c5d",
+      accent: "#bd7043",
+      accentDeep: "#875034",
+      accentSoft: "#ead4bd",
+      line: "rgb(61 49 37 / 16%)",
+      lineStrong: "rgb(61 49 37 / 28%)",
+      panel: "#fffaf3",
+      radius: "34px",
+      artOne: "#ddbe9b",
+      artTwo: "#c2a773",
+      quoteInk: "#fffaf2",
+      quoteMark: "#f4d8bd",
+      artLabel: "#796c5d",
+      overlay: "radial-gradient(circle at 92% 8%, #ead4bd 0 14%, var(--paper) 15%)",
+    },
+  },
+  {
+    name: "mono",
+    label: "Mono",
+    description:
+      "Neutral monochrome palette for legal, finance, and highly focused information design.",
+    tokens: {
+      paper: "#f5f5f3",
+      ink: "#171717",
+      muted: "#626262",
+      accent: "#2c2c2c",
+      accentDeep: "#0f0f0f",
+      accentSoft: "#dededb",
+      line: "rgb(23 23 23 / 16%)",
+      lineStrong: "rgb(23 23 23 / 32%)",
+      panel: "#ffffff",
+      radius: "8px",
+      artOne: "#bababa",
+      artTwo: "#eeeeee",
+      quoteInk: "#ffffff",
+      quoteMark: "#d2d2d2",
+      artLabel: "#626262",
+      overlay: "linear-gradient(135deg, transparent 0 70%, #dededb 70% 70.3%, transparent 70.3%)",
+    },
+  },
+  {
+    name: "mint",
+    label: "Mint",
+    description: "Bright mint palette for product growth, wellness, and collaborative planning.",
+    tokens: {
+      paper: "#effcf7",
+      ink: "#15372e",
+      muted: "#5a766b",
+      accent: "#20a97f",
+      accentDeep: "#117256",
+      accentSoft: "#c9f0e1",
+      line: "rgb(21 55 46 / 16%)",
+      lineStrong: "rgb(21 55 46 / 28%)",
+      panel: "#fbfffd",
+      radius: "28px",
+      artOne: "#9addc5",
+      artTwo: "#f3c28a",
+      quoteInk: "#ffffff",
+      quoteMark: "#c4f4e0",
+      artLabel: "#5a766b",
+      overlay: "radial-gradient(circle at 92% 8%, #c9f0e1 0 14%, var(--paper) 15%)",
+    },
+  },
+  {
+    name: "copper",
+    label: "Copper",
+    description: "Confident copper palette for architecture, craft, and product storytelling.",
+    tokens: {
+      paper: "#fff5ed",
+      ink: "#3f2318",
+      muted: "#7c5d4e",
+      accent: "#c46b35",
+      accentDeep: "#8f4520",
+      accentSoft: "#f4d0b6",
+      line: "rgb(63 35 24 / 16%)",
+      lineStrong: "rgb(63 35 24 / 28%)",
+      panel: "#fffaf5",
+      radius: "14px",
+      artOne: "#e6ab7f",
+      artTwo: "#8ec4b8",
+      quoteInk: "#ffffff",
+      quoteMark: "#f9dac2",
+      artLabel: "#7c5d4e",
+      overlay: "radial-gradient(circle at 92% 8%, #f4d0b6 0 14%, var(--paper) 15%)",
+    },
+  },
+  {
+    name: "violet",
+    label: "Violet",
+    description: "Modern violet palette for AI, innovation, and future-facing product narratives.",
+    tokens: {
+      paper: "#f6f4ff",
+      ink: "#241d45",
+      muted: "#716b91",
+      accent: "#7357ef",
+      accentDeep: "#4c35ba",
+      accentSoft: "#ddd7ff",
+      line: "rgb(36 29 69 / 16%)",
+      lineStrong: "rgb(36 29 69 / 28%)",
+      panel: "#ffffff",
+      radius: "26px",
+      artOne: "#bcb3fb",
+      artTwo: "#f7a3c7",
+      quoteInk: "#ffffff",
+      quoteMark: "#e5e0ff",
+      artLabel: "#716b91",
+      overlay: "radial-gradient(circle at 92% 8%, #ddd7ff 0 14%, var(--paper) 15%)",
+    },
+  },
+  {
+    name: "ice",
+    label: "Ice",
+    description: "Cool blue-grey palette for enterprise, governance, and evidence-led decisions.",
+    tokens: {
+      paper: "#f1faff",
+      ink: "#153148",
+      muted: "#617f91",
+      accent: "#3e9bd4",
+      accentDeep: "#276b99",
+      accentSoft: "#cfeaf8",
+      line: "rgb(21 49 72 / 16%)",
+      lineStrong: "rgb(21 49 72 / 28%)",
+      panel: "#fbfeff",
+      radius: "18px",
+      artOne: "#a7d7f0",
+      artTwo: "#edbd93",
+      quoteInk: "#ffffff",
+      quoteMark: "#d9f0ff",
+      artLabel: "#617f91",
+      overlay: "radial-gradient(circle at 92% 8%, #cfeaf8 0 14%, var(--paper) 15%)",
+    },
+  },
+];
+
+const variantModifiers = [
+  {
+    name: "airy",
+    label: "Airy",
+    description: "More breathing room and a quieter surface for reflective narratives.",
+    css: `
+      .slide { padding: 84px 100px 68px; }
+      .panel, .stat { box-shadow: none; }
+    `,
+  },
+  {
+    name: "signal",
+    label: "Signal",
+    description: "Larger type and stronger labels for high-attention executive moments.",
+    css: `
+      .title { font-size: 84px; }
+      .section-title { font-size: 68px; }
+      .panel .label { letter-spacing: .22em; }
+    `,
+  },
+  {
+    name: "grid",
+    label: "Grid",
+    description: "A visible modular grid for systems thinking and operational storytelling.",
+    css: `
+      .slide { background-size: 44px 44px; }
+      .slide::before { background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 44px 44px; }
+    `,
+  },
+  {
+    name: "poster",
+    label: "Poster",
+    description: "Poster-like capitalization and borders for campaigns and bold announcements.",
+    css: `
+      .title, .section-title { text-transform: uppercase; }
+      .panel, .stat { border-width: 2px; }
+      .kicker { letter-spacing: .24em; }
+    `,
+  },
+  {
+    name: "soft",
+    label: "Soft",
+    description: "Rounded surfaces and translucent panels for friendly collaborative work.",
+    css: `
+      :root { --radius: 44px; }
+      .panel, .stat, .quote { backdrop-filter: blur(12px); }
+      .slide:not(.closing)::after { opacity: .6; }
+    `,
+  },
+  {
+    name: "frame",
+    label: "Frame",
+    description: "A strong outer frame that gives every page a distinct poster boundary.",
+    css: `
+      .slide { border: 2px solid var(--line-strong); }
+      .slide:not(.closing)::after { border-width: 3px; }
+    `,
+  },
+  {
+    name: "mono",
+    label: "Mono",
+    description: "Monospace-led typography for technical, analytical, and product narratives.",
+    css: `
+      :root { --sans: "Cascadia Mono", "SFMono-Regular", Consolas, monospace; }
+      .title, .section-title { font-family: var(--sans); letter-spacing: -.08em; }
+      .panel h2, .step h2 { letter-spacing: .02em; }
+    `,
+  },
+  {
+    name: "glow",
+    label: "Glow",
+    description: "A luminous accent treatment for launches, demos, and future-facing concepts.",
+    css: `
+      .panel, .stat { box-shadow: 0 0 42px color-mix(in srgb, var(--accent) 16%, transparent); }
+      .quote { box-shadow: 0 0 48px color-mix(in srgb, var(--accent) 22%, transparent); }
+    `,
+  },
+  {
+    name: "editorial",
+    label: "Editorial",
+    description: "Serif-led hierarchy for essays, research, portfolios, and considered proposals.",
+    css: `
+      .title, .section-title { font-family: var(--serif); font-weight: 600; }
+      .lede, .section-lede { font-family: var(--serif); }
+    `,
+  },
+  {
+    name: "compact",
+    label: "Compact",
+    description:
+      "Denser spacing for information-rich reviews where every page must carry more detail.",
+    css: `
+      .slide { padding: 64px 72px 54px; }
+      .section-title { font-size: 56px; }
+      .hero-grid, .compare { margin-top: 32px; }
+    `,
+  },
+];
+
+const familyLabels = {
+  aurora: "Aurora",
+  midnight: "Midnight",
+  swiss: "Swiss",
+  brutalist: "Brutalist",
+  organic: "Organic",
+  datanoir: "Data Noir",
+  luxury: "Luxury",
+  retrofuture: "Retro Future",
+};
+
+function paletteCss(tokens) {
+  return `
+    :root {
+      --paper: ${tokens.paper};
+      --ink: ${tokens.ink};
+      --muted: ${tokens.muted};
+      --accent: ${tokens.accent};
+      --accent-deep: ${tokens.accentDeep};
+      --accent-soft: ${tokens.accentSoft};
+      --line: ${tokens.line};
+      --line-strong: ${tokens.lineStrong};
+      --panel: ${tokens.panel};
+      --radius: ${tokens.radius};
+      --art-one: ${tokens.artOne};
+      --art-two: ${tokens.artTwo};
+      --quote-ink: ${tokens.quoteInk};
+      --quote-mark: ${tokens.quoteMark};
+      --art-label: ${tokens.artLabel};
+      --slide-overlay: ${tokens.overlay};
+    }
+  `;
+}
+
 function slide(id, body) {
   return `<section class="slide" data-pl-slide data-slide-id="${id}">${body}</section>`;
 }
@@ -272,7 +690,7 @@ function commonSlides(name, label) {
     ),
     slide(
       "metrics",
-      `<div class="section-head"><div><p class="kicker">02 / Evidence</p><h1 class="section-title">A small set of metrics can anchor a large idea.</h1><p class="section-lede">The same component can present a scorecard, a benchmark, or a design-system health check.</p></div><span class="page-no">03</span></div><div class="stat-grid"><article class="stat"><span class="value">8</span><span class="label">distinct visual systems in this gallery</span></article><article class="stat"><span class="value">56</span><span class="label">sample slides rendered from HTML sources</span></article><article class="stat"><span class="value">3</span><span class="label">handoff formats per template folder</span></article></div><div class="bar-layout"><div class="bar-chart"><div class="bar"><i style="height: 42%"></i><span>Brief</span></div><div class="bar"><i style="height: 66%"></i><span>Design</span></div><div class="bar"><i style="height: 84%"></i><span>Render</span></div><div class="bar"><i style="height: 100%"></i><span>Review</span></div></div><p class="bar-note">The workflow gets stronger when validation and visual review happen before delivery.</p></div><p class="footer">03 / Metric board</p>`,
+      `<div class="section-head"><div><p class="kicker">02 / Evidence</p><h1 class="section-title">A small set of metrics can anchor a large idea.</h1><p class="section-lede">The same component can present a scorecard, a benchmark, or a design-system health check.</p></div><span class="page-no">03</span></div><div class="stat-grid"><article class="stat"><span class="value">100</span><span class="label">distinct visual systems in this gallery</span></article><article class="stat"><span class="value">700</span><span class="label">sample slides rendered from HTML sources</span></article><article class="stat"><span class="value">3</span><span class="label">handoff formats per template folder</span></article></div><div class="bar-layout"><div class="bar-chart"><div class="bar"><i style="height: 42%"></i><span>Brief</span></div><div class="bar"><i style="height: 66%"></i><span>Design</span></div><div class="bar"><i style="height: 84%"></i><span>Render</span></div><div class="bar"><i style="height: 100%"></i><span>Review</span></div></div><p class="bar-note">The workflow gets stronger when validation and visual review happen before delivery.</p></div><p class="footer">03 / Metric board</p>`,
     ),
     slide(
       "comparison",
@@ -295,14 +713,14 @@ function commonSlides(name, label) {
 
 function htmlForTemplate(template) {
   const title = `PresentLab ${template.label} template gallery`;
-  const slides = commonSlides(template.name, template.label).join("\n");
+  const slides = commonSlides(template.name, template.visualLabel ?? template.label).join("\n");
   return `<!doctype html>
 <html lang="en" data-pl-format="16:9" data-pl-title="${title}" data-pl-theme="${template.name}">
 <head>
   <meta charset="utf-8" />
   <meta name="description" content="${template.description}" />
   <style>${baseCss}
-${styleCss[template.name]}</style>
+${template.css}</style>
 </head>
 <body class="theme-${template.name}">
 ${slides}
@@ -311,17 +729,47 @@ ${slides}
 `;
 }
 
-const templates = Object.keys(styleCss).map((name) => ({
+const baseTemplates = Object.keys(styleCss).map((name) => ({
   name,
-  label:
-    name === "datanoir"
-      ? "Data Noir"
-      : name === "retrofuture"
-        ? "Retro Future"
-        : name[0].toUpperCase() + name.slice(1),
+  label: familyLabels[name],
+  visualLabel: familyLabels[name],
   description: templateDescriptions[name],
+  family: name,
+  palette: "base",
+  modifier: "base",
+  css: styleCss[name],
   theme: themeTokens[name],
 }));
+
+const variantTemplates = [];
+for (const palette of paletteVariants) {
+  for (const family of baseTemplates) {
+    if (variantTemplates.length >= 92) {
+      break;
+    }
+    const modifier = variantModifiers[variantTemplates.length % variantModifiers.length];
+    const name = `${family.name}-${palette.name}`;
+    variantTemplates.push({
+      name,
+      label: `${family.label} / ${palette.label} / ${modifier.label}`,
+      visualLabel: `${family.label} · ${palette.label}`,
+      description: `${palette.description} ${family.description} ${modifier.description}`,
+      family: family.name,
+      palette: palette.name,
+      modifier: modifier.name,
+      css: `${family.css}\n${paletteCss(palette.tokens)}\n${modifier.css}`,
+      theme: {
+        ...family.theme,
+        ...palette.tokens,
+        family: family.name,
+        palette: palette.name,
+        modifier: modifier.name,
+      },
+    });
+  }
+}
+
+const templates = [...baseTemplates, ...variantTemplates];
 
 await mkdir(templatesRoot, { recursive: true });
 await mkdir(themesRoot, { recursive: true });
@@ -364,10 +812,13 @@ for (const template of templates) {
   console.log("Built " + template.name + ": HTML + PDF + PPTX");
 }
 
-const templateIndex = templates.map(({ name, label, description }) => ({
+const templateIndex = templates.map(({ name, label, description, family, palette, modifier }) => ({
   name,
   title: label + " template",
   description,
+  family,
+  palette,
+  modifier,
   path: "templates/" + name + "/deck.html",
 }));
 await writeFile(
@@ -383,10 +834,13 @@ await writeFile(
 await writeFile(
   join(themesRoot, "index.json"),
   `${JSON.stringify(
-    templates.map(({ name, label, description }) => ({
+    templates.map(({ name, label, description, family, palette, modifier }) => ({
       name,
       title: label,
       description,
+      family,
+      palette,
+      modifier,
       path: "resources/themes/" + name + ".json",
     })),
     null,

@@ -8,12 +8,13 @@ import { inspectDeckHtml } from "../src/core/inspect.js";
 const root = resolve("templates");
 
 describe("template gallery", () => {
-  it("contains eight independent template folders with three handoff artifacts", async () => {
+  it("contains 100 independent template folders with three handoff artifacts", async () => {
     const index = JSON.parse(await readFile(join(root, "index.json"), "utf8")) as Array<{
       name: string;
       path: string;
     }>;
-    expect(index).toHaveLength(8);
+    expect(index).toHaveLength(100);
+    expect(new Set(index.map((entry) => entry.name)).size).toBe(100);
 
     for (const entry of index) {
       const folder = join(root, entry.name);

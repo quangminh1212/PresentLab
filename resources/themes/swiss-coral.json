@@ -1,0 +1,27 @@
+{
+  "name": "swiss-coral",
+  "title": "Swiss / Coral / Airy",
+  "description": "Warm coral palette for human-centered launches, brands, and community narratives. Swiss-inspired grid with hard edges, red signal color, and disciplined information hierarchy. More breathing room and a quieter surface for reflective narratives.",
+  "format": "16:9",
+  "tokens": {
+    "paper": "#fff7f4",
+    "ink": "#321c24",
+    "accent": "#ed5d52",
+    "muted": "#735861",
+    "radius": "30px",
+    "accentDeep": "#b73a34",
+    "accentSoft": "#ffd7d1",
+    "line": "rgb(50 28 36 / 15%)",
+    "lineStrong": "rgb(50 28 36 / 28%)",
+    "panel": "#ffffff",
+    "artOne": "#ffc2b8",
+    "artTwo": "#f5b45f",
+    "quoteInk": "#ffffff",
+    "quoteMark": "#ffe6de",
+    "artLabel": "#735861",
+    "overlay": "radial-gradient(circle at 92% 8%, #ffd7d1 0 14%, var(--paper) 15%)",
+    "family": "swiss",
+    "palette": "coral",
+    "modifier": "airy"
+  }
+}

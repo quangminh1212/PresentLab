@@ -63,11 +63,17 @@ describe("MCP stdio contract", () => {
       expect(theme.contents[0]).toMatchObject({ mimeType: "application/json" });
       expect(templateTool.structuredContent).toMatchObject({ name: "aurora" });
       expect(templatesTool.structuredContent).toMatchObject({ templates: expect.any(Array) });
-      expect((templatesTool.structuredContent as { templates: unknown[] }).templates).toHaveLength(
-        8,
+      const templates = (
+        templatesTool.structuredContent as { templates: Array<Record<string, unknown>> }
+      ).templates;
+      expect(templates).toHaveLength(100);
+      expect(templates).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ name: "aurora-cobalt", family: "aurora", palette: "cobalt" }),
+        ]),
       );
       expect(themesTool.structuredContent).toMatchObject({ themes: expect.any(Array) });
-      expect((themesTool.structuredContent as { themes: unknown[] }).themes).toHaveLength(8);
+      expect((themesTool.structuredContent as { themes: unknown[] }).themes).toHaveLength(100);
     } finally {
       await client.close();
     }

@@ -47,6 +47,9 @@ const TemplateSchema = z.object({
   name: z.string(),
   title: z.string(),
   description: z.string(),
+  family: z.string(),
+  palette: z.string(),
+  modifier: z.string(),
   path: z.string(),
 });
 
@@ -62,6 +65,9 @@ const ThemeSchema = z.object({
   name: z.string(),
   title: z.string(),
   description: z.string(),
+  family: z.string(),
+  palette: z.string(),
+  modifier: z.string(),
   path: z.string(),
 });
 

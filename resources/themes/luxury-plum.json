@@ -1,0 +1,27 @@
+{
+  "name": "luxury-plum",
+  "title": "Luxury / Plum / Editorial",
+  "description": "Expressive plum palette for culture, editorial, and premium creative work. Quiet luxury system with ivory paper, hairline rules, serif typography, and restrained gold. Serif-led hierarchy for essays, research, portfolios, and considered proposals.",
+  "format": "16:9",
+  "tokens": {
+    "paper": "#fbf7fc",
+    "ink": "#291a33",
+    "accent": "#9c4fd4",
+    "muted": "#745e7f",
+    "radius": "32px",
+    "accentDeep": "#6e2e9f",
+    "accentSoft": "#ead8f7",
+    "line": "rgb(41 26 51 / 16%)",
+    "lineStrong": "rgb(41 26 51 / 28%)",
+    "panel": "#ffffff",
+    "artOne": "#d3a9ee",
+    "artTwo": "#f6b5cc",
+    "quoteInk": "#ffffff",
+    "quoteMark": "#f1dfff",
+    "artLabel": "#745e7f",
+    "overlay": "radial-gradient(circle at 92% 8%, #ead8f7 0 14%, var(--paper) 15%)",
+    "family": "luxury",
+    "palette": "plum",
+    "modifier": "editorial"
+  }
+}

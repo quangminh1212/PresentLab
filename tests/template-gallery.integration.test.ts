@@ -29,5 +29,5 @@ describe("template gallery browser render", () => {
         expect((await stat(artifact.path)).size).toBeGreaterThan(100);
       }
     }
-  }, 240_000);
+  }, 900_000);
 });

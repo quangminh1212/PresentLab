@@ -1,0 +1,797 @@
+<!doctype html>
+<html
+  lang="en"
+  data-pl-format="16:9"
+  data-pl-title="PresentLab Retro Future / Ocean / Glow template gallery"
+  data-pl-theme="retrofuture-ocean"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="description"
+      content="Fresh cyan palette for research, customer insight, and service design narratives. Neon retro-future system with synthwave gradients, luminous grids, and energetic pacing. A luminous accent treatment for launches, demos, and future-facing concepts."
+    />
+    <style>
+      :root {
+        color-scheme: light;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        background: var(--paper);
+        color: var(--ink);
+      }
+      body {
+        overflow-x: hidden;
+        font-family: var(--sans);
+      }
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+      .slide {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        width: 1600px;
+        height: 900px;
+        min-height: 900px;
+        padding: 76px 88px;
+        overflow: hidden;
+        isolation: isolate;
+        background: var(--paper);
+        color: var(--ink);
+      }
+      .slide::before {
+        position: absolute;
+        inset: 0;
+        z-index: -2;
+        pointer-events: none;
+        content: "";
+        background: var(--slide-overlay, none);
+      }
+      .cover {
+        justify-content: center;
+      }
+      .cover-copy {
+        position: relative;
+        z-index: 2;
+        max-width: 980px;
+      }
+      .kicker {
+        margin-bottom: 20px;
+        color: var(--accent);
+        font-size: 17px;
+        font-weight: 800;
+        letter-spacing: 0.18em;
+        line-height: 1.1;
+        text-transform: uppercase;
+      }
+      .title {
+        max-width: 1120px;
+        font-size: 76px;
+        font-weight: 800;
+        letter-spacing: -0.055em;
+        line-height: 0.98;
+      }
+      .title em {
+        color: var(--accent);
+        font-style: normal;
+      }
+      .lede {
+        max-width: 820px;
+        margin-top: 24px;
+        color: var(--muted);
+        font-size: 26px;
+        line-height: 1.35;
+      }
+      .footer {
+        margin-top: auto;
+        color: var(--muted);
+        font-size: 15px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+      .meta-line {
+        display: flex;
+        gap: 28px;
+        margin-top: 38px;
+        color: var(--muted);
+        font-size: 15px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      .cover-art {
+        position: absolute;
+        right: 70px;
+        top: 70px;
+        width: 560px;
+        height: 760px;
+      }
+      .orb {
+        position: absolute;
+        border-radius: 50%;
+      }
+      .orb-a {
+        width: 430px;
+        height: 430px;
+        right: 0;
+        top: 90px;
+        background: var(--art-one);
+        box-shadow: var(--art-shadow, none);
+      }
+      .orb-b {
+        width: 260px;
+        height: 260px;
+        left: 20px;
+        bottom: 90px;
+        background: var(--art-two);
+        mix-blend-mode: multiply;
+      }
+      .orb-c {
+        width: 150px;
+        height: 150px;
+        left: 160px;
+        top: 40px;
+        border: 2px solid var(--accent);
+        background: transparent;
+      }
+      .art-label {
+        position: absolute;
+        right: 36px;
+        bottom: 40px;
+        color: var(--art-label, var(--ink));
+        font-size: 14px;
+        font-weight: 900;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        transform: rotate(-90deg);
+        transform-origin: bottom right;
+      }
+      .section-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        gap: 28px;
+      }
+      .page-no {
+        color: var(--accent);
+        font-size: 17px;
+        font-weight: 900;
+        letter-spacing: 0.12em;
+      }
+      .section-title {
+        max-width: 1120px;
+        margin-top: 12px;
+        font-size: 62px;
+        font-weight: 800;
+        letter-spacing: -0.05em;
+        line-height: 1;
+      }
+      .section-lede {
+        max-width: 760px;
+        margin-top: 18px;
+        color: var(--muted);
+        font-size: 21px;
+        line-height: 1.4;
+      }
+      .hero-grid {
+        display: grid;
+        grid-template-columns: 1.05fr 0.95fr;
+        gap: 26px;
+        margin-top: 46px;
+      }
+      .panel {
+        min-height: 230px;
+        padding: 30px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--panel);
+        box-shadow: var(--shadow);
+      }
+      .panel h2 {
+        margin-bottom: 15px;
+        font-size: 25px;
+        letter-spacing: -0.03em;
+      }
+      .panel p {
+        color: var(--muted);
+        font-size: 19px;
+        line-height: 1.45;
+      }
+      .panel strong {
+        color: var(--ink);
+      }
+      .panel .label {
+        display: block;
+        margin-bottom: 26px;
+        color: var(--accent);
+        font-size: 14px;
+        font-weight: 900;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+      .list {
+        display: grid;
+        gap: 13px;
+        margin-top: 24px;
+        padding: 0;
+        list-style: none;
+      }
+      .list li {
+        display: flex;
+        gap: 12px;
+        align-items: start;
+        color: var(--muted);
+        font-size: 18px;
+        line-height: 1.35;
+      }
+      .list li::before {
+        flex: 0 0 auto;
+        width: 9px;
+        height: 9px;
+        margin-top: 7px;
+        border-radius: 50%;
+        background: var(--accent);
+        content: "";
+      }
+      .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        margin-top: 48px;
+      }
+      .stat {
+        min-height: 198px;
+        padding: 26px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--panel);
+        box-shadow: var(--shadow);
+      }
+      .stat .value {
+        color: var(--accent);
+        font-size: 58px;
+        font-weight: 850;
+        letter-spacing: -0.08em;
+        line-height: 0.95;
+      }
+      .stat .label {
+        display: block;
+        margin-top: 18px;
+        color: var(--muted);
+        font-size: 16px;
+        line-height: 1.25;
+      }
+      .bar-layout {
+        display: grid;
+        grid-template-columns: 1fr 0.9fr;
+        gap: 38px;
+        align-items: end;
+        margin-top: 38px;
+      }
+      .bar-chart {
+        display: flex;
+        align-items: end;
+        gap: 20px;
+        height: 260px;
+        padding: 24px;
+        border-bottom: 1px solid var(--line);
+        border-left: 1px solid var(--line);
+      }
+      .bar {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        justify-content: end;
+        gap: 10px;
+        min-width: 44px;
+        height: 100%;
+      }
+      .bar i {
+        display: block;
+        min-height: 14px;
+        border-radius: 12px 12px 0 0;
+        background: linear-gradient(180deg, var(--accent), var(--accent-deep));
+      }
+      .bar span {
+        color: var(--muted);
+        font-size: 14px;
+        font-weight: 800;
+        text-align: center;
+      }
+      .bar-note {
+        padding: 28px;
+        border-left: 4px solid var(--accent);
+        color: var(--muted);
+        font-size: 21px;
+        line-height: 1.38;
+      }
+      .compare {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 22px;
+        margin-top: 48px;
+      }
+      .compare .panel {
+        min-height: 310px;
+      }
+      .compare .panel:first-child {
+        border-color: var(--line-strong);
+      }
+      .compare .panel:last-child {
+        background: var(--accent-soft);
+        border-color: transparent;
+      }
+      .compare h2 {
+        font-size: 35px;
+      }
+      .compare .panel:last-child h2 {
+        color: var(--accent-deep);
+      }
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0;
+        margin-top: 56px;
+        border-top: 1px solid var(--line);
+      }
+      .step {
+        min-height: 245px;
+        padding: 25px 20px 0 0;
+        border-right: 1px solid var(--line);
+      }
+      .step:not(:first-child) {
+        padding-left: 20px;
+      }
+      .step:last-child {
+        border-right: 0;
+      }
+      .step .number {
+        color: var(--accent);
+        font-size: 48px;
+        font-weight: 900;
+        letter-spacing: -0.08em;
+      }
+      .step h2 {
+        margin-top: 24px;
+        font-size: 23px;
+      }
+      .step p {
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 17px;
+        line-height: 1.4;
+      }
+      .quote-layout {
+        display: grid;
+        grid-template-columns: 1.3fr 0.7fr;
+        gap: 34px;
+        align-items: stretch;
+        margin-top: 42px;
+      }
+      .quote {
+        position: relative;
+        min-height: 370px;
+        padding: 48px;
+        border-radius: var(--radius);
+        background: var(--accent);
+        color: var(--quote-ink);
+        box-shadow: var(--shadow);
+      }
+      .quote-mark {
+        color: var(--quote-mark);
+        font-family: Georgia, serif;
+        font-size: 130px;
+        line-height: 0.5;
+      }
+      .quote p {
+        max-width: 800px;
+        margin-top: 20px;
+        font-family: var(--serif);
+        font-size: 39px;
+        font-weight: 700;
+        letter-spacing: -0.04em;
+        line-height: 1.08;
+      }
+      .quote cite {
+        display: block;
+        margin-top: 26px;
+        font-family: var(--sans);
+        font-size: 15px;
+        font-style: normal;
+        font-weight: 800;
+        letter-spacing: 0.11em;
+        text-transform: uppercase;
+      }
+      .quote-aside {
+        display: flex;
+        flex-direction: column;
+        justify-content: end;
+        padding: 26px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--panel);
+      }
+      .quote-aside .value {
+        color: var(--accent);
+        font-size: 70px;
+        font-weight: 900;
+        letter-spacing: -0.08em;
+      }
+      .quote-aside p {
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 18px;
+        line-height: 1.35;
+      }
+      .closing {
+        justify-content: end;
+        background: var(--accent);
+        color: var(--quote-ink);
+      }
+      .closing::before {
+        opacity: 0.35;
+        background:
+          radial-gradient(circle at 85% 15%, var(--accent-soft) 0 16%, var(--accent) 17%),
+          radial-gradient(circle at 10% 95%, var(--art-two) 0 18%, var(--accent) 19%);
+      }
+      .closing .kicker,
+      .closing .footer {
+        color: var(--quote-mark);
+      }
+      .closing .title {
+        max-width: 880px;
+      }
+      .closing .title em {
+        color: var(--quote-mark);
+      }
+      .closing .lede {
+        color: color-mix(in srgb, var(--quote-ink) 72%, transparent);
+      }
+      .closing .meta-line {
+        color: var(--quote-mark);
+      }
+      @media print {
+        .slide {
+          break-after: page;
+          page-break-after: always;
+        }
+        .slide:last-of-type {
+          break-after: auto;
+          page-break-after: auto;
+        }
+      }
+
+      :root {
+        --paper: #12072b;
+        --ink: #fbf7ff;
+        --muted: #c0b3de;
+        --accent: #ff5bc8;
+        --accent-deep: #a546ff;
+        --accent-soft: #33205f;
+        --line: rgb(255 255 255 / 18%);
+        --line-strong: rgb(255 91 200 / 56%);
+        --panel: rgb(35 18 69 / 88%);
+        --radius: 18px;
+        --shadow: 0 24px 70px rgb(0 0 0 / 35%);
+        --sans: "Arial Narrow", Arial, sans-serif;
+        --serif: Georgia, serif;
+        --art-one: #5631b8;
+        --art-two: #41e7ff;
+        --quote-ink: #12072b;
+        --quote-mark: #b9fbff;
+        --art-label: #c0b3de;
+        --slide-overlay:
+          linear-gradient(rgb(65 231 255 / 7%) 1px, transparent 1px),
+          linear-gradient(90deg, rgb(65 231 255 / 7%) 1px, transparent 1px);
+      }
+      .slide {
+        background-size: 48px 48px;
+      }
+      .slide:not(.closing)::after {
+        position: absolute;
+        right: -60px;
+        bottom: -90px;
+        width: 420px;
+        height: 420px;
+        border: 2px solid rgb(65 231 255 / 42%);
+        border-radius: 50%;
+        box-shadow: 0 0 60px rgb(65 231 255 / 22%);
+        content: "";
+      }
+      .title,
+      .section-title {
+        font-weight: 900;
+        letter-spacing: -0.07em;
+        text-transform: uppercase;
+      }
+      .title em {
+        color: #41e7ff;
+      }
+      .kicker,
+      .footer,
+      .page-no {
+        letter-spacing: 0.22em;
+      }
+      .orb-a {
+        background: radial-gradient(circle at 35% 30%, #ff5bc8, #a546ff 48%, #20104d);
+        box-shadow: 0 0 100px rgb(255 91 200 / 34%);
+      }
+      .orb-b {
+        background: #41e7ff;
+        mix-blend-mode: screen;
+        opacity: 0.48;
+      }
+      .orb-c {
+        border-color: #41e7ff;
+        box-shadow: 0 0 24px rgb(65 231 255 / 45%);
+      }
+      .panel,
+      .stat {
+        border-color: rgb(65 231 255 / 28%);
+        backdrop-filter: blur(14px);
+      }
+      .bar i {
+        background: linear-gradient(180deg, #41e7ff, #a546ff);
+        box-shadow: 0 0 22px rgb(65 231 255 / 34%);
+      }
+      .quote {
+        background: linear-gradient(135deg, #ff5bc8, #a546ff);
+      }
+      .closing {
+        background: linear-gradient(135deg, #a546ff, #ff5bc8);
+      }
+
+      :root {
+        --paper: #eefaff;
+        --ink: #12303e;
+        --muted: #5e7782;
+        --accent: #0f9ec7;
+        --accent-deep: #057493;
+        --accent-soft: #c8f0fa;
+        --line: rgb(18 48 62 / 16%);
+        --line-strong: rgb(18 48 62 / 28%);
+        --panel: #faffff;
+        --radius: 24px;
+        --art-one: #a8dfea;
+        --art-two: #ffcc9b;
+        --quote-ink: #05303c;
+        --quote-mark: #d8f8ff;
+        --art-label: #5e7782;
+        --slide-overlay: radial-gradient(circle at 92% 8%, #c8f0fa 0 14%, var(--paper) 15%);
+      }
+
+      .panel,
+      .stat {
+        box-shadow: 0 0 42px color-mix(in srgb, var(--accent) 16%, transparent);
+      }
+      .quote {
+        box-shadow: 0 0 48px color-mix(in srgb, var(--accent) 22%, transparent);
+      }
+    </style>
+  </head>
+  <body class="theme-retrofuture-ocean">
+    <section class="slide" data-pl-slide data-slide-id="cover">
+      <div class="cover-art" aria-hidden="true">
+        <div class="orb orb-a"></div>
+        <div class="orb orb-b"></div>
+        <div class="orb orb-c"></div>
+        <span class="art-label">Retro Future · Ocean / 01</span>
+      </div>
+      <div class="cover-copy">
+        <p class="kicker">PresentLab / Retro Future · Ocean</p>
+        <h1 class="title">A strong visual system makes the <em>story easier to follow.</em></h1>
+        <p class="lede">
+          A reusable HTML-first template for AI agents that need polished slides, printable pages,
+          and reliable handoff artifacts.
+        </p>
+        <div class="meta-line"><span>16:9 canvas</span><span>Template RETROFUTURE-OCEAN</span></div>
+      </div>
+      <p class="footer">01 / Cover composition</p>
+    </section>
+    <section class="slide" data-pl-slide data-slide-id="thesis">
+      <div class="section-head">
+        <div>
+          <p class="kicker">01 / Narrative</p>
+          <h1 class="section-title">One clear claim gives the slide its shape.</h1>
+          <p class="section-lede">
+            The layout keeps the main idea visible while the supporting detail stays close enough to
+            scan.
+          </p>
+        </div>
+        <span class="page-no">02</span>
+      </div>
+      <div class="hero-grid">
+        <article class="panel">
+          <span class="label">Signal</span>
+          <h2>Lead with the point</h2>
+          <p>
+            Use a direct title that names the subject or the finding. The audience should know what
+            to look at before they read the detail.
+          </p>
+          <ul class="list">
+            <li>Short title with a visible subject</li>
+            <li>One visual priority per page</li>
+            <li>Evidence close to the claim</li>
+          </ul>
+        </article>
+        <article class="panel">
+          <span class="label">System</span>
+          <h2>Keep the rhythm stable</h2>
+          <p>
+            Repeat margins, type scale, and page markers so the deck feels intentional even when an
+            agent creates new content.
+          </p>
+          <ul class="list">
+            <li>Consistent spacing tokens</li>
+            <li>Accessible text hierarchy</li>
+            <li>Local, deterministic assets</li>
+          </ul>
+        </article>
+      </div>
+      <p class="footer">02 / Thesis layout</p>
+    </section>
+    <section class="slide" data-pl-slide data-slide-id="metrics">
+      <div class="section-head">
+        <div>
+          <p class="kicker">02 / Evidence</p>
+          <h1 class="section-title">A small set of metrics can anchor a large idea.</h1>
+          <p class="section-lede">
+            The same component can present a scorecard, a benchmark, or a design-system health
+            check.
+          </p>
+        </div>
+        <span class="page-no">03</span>
+      </div>
+      <div class="stat-grid">
+        <article class="stat">
+          <span class="value">100</span
+          ><span class="label">distinct visual systems in this gallery</span>
+        </article>
+        <article class="stat">
+          <span class="value">700</span
+          ><span class="label">sample slides rendered from HTML sources</span>
+        </article>
+        <article class="stat">
+          <span class="value">3</span><span class="label">handoff formats per template folder</span>
+        </article>
+      </div>
+      <div class="bar-layout">
+        <div class="bar-chart">
+          <div class="bar"><i style="height: 42%"></i><span>Brief</span></div>
+          <div class="bar"><i style="height: 66%"></i><span>Design</span></div>
+          <div class="bar"><i style="height: 84%"></i><span>Render</span></div>
+          <div class="bar"><i style="height: 100%"></i><span>Review</span></div>
+        </div>
+        <p class="bar-note">
+          The workflow gets stronger when validation and visual review happen before delivery.
+        </p>
+      </div>
+      <p class="footer">03 / Metric board</p>
+    </section>
+    <section class="slide" data-pl-slide data-slide-id="comparison">
+      <div class="section-head">
+        <div>
+          <p class="kicker">03 / Choice</p>
+          <h1 class="section-title">The right template changes how the audience reads.</h1>
+          <p class="section-lede">
+            Style is a communication decision. Match the visual grammar to the audience, topic, and
+            level of urgency.
+          </p>
+        </div>
+        <span class="page-no">04</span>
+      </div>
+      <div class="compare">
+        <article class="panel">
+          <span class="label">Quiet narrative</span>
+          <h2>Make space for reflection</h2>
+          <p>
+            Use generous margins, low contrast, and a restrained accent when the story depends on
+            trust, nuance, or a considered decision.
+          </p>
+          <ul class="list">
+            <li>Editorial, portfolio, or strategy work</li>
+            <li>Longer reading moments</li>
+            <li>Subtle hierarchy</li>
+          </ul>
+        </article>
+        <article class="panel">
+          <span class="label">High signal</span>
+          <h2>Make the change visible</h2>
+          <p>
+            Use contrast, strong alignment, and a clear focal point when the deck must help a group
+            act quickly.
+          </p>
+          <ul class="list">
+            <li>Launch, operating review, or product work</li>
+            <li>Short attention windows</li>
+            <li>Decisive visual cues</li>
+          </ul>
+        </article>
+      </div>
+      <p class="footer">04 / Comparison layout</p>
+    </section>
+    <section class="slide" data-pl-slide data-slide-id="process">
+      <div class="section-head">
+        <div>
+          <p class="kicker">04 / Workflow</p>
+          <h1 class="section-title">From brief to handoff, the system stays inspectable.</h1>
+          <p class="section-lede">
+            The template gives an AI agent a stable surface for content while the renderer protects
+            output quality.
+          </p>
+        </div>
+        <span class="page-no">05</span>
+      </div>
+      <div class="steps">
+        <article class="step">
+          <span class="number">01</span>
+          <h2>Frame</h2>
+          <p>Choose a style and write a direct narrative outline.</p>
+        </article>
+        <article class="step">
+          <span class="number">02</span>
+          <h2>Compose</h2>
+          <p>Place content into an HTML slide contract with local tokens.</p>
+        </article>
+        <article class="step">
+          <span class="number">03</span>
+          <h2>Validate</h2>
+          <p>Check metadata, ids, readability, and image accessibility.</p>
+        </article>
+        <article class="step">
+          <span class="number">04</span>
+          <h2>Deliver</h2>
+          <p>Render PDF and PPTX, then review the actual pages.</p>
+        </article>
+      </div>
+      <p class="footer">05 / Four-step workflow</p>
+    </section>
+    <section class="slide" data-pl-slide data-slide-id="voice">
+      <div class="section-head">
+        <div>
+          <p class="kicker">05 / Voice</p>
+          <h1 class="section-title">Good design makes precise writing easier to trust.</h1>
+        </div>
+        <span class="page-no">06</span>
+      </div>
+      <div class="quote-layout">
+        <blockquote class="quote">
+          <span class="quote-mark">“</span>
+          <p>
+            When each slide has one job, the audience spends less time decoding the layout and more
+            time considering the idea.
+          </p>
+          <cite>PresentLab design principle</cite>
+        </blockquote>
+        <aside class="quote-aside">
+          <span class="value">1 job</span>
+          <p>per slide keeps the narrative legible and gives the next slide room to move.</p>
+        </aside>
+      </div>
+      <p class="footer">06 / Editorial quote</p>
+    </section>
+    <section class="slide" data-pl-slide data-slide-id="close">
+      <div class="cover-copy">
+        <p class="kicker">PresentLab / Handoff</p>
+        <h1 class="title">Choose a style.<br /><em>Keep the story clear.</em></h1>
+        <p class="lede">
+          Every folder in this gallery contains the HTML source plus rendered PDF and PPTX outputs
+          for a fast, inspectable starting point.
+        </p>
+        <div class="meta-line"><span>Validate first</span><span>Review every page</span></div>
+      </div>
+      <p class="footer">07 / Closing frame</p>
+    </section>
+  </body>
+</html>

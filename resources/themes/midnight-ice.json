@@ -1,0 +1,27 @@
+{
+  "name": "midnight-ice",
+  "title": "Midnight / Ice / Compact",
+  "description": "Cool blue-grey palette for enterprise, governance, and evidence-led decisions. Dark cinematic system with luminous cyan highlights, grid structure, and contrast-led storytelling. Denser spacing for information-rich reviews where every page must carry more detail.",
+  "format": "16:9",
+  "tokens": {
+    "paper": "#f1faff",
+    "ink": "#153148",
+    "accent": "#3e9bd4",
+    "muted": "#617f91",
+    "radius": "18px",
+    "accentDeep": "#276b99",
+    "accentSoft": "#cfeaf8",
+    "line": "rgb(21 49 72 / 16%)",
+    "lineStrong": "rgb(21 49 72 / 28%)",
+    "panel": "#fbfeff",
+    "artOne": "#a7d7f0",
+    "artTwo": "#edbd93",
+    "quoteInk": "#ffffff",
+    "quoteMark": "#d9f0ff",
+    "artLabel": "#617f91",
+    "overlay": "radial-gradient(circle at 92% 8%, #cfeaf8 0 14%, var(--paper) 15%)",
+    "family": "midnight",
+    "palette": "ice",
+    "modifier": "compact"
+  }
+}

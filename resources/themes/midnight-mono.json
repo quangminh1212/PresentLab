@@ -1,0 +1,27 @@
+{
+  "name": "midnight-mono",
+  "title": "Midnight / Mono / Glow",
+  "description": "Neutral monochrome palette for legal, finance, and highly focused information design. Dark cinematic system with luminous cyan highlights, grid structure, and contrast-led storytelling. A luminous accent treatment for launches, demos, and future-facing concepts.",
+  "format": "16:9",
+  "tokens": {
+    "paper": "#f5f5f3",
+    "ink": "#171717",
+    "accent": "#2c2c2c",
+    "muted": "#626262",
+    "radius": "8px",
+    "accentDeep": "#0f0f0f",
+    "accentSoft": "#dededb",
+    "line": "rgb(23 23 23 / 16%)",
+    "lineStrong": "rgb(23 23 23 / 32%)",
+    "panel": "#ffffff",
+    "artOne": "#bababa",
+    "artTwo": "#eeeeee",
+    "quoteInk": "#ffffff",
+    "quoteMark": "#d2d2d2",
+    "artLabel": "#626262",
+    "overlay": "linear-gradient(135deg, transparent 0 70%, #dededb 70% 70.3%, transparent 70.3%)",
+    "family": "midnight",
+    "palette": "mono",
+    "modifier": "glow"
+  }
+}

@@ -6,10 +6,32 @@ import { inspectDeckFile } from "../dist/core/inspect.js";
 const root = resolve(import.meta.dirname, "..");
 const templatesRoot = join(root, "templates");
 const index = JSON.parse(await readFile(join(templatesRoot, "index.json"), "utf8"));
+const expectedTemplateCount = 100;
+const expectedSlideCount = 7;
+const templateDirectories = (await readdir(templatesRoot, { withFileTypes: true })).filter(
+  (entry) => entry.isDirectory(),
+);
 
-if (!Array.isArray(index) || index.length !== 8) {
+if (!Array.isArray(index) || index.length !== expectedTemplateCount) {
   throw new Error(
-    `Expected 8 gallery templates, found ${Array.isArray(index) ? index.length : "invalid index"}.`,
+    `Expected ${expectedTemplateCount} gallery templates, found ${Array.isArray(index) ? index.length : "invalid index"}.`,
+  );
+}
+if (templateDirectories.length !== expectedTemplateCount) {
+  throw new Error(
+    `Expected ${expectedTemplateCount} template directories, found ${templateDirectories.length}.`,
+  );
+}
+if (new Set(index.map((entry) => entry.name)).size !== expectedTemplateCount) {
+  throw new Error("Template index contains duplicate names.");
+}
+
+const themeIndex = JSON.parse(
+  await readFile(join(root, "resources", "themes", "index.json"), "utf8"),
+);
+if (!Array.isArray(themeIndex) || themeIndex.length !== expectedTemplateCount) {
+  throw new Error(
+    `Expected ${expectedTemplateCount} theme entries, found ${Array.isArray(themeIndex) ? themeIndex.length : "invalid index"}.`,
   );
 }
 
@@ -23,7 +45,7 @@ for (const entry of index) {
 
   const htmlPath = join(templateDir, "deck.html");
   const { inspection } = await inspectDeckFile(htmlPath, 10);
-  if (inspection.errors.length > 0 || inspection.slides.length !== 7) {
+  if (inspection.errors.length > 0 || inspection.slides.length !== expectedSlideCount) {
     throw new Error(
       `${entry.name} HTML is invalid or has the wrong slide count: ${inspection.errors.join("; ")}`,
     );
