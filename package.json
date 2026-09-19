@@ -4,13 +4,29 @@
   "description": "HTML-first design resources and MCP rendering bridge for slides, catalogs, and PDF.",
   "license": "MIT",
   "type": "module",
-  "private": true,
+  "homepage": "https://github.com/quangminh1212/PresentLab#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/quangminh1212/PresentLab.git"
+  },
+  "bugs": {
+    "url": "https://github.com/quangminh1212/PresentLab/issues"
+  },
   "engines": {
     "node": ">=22.0.0",
     "npm": ">=10.9.0"
   },
   "bin": {
     "presentlab": "dist/cli.js"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./cli": "./dist/cli.js"
   },
   "files": [
     "dist",

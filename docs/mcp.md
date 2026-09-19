@@ -17,6 +17,8 @@ npm run mcp
 | `presentlab_render_deck`    | PNG, PDF, and fidelity-first PPTX output              |
 | `presentlab_build_catalog`  | HTML and A4 landscape PDF contact sheet               |
 | `presentlab_list_templates` | Discover local template metadata                      |
+| `presentlab_get_template`   | Read a discovered HTML template                       |
+| `presentlab_list_themes`    | Discover local design token themes                    |
 
 Tool paths are workspace-relative. The server uses `PRESENTLAB_ROOT` when set, otherwise its current working directory. The default network policy blocks HTTP(S) and WebSocket assets. Set `allowExternalAssets: true` only for trusted HTML.
 
@@ -24,6 +26,8 @@ Tool paths are workspace-relative. The server uses `PRESENTLAB_ROOT` when set, o
 
 - `presentlab://schema/deck` returns the JSON Schema for normalized deck metadata.
 - `presentlab://templates` returns the local design-template index.
+- `presentlab://templates/{name}` returns one discovered HTML template.
+- `presentlab://themes/{name}` returns one discovered JSON theme token file.
 - `presentlab_design_deck` provides a structured design brief prompt and tells the agent to validate before rendering.
 
 ## Host registration

@@ -66,7 +66,7 @@ npm run build
 npm run mcp
 ```
 
-The server exposes `presentlab_validate_deck`, `presentlab_render_deck`, `presentlab_build_catalog`, `presentlab_list_templates`, a deck schema resource, a templates resource, and a `presentlab_design_deck` prompt. Logs go to stderr because stdout is reserved for JSON-RPC.
+The server exposes validation, rendering, catalog, template/theme discovery and read tools, static and dynamic design resources, and a `presentlab_design_deck` prompt. Logs go to stderr because stdout is reserved for JSON-RPC.
 
 The repo-local plugin lives at `plugins/presentlab-ai`. Host-specific examples are available in `.vscode/mcp.json` and `.cursor/mcp.json`.
 

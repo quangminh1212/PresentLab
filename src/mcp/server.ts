@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
-import { McpServer } from "@modelcontextprotocol/server";
+import { McpServer, ResourceTemplate } from "@modelcontextprotocol/server";
 import { serveStdio } from "@modelcontextprotocol/server/stdio";
 import * as z from "zod/v4";
 
@@ -52,12 +52,34 @@ const TemplateSchema = z.object({
 
 const TemplatesOutputSchema = z.object({ templates: z.array(TemplateSchema) });
 
+const TemplateContentOutputSchema = z.object({
+  name: z.string(),
+  path: z.string(),
+  html: z.string(),
+});
+
+const ThemeSchema = z.object({
+  name: z.string(),
+  title: z.string(),
+  description: z.string(),
+  path: z.string(),
+});
+
+const ThemesOutputSchema = z.object({ themes: z.array(ThemeSchema) });
+
 type Template = z.infer<typeof TemplateSchema>;
+type Theme = z.infer<typeof ThemeSchema>;
 
 async function loadTemplates(root: string): Promise<Template[]> {
   const indexPath = join(root, "resources", "templates", "index.json");
   const raw = JSON.parse(await readFile(indexPath, "utf8")) as unknown;
   return z.array(TemplateSchema).parse(raw);
+}
+
+async function loadThemes(root: string): Promise<Theme[]> {
+  const indexPath = join(root, "resources", "themes", "index.json");
+  const raw = JSON.parse(await readFile(indexPath, "utf8")) as unknown;
+  return z.array(ThemeSchema).parse(raw);
 }
 
 function pathForTool(root: string, candidate: string, label: string): string {
@@ -193,6 +215,38 @@ export function createPresentLabServer(requestedRoot?: string): McpServer {
     async () => toolText({ templates: await loadTemplates(root) }),
   );
 
+  server.registerTool(
+    "presentlab_get_template",
+    {
+      title: "Read a PresentLab template",
+      description:
+        "Read the HTML source of a named local template after discovering it with presentlab_list_templates.",
+      inputSchema: z.object({ name: z.string().min(1) }),
+      outputSchema: TemplateContentOutputSchema,
+    },
+    async ({ name }) => {
+      const template = (await loadTemplates(root)).find((candidate) => candidate.name === name);
+      if (!template) throw new Error(`Unknown PresentLab template '${name}'.`);
+      const templatePath = pathForTool(root, template.path, "template");
+      return toolText({
+        name: template.name,
+        path: relativeArtifactPath(root, templatePath),
+        html: await readFile(templatePath, "utf8"),
+      });
+    },
+  );
+
+  server.registerTool(
+    "presentlab_list_themes",
+    {
+      title: "List PresentLab themes",
+      description: "List local design themes and token metadata for an AI deck authoring workflow.",
+      inputSchema: z.object({}),
+      outputSchema: ThemesOutputSchema,
+    },
+    async () => toolText({ themes: await loadThemes(root) }),
+  );
+
   server.registerResource(
     "presentlab-deck-schema",
     "presentlab://schema/deck",
@@ -231,6 +285,70 @@ export function createPresentLabServer(requestedRoot?: string): McpServer {
         },
       ],
     }),
+  );
+
+  server.registerResource(
+    "presentlab-template-content",
+    new ResourceTemplate("presentlab://templates/{name}", {
+      list: async () => ({
+        resources: (await loadTemplates(root)).map((template) => ({
+          uri: `presentlab://templates/${encodeURIComponent(template.name)}`,
+          name: template.name,
+          title: template.title,
+          description: template.description,
+          mimeType: "text/html",
+        })),
+      }),
+    }),
+    {
+      title: "PresentLab template source",
+      description: "Read one reusable local HTML template.",
+      mimeType: "text/html",
+      cacheHint: { ttlMs: 60_000, cacheScope: "public" },
+    },
+    async (uri, variables) => {
+      const template = (await loadTemplates(root)).find(
+        (candidate) => candidate.name === variables.name,
+      );
+      if (!template) throw new Error(`Unknown PresentLab template '${variables.name}'.`);
+      const templatePath = pathForTool(root, template.path, "template");
+      return {
+        contents: [
+          { uri: uri.href, mimeType: "text/html", text: await readFile(templatePath, "utf8") },
+        ],
+      };
+    },
+  );
+
+  server.registerResource(
+    "presentlab-theme-content",
+    new ResourceTemplate("presentlab://themes/{name}", {
+      list: async () => ({
+        resources: (await loadThemes(root)).map((theme) => ({
+          uri: `presentlab://themes/${encodeURIComponent(theme.name)}`,
+          name: theme.name,
+          title: theme.title,
+          description: theme.description,
+          mimeType: "application/json",
+        })),
+      }),
+    }),
+    {
+      title: "PresentLab theme tokens",
+      description: "Read one reusable local theme token file.",
+      mimeType: "application/json",
+      cacheHint: { ttlMs: 60_000, cacheScope: "public" },
+    },
+    async (uri, variables) => {
+      const theme = (await loadThemes(root)).find((candidate) => candidate.name === variables.name);
+      if (!theme) throw new Error(`Unknown PresentLab theme '${variables.name}'.`);
+      const themePath = pathForTool(root, theme.path, "theme");
+      return {
+        contents: [
+          { uri: uri.href, mimeType: "application/json", text: await readFile(themePath, "utf8") },
+        ],
+      };
+    },
   );
 
   server.registerPrompt(

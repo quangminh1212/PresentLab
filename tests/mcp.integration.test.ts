@@ -23,6 +23,12 @@ describe("MCP stdio contract", () => {
         arguments: { input: "examples/aurora/deck.html" },
       });
       const schema = await client.readResource({ uri: "presentlab://schema/deck" });
+      const template = await client.readResource({ uri: "presentlab://templates/aurora" });
+      const theme = await client.readResource({ uri: "presentlab://themes/aurora" });
+      const templateTool = await client.callTool({
+        name: "presentlab_get_template",
+        arguments: { name: "aurora" },
+      });
 
       expect(tools.tools.map((tool) => tool.name)).toEqual(
         expect.arrayContaining([
@@ -30,6 +36,8 @@ describe("MCP stdio contract", () => {
           "presentlab_render_deck",
           "presentlab_build_catalog",
           "presentlab_list_templates",
+          "presentlab_get_template",
+          "presentlab_list_themes",
         ]),
       );
       expect(resources.resources.map((resource) => resource.uri)).toEqual(
@@ -39,6 +47,9 @@ describe("MCP stdio contract", () => {
       expect(validation.isError).not.toBe(true);
       expect(validation.structuredContent).toMatchObject({ valid: true, slideCount: 3 });
       expect(schema.contents[0]).toMatchObject({ mimeType: "application/schema+json" });
+      expect(template.contents[0]).toMatchObject({ mimeType: "text/html" });
+      expect(theme.contents[0]).toMatchObject({ mimeType: "application/json" });
+      expect(templateTool.structuredContent).toMatchObject({ name: "aurora" });
     } finally {
       await client.close();
     }
