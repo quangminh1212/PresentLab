@@ -128,6 +128,7 @@ export function createPresentLabServer(requestedRoot?: string): McpServer {
         formats: (formats ?? ["png", "pdf", "pptx"]) as OutputFormat[],
         maxSlides: maxSlides ?? MAX_SLIDES,
         ...(allowExternalAssets === undefined ? {} : { allowExternalAssets }),
+        workspaceRoot: root,
       } as const;
       const result = await renderDeck(renderOptions);
       const output = {
@@ -166,6 +167,7 @@ export function createPresentLabServer(requestedRoot?: string): McpServer {
         formats: (formats ?? ["html", "pdf"]) as CatalogFormat[],
         maxSlides: maxSlides ?? MAX_SLIDES,
         ...(allowExternalAssets === undefined ? {} : { allowExternalAssets }),
+        workspaceRoot: root,
       } as const;
       const result = await buildCatalog(catalogOptions);
       const output = {

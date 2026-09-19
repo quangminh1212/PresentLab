@@ -80,6 +80,9 @@ async function writePdf(
 
 export async function renderDeck(options: RenderDeckOptions): Promise<RenderResult> {
   const formats = uniqueFormats(options.formats);
+  if (formats.length === 0) {
+    throw new Error("At least one output format is required.");
+  }
   const { inspection, sourceHash } = await inspectDeckFile(options.inputPath, options.maxSlides);
   if (inspection.errors.length > 0) {
     throw new Error(`Deck validation failed:\n${inspection.errors.join("\n")}`);

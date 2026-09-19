@@ -16,12 +16,12 @@ The repository also ships an MCP server, a Codex-compatible skill/plugin, reusab
 
 ## Quick start
 
-Requirements: Node.js 22 or newer and npm 11 or newer.
+Requirements: Node.js 22 or newer and npm 10.9 or newer.
 
 ```powershell
 npm ci
 npx playwright install chromium
-npm run verify
+npm run verify:all
 npm run build
 node dist/cli.js render --input examples/aurora/deck.html --output .artifacts/aurora --format png,pdf,pptx
 node dist/cli.js catalog --input examples/aurora/deck.html --output .artifacts/aurora-catalog --format html,pdf
@@ -74,4 +74,4 @@ The repo-local plugin lives at `plugins/presentlab-ai`. Host-specific examples a
 
 The default PPTX mode is fidelity-first: slide text remains selectable in the source HTML/PDF, while the PPTX contains a full-slide image. This is deliberate because arbitrary HTML/CSS cannot be losslessly translated into editable PowerPoint shapes. The artifact manifest records the renderer inputs and output files for reproducibility.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and [CHANGELOG.md](CHANGELOG.md) for release and threat-model guidance.
+See [docs/architecture.md](docs/architecture.md), [docs/html-contract.md](docs/html-contract.md), [docs/mcp.md](docs/mcp.md), [docs/release.md](docs/release.md), [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and [CHANGELOG.md](CHANGELOG.md) for release and threat-model guidance.

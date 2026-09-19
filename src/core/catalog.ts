@@ -15,6 +15,7 @@ export interface CatalogOptions {
   readonly formats: readonly CatalogFormat[];
   readonly maxSlides?: number;
   readonly allowExternalAssets?: boolean;
+  readonly workspaceRoot?: string;
 }
 
 export interface CatalogResult {
@@ -121,6 +122,7 @@ export async function buildCatalog(options: CatalogOptions): Promise<CatalogResu
     ...(options.allowExternalAssets === undefined
       ? {}
       : { allowExternalAssets: options.allowExternalAssets }),
+    ...(options.workspaceRoot === undefined ? {} : { workspaceRoot: options.workspaceRoot }),
   } as const;
   const render = await renderDeck(renderOptions);
 

@@ -1,13 +1,16 @@
-import { pathToFileURL } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import { resolve } from "node:path";
 
 import { chromium, type Browser, type BrowserContext, type Locator, type Page } from "playwright";
 
 import { PresentLabError, getErrorMessage } from "./errors.js";
+import { isPathInside } from "./files.js";
 import { pageDimensions } from "./schema.js";
 import type { DeckInspection } from "./schema.js";
 
 export interface BrowserDeckOptions {
   readonly allowExternalAssets?: boolean;
+  readonly workspaceRoot?: string;
 }
 
 export interface BrowserDeck {
@@ -77,6 +80,7 @@ export async function openBrowserDeck(
   options: BrowserDeckOptions = {},
 ): Promise<BrowserDeck> {
   const dimensions = pageDimensions(inspection.manifest.format);
+  const workspaceRoot = options.workspaceRoot ? resolve(options.workspaceRoot) : undefined;
   let browser: Browser | undefined;
   let context: BrowserContext | undefined;
 
@@ -94,6 +98,19 @@ export async function openBrowserDeck(
       if (!options.allowExternalAssets && /^(https?:|ws:|wss:)/i.test(url)) {
         await route.abort("blockedbyclient");
         return;
+      }
+      if (workspaceRoot && /^file:/i.test(url)) {
+        let localPath: string;
+        try {
+          localPath = fileURLToPath(url);
+        } catch {
+          await route.abort("blockedbyclient");
+          return;
+        }
+        if (!isPathInside(workspaceRoot, localPath, true)) {
+          await route.abort("blockedbyclient");
+          return;
+        }
       }
       await route.continue();
     });

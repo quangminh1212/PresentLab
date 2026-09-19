@@ -5,7 +5,7 @@
 ```powershell
 npm ci
 npx playwright install chromium
-npm run verify
+npm run verify:all
 ```
 
 Use `npm run build` before running the MCP server. Keep public API changes documented in `CHANGELOG.md` and add a regression test for behavior changes.

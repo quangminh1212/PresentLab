@@ -8,6 +8,7 @@ PresentLab renders HTML supplied by a caller. The CLI and MCP server treat the c
 
 - Input and output paths must remain inside the configured workspace root.
 - Network assets are blocked by default during Chromium rendering.
+- Local file assets outside the workspace root are blocked during Chromium rendering.
 - MCP uses stdio by default; stdout is reserved for JSON-RPC and logs go to stderr.
 - Generated artifacts are written to an explicit output directory and are not deleted automatically.
 

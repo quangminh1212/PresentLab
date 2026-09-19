@@ -10,6 +10,16 @@ export function getWorkspaceRoot(requestedRoot?: string): string {
   return resolve(requestedRoot ?? process.env.PRESENTLAB_ROOT ?? process.cwd());
 }
 
+export function isPathInside(root: string, candidate: string, allowRoot = false): boolean {
+  const relativeCandidate = relative(resolve(root), resolve(candidate));
+  if (!allowRoot && relativeCandidate.length === 0) return false;
+  return !(
+    relativeCandidate === ".." ||
+    relativeCandidate.startsWith(`..${sep}`) ||
+    isAbsolute(relativeCandidate)
+  );
+}
+
 export function resolveWorkspacePath(root: string, candidate: string, label: string): string {
   if (!candidate.trim()) {
     throw new PresentLabError("INVALID_PATH", `${label} must not be empty.`);
@@ -17,13 +27,9 @@ export function resolveWorkspacePath(root: string, candidate: string, label: str
 
   const absoluteRoot = resolve(root);
   const absoluteCandidate = resolve(absoluteRoot, candidate);
-  const relativeCandidate = relative(absoluteRoot, absoluteCandidate);
-  const escapesRoot =
-    relativeCandidate === ".." ||
-    relativeCandidate.startsWith(`..${sep}`) ||
-    isAbsolute(relativeCandidate);
+  const escapesRoot = !isPathInside(absoluteRoot, absoluteCandidate);
 
-  if (escapesRoot || relativeCandidate.length === 0) {
+  if (escapesRoot) {
     throw new PresentLabError(
       "PATH_OUTSIDE_WORKSPACE",
       `${label} must resolve to a non-root path inside the configured workspace.`,

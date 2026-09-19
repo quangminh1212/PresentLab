@@ -122,6 +122,7 @@ async function commandRender(values: CliValues, root: string): Promise<number> {
     formats,
     maxSlides: numberOption(values, "max-slides", 100),
     allowExternalAssets: booleanOption(values, "allow-external-assets"),
+    workspaceRoot: root,
   });
   if (booleanOption(values, "json")) {
     console.log(JSON.stringify(result, null, 2));
@@ -146,6 +147,7 @@ async function commandCatalog(values: CliValues, root: string): Promise<number> 
     formats,
     maxSlides: numberOption(values, "max-slides", 100),
     allowExternalAssets: booleanOption(values, "allow-external-assets"),
+    workspaceRoot: root,
   });
   if (booleanOption(values, "json")) {
     console.log(JSON.stringify(result, null, 2));

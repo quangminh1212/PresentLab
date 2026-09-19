@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { PresentLabError } from "../src/core/errors.js";
-import { readUtf8File, resolveWorkspacePath, sha256 } from "../src/core/files.js";
+import { isPathInside, readUtf8File, resolveWorkspacePath, sha256 } from "../src/core/files.js";
 
 describe("workspace boundaries", () => {
   it("rejects traversal and the workspace root", () => {
@@ -21,6 +21,8 @@ describe("workspace boundaries", () => {
     await writeFile(filePath, "<html></html>", "utf8");
 
     expect(resolveWorkspacePath(root, "deck.html", "input")).toBe(filePath);
+    expect(isPathInside(root, filePath)).toBe(true);
+    expect(isPathInside(root, join(root, "..", "outside.txt"))).toBe(false);
     expect(await readUtf8File(filePath)).toBe("<html></html>");
     expect(sha256("same")).toBe(sha256("same"));
   });
