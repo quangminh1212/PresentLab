@@ -1,0 +1,65 @@
+{
+  "name": "plum",
+  "title": "Plum",
+  "description": "Expressive plum palette for culture, editorial, and premium creative work.",
+  "category": "Expressive",
+  "mood": "Creative and premium",
+  "recommendedFor": "Culture, editorial, fashion, and creative work",
+  "catalogSlide": 8,
+  "swatches": [
+    {
+      "name": "Canvas",
+      "role": "surface",
+      "hex": "#fbf7fc"
+    },
+    {
+      "name": "Text",
+      "role": "type",
+      "hex": "#291a33"
+    },
+    {
+      "name": "Signal",
+      "role": "action",
+      "hex": "#9c4fd4"
+    },
+    {
+      "name": "Depth",
+      "role": "emphasis",
+      "hex": "#6e2e9f"
+    },
+    {
+      "name": "Soft",
+      "role": "context",
+      "hex": "#ead8f7"
+    },
+    {
+      "name": "Visual A",
+      "role": "visual",
+      "hex": "#d3a9ee"
+    },
+    {
+      "name": "Visual B",
+      "role": "visual",
+      "hex": "#f6b5cc"
+    }
+  ],
+  "tokens": {
+    "paper": "#fbf7fc",
+    "ink": "#291a33",
+    "muted": "#745e7f",
+    "accent": "#9c4fd4",
+    "accentDeep": "#6e2e9f",
+    "accentSoft": "#ead8f7",
+    "line": "rgb(41 26 51 / 16%)",
+    "lineStrong": "rgb(41 26 51 / 28%)",
+    "panel": "#ffffff",
+    "radius": "32px",
+    "artOne": "#d3a9ee",
+    "artTwo": "#f6b5cc",
+    "quoteInk": "#ffffff",
+    "quoteMark": "#f1dfff",
+    "artLabel": "#745e7f",
+    "overlay": "radial-gradient(circle at 92% 8%, #ead8f7 0 14%, var(--paper) 15%)"
+  },
+  "path": "resources/palettes/plum.json"
+}

@@ -1,0 +1,65 @@
+{
+  "name": "ocean",
+  "title": "Ocean",
+  "description": "Fresh cyan palette for research, customer insight, and service design narratives.",
+  "category": "Cool",
+  "mood": "Fresh and exploratory",
+  "recommendedFor": "Research, customer insight, service design, and discovery",
+  "catalogSlide": 9,
+  "swatches": [
+    {
+      "name": "Canvas",
+      "role": "surface",
+      "hex": "#eefaff"
+    },
+    {
+      "name": "Text",
+      "role": "type",
+      "hex": "#12303e"
+    },
+    {
+      "name": "Signal",
+      "role": "action",
+      "hex": "#0f9ec7"
+    },
+    {
+      "name": "Depth",
+      "role": "emphasis",
+      "hex": "#057493"
+    },
+    {
+      "name": "Soft",
+      "role": "context",
+      "hex": "#c8f0fa"
+    },
+    {
+      "name": "Visual A",
+      "role": "visual",
+      "hex": "#a8dfea"
+    },
+    {
+      "name": "Visual B",
+      "role": "visual",
+      "hex": "#ffcc9b"
+    }
+  ],
+  "tokens": {
+    "paper": "#eefaff",
+    "ink": "#12303e",
+    "muted": "#5e7782",
+    "accent": "#0f9ec7",
+    "accentDeep": "#057493",
+    "accentSoft": "#c8f0fa",
+    "line": "rgb(18 48 62 / 16%)",
+    "lineStrong": "rgb(18 48 62 / 28%)",
+    "panel": "#faffff",
+    "radius": "24px",
+    "artOne": "#a8dfea",
+    "artTwo": "#ffcc9b",
+    "quoteInk": "#05303c",
+    "quoteMark": "#d8f8ff",
+    "artLabel": "#5e7782",
+    "overlay": "radial-gradient(circle at 92% 8%, #c8f0fa 0 14%, var(--paper) 15%)"
+  },
+  "path": "resources/palettes/ocean.json"
+}

@@ -1,0 +1,65 @@
+{
+  "name": "coral",
+  "title": "Coral",
+  "description": "Warm coral palette for human-centered launches, brands, and community narratives.",
+  "category": "Warm",
+  "mood": "Human and energetic",
+  "recommendedFor": "Community, brand, people, and launch stories",
+  "catalogSlide": 5,
+  "swatches": [
+    {
+      "name": "Canvas",
+      "role": "surface",
+      "hex": "#fff7f4"
+    },
+    {
+      "name": "Text",
+      "role": "type",
+      "hex": "#321c24"
+    },
+    {
+      "name": "Signal",
+      "role": "action",
+      "hex": "#ed5d52"
+    },
+    {
+      "name": "Depth",
+      "role": "emphasis",
+      "hex": "#b73a34"
+    },
+    {
+      "name": "Soft",
+      "role": "context",
+      "hex": "#ffd7d1"
+    },
+    {
+      "name": "Visual A",
+      "role": "visual",
+      "hex": "#ffc2b8"
+    },
+    {
+      "name": "Visual B",
+      "role": "visual",
+      "hex": "#f5b45f"
+    }
+  ],
+  "tokens": {
+    "paper": "#fff7f4",
+    "ink": "#321c24",
+    "muted": "#735861",
+    "accent": "#ed5d52",
+    "accentDeep": "#b73a34",
+    "accentSoft": "#ffd7d1",
+    "line": "rgb(50 28 36 / 15%)",
+    "lineStrong": "rgb(50 28 36 / 28%)",
+    "panel": "#ffffff",
+    "radius": "30px",
+    "artOne": "#ffc2b8",
+    "artTwo": "#f5b45f",
+    "quoteInk": "#ffffff",
+    "quoteMark": "#ffe6de",
+    "artLabel": "#735861",
+    "overlay": "radial-gradient(circle at 92% 8%, #ffd7d1 0 14%, var(--paper) 15%)"
+  },
+  "path": "resources/palettes/coral.json"
+}

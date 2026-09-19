@@ -1,0 +1,65 @@
+{
+  "name": "ice",
+  "title": "Ice",
+  "description": "Cool blue-grey palette for enterprise, governance, and evidence-led decisions.",
+  "category": "Cool",
+  "mood": "Calm and evidence-led",
+  "recommendedFor": "Enterprise, governance, research, and decision support",
+  "catalogSlide": 15,
+  "swatches": [
+    {
+      "name": "Canvas",
+      "role": "surface",
+      "hex": "#f1faff"
+    },
+    {
+      "name": "Text",
+      "role": "type",
+      "hex": "#153148"
+    },
+    {
+      "name": "Signal",
+      "role": "action",
+      "hex": "#3e9bd4"
+    },
+    {
+      "name": "Depth",
+      "role": "emphasis",
+      "hex": "#276b99"
+    },
+    {
+      "name": "Soft",
+      "role": "context",
+      "hex": "#cfeaf8"
+    },
+    {
+      "name": "Visual A",
+      "role": "visual",
+      "hex": "#a7d7f0"
+    },
+    {
+      "name": "Visual B",
+      "role": "visual",
+      "hex": "#edbd93"
+    }
+  ],
+  "tokens": {
+    "paper": "#f1faff",
+    "ink": "#153148",
+    "muted": "#617f91",
+    "accent": "#3e9bd4",
+    "accentDeep": "#276b99",
+    "accentSoft": "#cfeaf8",
+    "line": "rgb(21 49 72 / 16%)",
+    "lineStrong": "rgb(21 49 72 / 28%)",
+    "panel": "#fbfeff",
+    "radius": "18px",
+    "artOne": "#a7d7f0",
+    "artTwo": "#edbd93",
+    "quoteInk": "#ffffff",
+    "quoteMark": "#d9f0ff",
+    "artLabel": "#617f91",
+    "overlay": "radial-gradient(circle at 92% 8%, #cfeaf8 0 14%, var(--paper) 15%)"
+  },
+  "path": "resources/palettes/ice.json"
+}

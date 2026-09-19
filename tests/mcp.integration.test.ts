@@ -26,6 +26,8 @@ describe("MCP stdio contract", () => {
       const schema = await client.readResource({ uri: "presentlab://schema/deck" });
       const template = await client.readResource({ uri: "presentlab://templates/aurora" });
       const theme = await client.readResource({ uri: "presentlab://themes/aurora" });
+      const paletteCatalog = await client.readResource({ uri: "presentlab://palettes/catalog" });
+      const palette = await client.readResource({ uri: "presentlab://palettes/cinematic" });
       const templateTool = await client.callTool({
         name: "presentlab_get_template",
         arguments: { name: "aurora" },
@@ -38,6 +40,14 @@ describe("MCP stdio contract", () => {
         name: "presentlab_list_themes",
         arguments: {},
       });
+      const palettesTool = await client.callTool({
+        name: "presentlab_list_palettes",
+        arguments: {},
+      });
+      const paletteTool = await client.callTool({
+        name: "presentlab_get_palette",
+        arguments: { name: "cinematic" },
+      });
 
       expect(tools.tools.map((tool) => tool.name)).toEqual(
         expect.arrayContaining([
@@ -47,13 +57,24 @@ describe("MCP stdio contract", () => {
           "presentlab_list_templates",
           "presentlab_get_template",
           "presentlab_list_themes",
+          "presentlab_list_palettes",
+          "presentlab_get_palette",
         ]),
       );
       expect(resources.resources.map((resource) => resource.uri)).toEqual(
-        expect.arrayContaining(["presentlab://schema/deck", "presentlab://templates"]),
+        expect.arrayContaining([
+          "presentlab://schema/deck",
+          "presentlab://templates",
+          "presentlab://palettes",
+          "presentlab://palettes/catalog",
+        ]),
       );
       expect(resourceTemplates.resourceTemplates.map((resource) => resource.uriTemplate)).toEqual(
-        expect.arrayContaining(["presentlab://templates/{name}", "presentlab://themes/{name}"]),
+        expect.arrayContaining([
+          "presentlab://templates/{name}",
+          "presentlab://themes/{name}",
+          "presentlab://palettes/{name}",
+        ]),
       );
       expect(prompts.prompts.map((prompt) => prompt.name)).toContain("presentlab_design_deck");
       expect(validation.isError).not.toBe(true);
@@ -61,6 +82,8 @@ describe("MCP stdio contract", () => {
       expect(schema.contents[0]).toMatchObject({ mimeType: "application/schema+json" });
       expect(template.contents[0]).toMatchObject({ mimeType: "text/html" });
       expect(theme.contents[0]).toMatchObject({ mimeType: "application/json" });
+      expect(paletteCatalog.contents[0]).toMatchObject({ mimeType: "text/html" });
+      expect(palette.contents[0]).toMatchObject({ mimeType: "application/json" });
       expect(templateTool.structuredContent).toMatchObject({ name: "aurora" });
       expect(templatesTool.structuredContent).toMatchObject({ templates: expect.any(Array) });
       const templates = (
@@ -74,6 +97,22 @@ describe("MCP stdio contract", () => {
       );
       expect(themesTool.structuredContent).toMatchObject({ themes: expect.any(Array) });
       expect((themesTool.structuredContent as { themes: unknown[] }).themes).toHaveLength(100);
+      expect(palettesTool.structuredContent).toMatchObject({ palettes: expect.any(Array) });
+      expect(
+        (palettesTool.structuredContent as { palettes: Array<Record<string, unknown>> }).palettes,
+      ).toHaveLength(13);
+      expect(palettesTool.structuredContent).toEqual(
+        expect.objectContaining({
+          palettes: expect.arrayContaining([
+            expect.objectContaining({ name: "cinematic", category: "Cinematic" }),
+          ]),
+        }),
+      );
+      expect(paletteTool.structuredContent).toEqual(
+        expect.objectContaining({
+          palette: expect.objectContaining({ name: "cinematic", swatches: expect.any(Array) }),
+        }),
+      );
     } finally {
       await client.close();
     }

@@ -1,0 +1,857 @@
+{
+  "catalog": {
+    "title": "PresentLab color palette catalog",
+    "description": "Thirteen curated color systems for clients, designers, and AI agents choosing a slide direction.",
+    "slideCount": 15,
+    "html": "resources/palettes/catalog.html",
+    "pdf": "resources/palettes/catalog.pdf",
+    "pptx": "resources/palettes/catalog.pptx"
+  },
+  "palettes": [
+    {
+      "name": "cinematic",
+      "title": "Cinematic",
+      "description": "Deep navy, teal light, and ember orange for film-led storytelling and premium launches.",
+      "category": "Cinematic",
+      "mood": "Night, tension, and warm release",
+      "recommendedFor": "Film, premium launches, brand stories, and keynote moments",
+      "catalogSlide": 3,
+      "swatches": [
+        {
+          "name": "Canvas",
+          "role": "surface",
+          "hex": "#0b1020"
+        },
+        {
+          "name": "Text",
+          "role": "type",
+          "hex": "#edf4ff"
+        },
+        {
+          "name": "Signal",
+          "role": "action",
+          "hex": "#55e0d0"
+        },
+        {
+          "name": "Depth",
+          "role": "emphasis",
+          "hex": "#1e9994"
+        },
+        {
+          "name": "Soft",
+          "role": "context",
+          "hex": "#183d4a"
+        },
+        {
+          "name": "Visual A",
+          "role": "visual",
+          "hex": "#173d70"
+        },
+        {
+          "name": "Visual B",
+          "role": "visual",
+          "hex": "#d86d49"
+        }
+      ],
+      "tokens": {
+        "paper": "#0b1020",
+        "ink": "#edf4ff",
+        "muted": "#9aaac2",
+        "accent": "#55e0d0",
+        "accentDeep": "#1e9994",
+        "accentSoft": "#183d4a",
+        "line": "rgb(237 244 255 / 16%)",
+        "lineStrong": "rgb(85 224 208 / 52%)",
+        "panel": "#111a2b",
+        "radius": "12px",
+        "artOne": "#173d70",
+        "artTwo": "#d86d49",
+        "quoteInk": "#081018",
+        "quoteMark": "#b9fff3",
+        "artLabel": "#9aaac2",
+        "overlay": "linear-gradient(135deg, rgb(85 224 208 / 8%), transparent 38%), radial-gradient(circle at 92% 8%, #183d4a 0 14%, var(--paper) 15%)"
+      },
+      "path": "resources/palettes/cinematic.json"
+    },
+    {
+      "name": "cobalt",
+      "title": "Cobalt",
+      "description": "Clear blue product palette for confident strategy and technology stories.",
+      "category": "Product",
+      "mood": "Clear and confident",
+      "recommendedFor": "Strategy, technology, product, and B2B narratives",
+      "catalogSlide": 4,
+      "swatches": [
+        {
+          "name": "Canvas",
+          "role": "surface",
+          "hex": "#f4f7ff"
+        },
+        {
+          "name": "Text",
+          "role": "type",
+          "hex": "#14213d"
+        },
+        {
+          "name": "Signal",
+          "role": "action",
+          "hex": "#315efb"
+        },
+        {
+          "name": "Depth",
+          "role": "emphasis",
+          "hex": "#2340b4"
+        },
+        {
+          "name": "Soft",
+          "role": "context",
+          "hex": "#dbe5ff"
+        },
+        {
+          "name": "Visual A",
+          "role": "visual",
+          "hex": "#b5c6ff"
+        },
+        {
+          "name": "Visual B",
+          "role": "visual",
+          "hex": "#ffb29c"
+        }
+      ],
+      "tokens": {
+        "paper": "#f4f7ff",
+        "ink": "#14213d",
+        "muted": "#5c6a83",
+        "accent": "#315efb",
+        "accentDeep": "#2340b4",
+        "accentSoft": "#dbe5ff",
+        "line": "rgb(20 33 61 / 16%)",
+        "lineStrong": "rgb(20 33 61 / 28%)",
+        "panel": "#ffffff",
+        "radius": "24px",
+        "artOne": "#b5c6ff",
+        "artTwo": "#ffb29c",
+        "quoteInk": "#ffffff",
+        "quoteMark": "#c9d5ff",
+        "artLabel": "#5c6a83",
+        "overlay": "radial-gradient(circle at 92% 8%, #dbe5ff 0 14%, var(--paper) 15%)"
+      },
+      "path": "resources/palettes/cobalt.json"
+    },
+    {
+      "name": "coral",
+      "title": "Coral",
+      "description": "Warm coral palette for human-centered launches, brands, and community narratives.",
+      "category": "Warm",
+      "mood": "Human and energetic",
+      "recommendedFor": "Community, brand, people, and launch stories",
+      "catalogSlide": 5,
+      "swatches": [
+        {
+          "name": "Canvas",
+          "role": "surface",
+          "hex": "#fff7f4"
+        },
+        {
+          "name": "Text",
+          "role": "type",
+          "hex": "#321c24"
+        },
+        {
+          "name": "Signal",
+          "role": "action",
+          "hex": "#ed5d52"
+        },
+        {
+          "name": "Depth",
+          "role": "emphasis",
+          "hex": "#b73a34"
+        },
+        {
+          "name": "Soft",
+          "role": "context",
+          "hex": "#ffd7d1"
+        },
+        {
+          "name": "Visual A",
+          "role": "visual",
+          "hex": "#ffc2b8"
+        },
+        {
+          "name": "Visual B",
+          "role": "visual",
+          "hex": "#f5b45f"
+        }
+      ],
+      "tokens": {
+        "paper": "#fff7f4",
+        "ink": "#321c24",
+        "muted": "#735861",
+        "accent": "#ed5d52",
+        "accentDeep": "#b73a34",
+        "accentSoft": "#ffd7d1",
+        "line": "rgb(50 28 36 / 15%)",
+        "lineStrong": "rgb(50 28 36 / 28%)",
+        "panel": "#ffffff",
+        "radius": "30px",
+        "artOne": "#ffc2b8",
+        "artTwo": "#f5b45f",
+        "quoteInk": "#ffffff",
+        "quoteMark": "#ffe6de",
+        "artLabel": "#735861",
+        "overlay": "radial-gradient(circle at 92% 8%, #ffd7d1 0 14%, var(--paper) 15%)"
+      },
+      "path": "resources/palettes/coral.json"
+    },
+    {
+      "name": "forest",
+      "title": "Forest",
+      "description": "Grounded green palette for sustainability, operations, and long-term growth stories.",
+      "category": "Natural",
+      "mood": "Grounded and steady",
+      "recommendedFor": "Sustainability, operations, growth, and impact narratives",
+      "catalogSlide": 6,
+      "swatches": [
+        {
+          "name": "Canvas",
+          "role": "surface",
+          "hex": "#f2f7f1"
+        },
+        {
+          "name": "Text",
+          "role": "type",
+          "hex": "#1b3327"
+        },
+        {
+          "name": "Signal",
+          "role": "action",
+          "hex": "#1f8a62"
+        },
+        {
+          "name": "Depth",
+          "role": "emphasis",
+          "hex": "#126044"
+        },
+        {
+          "name": "Soft",
+          "role": "context",
+          "hex": "#cae8d7"
+        },
+        {
+          "name": "Visual A",
+          "role": "visual",
+          "hex": "#a5cdb3"
+        },
+        {
+          "name": "Visual B",
+          "role": "visual",
+          "hex": "#e7ae77"
+        }
+      ],
+      "tokens": {
+        "paper": "#f2f7f1",
+        "ink": "#1b3327",
+        "muted": "#5e7264",
+        "accent": "#1f8a62",
+        "accentDeep": "#126044",
+        "accentSoft": "#cae8d7",
+        "line": "rgb(27 51 39 / 16%)",
+        "lineStrong": "rgb(27 51 39 / 28%)",
+        "panel": "#fbfffc",
+        "radius": "26px",
+        "artOne": "#a5cdb3",
+        "artTwo": "#e7ae77",
+        "quoteInk": "#ffffff",
+        "quoteMark": "#bfe7cc",
+        "artLabel": "#5e7264",
+        "overlay": "radial-gradient(circle at 92% 8%, #cae8d7 0 14%, var(--paper) 15%)"
+      },
+      "path": "resources/palettes/forest.json"
+    },
+    {
+      "name": "saffron",
+      "title": "Saffron",
+      "description": "Optimistic golden palette for education, change management, and opportunity maps.",
+      "category": "Warm",
+      "mood": "Optimistic and open",
+      "recommendedFor": "Education, change, opportunity, and future planning",
+      "catalogSlide": 7,
+      "swatches": [
+        {
+          "name": "Canvas",
+          "role": "surface",
+          "hex": "#fff9e8"
+        },
+        {
+          "name": "Text",
+          "role": "type",
+          "hex": "#3b2a14"
+        },
+        {
+          "name": "Signal",
+          "role": "action",
+          "hex": "#e3a316"
+        },
+        {
+          "name": "Depth",
+          "role": "emphasis",
+          "hex": "#9d6b05"
+        },
+        {
+          "name": "Soft",
+          "role": "context",
+          "hex": "#f9e5a8"
+        },
+        {
+          "name": "Visual A",
+          "role": "visual",
+          "hex": "#f7cf68"
+        },
+        {
+          "name": "Visual B",
+          "role": "visual",
+          "hex": "#e57b52"
+        }
+      ],
+      "tokens": {
+        "paper": "#fff9e8",
+        "ink": "#3b2a14",
+        "muted": "#806d4e",
+        "accent": "#e3a316",
+        "accentDeep": "#9d6b05",
+        "accentSoft": "#f9e5a8",
+        "line": "rgb(59 42 20 / 16%)",
+        "lineStrong": "rgb(59 42 20 / 28%)",
+        "panel": "#fffdf6",
+        "radius": "20px",
+        "artOne": "#f7cf68",
+        "artTwo": "#e57b52",
+        "quoteInk": "#261a0c",
+        "quoteMark": "#fff1b9",
+        "artLabel": "#806d4e",
+        "overlay": "radial-gradient(circle at 92% 8%, #f9e5a8 0 14%, var(--paper) 15%)"
+      },
+      "path": "resources/palettes/saffron.json"
+    },
+    {
+      "name": "plum",
+      "title": "Plum",
+      "description": "Expressive plum palette for culture, editorial, and premium creative work.",
+      "category": "Expressive",
+      "mood": "Creative and premium",
+      "recommendedFor": "Culture, editorial, fashion, and creative work",
+      "catalogSlide": 8,
+      "swatches": [
+        {
+          "name": "Canvas",
+          "role": "surface",
+          "hex": "#fbf7fc"
+        },
+        {
+          "name": "Text",
+          "role": "type",
+          "hex": "#291a33"
+        },
+        {
+          "name": "Signal",
+          "role": "action",
+          "hex": "#9c4fd4"
+        },
+        {
+          "name": "Depth",
+          "role": "emphasis",
+          "hex": "#6e2e9f"
+        },
+        {
+          "name": "Soft",
+          "role": "context",
+          "hex": "#ead8f7"
+        },
+        {
+          "name": "Visual A",
+          "role": "visual",
+          "hex": "#d3a9ee"
+        },
+        {
+          "name": "Visual B",
+          "role": "visual",
+          "hex": "#f6b5cc"
+        }
+      ],
+      "tokens": {
+        "paper": "#fbf7fc",
+        "ink": "#291a33",
+        "muted": "#745e7f",
+        "accent": "#9c4fd4",
+        "accentDeep": "#6e2e9f",
+        "accentSoft": "#ead8f7",
+        "line": "rgb(41 26 51 / 16%)",
+        "lineStrong": "rgb(41 26 51 / 28%)",
+        "panel": "#ffffff",
+        "radius": "32px",
+        "artOne": "#d3a9ee",
+        "artTwo": "#f6b5cc",
+        "quoteInk": "#ffffff",
+        "quoteMark": "#f1dfff",
+        "artLabel": "#745e7f",
+        "overlay": "radial-gradient(circle at 92% 8%, #ead8f7 0 14%, var(--paper) 15%)"
+      },
+      "path": "resources/palettes/plum.json"
+    },
+    {
+      "name": "ocean",
+      "title": "Ocean",
+      "description": "Fresh cyan palette for research, customer insight, and service design narratives.",
+      "category": "Cool",
+      "mood": "Fresh and exploratory",
+      "recommendedFor": "Research, customer insight, service design, and discovery",
+      "catalogSlide": 9,
+      "swatches": [
+        {
+          "name": "Canvas",
+          "role": "surface",
+          "hex": "#eefaff"
+        },
+        {
+          "name": "Text",
+          "role": "type",
+          "hex": "#12303e"
+        },
+        {
+          "name": "Signal",
+          "role": "action",
+          "hex": "#0f9ec7"
+        },
+        {
+          "name": "Depth",
+          "role": "emphasis",
+          "hex": "#057493"
+        },
+        {
+          "name": "Soft",
+          "role": "context",
+          "hex": "#c8f0fa"
+        },
+        {
+          "name": "Visual A",
+          "role": "visual",
+          "hex": "#a8dfea"
+        },
+        {
+          "name": "Visual B",
+          "role": "visual",
+          "hex": "#ffcc9b"
+        }
+      ],
+      "tokens": {
+        "paper": "#eefaff",
+        "ink": "#12303e",
+        "muted": "#5e7782",
+        "accent": "#0f9ec7",
+        "accentDeep": "#057493",
+        "accentSoft": "#c8f0fa",
+        "line": "rgb(18 48 62 / 16%)",
+        "lineStrong": "rgb(18 48 62 / 28%)",
+        "panel": "#faffff",
+        "radius": "24px",
+        "artOne": "#a8dfea",
+        "artTwo": "#ffcc9b",
+        "quoteInk": "#05303c",
+        "quoteMark": "#d8f8ff",
+        "artLabel": "#5e7782",
+        "overlay": "radial-gradient(circle at 92% 8%, #c8f0fa 0 14%, var(--paper) 15%)"
+      },
+      "path": "resources/palettes/ocean.json"
+    },
+    {
+      "name": "sand",
+      "title": "Sand",
+      "description": "Natural terracotta palette for consulting, hospitality, and considered brand stories.",
+      "category": "Earth",
+      "mood": "Considered and tactile",
+      "recommendedFor": "Consulting, hospitality, architecture, and heritage stories",
+      "catalogSlide": 10,
+      "swatches": [
+        {
+          "name": "Canvas",
+          "role": "surface",
+          "hex": "#f7f0e5"
+        },
+        {
+          "name": "Text",
+          "role": "type",
+          "hex": "#3d3125"
+        },
+        {
+          "name": "Signal",
+          "role": "action",
+          "hex": "#bd7043"
+        },
+        {
+          "name": "Depth",
+          "role": "emphasis",
+          "hex": "#875034"
+        },
+        {
+          "name": "Soft",
+          "role": "context",
+          "hex": "#ead4bd"
+        },
+        {
+          "name": "Visual A",
+          "role": "visual",
+          "hex": "#ddbe9b"
+        },
+        {
+          "name": "Visual B",
+          "role": "visual",
+          "hex": "#c2a773"
+        }
+      ],
+      "tokens": {
+        "paper": "#f7f0e5",
+        "ink": "#3d3125",
+        "muted": "#796c5d",
+        "accent": "#bd7043",
+        "accentDeep": "#875034",
+        "accentSoft": "#ead4bd",
+        "line": "rgb(61 49 37 / 16%)",
+        "lineStrong": "rgb(61 49 37 / 28%)",
+        "panel": "#fffaf3",
+        "radius": "34px",
+        "artOne": "#ddbe9b",
+        "artTwo": "#c2a773",
+        "quoteInk": "#fffaf2",
+        "quoteMark": "#f4d8bd",
+        "artLabel": "#796c5d",
+        "overlay": "radial-gradient(circle at 92% 8%, #ead4bd 0 14%, var(--paper) 15%)"
+      },
+      "path": "resources/palettes/sand.json"
+    },
+    {
+      "name": "mono",
+      "title": "Mono",
+      "description": "Neutral monochrome palette for legal, finance, and highly focused information design.",
+      "category": "Neutral",
+      "mood": "Focused and precise",
+      "recommendedFor": "Legal, finance, governance, and information-heavy reviews",
+      "catalogSlide": 11,
+      "swatches": [
+        {
+          "name": "Canvas",
+          "role": "surface",
+          "hex": "#f5f5f3"
+        },
+        {
+          "name": "Text",
+          "role": "type",
+          "hex": "#171717"
+        },
+        {
+          "name": "Signal",
+          "role": "action",
+          "hex": "#2c2c2c"
+        },
+        {
+          "name": "Depth",
+          "role": "emphasis",
+          "hex": "#0f0f0f"
+        },
+        {
+          "name": "Soft",
+          "role": "context",
+          "hex": "#dededb"
+        },
+        {
+          "name": "Visual A",
+          "role": "visual",
+          "hex": "#bababa"
+        },
+        {
+          "name": "Visual B",
+          "role": "visual",
+          "hex": "#eeeeee"
+        }
+      ],
+      "tokens": {
+        "paper": "#f5f5f3",
+        "ink": "#171717",
+        "muted": "#626262",
+        "accent": "#2c2c2c",
+        "accentDeep": "#0f0f0f",
+        "accentSoft": "#dededb",
+        "line": "rgb(23 23 23 / 16%)",
+        "lineStrong": "rgb(23 23 23 / 32%)",
+        "panel": "#ffffff",
+        "radius": "8px",
+        "artOne": "#bababa",
+        "artTwo": "#eeeeee",
+        "quoteInk": "#ffffff",
+        "quoteMark": "#d2d2d2",
+        "artLabel": "#626262",
+        "overlay": "linear-gradient(135deg, transparent 0 70%, #dededb 70% 70.3%, transparent 70.3%)"
+      },
+      "path": "resources/palettes/mono.json"
+    },
+    {
+      "name": "mint",
+      "title": "Mint",
+      "description": "Bright mint palette for product growth, wellness, and collaborative planning.",
+      "category": "Fresh",
+      "mood": "Luminous and collaborative",
+      "recommendedFor": "Product growth, wellness, collaboration, and service launches",
+      "catalogSlide": 12,
+      "swatches": [
+        {
+          "name": "Canvas",
+          "role": "surface",
+          "hex": "#effcf7"
+        },
+        {
+          "name": "Text",
+          "role": "type",
+          "hex": "#15372e"
+        },
+        {
+          "name": "Signal",
+          "role": "action",
+          "hex": "#20a97f"
+        },
+        {
+          "name": "Depth",
+          "role": "emphasis",
+          "hex": "#117256"
+        },
+        {
+          "name": "Soft",
+          "role": "context",
+          "hex": "#c9f0e1"
+        },
+        {
+          "name": "Visual A",
+          "role": "visual",
+          "hex": "#9addc5"
+        },
+        {
+          "name": "Visual B",
+          "role": "visual",
+          "hex": "#f3c28a"
+        }
+      ],
+      "tokens": {
+        "paper": "#effcf7",
+        "ink": "#15372e",
+        "muted": "#5a766b",
+        "accent": "#20a97f",
+        "accentDeep": "#117256",
+        "accentSoft": "#c9f0e1",
+        "line": "rgb(21 55 46 / 16%)",
+        "lineStrong": "rgb(21 55 46 / 28%)",
+        "panel": "#fbfffd",
+        "radius": "28px",
+        "artOne": "#9addc5",
+        "artTwo": "#f3c28a",
+        "quoteInk": "#ffffff",
+        "quoteMark": "#c4f4e0",
+        "artLabel": "#5a766b",
+        "overlay": "radial-gradient(circle at 92% 8%, #c9f0e1 0 14%, var(--paper) 15%)"
+      },
+      "path": "resources/palettes/mint.json"
+    },
+    {
+      "name": "copper",
+      "title": "Copper",
+      "description": "Confident copper palette for architecture, craft, and product storytelling.",
+      "category": "Warm",
+      "mood": "Crafted and confident",
+      "recommendedFor": "Architecture, craft, food, and product storytelling",
+      "catalogSlide": 13,
+      "swatches": [
+        {
+          "name": "Canvas",
+          "role": "surface",
+          "hex": "#fff5ed"
+        },
+        {
+          "name": "Text",
+          "role": "type",
+          "hex": "#3f2318"
+        },
+        {
+          "name": "Signal",
+          "role": "action",
+          "hex": "#c46b35"
+        },
+        {
+          "name": "Depth",
+          "role": "emphasis",
+          "hex": "#8f4520"
+        },
+        {
+          "name": "Soft",
+          "role": "context",
+          "hex": "#f4d0b6"
+        },
+        {
+          "name": "Visual A",
+          "role": "visual",
+          "hex": "#e6ab7f"
+        },
+        {
+          "name": "Visual B",
+          "role": "visual",
+          "hex": "#8ec4b8"
+        }
+      ],
+      "tokens": {
+        "paper": "#fff5ed",
+        "ink": "#3f2318",
+        "muted": "#7c5d4e",
+        "accent": "#c46b35",
+        "accentDeep": "#8f4520",
+        "accentSoft": "#f4d0b6",
+        "line": "rgb(63 35 24 / 16%)",
+        "lineStrong": "rgb(63 35 24 / 28%)",
+        "panel": "#fffaf5",
+        "radius": "14px",
+        "artOne": "#e6ab7f",
+        "artTwo": "#8ec4b8",
+        "quoteInk": "#ffffff",
+        "quoteMark": "#f9dac2",
+        "artLabel": "#7c5d4e",
+        "overlay": "radial-gradient(circle at 92% 8%, #f4d0b6 0 14%, var(--paper) 15%)"
+      },
+      "path": "resources/palettes/copper.json"
+    },
+    {
+      "name": "violet",
+      "title": "Violet",
+      "description": "Modern violet palette for AI, innovation, and future-facing product narratives.",
+      "category": "Digital",
+      "mood": "Modern and imaginative",
+      "recommendedFor": "AI, innovation, creative technology, and future products",
+      "catalogSlide": 14,
+      "swatches": [
+        {
+          "name": "Canvas",
+          "role": "surface",
+          "hex": "#f6f4ff"
+        },
+        {
+          "name": "Text",
+          "role": "type",
+          "hex": "#241d45"
+        },
+        {
+          "name": "Signal",
+          "role": "action",
+          "hex": "#7357ef"
+        },
+        {
+          "name": "Depth",
+          "role": "emphasis",
+          "hex": "#4c35ba"
+        },
+        {
+          "name": "Soft",
+          "role": "context",
+          "hex": "#ddd7ff"
+        },
+        {
+          "name": "Visual A",
+          "role": "visual",
+          "hex": "#bcb3fb"
+        },
+        {
+          "name": "Visual B",
+          "role": "visual",
+          "hex": "#f7a3c7"
+        }
+      ],
+      "tokens": {
+        "paper": "#f6f4ff",
+        "ink": "#241d45",
+        "muted": "#716b91",
+        "accent": "#7357ef",
+        "accentDeep": "#4c35ba",
+        "accentSoft": "#ddd7ff",
+        "line": "rgb(36 29 69 / 16%)",
+        "lineStrong": "rgb(36 29 69 / 28%)",
+        "panel": "#ffffff",
+        "radius": "26px",
+        "artOne": "#bcb3fb",
+        "artTwo": "#f7a3c7",
+        "quoteInk": "#ffffff",
+        "quoteMark": "#e5e0ff",
+        "artLabel": "#716b91",
+        "overlay": "radial-gradient(circle at 92% 8%, #ddd7ff 0 14%, var(--paper) 15%)"
+      },
+      "path": "resources/palettes/violet.json"
+    },
+    {
+      "name": "ice",
+      "title": "Ice",
+      "description": "Cool blue-grey palette for enterprise, governance, and evidence-led decisions.",
+      "category": "Cool",
+      "mood": "Calm and evidence-led",
+      "recommendedFor": "Enterprise, governance, research, and decision support",
+      "catalogSlide": 15,
+      "swatches": [
+        {
+          "name": "Canvas",
+          "role": "surface",
+          "hex": "#f1faff"
+        },
+        {
+          "name": "Text",
+          "role": "type",
+          "hex": "#153148"
+        },
+        {
+          "name": "Signal",
+          "role": "action",
+          "hex": "#3e9bd4"
+        },
+        {
+          "name": "Depth",
+          "role": "emphasis",
+          "hex": "#276b99"
+        },
+        {
+          "name": "Soft",
+          "role": "context",
+          "hex": "#cfeaf8"
+        },
+        {
+          "name": "Visual A",
+          "role": "visual",
+          "hex": "#a7d7f0"
+        },
+        {
+          "name": "Visual B",
+          "role": "visual",
+          "hex": "#edbd93"
+        }
+      ],
+      "tokens": {
+        "paper": "#f1faff",
+        "ink": "#153148",
+        "muted": "#617f91",
+        "accent": "#3e9bd4",
+        "accentDeep": "#276b99",
+        "accentSoft": "#cfeaf8",
+        "line": "rgb(21 49 72 / 16%)",
+        "lineStrong": "rgb(21 49 72 / 28%)",
+        "panel": "#fbfeff",
+        "radius": "18px",
+        "artOne": "#a7d7f0",
+        "artTwo": "#edbd93",
+        "quoteInk": "#ffffff",
+        "quoteMark": "#d9f0ff",
+        "artLabel": "#617f91",
+        "overlay": "radial-gradient(circle at 92% 8%, #cfeaf8 0 14%, var(--paper) 15%)"
+      },
+      "path": "resources/palettes/ice.json"
+    }
+  ]
+}

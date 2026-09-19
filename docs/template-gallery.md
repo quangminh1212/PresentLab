@@ -23,7 +23,9 @@ The current gallery has 100 template folders and 2,500 sample slides. Eight stru
 - Luxury: ivory paper, hairline rules, and restrained gold
 - Retro Future: synthwave gradients, grid lines, and neon accents
 
-The generated variants use the family names above with palettes including Cobalt, Coral, Forest, Saffron, Plum, Ocean, Sand, Mono, Mint, Copper, Violet, and Ice. Each index entry also exposes `family`, `palette`, and `modifier` metadata for programmatic selection by an AI agent.
+The generated variants use the family names above with palettes including Cobalt, Coral, Forest, Saffron, Plum, Ocean, Sand, Mono, Mint, Copper, Violet, and Ice. The client-facing palette catalog adds Cinematic, a deep-navy, teal, and ember system intended for film-led stories, premium launches, and keynote moments. Each template index entry exposes `family`, `palette`, and `modifier` metadata for programmatic selection by an AI agent.
+
+The palette catalog lives in [`resources/palettes/`](../resources/palettes/) and [`templates/palettes/`](../templates/palettes/). It contains one JSON record per palette plus `catalog.html`, `catalog.pdf`, and `catalog.pptx`. The catalog names seven practical roles for every palette: canvas, text, signal, depth, soft surface, visual A, and visual B.
 
 ## Rebuild and verify
 
@@ -37,7 +39,7 @@ node scripts/verify-template-gallery.mjs
 
 The build renders temporary PNG, PDF, PPTX, and manifest artifacts under `.artifacts/template-gallery/`. Only the HTML, PDF, and PPTX handoff files are copied into each template folder in the `PresentTemplate` submodule. The temporary directory is ignored by Git.
 
-The generator refreshes `templates/index.json` in the submodule, the MCP template index at `resources/templates/index.json`, and the theme index under `resources/themes/`.
+The generator refreshes `templates/index.json` in the submodule, the MCP template index at `resources/templates/index.json`, the theme index under `resources/themes/`, and the palette index/artifacts under `resources/palettes/` and `templates/palettes/`.
 
 When a gallery source changes, commit it in two repository steps: first commit and push the updated files from `C:\Dev\PresentTemplate`, then commit the updated `templates` gitlink and generated parent indexes in PresentLab. CI needs the `PRESENTTEMPLATE_TOKEN` secret with read access to the private template repository.
 

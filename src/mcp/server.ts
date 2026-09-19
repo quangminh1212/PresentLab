@@ -73,8 +73,43 @@ const ThemeSchema = z.object({
 
 const ThemesOutputSchema = z.object({ themes: z.array(ThemeSchema) });
 
+const PaletteSchema = z.object({
+  name: z.string(),
+  title: z.string(),
+  description: z.string(),
+  category: z.string(),
+  mood: z.string(),
+  recommendedFor: z.string(),
+  catalogSlide: z.number().int().positive(),
+  swatches: z.array(
+    z.object({
+      name: z.string(),
+      role: z.string(),
+      hex: z.string(),
+    }),
+  ),
+  tokens: z.record(z.string(), z.string()),
+  path: z.string(),
+});
+
+const PaletteCatalogSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  slideCount: z.number().int().positive(),
+  html: z.string(),
+  pdf: z.string(),
+  pptx: z.string(),
+});
+
+const PalettesOutputSchema = z.object({
+  catalog: PaletteCatalogSchema,
+  palettes: z.array(PaletteSchema),
+});
+const PaletteOutputSchema = z.object({ palette: PaletteSchema });
+
 type Template = z.infer<typeof TemplateSchema>;
 type Theme = z.infer<typeof ThemeSchema>;
+type Palette = z.infer<typeof PaletteSchema>;
 
 async function loadTemplates(root: string): Promise<Template[]> {
   const indexPath = join(root, "resources", "templates", "index.json");
@@ -86,6 +121,12 @@ async function loadThemes(root: string): Promise<Theme[]> {
   const indexPath = join(root, "resources", "themes", "index.json");
   const raw = JSON.parse(await readFile(indexPath, "utf8")) as unknown;
   return z.array(ThemeSchema).parse(raw);
+}
+
+async function loadPalettes(root: string): Promise<z.infer<typeof PalettesOutputSchema>> {
+  const indexPath = join(root, "resources", "palettes", "index.json");
+  const raw = JSON.parse(await readFile(indexPath, "utf8")) as unknown;
+  return PalettesOutputSchema.parse(raw);
 }
 
 function pathForTool(root: string, candidate: string, label: string): string {
@@ -253,6 +294,35 @@ export function createPresentLabServer(requestedRoot?: string): McpServer {
     async () => toolText({ themes: await loadThemes(root) }),
   );
 
+  server.registerTool(
+    "presentlab_list_palettes",
+    {
+      title: "List PresentLab color palettes",
+      description:
+        "List curated slide color palettes, named swatch roles, recommended uses, and the visual catalog paths for client selection.",
+      inputSchema: z.object({}),
+      outputSchema: PalettesOutputSchema,
+    },
+    async () => toolText(await loadPalettes(root)),
+  );
+
+  server.registerTool(
+    "presentlab_get_palette",
+    {
+      title: "Read a PresentLab color palette",
+      description:
+        "Read one named slide color palette after discovering it with presentlab_list_palettes.",
+      inputSchema: z.object({ name: z.string().min(1) }),
+      outputSchema: PaletteOutputSchema,
+    },
+    async ({ name }) => {
+      const { palettes } = await loadPalettes(root);
+      const palette: Palette | undefined = palettes.find((candidate) => candidate.name === name);
+      if (!palette) throw new Error(`Unknown PresentLab palette '${name}'.`);
+      return toolText({ palette });
+    },
+  );
+
   server.registerResource(
     "presentlab-deck-schema",
     "presentlab://schema/deck",
@@ -291,6 +361,83 @@ export function createPresentLabServer(requestedRoot?: string): McpServer {
         },
       ],
     }),
+  );
+
+  server.registerResource(
+    "presentlab-palettes",
+    "presentlab://palettes",
+    {
+      title: "PresentLab color palette index",
+      description: "Curated slide color palettes for client selection and AI deck authoring.",
+      mimeType: "application/json",
+      cacheHint: { ttlMs: 60_000, cacheScope: "public" },
+    },
+    async (uri) => ({
+      contents: [
+        {
+          uri: uri.href,
+          mimeType: "application/json",
+          text: JSON.stringify(await loadPalettes(root), null, 2),
+        },
+      ],
+    }),
+  );
+
+  server.registerResource(
+    "presentlab-palette-catalog",
+    "presentlab://palettes/catalog",
+    {
+      title: "PresentLab color palette catalog",
+      description: "HTML visual catalog for choosing a slide color direction.",
+      mimeType: "text/html",
+      cacheHint: { ttlMs: 60_000, cacheScope: "public" },
+    },
+    async (uri) => ({
+      contents: [
+        {
+          uri: uri.href,
+          mimeType: "text/html",
+          text: await readFile(join(root, "resources", "palettes", "catalog.html"), "utf8"),
+        },
+      ],
+    }),
+  );
+
+  server.registerResource(
+    "presentlab-palette-content",
+    new ResourceTemplate("presentlab://palettes/{name}", {
+      list: async () => ({
+        resources: (await loadPalettes(root)).palettes.map((palette) => ({
+          uri: `presentlab://palettes/${encodeURIComponent(palette.name)}`,
+          name: palette.name,
+          title: palette.title,
+          description: palette.description,
+          mimeType: "application/json",
+        })),
+      }),
+    }),
+    {
+      title: "PresentLab palette tokens",
+      description: "Read one reusable slide color palette and its named swatch roles.",
+      mimeType: "application/json",
+      cacheHint: { ttlMs: 60_000, cacheScope: "public" },
+    },
+    async (uri, variables) => {
+      const palette = (await loadPalettes(root)).palettes.find(
+        (candidate) => candidate.name === variables.name,
+      );
+      if (!palette) throw new Error(`Unknown PresentLab palette '${variables.name}'.`);
+      const palettePath = pathForTool(root, palette.path, "palette");
+      return {
+        contents: [
+          {
+            uri: uri.href,
+            mimeType: "application/json",
+            text: await readFile(palettePath, "utf8"),
+          },
+        ],
+      };
+    },
   );
 
   server.registerResource(
@@ -380,6 +527,7 @@ export function createPresentLabServer(requestedRoot?: string): McpServer {
               `Use format ${format ?? "16:9"}. Include <html data-pl-format="${format ?? "16:9"}" data-pl-title="..."> and one unique [data-pl-slide] element per page.`,
               "Give every slide a data-slide-id, a meaningful heading, and alt text for every image.",
               "Prefer local resources and deterministic CSS. Do not fetch external assets unless explicitly requested.",
+              "Before composing, call presentlab_list_palettes and choose a named palette that matches the audience and story.",
               "After writing the HTML, call presentlab_validate_deck, fix all errors, then call presentlab_render_deck.",
             ].join("\n"),
           },

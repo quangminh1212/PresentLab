@@ -8,6 +8,8 @@ import prettier from "prettier";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const templatesRoot = join(root, "templates");
 const themesRoot = join(root, "resources", "themes");
+const paletteRepositoryRoot = join(templatesRoot, "palettes");
+const paletteResourceRoot = join(root, "resources", "palettes");
 const artifactsRoot = join(root, ".artifacts", "template-gallery");
 
 const baseCss = `
@@ -540,6 +542,105 @@ const paletteVariants = [
   },
 ];
 
+const cinematicPalette = {
+  name: "cinematic",
+  label: "Cinematic",
+  description:
+    "Deep navy, teal light, and ember orange for film-led storytelling and premium launches.",
+  tokens: {
+    paper: "#0b1020",
+    ink: "#edf4ff",
+    muted: "#9aaac2",
+    accent: "#55e0d0",
+    accentDeep: "#1e9994",
+    accentSoft: "#183d4a",
+    line: "rgb(237 244 255 / 16%)",
+    lineStrong: "rgb(85 224 208 / 52%)",
+    panel: "#111a2b",
+    radius: "12px",
+    artOne: "#173d70",
+    artTwo: "#d86d49",
+    quoteInk: "#081018",
+    quoteMark: "#b9fff3",
+    artLabel: "#9aaac2",
+    overlay:
+      "linear-gradient(135deg, rgb(85 224 208 / 8%), transparent 38%), radial-gradient(circle at 92% 8%, #183d4a 0 14%, var(--paper) 15%)",
+  },
+};
+
+const paletteCatalogMetadata = {
+  cinematic: {
+    category: "Cinematic",
+    mood: "Night, tension, and warm release",
+    recommendedFor: "Film, premium launches, brand stories, and keynote moments",
+  },
+  cobalt: {
+    category: "Product",
+    mood: "Clear and confident",
+    recommendedFor: "Strategy, technology, product, and B2B narratives",
+  },
+  coral: {
+    category: "Warm",
+    mood: "Human and energetic",
+    recommendedFor: "Community, brand, people, and launch stories",
+  },
+  forest: {
+    category: "Natural",
+    mood: "Grounded and steady",
+    recommendedFor: "Sustainability, operations, growth, and impact narratives",
+  },
+  saffron: {
+    category: "Warm",
+    mood: "Optimistic and open",
+    recommendedFor: "Education, change, opportunity, and future planning",
+  },
+  plum: {
+    category: "Expressive",
+    mood: "Creative and premium",
+    recommendedFor: "Culture, editorial, fashion, and creative work",
+  },
+  ocean: {
+    category: "Cool",
+    mood: "Fresh and exploratory",
+    recommendedFor: "Research, customer insight, service design, and discovery",
+  },
+  sand: {
+    category: "Earth",
+    mood: "Considered and tactile",
+    recommendedFor: "Consulting, hospitality, architecture, and heritage stories",
+  },
+  mono: {
+    category: "Neutral",
+    mood: "Focused and precise",
+    recommendedFor: "Legal, finance, governance, and information-heavy reviews",
+  },
+  mint: {
+    category: "Fresh",
+    mood: "Luminous and collaborative",
+    recommendedFor: "Product growth, wellness, collaboration, and service launches",
+  },
+  copper: {
+    category: "Warm",
+    mood: "Crafted and confident",
+    recommendedFor: "Architecture, craft, food, and product storytelling",
+  },
+  violet: {
+    category: "Digital",
+    mood: "Modern and imaginative",
+    recommendedFor: "AI, innovation, creative technology, and future products",
+  },
+  ice: {
+    category: "Cool",
+    mood: "Calm and evidence-led",
+    recommendedFor: "Enterprise, governance, research, and decision support",
+  },
+};
+
+const paletteCatalog = [cinematicPalette, ...paletteVariants].map((palette) => ({
+  ...palette,
+  ...paletteCatalogMetadata[palette.name],
+}));
+
 const variantModifiers = [
   {
     name: "airy",
@@ -675,6 +776,129 @@ function paletteCss(tokens) {
 
 function slide(id, body) {
   return `<section class="slide" data-pl-slide data-slide-id="${id}">${body}</section>`;
+}
+
+const paletteSwatchRoles = [
+  { key: "paper", label: "Canvas", role: "surface" },
+  { key: "ink", label: "Text", role: "type" },
+  { key: "accent", label: "Signal", role: "action" },
+  { key: "accentDeep", label: "Depth", role: "emphasis" },
+  { key: "accentSoft", label: "Soft", role: "context" },
+  { key: "artOne", label: "Visual A", role: "visual" },
+  { key: "artTwo", label: "Visual B", role: "visual" },
+];
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
+
+const paletteCatalogCss = `
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #060a13; color: #edf4ff; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+  body { width: 1280px; }
+  .slide { position: relative; width: 1280px; height: 720px; overflow: hidden; padding: 68px 82px 54px; background: #0b1020; color: #edf4ff; page-break-after: always; }
+  .slide::before { position: absolute; inset: 0; background: linear-gradient(135deg, rgb(85 224 208 / 7%), transparent 35%), radial-gradient(circle at 95% 8%, rgb(216 109 73 / 20%), transparent 25%); content: ""; pointer-events: none; }
+  .slide > * { position: relative; z-index: 1; }
+  .catalog-kicker, .catalog-footer, .catalog-page, .palette-category, .swatch-label, .swatch-hex, .preview-kicker { color: #55e0d0; font-size: 14px; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; }
+  .catalog-page { color: #9aaac2; letter-spacing: .08em; }
+  .catalog-footer { position: absolute; left: 82px; bottom: 30px; color: #9aaac2; font-size: 12px; }
+  .catalog-cover { display: flex; min-height: 590px; flex-direction: column; justify-content: center; max-width: 900px; }
+  .catalog-title { margin: 22px 0 22px; font-size: 76px; line-height: .98; letter-spacing: -.065em; }
+  .catalog-title em { color: #55e0d0; font-style: normal; }
+  .catalog-subtitle { max-width: 700px; color: #9aaac2; font-size: 22px; line-height: 1.4; }
+  .cover-rail { display: flex; width: 720px; height: 70px; margin-top: 54px; border: 1px solid rgb(237 244 255 / 18%); }
+  .cover-rail span { flex: 1; }
+  .cover-meta { display: flex; gap: 34px; margin-top: 20px; color: #9aaac2; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; }
+  .catalog-header { display: flex; align-items: flex-start; justify-content: space-between; }
+  .catalog-heading { max-width: 920px; margin: 16px 0 0; font-size: 54px; line-height: 1.02; letter-spacing: -.055em; }
+  .catalog-lede { max-width: 730px; margin: 16px 0 0; color: #9aaac2; font-size: 18px; line-height: 1.45; }
+  .choice-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; margin-top: 40px; }
+  .choice-card { min-height: 168px; padding: 24px 26px; border: 1px solid rgb(237 244 255 / 18%); background: #111a2b; }
+  .choice-card h2 { margin: 10px 0 8px; font-size: 25px; letter-spacing: -.03em; }
+  .choice-card p { max-width: 480px; margin: 0; color: #9aaac2; font-size: 16px; line-height: 1.4; }
+  .choice-card small { color: #55e0d0; font-size: 13px; letter-spacing: .04em; }
+  .palette-layout { display: grid; grid-template-columns: .95fr 1.05fr; gap: 48px; margin-top: 36px; }
+  .palette-copy { min-width: 0; }
+  .palette-category { margin-bottom: 14px; }
+  .palette-title { margin: 0; font-size: 48px; line-height: 1; letter-spacing: -.055em; }
+  .palette-description { max-width: 500px; margin: 16px 0 0; color: #9aaac2; font-size: 17px; line-height: 1.42; }
+  .palette-meta { display: grid; grid-template-columns: 120px 1fr; gap: 9px 18px; margin-top: 22px; font-size: 14px; line-height: 1.35; }
+  .palette-meta dt { color: #55e0d0; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+  .palette-meta dd { margin: 0; color: #d7e0ef; }
+  .swatch-rail { display: grid; grid-template-columns: repeat(7, 1fr); gap: 7px; margin-top: 30px; }
+  .swatch { display: flex; min-height: 104px; flex-direction: column; justify-content: flex-end; padding: 9px; border: 1px solid rgb(237 244 255 / 24%); }
+  .swatch-label { margin-bottom: 5px; font-size: 10px; letter-spacing: .08em; }
+  .swatch-hex { font-size: 10px; letter-spacing: .03em; opacity: .85; }
+  .palette-preview { position: relative; min-height: 430px; overflow: hidden; padding: 38px 40px; border: 1px solid var(--preview-accent); background: var(--preview-paper); color: var(--preview-ink); }
+  .palette-preview::before { position: absolute; top: -100px; right: -80px; width: 330px; height: 330px; border-radius: 50%; background: var(--preview-art); opacity: .72; content: ""; }
+  .palette-preview::after { position: absolute; right: 0; bottom: 0; width: 52%; height: 10px; background: var(--preview-accent); content: ""; }
+  .palette-preview > * { position: relative; z-index: 1; }
+  .preview-kicker { color: var(--preview-accent); }
+  .preview-title { max-width: 480px; margin: 30px 0 16px; font-size: 41px; line-height: 1; letter-spacing: -.055em; }
+  .preview-lede { max-width: 470px; margin: 0; color: var(--preview-muted); font-size: 17px; line-height: 1.42; }
+  .preview-rule { width: 100%; height: 1px; margin-top: 50px; background: var(--preview-accent); opacity: .55; }
+  .preview-data { display: flex; gap: 34px; margin-top: 18px; color: var(--preview-deep); font-size: 13px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+`;
+
+function paletteCatalogHtml() {
+  const coverRail = paletteCatalog
+    .slice(0, 7)
+    .map((palette) => `<span style="background:${palette.tokens.accent}"></span>`)
+    .join("");
+  const choiceCards = [
+    [
+      "Dark and cinematic",
+      "Cinematic",
+      "Deep surfaces, teal signal, and warm ember for tension and release.",
+    ],
+    [
+      "Cool and precise",
+      "Cobalt / Ocean / Ice / Mono",
+      "A clear starting point for evidence, products, and decisions.",
+    ],
+    [
+      "Warm and human",
+      "Coral / Saffron / Copper / Sand",
+      "More warmth for brands, communities, craft, and change.",
+    ],
+    [
+      "Natural and expressive",
+      "Forest / Mint / Plum / Violet",
+      "Distinctive color without losing a calm reading hierarchy.",
+    ],
+  ]
+    .map(
+      ([title, names, description]) =>
+        `<article class="choice-card"><small>${title}</small><h2>${names}</h2><p>${description}</p></article>`,
+    )
+    .join("");
+  const paletteSlides = paletteCatalog
+    .map((palette, index) => {
+      const page = String(index + 3).padStart(2, "0");
+      const previewStyle = [
+        `--preview-paper:${palette.tokens.paper}`,
+        `--preview-ink:${palette.tokens.ink}`,
+        `--preview-muted:${palette.tokens.muted}`,
+        `--preview-accent:${palette.tokens.accent}`,
+        `--preview-deep:${palette.tokens.accentDeep}`,
+        `--preview-art:${palette.tokens.artTwo}`,
+      ].join(";");
+      const swatches = paletteSwatchRoles
+        .map((swatch) => {
+          const textColor = ["paper", "accentSoft"].includes(swatch.key)
+            ? palette.tokens.ink
+            : palette.tokens.quoteInk;
+          return `<div class="swatch" style="background:${palette.tokens[swatch.key]};color:${textColor}"><span class="swatch-label">${swatch.label}</span><span class="swatch-hex">${palette.tokens[swatch.key]}</span></div>`;
+        })
+        .join("");
+      return `<section class="slide" data-pl-slide data-slide-id="palette-${palette.name}" id="palette-${palette.name}"><div class="catalog-header"><div><p class="catalog-kicker">${page} / Palette</p><h1 class="palette-title">${escapeHtml(palette.label)}</h1></div><span class="catalog-page">${page}</span></div><div class="palette-layout"><div class="palette-copy"><p class="palette-category">${escapeHtml(palette.category)}</p><p class="palette-description">${escapeHtml(palette.description)}</p><dl class="palette-meta"><dt>Mood</dt><dd>${escapeHtml(palette.mood)}</dd><dt>Use it for</dt><dd>${escapeHtml(palette.recommendedFor)}</dd></dl><div class="swatch-rail">${swatches}</div></div><div class="palette-preview" style="${previewStyle}"><p class="preview-kicker">PresentLab / Sample narrative</p><h2 class="preview-title">One clear claim gives the slide its shape.</h2><p class="preview-lede">Use the signal color for the decision, the soft tone for context, and the second visual color for emphasis.</p><div class="preview-rule"></div><div class="preview-data"><span>Signal</span><span>Evidence</span><span>Action</span></div></div></div><p class="catalog-footer">${page} / ${escapeHtml(palette.label)} palette</p></section>`;
+    })
+    .join("\n");
+  return `<!doctype html><html lang="en" data-pl-format="16:9" data-pl-title="PresentLab color palette catalog" data-pl-theme="palette-catalog"><head><meta charset="utf-8" /><meta name="description" content="PresentLab color palette catalog with cinematic, product, warm, natural, and expressive slide color systems." /><style>${paletteCatalogCss}</style></head><body><section class="slide" data-pl-slide data-slide-id="palette-cover"><div class="catalog-cover"><p class="catalog-kicker">PresentLab / Palette catalog</p><h1 class="catalog-title">Choose the atmosphere<br /><em>before the slide.</em></h1><p class="catalog-subtitle">Thirteen curated color systems for clients, designers, and AI agents. Start with the mood, then match the palette to the story.</p><div class="cover-rail">${coverRail}</div><div class="cover-meta"><span>13 color systems</span><span>7 named roles per palette</span><span>16:9 slide canvas</span></div></div><p class="catalog-footer">01 / Color palette catalog</p></section><section class="slide" data-pl-slide data-slide-id="palette-guide"><div class="catalog-header"><div><p class="catalog-kicker">02 / Choose a direction</p><h1 class="catalog-heading">Pick by mood, then match the story.</h1><p class="catalog-lede">Every palette names its canvas, text, signal, depth, soft surface, and visual accents so the choice stays practical and easy to brief.</p></div><span class="catalog-page">02</span></div><div class="choice-grid">${choiceCards}</div><p class="catalog-footer">02 / Palette selection guide</p></section>${paletteSlides}</body></html>`;
 }
 
 function commonSlides(name, label) {
@@ -829,10 +1053,14 @@ const baseTemplates = Object.keys(styleCss).map((name) => ({
   visualLabel: familyLabels[name],
   description: templateDescriptions[name],
   family: name,
-  palette: "base",
+  palette: name === "midnight" ? "cinematic" : "base",
   modifier: "base",
-  css: styleCss[name],
-  theme: themeTokens[name],
+  css:
+    name === "midnight"
+      ? `${styleCss[name]}\n${paletteCss(cinematicPalette.tokens)}`
+      : styleCss[name],
+  theme:
+    name === "midnight" ? { ...themeTokens[name], ...cinematicPalette.tokens } : themeTokens[name],
 }));
 
 const variantTemplates = [];
@@ -953,6 +1181,115 @@ await writeFile(
     2,
   )}\n`,
   "utf8",
+);
+
+await mkdir(paletteRepositoryRoot, { recursive: true });
+await mkdir(paletteResourceRoot, { recursive: true });
+const paletteRecords = paletteCatalog.map((palette, index) => ({
+  name: palette.name,
+  title: palette.label,
+  description: palette.description,
+  category: palette.category,
+  mood: palette.mood,
+  recommendedFor: palette.recommendedFor,
+  catalogSlide: index + 3,
+  swatches: paletteSwatchRoles.map((swatch) => ({
+    name: swatch.label,
+    role: swatch.role,
+    hex: palette.tokens[swatch.key],
+  })),
+  tokens: palette.tokens,
+}));
+const repositoryPaletteIndex = {
+  catalog: {
+    title: "PresentLab color palette catalog",
+    description:
+      "Thirteen curated color systems for clients, designers, and AI agents choosing a slide direction.",
+    slideCount: paletteRecords.length + 2,
+    html: "palettes/catalog.html",
+    pdf: "palettes/catalog.pdf",
+    pptx: "palettes/catalog.pptx",
+  },
+  palettes: paletteRecords.map((palette) => ({
+    ...palette,
+    path: `palettes/${palette.name}.json`,
+  })),
+};
+const resourcePaletteIndex = {
+  ...repositoryPaletteIndex,
+  catalog: {
+    ...repositoryPaletteIndex.catalog,
+    html: "resources/palettes/catalog.html",
+    pdf: "resources/palettes/catalog.pdf",
+    pptx: "resources/palettes/catalog.pptx",
+  },
+  palettes: repositoryPaletteIndex.palettes.map((palette) => ({
+    ...palette,
+    path: `resources/palettes/${palette.name}.json`,
+  })),
+};
+for (const palette of repositoryPaletteIndex.palettes) {
+  const paletteJson = `${JSON.stringify(palette, null, 2)}\n`;
+  await writeFile(join(paletteRepositoryRoot, `${palette.name}.json`), paletteJson, "utf8");
+  await writeFile(
+    join(paletteResourceRoot, `${palette.name}.json`),
+    `${JSON.stringify(
+      resourcePaletteIndex.palettes.find((entry) => entry.name === palette.name),
+      null,
+      2,
+    )}\n`,
+    "utf8",
+  );
+}
+await writeFile(
+  join(paletteRepositoryRoot, "index.json"),
+  `${JSON.stringify(repositoryPaletteIndex, null, 2)}\n`,
+  "utf8",
+);
+await writeFile(
+  join(paletteResourceRoot, "index.json"),
+  `${JSON.stringify(resourcePaletteIndex, null, 2)}\n`,
+  "utf8",
+);
+const paletteCatalogHtmlPath = join(paletteRepositoryRoot, "catalog.html");
+const formattedPaletteCatalog = await prettier.format(paletteCatalogHtml(), {
+  ...prettierOptions,
+  filepath: paletteCatalogHtmlPath,
+});
+await writeFile(paletteCatalogHtmlPath, formattedPaletteCatalog, "utf8");
+await writeFile(join(paletteResourceRoot, "catalog.html"), formattedPaletteCatalog, "utf8");
+const paletteCatalogArtifactDir = join(artifactsRoot, "palette-catalog");
+await rm(paletteCatalogArtifactDir, { recursive: true, force: true });
+await mkdir(paletteCatalogArtifactDir, { recursive: true });
+execFileSync(
+  process.execPath,
+  [
+    join(root, "dist", "cli.js"),
+    "render",
+    "--input",
+    "templates/palettes/catalog.html",
+    "--output",
+    ".artifacts/template-gallery/palette-catalog",
+    "--format",
+    "png,pdf,pptx",
+  ],
+  { cwd: root, stdio: "inherit" },
+);
+await copyFile(
+  join(paletteCatalogArtifactDir, "deck.pdf"),
+  join(paletteRepositoryRoot, "catalog.pdf"),
+);
+await copyFile(
+  join(paletteCatalogArtifactDir, "deck.pptx"),
+  join(paletteRepositoryRoot, "catalog.pptx"),
+);
+await copyFile(
+  join(paletteCatalogArtifactDir, "deck.pdf"),
+  join(paletteResourceRoot, "catalog.pdf"),
+);
+await copyFile(
+  join(paletteCatalogArtifactDir, "deck.pptx"),
+  join(paletteResourceRoot, "catalog.pptx"),
 );
 
 console.log("Built " + templates.length + " template folders under " + templatesRoot + ".");

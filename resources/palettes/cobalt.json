@@ -1,0 +1,65 @@
+{
+  "name": "cobalt",
+  "title": "Cobalt",
+  "description": "Clear blue product palette for confident strategy and technology stories.",
+  "category": "Product",
+  "mood": "Clear and confident",
+  "recommendedFor": "Strategy, technology, product, and B2B narratives",
+  "catalogSlide": 4,
+  "swatches": [
+    {
+      "name": "Canvas",
+      "role": "surface",
+      "hex": "#f4f7ff"
+    },
+    {
+      "name": "Text",
+      "role": "type",
+      "hex": "#14213d"
+    },
+    {
+      "name": "Signal",
+      "role": "action",
+      "hex": "#315efb"
+    },
+    {
+      "name": "Depth",
+      "role": "emphasis",
+      "hex": "#2340b4"
+    },
+    {
+      "name": "Soft",
+      "role": "context",
+      "hex": "#dbe5ff"
+    },
+    {
+      "name": "Visual A",
+      "role": "visual",
+      "hex": "#b5c6ff"
+    },
+    {
+      "name": "Visual B",
+      "role": "visual",
+      "hex": "#ffb29c"
+    }
+  ],
+  "tokens": {
+    "paper": "#f4f7ff",
+    "ink": "#14213d",
+    "muted": "#5c6a83",
+    "accent": "#315efb",
+    "accentDeep": "#2340b4",
+    "accentSoft": "#dbe5ff",
+    "line": "rgb(20 33 61 / 16%)",
+    "lineStrong": "rgb(20 33 61 / 28%)",
+    "panel": "#ffffff",
+    "radius": "24px",
+    "artOne": "#b5c6ff",
+    "artTwo": "#ffb29c",
+    "quoteInk": "#ffffff",
+    "quoteMark": "#c9d5ff",
+    "artLabel": "#5c6a83",
+    "overlay": "radial-gradient(circle at 92% 8%, #dbe5ff 0 14%, var(--paper) 15%)"
+  },
+  "path": "resources/palettes/cobalt.json"
+}

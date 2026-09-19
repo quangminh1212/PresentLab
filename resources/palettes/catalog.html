@@ -1,0 +1,1258 @@
+<!doctype html>
+<html
+  lang="en"
+  data-pl-format="16:9"
+  data-pl-title="PresentLab color palette catalog"
+  data-pl-theme="palette-catalog"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="description"
+      content="PresentLab color palette catalog with cinematic, product, warm, natural, and expressive slide color systems."
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: #060a13;
+        color: #edf4ff;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+      }
+      body {
+        width: 1280px;
+      }
+      .slide {
+        position: relative;
+        width: 1280px;
+        height: 720px;
+        overflow: hidden;
+        padding: 68px 82px 54px;
+        background: #0b1020;
+        color: #edf4ff;
+        page-break-after: always;
+      }
+      .slide::before {
+        position: absolute;
+        inset: 0;
+        background:
+          linear-gradient(135deg, rgb(85 224 208 / 7%), transparent 35%),
+          radial-gradient(circle at 95% 8%, rgb(216 109 73 / 20%), transparent 25%);
+        content: "";
+        pointer-events: none;
+      }
+      .slide > * {
+        position: relative;
+        z-index: 1;
+      }
+      .catalog-kicker,
+      .catalog-footer,
+      .catalog-page,
+      .palette-category,
+      .swatch-label,
+      .swatch-hex,
+      .preview-kicker {
+        color: #55e0d0;
+        font-size: 14px;
+        font-weight: 800;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+      .catalog-page {
+        color: #9aaac2;
+        letter-spacing: 0.08em;
+      }
+      .catalog-footer {
+        position: absolute;
+        left: 82px;
+        bottom: 30px;
+        color: #9aaac2;
+        font-size: 12px;
+      }
+      .catalog-cover {
+        display: flex;
+        min-height: 590px;
+        flex-direction: column;
+        justify-content: center;
+        max-width: 900px;
+      }
+      .catalog-title {
+        margin: 22px 0 22px;
+        font-size: 76px;
+        line-height: 0.98;
+        letter-spacing: -0.065em;
+      }
+      .catalog-title em {
+        color: #55e0d0;
+        font-style: normal;
+      }
+      .catalog-subtitle {
+        max-width: 700px;
+        color: #9aaac2;
+        font-size: 22px;
+        line-height: 1.4;
+      }
+      .cover-rail {
+        display: flex;
+        width: 720px;
+        height: 70px;
+        margin-top: 54px;
+        border: 1px solid rgb(237 244 255 / 18%);
+      }
+      .cover-rail span {
+        flex: 1;
+      }
+      .cover-meta {
+        display: flex;
+        gap: 34px;
+        margin-top: 20px;
+        color: #9aaac2;
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .catalog-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+      }
+      .catalog-heading {
+        max-width: 920px;
+        margin: 16px 0 0;
+        font-size: 54px;
+        line-height: 1.02;
+        letter-spacing: -0.055em;
+      }
+      .catalog-lede {
+        max-width: 730px;
+        margin: 16px 0 0;
+        color: #9aaac2;
+        font-size: 18px;
+        line-height: 1.45;
+      }
+      .choice-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+        margin-top: 40px;
+      }
+      .choice-card {
+        min-height: 168px;
+        padding: 24px 26px;
+        border: 1px solid rgb(237 244 255 / 18%);
+        background: #111a2b;
+      }
+      .choice-card h2 {
+        margin: 10px 0 8px;
+        font-size: 25px;
+        letter-spacing: -0.03em;
+      }
+      .choice-card p {
+        max-width: 480px;
+        margin: 0;
+        color: #9aaac2;
+        font-size: 16px;
+        line-height: 1.4;
+      }
+      .choice-card small {
+        color: #55e0d0;
+        font-size: 13px;
+        letter-spacing: 0.04em;
+      }
+      .palette-layout {
+        display: grid;
+        grid-template-columns: 0.95fr 1.05fr;
+        gap: 48px;
+        margin-top: 36px;
+      }
+      .palette-copy {
+        min-width: 0;
+      }
+      .palette-category {
+        margin-bottom: 14px;
+      }
+      .palette-title {
+        margin: 0;
+        font-size: 48px;
+        line-height: 1;
+        letter-spacing: -0.055em;
+      }
+      .palette-description {
+        max-width: 500px;
+        margin: 16px 0 0;
+        color: #9aaac2;
+        font-size: 17px;
+        line-height: 1.42;
+      }
+      .palette-meta {
+        display: grid;
+        grid-template-columns: 120px 1fr;
+        gap: 9px 18px;
+        margin-top: 22px;
+        font-size: 14px;
+        line-height: 1.35;
+      }
+      .palette-meta dt {
+        color: #55e0d0;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .palette-meta dd {
+        margin: 0;
+        color: #d7e0ef;
+      }
+      .swatch-rail {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 7px;
+        margin-top: 30px;
+      }
+      .swatch {
+        display: flex;
+        min-height: 104px;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 9px;
+        border: 1px solid rgb(237 244 255 / 24%);
+      }
+      .swatch-label {
+        margin-bottom: 5px;
+        font-size: 10px;
+        letter-spacing: 0.08em;
+      }
+      .swatch-hex {
+        font-size: 10px;
+        letter-spacing: 0.03em;
+        opacity: 0.85;
+      }
+      .palette-preview {
+        position: relative;
+        min-height: 430px;
+        overflow: hidden;
+        padding: 38px 40px;
+        border: 1px solid var(--preview-accent);
+        background: var(--preview-paper);
+        color: var(--preview-ink);
+      }
+      .palette-preview::before {
+        position: absolute;
+        top: -100px;
+        right: -80px;
+        width: 330px;
+        height: 330px;
+        border-radius: 50%;
+        background: var(--preview-art);
+        opacity: 0.72;
+        content: "";
+      }
+      .palette-preview::after {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        width: 52%;
+        height: 10px;
+        background: var(--preview-accent);
+        content: "";
+      }
+      .palette-preview > * {
+        position: relative;
+        z-index: 1;
+      }
+      .preview-kicker {
+        color: var(--preview-accent);
+      }
+      .preview-title {
+        max-width: 480px;
+        margin: 30px 0 16px;
+        font-size: 41px;
+        line-height: 1;
+        letter-spacing: -0.055em;
+      }
+      .preview-lede {
+        max-width: 470px;
+        margin: 0;
+        color: var(--preview-muted);
+        font-size: 17px;
+        line-height: 1.42;
+      }
+      .preview-rule {
+        width: 100%;
+        height: 1px;
+        margin-top: 50px;
+        background: var(--preview-accent);
+        opacity: 0.55;
+      }
+      .preview-data {
+        display: flex;
+        gap: 34px;
+        margin-top: 18px;
+        color: var(--preview-deep);
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="slide" data-pl-slide data-slide-id="palette-cover">
+      <div class="catalog-cover">
+        <p class="catalog-kicker">PresentLab / Palette catalog</p>
+        <h1 class="catalog-title">Choose the atmosphere<br /><em>before the slide.</em></h1>
+        <p class="catalog-subtitle">
+          Thirteen curated color systems for clients, designers, and AI agents. Start with the mood,
+          then match the palette to the story.
+        </p>
+        <div class="cover-rail">
+          <span style="background: #55e0d0"></span><span style="background: #315efb"></span
+          ><span style="background: #ed5d52"></span><span style="background: #1f8a62"></span
+          ><span style="background: #e3a316"></span><span style="background: #9c4fd4"></span
+          ><span style="background: #0f9ec7"></span>
+        </div>
+        <div class="cover-meta">
+          <span>13 color systems</span><span>7 named roles per palette</span
+          ><span>16:9 slide canvas</span>
+        </div>
+      </div>
+      <p class="catalog-footer">01 / Color palette catalog</p>
+    </section>
+    <section class="slide" data-pl-slide data-slide-id="palette-guide">
+      <div class="catalog-header">
+        <div>
+          <p class="catalog-kicker">02 / Choose a direction</p>
+          <h1 class="catalog-heading">Pick by mood, then match the story.</h1>
+          <p class="catalog-lede">
+            Every palette names its canvas, text, signal, depth, soft surface, and visual accents so
+            the choice stays practical and easy to brief.
+          </p>
+        </div>
+        <span class="catalog-page">02</span>
+      </div>
+      <div class="choice-grid">
+        <article class="choice-card">
+          <small>Dark and cinematic</small>
+          <h2>Cinematic</h2>
+          <p>Deep surfaces, teal signal, and warm ember for tension and release.</p>
+        </article>
+        <article class="choice-card">
+          <small>Cool and precise</small>
+          <h2>Cobalt / Ocean / Ice / Mono</h2>
+          <p>A clear starting point for evidence, products, and decisions.</p>
+        </article>
+        <article class="choice-card">
+          <small>Warm and human</small>
+          <h2>Coral / Saffron / Copper / Sand</h2>
+          <p>More warmth for brands, communities, craft, and change.</p>
+        </article>
+        <article class="choice-card">
+          <small>Natural and expressive</small>
+          <h2>Forest / Mint / Plum / Violet</h2>
+          <p>Distinctive color without losing a calm reading hierarchy.</p>
+        </article>
+      </div>
+      <p class="catalog-footer">02 / Palette selection guide</p>
+    </section>
+    <section class="slide" data-pl-slide data-slide-id="palette-cinematic" id="palette-cinematic">
+      <div class="catalog-header">
+        <div>
+          <p class="catalog-kicker">03 / Palette</p>
+          <h1 class="palette-title">Cinematic</h1>
+        </div>
+        <span class="catalog-page">03</span>
+      </div>
+      <div class="palette-layout">
+        <div class="palette-copy">
+          <p class="palette-category">Cinematic</p>
+          <p class="palette-description">
+            Deep navy, teal light, and ember orange for film-led storytelling and premium launches.
+          </p>
+          <dl class="palette-meta">
+            <dt>Mood</dt>
+            <dd>Night, tension, and warm release</dd>
+            <dt>Use it for</dt>
+            <dd>Film, premium launches, brand stories, and keynote moments</dd>
+          </dl>
+          <div class="swatch-rail">
+            <div class="swatch" style="background: #0b1020; color: #edf4ff">
+              <span class="swatch-label">Canvas</span><span class="swatch-hex">#0b1020</span>
+            </div>
+            <div class="swatch" style="background: #edf4ff; color: #081018">
+              <span class="swatch-label">Text</span><span class="swatch-hex">#edf4ff</span>
+            </div>
+            <div class="swatch" style="background: #55e0d0; color: #081018">
+              <span class="swatch-label">Signal</span><span class="swatch-hex">#55e0d0</span>
+            </div>
+            <div class="swatch" style="background: #1e9994; color: #081018">
+              <span class="swatch-label">Depth</span><span class="swatch-hex">#1e9994</span>
+            </div>
+            <div class="swatch" style="background: #183d4a; color: #edf4ff">
+              <span class="swatch-label">Soft</span><span class="swatch-hex">#183d4a</span>
+            </div>
+            <div class="swatch" style="background: #173d70; color: #081018">
+              <span class="swatch-label">Visual A</span><span class="swatch-hex">#173d70</span>
+            </div>
+            <div class="swatch" style="background: #d86d49; color: #081018">
+              <span class="swatch-label">Visual B</span><span class="swatch-hex">#d86d49</span>
+            </div>
+          </div>
+        </div>
+        <div
+          class="palette-preview"
+          style="
+            --preview-paper: #0b1020;
+            --preview-ink: #edf4ff;
+            --preview-muted: #9aaac2;
+            --preview-accent: #55e0d0;
+            --preview-deep: #1e9994;
+            --preview-art: #d86d49;
+          "
+        >
+          <p class="preview-kicker">PresentLab / Sample narrative</p>
+          <h2 class="preview-title">One clear claim gives the slide its shape.</h2>
+          <p class="preview-lede">
+            Use the signal color for the decision, the soft tone for context, and the second visual
+            color for emphasis.
+          </p>
+          <div class="preview-rule"></div>
+          <div class="preview-data">
+            <span>Signal</span><span>Evidence</span><span>Action</span>
+          </div>
+        </div>
+      </div>
+      <p class="catalog-footer">03 / Cinematic palette</p>
+    </section>
+    <section class="slide" data-pl-slide data-slide-id="palette-cobalt" id="palette-cobalt">
+      <div class="catalog-header">
+        <div>
+          <p class="catalog-kicker">04 / Palette</p>
+          <h1 class="palette-title">Cobalt</h1>
+        </div>
+        <span class="catalog-page">04</span>
+      </div>
+      <div class="palette-layout">
+        <div class="palette-copy">
+          <p class="palette-category">Product</p>
+          <p class="palette-description">
+            Clear blue product palette for confident strategy and technology stories.
+          </p>
+          <dl class="palette-meta">
+            <dt>Mood</dt>
+            <dd>Clear and confident</dd>
+            <dt>Use it for</dt>
+            <dd>Strategy, technology, product, and B2B narratives</dd>
+          </dl>
+          <div class="swatch-rail">
+            <div class="swatch" style="background: #f4f7ff; color: #14213d">
+              <span class="swatch-label">Canvas</span><span class="swatch-hex">#f4f7ff</span>
+            </div>
+            <div class="swatch" style="background: #14213d; color: #ffffff">
+              <span class="swatch-label">Text</span><span class="swatch-hex">#14213d</span>
+            </div>
+            <div class="swatch" style="background: #315efb; color: #ffffff">
+              <span class="swatch-label">Signal</span><span class="swatch-hex">#315efb</span>
+            </div>
+            <div class="swatch" style="background: #2340b4; color: #ffffff">
+              <span class="swatch-label">Depth</span><span class="swatch-hex">#2340b4</span>
+            </div>
+            <div class="swatch" style="background: #dbe5ff; color: #14213d">
+              <span class="swatch-label">Soft</span><span class="swatch-hex">#dbe5ff</span>
+            </div>
+            <div class="swatch" style="background: #b5c6ff; color: #ffffff">
+              <span class="swatch-label">Visual A</span><span class="swatch-hex">#b5c6ff</span>
+            </div>
+            <div class="swatch" style="background: #ffb29c; color: #ffffff">
+              <span class="swatch-label">Visual B</span><span class="swatch-hex">#ffb29c</span>
+            </div>
+          </div>
+        </div>
+        <div
+          class="palette-preview"
+          style="
+            --preview-paper: #f4f7ff;
+            --preview-ink: #14213d;
+            --preview-muted: #5c6a83;
+            --preview-accent: #315efb;
+            --preview-deep: #2340b4;
+            --preview-art: #ffb29c;
+          "
+        >
+          <p class="preview-kicker">PresentLab / Sample narrative</p>
+          <h2 class="preview-title">One clear claim gives the slide its shape.</h2>
+          <p class="preview-lede">
+            Use the signal color for the decision, the soft tone for context, and the second visual
+            color for emphasis.
+          </p>
+          <div class="preview-rule"></div>
+          <div class="preview-data">
+            <span>Signal</span><span>Evidence</span><span>Action</span>
+          </div>
+        </div>
+      </div>
+      <p class="catalog-footer">04 / Cobalt palette</p>
+    </section>
+    <section class="slide" data-pl-slide data-slide-id="palette-coral" id="palette-coral">
+      <div class="catalog-header">
+        <div>
+          <p class="catalog-kicker">05 / Palette</p>
+          <h1 class="palette-title">Coral</h1>
+        </div>
+        <span class="catalog-page">05</span>
+      </div>
+      <div class="palette-layout">
+        <div class="palette-copy">
+          <p class="palette-category">Warm</p>
+          <p class="palette-description">
+            Warm coral palette for human-centered launches, brands, and community narratives.
+          </p>
+          <dl class="palette-meta">
+            <dt>Mood</dt>
+            <dd>Human and energetic</dd>
+            <dt>Use it for</dt>
+            <dd>Community, brand, people, and launch stories</dd>
+          </dl>
+          <div class="swatch-rail">
+            <div class="swatch" style="background: #fff7f4; color: #321c24">
+              <span class="swatch-label">Canvas</span><span class="swatch-hex">#fff7f4</span>
+            </div>
+            <div class="swatch" style="background: #321c24; color: #ffffff">
+              <span class="swatch-label">Text</span><span class="swatch-hex">#321c24</span>
+            </div>
+            <div class="swatch" style="background: #ed5d52; color: #ffffff">
+              <span class="swatch-label">Signal</span><span class="swatch-hex">#ed5d52</span>
+            </div>
+            <div class="swatch" style="background: #b73a34; color: #ffffff">
+              <span class="swatch-label">Depth</span><span class="swatch-hex">#b73a34</span>
+            </div>
+            <div class="swatch" style="background: #ffd7d1; color: #321c24">
+              <span class="swatch-label">Soft</span><span class="swatch-hex">#ffd7d1</span>
+            </div>
+            <div class="swatch" style="background: #ffc2b8; color: #ffffff">
+              <span class="swatch-label">Visual A</span><span class="swatch-hex">#ffc2b8</span>
+            </div>
+            <div class="swatch" style="background: #f5b45f; color: #ffffff">
+              <span class="swatch-label">Visual B</span><span class="swatch-hex">#f5b45f</span>
+            </div>
+          </div>
+        </div>
+        <div
+          class="palette-preview"
+          style="
+            --preview-paper: #fff7f4;
+            --preview-ink: #321c24;
+            --preview-muted: #735861;
+            --preview-accent: #ed5d52;
+            --preview-deep: #b73a34;
+            --preview-art: #f5b45f;
+          "
+        >
+          <p class="preview-kicker">PresentLab / Sample narrative</p>
+          <h2 class="preview-title">One clear claim gives the slide its shape.</h2>
+          <p class="preview-lede">
+            Use the signal color for the decision, the soft tone for context, and the second visual
+            color for emphasis.
+          </p>
+          <div class="preview-rule"></div>
+          <div class="preview-data">
+            <span>Signal</span><span>Evidence</span><span>Action</span>
+          </div>
+        </div>
+      </div>
+      <p class="catalog-footer">05 / Coral palette</p>
+    </section>
+    <section class="slide" data-pl-slide data-slide-id="palette-forest" id="palette-forest">
+      <div class="catalog-header">
+        <div>
+          <p class="catalog-kicker">06 / Palette</p>
+          <h1 class="palette-title">Forest</h1>
+        </div>
+        <span class="catalog-page">06</span>
+      </div>
+      <div class="palette-layout">
+        <div class="palette-copy">
+          <p class="palette-category">Natural</p>
+          <p class="palette-description">
+            Grounded green palette for sustainability, operations, and long-term growth stories.
+          </p>
+          <dl class="palette-meta">
+            <dt>Mood</dt>
+            <dd>Grounded and steady</dd>
+            <dt>Use it for</dt>
+            <dd>Sustainability, operations, growth, and impact narratives</dd>
+          </dl>
+          <div class="swatch-rail">
+            <div class="swatch" style="background: #f2f7f1; color: #1b3327">
+              <span class="swatch-label">Canvas</span><span class="swatch-hex">#f2f7f1</span>
+            </div>
+            <div class="swatch" style="background: #1b3327; color: #ffffff">
+              <span class="swatch-label">Text</span><span class="swatch-hex">#1b3327</span>
+            </div>
+            <div class="swatch" style="background: #1f8a62; color: #ffffff">
+              <span class="swatch-label">Signal</span><span class="swatch-hex">#1f8a62</span>
+            </div>
+            <div class="swatch" style="background: #126044; color: #ffffff">
+              <span class="swatch-label">Depth</span><span class="swatch-hex">#126044</span>
+            </div>
+            <div class="swatch" style="background: #cae8d7; color: #1b3327">
+              <span class="swatch-label">Soft</span><span class="swatch-hex">#cae8d7</span>
+            </div>
+            <div class="swatch" style="background: #a5cdb3; color: #ffffff">
+              <span class="swatch-label">Visual A</span><span class="swatch-hex">#a5cdb3</span>
+            </div>
+            <div class="swatch" style="background: #e7ae77; color: #ffffff">
+              <span class="swatch-label">Visual B</span><span class="swatch-hex">#e7ae77</span>
+            </div>
+          </div>
+        </div>
+        <div
+          class="palette-preview"
+          style="
+            --preview-paper: #f2f7f1;
+            --preview-ink: #1b3327;
+            --preview-muted: #5e7264;
+            --preview-accent: #1f8a62;
+            --preview-deep: #126044;
+            --preview-art: #e7ae77;
+          "
+        >
+          <p class="preview-kicker">PresentLab / Sample narrative</p>
+          <h2 class="preview-title">One clear claim gives the slide its shape.</h2>
+          <p class="preview-lede">
+            Use the signal color for the decision, the soft tone for context, and the second visual
+            color for emphasis.
+          </p>
+          <div class="preview-rule"></div>
+          <div class="preview-data">
+            <span>Signal</span><span>Evidence</span><span>Action</span>
+          </div>
+        </div>
+      </div>
+      <p class="catalog-footer">06 / Forest palette</p>
+    </section>
+    <section class="slide" data-pl-slide data-slide-id="palette-saffron" id="palette-saffron">
+      <div class="catalog-header">
+        <div>
+          <p class="catalog-kicker">07 / Palette</p>
+          <h1 class="palette-title">Saffron</h1>
+        </div>
+        <span class="catalog-page">07</span>
+      </div>
+      <div class="palette-layout">
+        <div class="palette-copy">
+          <p class="palette-category">Warm</p>
+          <p class="palette-description">
+            Optimistic golden palette for education, change management, and opportunity maps.
+          </p>
+          <dl class="palette-meta">
+            <dt>Mood</dt>
+            <dd>Optimistic and open</dd>
+            <dt>Use it for</dt>
+            <dd>Education, change, opportunity, and future planning</dd>
+          </dl>
+          <div class="swatch-rail">
+            <div class="swatch" style="background: #fff9e8; color: #3b2a14">
+              <span class="swatch-label">Canvas</span><span class="swatch-hex">#fff9e8</span>
+            </div>
+            <div class="swatch" style="background: #3b2a14; color: #261a0c">
+              <span class="swatch-label">Text</span><span class="swatch-hex">#3b2a14</span>
+            </div>
+            <div class="swatch" style="background: #e3a316; color: #261a0c">
+              <span class="swatch-label">Signal</span><span class="swatch-hex">#e3a316</span>
+            </div>
+            <div class="swatch" style="background: #9d6b05; color: #261a0c">
+              <span class="swatch-label">Depth</span><span class="swatch-hex">#9d6b05</span>
+            </div>
+            <div class="swatch" style="background: #f9e5a8; color: #3b2a14">
+              <span class="swatch-label">Soft</span><span class="swatch-hex">#f9e5a8</span>
+            </div>
+            <div class="swatch" style="background: #f7cf68; color: #261a0c">
+              <span class="swatch-label">Visual A</span><span class="swatch-hex">#f7cf68</span>
+            </div>
+            <div class="swatch" style="background: #e57b52; color: #261a0c">
+              <span class="swatch-label">Visual B</span><span class="swatch-hex">#e57b52</span>
+            </div>
+          </div>
+        </div>
+        <div
+          class="palette-preview"
+          style="
+            --preview-paper: #fff9e8;
+            --preview-ink: #3b2a14;
+            --preview-muted: #806d4e;
+            --preview-accent: #e3a316;
+            --preview-deep: #9d6b05;
+            --preview-art: #e57b52;
+          "
+        >
+          <p class="preview-kicker">PresentLab / Sample narrative</p>
+          <h2 class="preview-title">One clear claim gives the slide its shape.</h2>
+          <p class="preview-lede">
+            Use the signal color for the decision, the soft tone for context, and the second visual
+            color for emphasis.
+          </p>
+          <div class="preview-rule"></div>
+          <div class="preview-data">
+            <span>Signal</span><span>Evidence</span><span>Action</span>
+          </div>
+        </div>
+      </div>
+      <p class="catalog-footer">07 / Saffron palette</p>
+    </section>
+    <section class="slide" data-pl-slide data-slide-id="palette-plum" id="palette-plum">
+      <div class="catalog-header">
+        <div>
+          <p class="catalog-kicker">08 / Palette</p>
+          <h1 class="palette-title">Plum</h1>
+        </div>
+        <span class="catalog-page">08</span>
+      </div>
+      <div class="palette-layout">
+        <div class="palette-copy">
+          <p class="palette-category">Expressive</p>
+          <p class="palette-description">
+            Expressive plum palette for culture, editorial, and premium creative work.
+          </p>
+          <dl class="palette-meta">
+            <dt>Mood</dt>
+            <dd>Creative and premium</dd>
+            <dt>Use it for</dt>
+            <dd>Culture, editorial, fashion, and creative work</dd>
+          </dl>
+          <div class="swatch-rail">
+            <div class="swatch" style="background: #fbf7fc; color: #291a33">
+              <span class="swatch-label">Canvas</span><span class="swatch-hex">#fbf7fc</span>
+            </div>
+            <div class="swatch" style="background: #291a33; color: #ffffff">
+              <span class="swatch-label">Text</span><span class="swatch-hex">#291a33</span>
+            </div>
+            <div class="swatch" style="background: #9c4fd4; color: #ffffff">
+              <span class="swatch-label">Signal</span><span class="swatch-hex">#9c4fd4</span>
+            </div>
+            <div class="swatch" style="background: #6e2e9f; color: #ffffff">
+              <span class="swatch-label">Depth</span><span class="swatch-hex">#6e2e9f</span>
+            </div>
+            <div class="swatch" style="background: #ead8f7; color: #291a33">
+              <span class="swatch-label">Soft</span><span class="swatch-hex">#ead8f7</span>
+            </div>
+            <div class="swatch" style="background: #d3a9ee; color: #ffffff">
+              <span class="swatch-label">Visual A</span><span class="swatch-hex">#d3a9ee</span>
+            </div>
+            <div class="swatch" style="background: #f6b5cc; color: #ffffff">
+              <span class="swatch-label">Visual B</span><span class="swatch-hex">#f6b5cc</span>
+            </div>
+          </div>
+        </div>
+        <div
+          class="palette-preview"
+          style="
+            --preview-paper: #fbf7fc;
+            --preview-ink: #291a33;
+            --preview-muted: #745e7f;
+            --preview-accent: #9c4fd4;
+            --preview-deep: #6e2e9f;
+            --preview-art: #f6b5cc;
+          "
+        >
+          <p class="preview-kicker">PresentLab / Sample narrative</p>
+          <h2 class="preview-title">One clear claim gives the slide its shape.</h2>
+          <p class="preview-lede">
+            Use the signal color for the decision, the soft tone for context, and the second visual
+            color for emphasis.
+          </p>
+          <div class="preview-rule"></div>
+          <div class="preview-data">
+            <span>Signal</span><span>Evidence</span><span>Action</span>
+          </div>
+        </div>
+      </div>
+      <p class="catalog-footer">08 / Plum palette</p>
+    </section>
+    <section class="slide" data-pl-slide data-slide-id="palette-ocean" id="palette-ocean">
+      <div class="catalog-header">
+        <div>
+          <p class="catalog-kicker">09 / Palette</p>
+          <h1 class="palette-title">Ocean</h1>
+        </div>
+        <span class="catalog-page">09</span>
+      </div>
+      <div class="palette-layout">
+        <div class="palette-copy">
+          <p class="palette-category">Cool</p>
+          <p class="palette-description">
+            Fresh cyan palette for research, customer insight, and service design narratives.
+          </p>
+          <dl class="palette-meta">
+            <dt>Mood</dt>
+            <dd>Fresh and exploratory</dd>
+            <dt>Use it for</dt>
+            <dd>Research, customer insight, service design, and discovery</dd>
+          </dl>
+          <div class="swatch-rail">
+            <div class="swatch" style="background: #eefaff; color: #12303e">
+              <span class="swatch-label">Canvas</span><span class="swatch-hex">#eefaff</span>
+            </div>
+            <div class="swatch" style="background: #12303e; color: #05303c">
+              <span class="swatch-label">Text</span><span class="swatch-hex">#12303e</span>
+            </div>
+            <div class="swatch" style="background: #0f9ec7; color: #05303c">
+              <span class="swatch-label">Signal</span><span class="swatch-hex">#0f9ec7</span>
+            </div>
+            <div class="swatch" style="background: #057493; color: #05303c">
+              <span class="swatch-label">Depth</span><span class="swatch-hex">#057493</span>
+            </div>
+            <div class="swatch" style="background: #c8f0fa; color: #12303e">
+              <span class="swatch-label">Soft</span><span class="swatch-hex">#c8f0fa</span>
+            </div>
+            <div class="swatch" style="background: #a8dfea; color: #05303c">
+              <span class="swatch-label">Visual A</span><span class="swatch-hex">#a8dfea</span>
+            </div>
+            <div class="swatch" style="background: #ffcc9b; color: #05303c">
+              <span class="swatch-label">Visual B</span><span class="swatch-hex">#ffcc9b</span>
+            </div>
+          </div>
+        </div>
+        <div
+          class="palette-preview"
+          style="
+            --preview-paper: #eefaff;
+            --preview-ink: #12303e;
+            --preview-muted: #5e7782;
+            --preview-accent: #0f9ec7;
+            --preview-deep: #057493;
+            --preview-art: #ffcc9b;
+          "
+        >
+          <p class="preview-kicker">PresentLab / Sample narrative</p>
+          <h2 class="preview-title">One clear claim gives the slide its shape.</h2>
+          <p class="preview-lede">
+            Use the signal color for the decision, the soft tone for context, and the second visual
+            color for emphasis.
+          </p>
+          <div class="preview-rule"></div>
+          <div class="preview-data">
+            <span>Signal</span><span>Evidence</span><span>Action</span>
+          </div>
+        </div>
+      </div>
+      <p class="catalog-footer">09 / Ocean palette</p>
+    </section>
+    <section class="slide" data-pl-slide data-slide-id="palette-sand" id="palette-sand">
+      <div class="catalog-header">
+        <div>
+          <p class="catalog-kicker">10 / Palette</p>
+          <h1 class="palette-title">Sand</h1>
+        </div>
+        <span class="catalog-page">10</span>
+      </div>
+      <div class="palette-layout">
+        <div class="palette-copy">
+          <p class="palette-category">Earth</p>
+          <p class="palette-description">
+            Natural terracotta palette for consulting, hospitality, and considered brand stories.
+          </p>
+          <dl class="palette-meta">
+            <dt>Mood</dt>
+            <dd>Considered and tactile</dd>
+            <dt>Use it for</dt>
+            <dd>Consulting, hospitality, architecture, and heritage stories</dd>
+          </dl>
+          <div class="swatch-rail">
+            <div class="swatch" style="background: #f7f0e5; color: #3d3125">
+              <span class="swatch-label">Canvas</span><span class="swatch-hex">#f7f0e5</span>
+            </div>
+            <div class="swatch" style="background: #3d3125; color: #fffaf2">
+              <span class="swatch-label">Text</span><span class="swatch-hex">#3d3125</span>
+            </div>
+            <div class="swatch" style="background: #bd7043; color: #fffaf2">
+              <span class="swatch-label">Signal</span><span class="swatch-hex">#bd7043</span>
+            </div>
+            <div class="swatch" style="background: #875034; color: #fffaf2">
+              <span class="swatch-label">Depth</span><span class="swatch-hex">#875034</span>
+            </div>
+            <div class="swatch" style="background: #ead4bd; color: #3d3125">
+              <span class="swatch-label">Soft</span><span class="swatch-hex">#ead4bd</span>
+            </div>
+            <div class="swatch" style="background: #ddbe9b; color: #fffaf2">
+              <span class="swatch-label">Visual A</span><span class="swatch-hex">#ddbe9b</span>
+            </div>
+            <div class="swatch" style="background: #c2a773; color: #fffaf2">
+              <span class="swatch-label">Visual B</span><span class="swatch-hex">#c2a773</span>
+            </div>
+          </div>
+        </div>
+        <div
+          class="palette-preview"
+          style="
+            --preview-paper: #f7f0e5;
+            --preview-ink: #3d3125;
+            --preview-muted: #796c5d;
+            --preview-accent: #bd7043;
+            --preview-deep: #875034;
+            --preview-art: #c2a773;
+          "
+        >
+          <p class="preview-kicker">PresentLab / Sample narrative</p>
+          <h2 class="preview-title">One clear claim gives the slide its shape.</h2>
+          <p class="preview-lede">
+            Use the signal color for the decision, the soft tone for context, and the second visual
+            color for emphasis.
+          </p>
+          <div class="preview-rule"></div>
+          <div class="preview-data">
+            <span>Signal</span><span>Evidence</span><span>Action</span>
+          </div>
+        </div>
+      </div>
+      <p class="catalog-footer">10 / Sand palette</p>
+    </section>
+    <section class="slide" data-pl-slide data-slide-id="palette-mono" id="palette-mono">
+      <div class="catalog-header">
+        <div>
+          <p class="catalog-kicker">11 / Palette</p>
+          <h1 class="palette-title">Mono</h1>
+        </div>
+        <span class="catalog-page">11</span>
+      </div>
+      <div class="palette-layout">
+        <div class="palette-copy">
+          <p class="palette-category">Neutral</p>
+          <p class="palette-description">
+            Neutral monochrome palette for legal, finance, and highly focused information design.
+          </p>
+          <dl class="palette-meta">
+            <dt>Mood</dt>
+            <dd>Focused and precise</dd>
+            <dt>Use it for</dt>
+            <dd>Legal, finance, governance, and information-heavy reviews</dd>
+          </dl>
+          <div class="swatch-rail">
+            <div class="swatch" style="background: #f5f5f3; color: #171717">
+              <span class="swatch-label">Canvas</span><span class="swatch-hex">#f5f5f3</span>
+            </div>
+            <div class="swatch" style="background: #171717; color: #ffffff">
+              <span class="swatch-label">Text</span><span class="swatch-hex">#171717</span>
+            </div>
+            <div class="swatch" style="background: #2c2c2c; color: #ffffff">
+              <span class="swatch-label">Signal</span><span class="swatch-hex">#2c2c2c</span>
+            </div>
+            <div class="swatch" style="background: #0f0f0f; color: #ffffff">
+              <span class="swatch-label">Depth</span><span class="swatch-hex">#0f0f0f</span>
+            </div>
+            <div class="swatch" style="background: #dededb; color: #171717">
+              <span class="swatch-label">Soft</span><span class="swatch-hex">#dededb</span>
+            </div>
+            <div class="swatch" style="background: #bababa; color: #ffffff">
+              <span class="swatch-label">Visual A</span><span class="swatch-hex">#bababa</span>
+            </div>
+            <div class="swatch" style="background: #eeeeee; color: #ffffff">
+              <span class="swatch-label">Visual B</span><span class="swatch-hex">#eeeeee</span>
+            </div>
+          </div>
+        </div>
+        <div
+          class="palette-preview"
+          style="
+            --preview-paper: #f5f5f3;
+            --preview-ink: #171717;
+            --preview-muted: #626262;
+            --preview-accent: #2c2c2c;
+            --preview-deep: #0f0f0f;
+            --preview-art: #eeeeee;
+          "
+        >
+          <p class="preview-kicker">PresentLab / Sample narrative</p>
+          <h2 class="preview-title">One clear claim gives the slide its shape.</h2>
+          <p class="preview-lede">
+            Use the signal color for the decision, the soft tone for context, and the second visual
+            color for emphasis.
+          </p>
+          <div class="preview-rule"></div>
+          <div class="preview-data">
+            <span>Signal</span><span>Evidence</span><span>Action</span>
+          </div>
+        </div>
+      </div>
+      <p class="catalog-footer">11 / Mono palette</p>
+    </section>
+    <section class="slide" data-pl-slide data-slide-id="palette-mint" id="palette-mint">
+      <div class="catalog-header">
+        <div>
+          <p class="catalog-kicker">12 / Palette</p>
+          <h1 class="palette-title">Mint</h1>
+        </div>
+        <span class="catalog-page">12</span>
+      </div>
+      <div class="palette-layout">
+        <div class="palette-copy">
+          <p class="palette-category">Fresh</p>
+          <p class="palette-description">
+            Bright mint palette for product growth, wellness, and collaborative planning.
+          </p>
+          <dl class="palette-meta">
+            <dt>Mood</dt>
+            <dd>Luminous and collaborative</dd>
+            <dt>Use it for</dt>
+            <dd>Product growth, wellness, collaboration, and service launches</dd>
+          </dl>
+          <div class="swatch-rail">
+            <div class="swatch" style="background: #effcf7; color: #15372e">
+              <span class="swatch-label">Canvas</span><span class="swatch-hex">#effcf7</span>
+            </div>
+            <div class="swatch" style="background: #15372e; color: #ffffff">
+              <span class="swatch-label">Text</span><span class="swatch-hex">#15372e</span>
+            </div>
+            <div class="swatch" style="background: #20a97f; color: #ffffff">
+              <span class="swatch-label">Signal</span><span class="swatch-hex">#20a97f</span>
+            </div>
+            <div class="swatch" style="background: #117256; color: #ffffff">
+              <span class="swatch-label">Depth</span><span class="swatch-hex">#117256</span>
+            </div>
+            <div class="swatch" style="background: #c9f0e1; color: #15372e">
+              <span class="swatch-label">Soft</span><span class="swatch-hex">#c9f0e1</span>
+            </div>
+            <div class="swatch" style="background: #9addc5; color: #ffffff">
+              <span class="swatch-label">Visual A</span><span class="swatch-hex">#9addc5</span>
+            </div>
+            <div class="swatch" style="background: #f3c28a; color: #ffffff">
+              <span class="swatch-label">Visual B</span><span class="swatch-hex">#f3c28a</span>
+            </div>
+          </div>
+        </div>
+        <div
+          class="palette-preview"
+          style="
+            --preview-paper: #effcf7;
+            --preview-ink: #15372e;
+            --preview-muted: #5a766b;
+            --preview-accent: #20a97f;
+            --preview-deep: #117256;
+            --preview-art: #f3c28a;
+          "
+        >
+          <p class="preview-kicker">PresentLab / Sample narrative</p>
+          <h2 class="preview-title">One clear claim gives the slide its shape.</h2>
+          <p class="preview-lede">
+            Use the signal color for the decision, the soft tone for context, and the second visual
+            color for emphasis.
+          </p>
+          <div class="preview-rule"></div>
+          <div class="preview-data">
+            <span>Signal</span><span>Evidence</span><span>Action</span>
+          </div>
+        </div>
+      </div>
+      <p class="catalog-footer">12 / Mint palette</p>
+    </section>
+    <section class="slide" data-pl-slide data-slide-id="palette-copper" id="palette-copper">
+      <div class="catalog-header">
+        <div>
+          <p class="catalog-kicker">13 / Palette</p>
+          <h1 class="palette-title">Copper</h1>
+        </div>
+        <span class="catalog-page">13</span>
+      </div>
+      <div class="palette-layout">
+        <div class="palette-copy">
+          <p class="palette-category">Warm</p>
+          <p class="palette-description">
+            Confident copper palette for architecture, craft, and product storytelling.
+          </p>
+          <dl class="palette-meta">
+            <dt>Mood</dt>
+            <dd>Crafted and confident</dd>
+            <dt>Use it for</dt>
+            <dd>Architecture, craft, food, and product storytelling</dd>
+          </dl>
+          <div class="swatch-rail">
+            <div class="swatch" style="background: #fff5ed; color: #3f2318">
+              <span class="swatch-label">Canvas</span><span class="swatch-hex">#fff5ed</span>
+            </div>
+            <div class="swatch" style="background: #3f2318; color: #ffffff">
+              <span class="swatch-label">Text</span><span class="swatch-hex">#3f2318</span>
+            </div>
+            <div class="swatch" style="background: #c46b35; color: #ffffff">
+              <span class="swatch-label">Signal</span><span class="swatch-hex">#c46b35</span>
+            </div>
+            <div class="swatch" style="background: #8f4520; color: #ffffff">
+              <span class="swatch-label">Depth</span><span class="swatch-hex">#8f4520</span>
+            </div>
+            <div class="swatch" style="background: #f4d0b6; color: #3f2318">
+              <span class="swatch-label">Soft</span><span class="swatch-hex">#f4d0b6</span>
+            </div>
+            <div class="swatch" style="background: #e6ab7f; color: #ffffff">
+              <span class="swatch-label">Visual A</span><span class="swatch-hex">#e6ab7f</span>
+            </div>
+            <div class="swatch" style="background: #8ec4b8; color: #ffffff">
+              <span class="swatch-label">Visual B</span><span class="swatch-hex">#8ec4b8</span>
+            </div>
+          </div>
+        </div>
+        <div
+          class="palette-preview"
+          style="
+            --preview-paper: #fff5ed;
+            --preview-ink: #3f2318;
+            --preview-muted: #7c5d4e;
+            --preview-accent: #c46b35;
+            --preview-deep: #8f4520;
+            --preview-art: #8ec4b8;
+          "
+        >
+          <p class="preview-kicker">PresentLab / Sample narrative</p>
+          <h2 class="preview-title">One clear claim gives the slide its shape.</h2>
+          <p class="preview-lede">
+            Use the signal color for the decision, the soft tone for context, and the second visual
+            color for emphasis.
+          </p>
+          <div class="preview-rule"></div>
+          <div class="preview-data">
+            <span>Signal</span><span>Evidence</span><span>Action</span>
+          </div>
+        </div>
+      </div>
+      <p class="catalog-footer">13 / Copper palette</p>
+    </section>
+    <section class="slide" data-pl-slide data-slide-id="palette-violet" id="palette-violet">
+      <div class="catalog-header">
+        <div>
+          <p class="catalog-kicker">14 / Palette</p>
+          <h1 class="palette-title">Violet</h1>
+        </div>
+        <span class="catalog-page">14</span>
+      </div>
+      <div class="palette-layout">
+        <div class="palette-copy">
+          <p class="palette-category">Digital</p>
+          <p class="palette-description">
+            Modern violet palette for AI, innovation, and future-facing product narratives.
+          </p>
+          <dl class="palette-meta">
+            <dt>Mood</dt>
+            <dd>Modern and imaginative</dd>
+            <dt>Use it for</dt>
+            <dd>AI, innovation, creative technology, and future products</dd>
+          </dl>
+          <div class="swatch-rail">
+            <div class="swatch" style="background: #f6f4ff; color: #241d45">
+              <span class="swatch-label">Canvas</span><span class="swatch-hex">#f6f4ff</span>
+            </div>
+            <div class="swatch" style="background: #241d45; color: #ffffff">
+              <span class="swatch-label">Text</span><span class="swatch-hex">#241d45</span>
+            </div>
+            <div class="swatch" style="background: #7357ef; color: #ffffff">
+              <span class="swatch-label">Signal</span><span class="swatch-hex">#7357ef</span>
+            </div>
+            <div class="swatch" style="background: #4c35ba; color: #ffffff">
+              <span class="swatch-label">Depth</span><span class="swatch-hex">#4c35ba</span>
+            </div>
+            <div class="swatch" style="background: #ddd7ff; color: #241d45">
+              <span class="swatch-label">Soft</span><span class="swatch-hex">#ddd7ff</span>
+            </div>
+            <div class="swatch" style="background: #bcb3fb; color: #ffffff">
+              <span class="swatch-label">Visual A</span><span class="swatch-hex">#bcb3fb</span>
+            </div>
+            <div class="swatch" style="background: #f7a3c7; color: #ffffff">
+              <span class="swatch-label">Visual B</span><span class="swatch-hex">#f7a3c7</span>
+            </div>
+          </div>
+        </div>
+        <div
+          class="palette-preview"
+          style="
+            --preview-paper: #f6f4ff;
+            --preview-ink: #241d45;
+            --preview-muted: #716b91;
+            --preview-accent: #7357ef;
+            --preview-deep: #4c35ba;
+            --preview-art: #f7a3c7;
+          "
+        >
+          <p class="preview-kicker">PresentLab / Sample narrative</p>
+          <h2 class="preview-title">One clear claim gives the slide its shape.</h2>
+          <p class="preview-lede">
+            Use the signal color for the decision, the soft tone for context, and the second visual
+            color for emphasis.
+          </p>
+          <div class="preview-rule"></div>
+          <div class="preview-data">
+            <span>Signal</span><span>Evidence</span><span>Action</span>
+          </div>
+        </div>
+      </div>
+      <p class="catalog-footer">14 / Violet palette</p>
+    </section>
+    <section class="slide" data-pl-slide data-slide-id="palette-ice" id="palette-ice">
+      <div class="catalog-header">
+        <div>
+          <p class="catalog-kicker">15 / Palette</p>
+          <h1 class="palette-title">Ice</h1>
+        </div>
+        <span class="catalog-page">15</span>
+      </div>
+      <div class="palette-layout">
+        <div class="palette-copy">
+          <p class="palette-category">Cool</p>
+          <p class="palette-description">
+            Cool blue-grey palette for enterprise, governance, and evidence-led decisions.
+          </p>
+          <dl class="palette-meta">
+            <dt>Mood</dt>
+            <dd>Calm and evidence-led</dd>
+            <dt>Use it for</dt>
+            <dd>Enterprise, governance, research, and decision support</dd>
+          </dl>
+          <div class="swatch-rail">
+            <div class="swatch" style="background: #f1faff; color: #153148">
+              <span class="swatch-label">Canvas</span><span class="swatch-hex">#f1faff</span>
+            </div>
+            <div class="swatch" style="background: #153148; color: #ffffff">
+              <span class="swatch-label">Text</span><span class="swatch-hex">#153148</span>
+            </div>
+            <div class="swatch" style="background: #3e9bd4; color: #ffffff">
+              <span class="swatch-label">Signal</span><span class="swatch-hex">#3e9bd4</span>
+            </div>
+            <div class="swatch" style="background: #276b99; color: #ffffff">
+              <span class="swatch-label">Depth</span><span class="swatch-hex">#276b99</span>
+            </div>
+            <div class="swatch" style="background: #cfeaf8; color: #153148">
+              <span class="swatch-label">Soft</span><span class="swatch-hex">#cfeaf8</span>
+            </div>
+            <div class="swatch" style="background: #a7d7f0; color: #ffffff">
+              <span class="swatch-label">Visual A</span><span class="swatch-hex">#a7d7f0</span>
+            </div>
+            <div class="swatch" style="background: #edbd93; color: #ffffff">
+              <span class="swatch-label">Visual B</span><span class="swatch-hex">#edbd93</span>
+            </div>
+          </div>
+        </div>
+        <div
+          class="palette-preview"
+          style="
+            --preview-paper: #f1faff;
+            --preview-ink: #153148;
+            --preview-muted: #617f91;
+            --preview-accent: #3e9bd4;
+            --preview-deep: #276b99;
+            --preview-art: #edbd93;
+          "
+        >
+          <p class="preview-kicker">PresentLab / Sample narrative</p>
+          <h2 class="preview-title">One clear claim gives the slide its shape.</h2>
+          <p class="preview-lede">
+            Use the signal color for the decision, the soft tone for context, and the second visual
+            color for emphasis.
+          </p>
+          <div class="preview-rule"></div>
+          <div class="preview-data">
+            <span>Signal</span><span>Evidence</span><span>Action</span>
+          </div>
+        </div>
+      </div>
+      <p class="catalog-footer">15 / Ice palette</p>
+    </section>
+  </body>
+</html>

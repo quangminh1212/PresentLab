@@ -54,7 +54,9 @@ The gallery is mounted at [`templates/`](templates/) from the private [`PresentT
 | `luxury`      | Quiet luxury         |
 | `retrofuture` | Neon retro-future    |
 
-Variant folders combine these structural families with curated palettes such as Cobalt, Coral, Forest, Saffron, Plum, Ocean, Sand, Mono, Mint, Copper, Violet, and Ice. The generated index records each template's `family`, `palette`, and `modifier` so an AI agent can select by visual intent.
+Variant folders combine these structural families with curated palettes such as Cobalt, Coral, Forest, Saffron, Plum, Ocean, Sand, Mono, Mint, Copper, Violet, and Ice. The standalone Cinematic palette uses deep navy, teal signal light, and ember orange for film-led storytelling, premium launches, and keynote moments. The generated index records each template's `family`, `palette`, and `modifier` so an AI agent can select by visual intent.
+
+The color selection catalog is available at [`resources/palettes/`](resources/palettes/) and in the private submodule at [`templates/palettes/`](templates/palettes/). It includes machine-readable palette tokens plus `catalog.html`, `catalog.pdf`, and `catalog.pptx` for client review. MCP clients can call `presentlab_list_palettes` or read `presentlab://palettes/catalog`.
 
 Each folder is a portable handoff unit. Edit `deck.html`, then regenerate its PDF/PPTX outputs with `npm run gallery:build`. The generator is deterministic and the gallery checker enforces a minimum of twenty-five slides plus the exact three-file folder contract across all 100 folders. Template changes are committed and pushed in `PresentTemplate`; the resulting submodule pointer is then committed in this repository. See [docs/template-gallery.md](docs/template-gallery.md) for the authoring rules.
 

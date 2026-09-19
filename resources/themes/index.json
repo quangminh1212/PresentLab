@@ -13,7 +13,7 @@
     "title": "Midnight",
     "description": "Dark cinematic system with luminous cyan highlights, grid structure, and contrast-led storytelling.",
     "family": "midnight",
-    "palette": "base",
+    "palette": "cinematic",
     "modifier": "base",
     "path": "resources/themes/midnight.json"
   },

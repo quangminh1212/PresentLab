@@ -1,0 +1,65 @@
+{
+  "name": "cinematic",
+  "title": "Cinematic",
+  "description": "Deep navy, teal light, and ember orange for film-led storytelling and premium launches.",
+  "category": "Cinematic",
+  "mood": "Night, tension, and warm release",
+  "recommendedFor": "Film, premium launches, brand stories, and keynote moments",
+  "catalogSlide": 3,
+  "swatches": [
+    {
+      "name": "Canvas",
+      "role": "surface",
+      "hex": "#0b1020"
+    },
+    {
+      "name": "Text",
+      "role": "type",
+      "hex": "#edf4ff"
+    },
+    {
+      "name": "Signal",
+      "role": "action",
+      "hex": "#55e0d0"
+    },
+    {
+      "name": "Depth",
+      "role": "emphasis",
+      "hex": "#1e9994"
+    },
+    {
+      "name": "Soft",
+      "role": "context",
+      "hex": "#183d4a"
+    },
+    {
+      "name": "Visual A",
+      "role": "visual",
+      "hex": "#173d70"
+    },
+    {
+      "name": "Visual B",
+      "role": "visual",
+      "hex": "#d86d49"
+    }
+  ],
+  "tokens": {
+    "paper": "#0b1020",
+    "ink": "#edf4ff",
+    "muted": "#9aaac2",
+    "accent": "#55e0d0",
+    "accentDeep": "#1e9994",
+    "accentSoft": "#183d4a",
+    "line": "rgb(237 244 255 / 16%)",
+    "lineStrong": "rgb(85 224 208 / 52%)",
+    "panel": "#111a2b",
+    "radius": "12px",
+    "artOne": "#173d70",
+    "artTwo": "#d86d49",
+    "quoteInk": "#081018",
+    "quoteMark": "#b9fff3",
+    "artLabel": "#9aaac2",
+    "overlay": "linear-gradient(135deg, rgb(85 224 208 / 8%), transparent 38%), radial-gradient(circle at 92% 8%, #183d4a 0 14%, var(--paper) 15%)"
+  },
+  "path": "resources/palettes/cinematic.json"
+}

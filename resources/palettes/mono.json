@@ -1,0 +1,65 @@
+{
+  "name": "mono",
+  "title": "Mono",
+  "description": "Neutral monochrome palette for legal, finance, and highly focused information design.",
+  "category": "Neutral",
+  "mood": "Focused and precise",
+  "recommendedFor": "Legal, finance, governance, and information-heavy reviews",
+  "catalogSlide": 11,
+  "swatches": [
+    {
+      "name": "Canvas",
+      "role": "surface",
+      "hex": "#f5f5f3"
+    },
+    {
+      "name": "Text",
+      "role": "type",
+      "hex": "#171717"
+    },
+    {
+      "name": "Signal",
+      "role": "action",
+      "hex": "#2c2c2c"
+    },
+    {
+      "name": "Depth",
+      "role": "emphasis",
+      "hex": "#0f0f0f"
+    },
+    {
+      "name": "Soft",
+      "role": "context",
+      "hex": "#dededb"
+    },
+    {
+      "name": "Visual A",
+      "role": "visual",
+      "hex": "#bababa"
+    },
+    {
+      "name": "Visual B",
+      "role": "visual",
+      "hex": "#eeeeee"
+    }
+  ],
+  "tokens": {
+    "paper": "#f5f5f3",
+    "ink": "#171717",
+    "muted": "#626262",
+    "accent": "#2c2c2c",
+    "accentDeep": "#0f0f0f",
+    "accentSoft": "#dededb",
+    "line": "rgb(23 23 23 / 16%)",
+    "lineStrong": "rgb(23 23 23 / 32%)",
+    "panel": "#ffffff",
+    "radius": "8px",
+    "artOne": "#bababa",
+    "artTwo": "#eeeeee",
+    "quoteInk": "#ffffff",
+    "quoteMark": "#d2d2d2",
+    "artLabel": "#626262",
+    "overlay": "linear-gradient(135deg, transparent 0 70%, #dededb 70% 70.3%, transparent 70.3%)"
+  },
+  "path": "resources/palettes/mono.json"
+}

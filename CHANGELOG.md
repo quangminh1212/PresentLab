@@ -5,6 +5,7 @@ All notable changes to PresentLab are documented here.
 ## [Unreleased]
 
 - Added a 100-template gallery with 2,500 rendered sample slides (25 per template) and portable HTML/PDF/PPTX folders, indexed by family, palette, and layout modifier.
+- Added a client-facing 13-palette catalog with cinematic navy, teal, and ember guidance, JSON token records, HTML/PDF/PPTX handoffs, and MCP palette discovery tools.
 - Moved the template gallery into the private `quangminh1212/PresentTemplate` repository and mounted it here as a Git submodule.
 - Added deterministic gallery build and verification scripts and included the gallery in the release gate and package contents.
 - Blocked external HTTP/WebSocket and out-of-workspace local-file assets during trusted workspace rendering.
