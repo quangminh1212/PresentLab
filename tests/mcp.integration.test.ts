@@ -17,6 +17,7 @@ describe("MCP stdio contract", () => {
       await client.connect(transport);
       const tools = await client.listTools();
       const resources = await client.listResources();
+      const resourceTemplates = await client.listResourceTemplates();
       const prompts = await client.listPrompts();
       const validation = await client.callTool({
         name: "presentlab_validate_deck",
@@ -28,6 +29,14 @@ describe("MCP stdio contract", () => {
       const templateTool = await client.callTool({
         name: "presentlab_get_template",
         arguments: { name: "aurora" },
+      });
+      const templatesTool = await client.callTool({
+        name: "presentlab_list_templates",
+        arguments: {},
+      });
+      const themesTool = await client.callTool({
+        name: "presentlab_list_themes",
+        arguments: {},
       });
 
       expect(tools.tools.map((tool) => tool.name)).toEqual(
@@ -43,6 +52,9 @@ describe("MCP stdio contract", () => {
       expect(resources.resources.map((resource) => resource.uri)).toEqual(
         expect.arrayContaining(["presentlab://schema/deck", "presentlab://templates"]),
       );
+      expect(resourceTemplates.resourceTemplates.map((resource) => resource.uriTemplate)).toEqual(
+        expect.arrayContaining(["presentlab://templates/{name}", "presentlab://themes/{name}"]),
+      );
       expect(prompts.prompts.map((prompt) => prompt.name)).toContain("presentlab_design_deck");
       expect(validation.isError).not.toBe(true);
       expect(validation.structuredContent).toMatchObject({ valid: true, slideCount: 3 });
@@ -50,6 +62,12 @@ describe("MCP stdio contract", () => {
       expect(template.contents[0]).toMatchObject({ mimeType: "text/html" });
       expect(theme.contents[0]).toMatchObject({ mimeType: "application/json" });
       expect(templateTool.structuredContent).toMatchObject({ name: "aurora" });
+      expect(templatesTool.structuredContent).toMatchObject({ templates: expect.any(Array) });
+      expect((templatesTool.structuredContent as { templates: unknown[] }).templates).toHaveLength(
+        8,
+      );
+      expect(themesTool.structuredContent).toMatchObject({ themes: expect.any(Array) });
+      expect((themesTool.structuredContent as { themes: unknown[] }).themes).toHaveLength(8);
     } finally {
       await client.close();
     }
