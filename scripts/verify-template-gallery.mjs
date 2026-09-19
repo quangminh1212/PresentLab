@@ -7,7 +7,7 @@ const root = resolve(import.meta.dirname, "..");
 const templatesRoot = join(root, "templates");
 const index = JSON.parse(await readFile(join(templatesRoot, "index.json"), "utf8"));
 const expectedTemplateCount = 100;
-const expectedMinimumSlideCount = 12;
+const expectedMinimumSlideCount = 25;
 const templateDirectories = (await readdir(templatesRoot, { withFileTypes: true })).filter(
   (entry) => entry.isDirectory(),
 );

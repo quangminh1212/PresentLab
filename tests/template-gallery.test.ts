@@ -23,7 +23,7 @@ describe("template gallery", () => {
       const html = await readFile(join(folder, "deck.html"), "utf8");
       const inspection = inspectDeckHtml(html, 100);
       expect(inspection.errors).toEqual([]);
-      expect(inspection.slides.length).toBeGreaterThanOrEqual(12);
+      expect(inspection.slides.length).toBeGreaterThanOrEqual(25);
       expect(new Set(inspection.slides.map((slide) => slide.id)).size).toBe(
         inspection.slides.length,
       );
