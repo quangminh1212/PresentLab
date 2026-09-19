@@ -1,0 +1,8 @@
+[
+  {
+    "name": "aurora",
+    "title": "Aurora editorial deck",
+    "description": "A light, spacious 16:9 narrative deck with indigo accents and card layouts.",
+    "path": "resources/templates/aurora/deck.html"
+  }
+]

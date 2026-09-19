@@ -1,0 +1,9 @@
+node_modules/
+dist/
+coverage/
+.artifacts/
+.playwright/
+*.log
+*.tmp
+Thumbs.db
+.DS_Store

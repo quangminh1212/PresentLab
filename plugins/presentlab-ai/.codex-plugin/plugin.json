@@ -1,0 +1,29 @@
+{
+  "name": "presentlab-ai",
+  "version": "0.1.0",
+  "description": "HTML-first slide, catalog, and PDF design tools for AI agents.",
+  "author": {
+    "name": "Quang Minh",
+    "url": "https://github.com/quangminh1212"
+  },
+  "homepage": "https://github.com/quangminh1212/PresentLab",
+  "repository": "https://github.com/quangminh1212/PresentLab",
+  "license": "MIT",
+  "keywords": ["html", "slides", "pdf", "catalog", "mcp", "design"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "PresentLab AI",
+    "shortDescription": "Design HTML decks and export slide artifacts.",
+    "longDescription": "Use PresentLab's local design resources, MCP tools, and validation loop to create HTML-first slides, catalogs, PDF, and fidelity-first PPTX artifacts.",
+    "developerName": "Quang Minh",
+    "category": "Design",
+    "capabilities": ["Design", "Write", "Export"],
+    "brandColor": "#5B6CF2",
+    "defaultPrompt": [
+      "Create a validated HTML deck from this brief.",
+      "Render this deck to PDF and PPTX.",
+      "Build a catalog of this presentation."
+    ]
+  },
+  "mcpServers": "./.mcp.json"
+}

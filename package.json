@@ -1,0 +1,59 @@
+{
+  "name": "presentlab",
+  "version": "0.1.0",
+  "description": "HTML-first design resources and MCP rendering bridge for slides, catalogs, and PDF.",
+  "license": "MIT",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=22.0.0",
+    "npm": ">=11.0.0"
+  },
+  "bin": {
+    "presentlab": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "resources",
+    "schemas",
+    "plugins",
+    "README.md",
+    "LICENSE",
+    "SECURITY.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "node -e \"import('node:fs').then(({rmSync}) => rmSync('dist', {recursive:true, force:true}))\"",
+    "dev": "tsx src/cli.ts",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint .",
+    "mcp": "node --enable-source-maps dist/cli.js mcp",
+    "render": "node --enable-source-maps dist/cli.js render",
+    "test": "vitest run",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "verify": "npm run format:check && npm run lint && npm run typecheck && npm test"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/client": "2.0.0",
+    "@modelcontextprotocol/server": "2.0.0",
+    "linkedom": "0.18.13",
+    "playwright": "1.63.0",
+    "pptxgenjs": "4.0.1",
+    "zod": "4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.2",
+    "@eslint/js": "10.0.1",
+    "eslint": "10.11.0",
+    "prettier": "3.9.8",
+    "tsx": "4.23.13",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.70.0",
+    "vitest": "5.0.1"
+  },
+  "overrides": {
+    "image-size": "2.0.4"
+  }
+}

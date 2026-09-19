@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://presentlab.dev/schemas/deck.schema.json",
+  "title": "PresentLab HTML deck contract",
+  "description": "Metadata and slide conventions for an HTML deck rendered by PresentLab.",
+  "type": "object",
+  "required": ["title", "format", "slides"],
+  "properties": {
+    "title": { "type": "string", "minLength": 1, "maxLength": 200 },
+    "format": { "enum": ["16:9", "4:3", "A4-landscape", "A4-portrait"] },
+    "language": { "type": "string", "minLength": 2, "maxLength": 16 },
+    "slides": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "required": ["id", "index"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$" },
+          "index": { "type": "integer", "minimum": 1 }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": false
+}

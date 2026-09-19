@@ -1,0 +1,9 @@
+{
+  "servers": {
+    "presentlab": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["dist/cli.js", "mcp"]
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "presentlab": {
+      "command": "node",
+      "args": ["dist/cli.js", "mcp"],
+      "env": {
+        "PRESENTLAB_ROOT": "."
+      }
+    }
+  }
+}
