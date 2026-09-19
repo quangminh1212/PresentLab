@@ -12,7 +12,7 @@ Every folder under [`templates/`](../templates/) contains exactly:
 | `deck.pdf`  | Print-oriented PDF rendered from the HTML source                    |
 | `deck.pptx` | Fidelity-first PowerPoint export with one full-slide image per page |
 
-The current gallery has eight visual directions and 56 sample slides:
+The current gallery has 100 template folders and 700 sample slides. Eight structural directions are combined with curated palette and layout variants:
 
 - Aurora: light editorial and spacious cards
 - Midnight: dark cinematic contrast and luminous accents
@@ -22,6 +22,8 @@ The current gallery has eight visual directions and 56 sample slides:
 - Data Noir: terminal-inspired product and operations language
 - Luxury: ivory paper, hairline rules, and restrained gold
 - Retro Future: synthwave gradients, grid lines, and neon accents
+
+The generated variants use the family names above with palettes including Cobalt, Coral, Forest, Saffron, Plum, Ocean, Sand, Mono, Mint, Copper, Violet, and Ice. Each index entry also exposes `family`, `palette`, and `modifier` metadata for programmatic selection by an AI agent.
 
 ## Rebuild and verify
 

@@ -4,7 +4,7 @@ All notable changes to PresentLab are documented here.
 
 ## [Unreleased]
 
-- Added an eight-style template gallery with 56 rendered sample slides and portable HTML/PDF/PPTX folders.
+- Added a 100-template gallery with 700 rendered sample slides and portable HTML/PDF/PPTX folders, indexed by family, palette, and layout modifier.
 - Added deterministic gallery build and verification scripts and included the gallery in the release gate and package contents.
 - Blocked external HTTP/WebSocket and out-of-workspace local-file assets during trusted workspace rendering.
 - Added dynamic MCP resources and fallback tools for reading HTML templates and theme tokens.

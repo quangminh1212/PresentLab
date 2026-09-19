@@ -10,7 +10,7 @@ The repository also ships an MCP server, a Codex-compatible skill/plugin, reusab
 - Chromium rendering for pixel-faithful PNG and print-quality PDF output.
 - PPTX export that places each rendered slide as a full-bleed image, preserving HTML fidelity across PowerPoint viewers.
 - Catalog generation as HTML and PDF.
-- An eight-style template gallery with 56 sample slides. Each folder contains `deck.html`, `deck.pdf`, and `deck.pptx`.
+- A 100-template gallery with 700 sample slides. Each folder contains `deck.html`, `deck.pdf`, and `deck.pptx`.
 - MCP tools, resources, and prompts for validation, rendering, catalogs, templates, and deck design guidance.
 - A repo-local `presentlab-ai` plugin with a reusable design skill.
 - Strict TypeScript, unit tests, integration smoke tests, formatting, linting, security boundaries, and GitHub Actions CI.
@@ -33,7 +33,7 @@ The generated artifact directories are intentionally ignored by Git.
 
 ## Template gallery
 
-The checked-in gallery lives under [`templates/`](templates/). It is organized by visual direction:
+The checked-in gallery lives under [`templates/`](templates/). It contains eight structural families and 92 palette/layout variants:
 
 | Folder        | Style                |
 | ------------- | -------------------- |
@@ -46,7 +46,9 @@ The checked-in gallery lives under [`templates/`](templates/). It is organized b
 | `luxury`      | Quiet luxury         |
 | `retrofuture` | Neon retro-future    |
 
-Each folder is a portable handoff unit. Edit `deck.html`, then regenerate its PDF/PPTX outputs with `npm run gallery:build`. The generator is deterministic and the gallery checker enforces seven slides plus the exact three-file folder contract. See [docs/template-gallery.md](docs/template-gallery.md) for the authoring rules.
+Variant folders combine these structural families with curated palettes such as Cobalt, Coral, Forest, Saffron, Plum, Ocean, Sand, Mono, Mint, Copper, Violet, and Ice. The generated index records each template's `family`, `palette`, and `modifier` so an AI agent can select by visual intent.
+
+Each folder is a portable handoff unit. Edit `deck.html`, then regenerate its PDF/PPTX outputs with `npm run gallery:build`. The generator is deterministic and the gallery checker enforces seven slides plus the exact three-file folder contract across all 100 folders. See [docs/template-gallery.md](docs/template-gallery.md) for the authoring rules.
 
 ## HTML contract
 
