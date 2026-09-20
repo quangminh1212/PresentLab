@@ -1,0 +1,29 @@
+{
+  "name": "artnouveau-botanical",
+  "title": "Art Nouveau / Jugendstil / Artnouveau Botanical",
+  "description": "Botanical curves, flowing linework, and ornamental natural forms. Warm studio system with earthy colors, serif headlines, and soft organic geometry.",
+  "format": "16:9",
+  "tokens": {
+    "paper": "#fbf7fc",
+    "ink": "#291a33",
+    "accent": "#9c4fd4",
+    "muted": "#745e7f",
+    "radius": "32px",
+    "accentDeep": "#6e2e9f",
+    "accentSoft": "#ead8f7",
+    "line": "rgb(41 26 51 / 16%)",
+    "lineStrong": "rgb(41 26 51 / 28%)",
+    "panel": "#ffffff",
+    "artOne": "#d3a9ee",
+    "artTwo": "#f6b5cc",
+    "quoteInk": "#ffffff",
+    "quoteMark": "#f1dfff",
+    "artLabel": "#745e7f",
+    "overlay": "radial-gradient(circle at 92% 8%, #ead8f7 0 14%, var(--paper) 15%)",
+    "baseFamily": "organic",
+    "styleGroup": "art-nouveau",
+    "styleCategory": "Art Nouveau / Jugendstil",
+    "styleTreatment": "nouveau",
+    "stylePalette": "plum"
+  }
+}

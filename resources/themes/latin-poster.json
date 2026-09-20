@@ -1,0 +1,29 @@
+{
+  "name": "latin-poster",
+  "title": "Latin Modernism / Color Field / Latin Poster",
+  "description": "Mural color, civic concrete, sun, and expressive modernist blocks. Neo-brutalist system with yellow canvas, ink borders, offset shadows, and playful emphasis.",
+  "format": "16:9",
+  "tokens": {
+    "paper": "#fff7f4",
+    "ink": "#321c24",
+    "accent": "#ed5d52",
+    "muted": "#735861",
+    "radius": "30px",
+    "accentDeep": "#b73a34",
+    "accentSoft": "#ffd7d1",
+    "line": "rgb(50 28 36 / 15%)",
+    "lineStrong": "rgb(50 28 36 / 28%)",
+    "panel": "#ffffff",
+    "artOne": "#ffc2b8",
+    "artTwo": "#f5b45f",
+    "quoteInk": "#ffffff",
+    "quoteMark": "#ffe6de",
+    "artLabel": "#735861",
+    "overlay": "radial-gradient(circle at 92% 8%, #ffd7d1 0 14%, var(--paper) 15%)",
+    "baseFamily": "brutalist",
+    "styleGroup": "latin-modern",
+    "styleCategory": "Latin Modernism / Color Field",
+    "styleTreatment": "latin",
+    "stylePalette": "coral"
+  }
+}

@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="vi" data-request-endpoint="/api/slide-requests" data-handoff-email="">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Cổng khách hàng PresentLab: chọn mẫu slide, gửi brief và theo dõi yêu cầu gia công."
+    />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-src 'self'; img-src 'self' data:; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; form-action 'self'"
+    />
+    <title>Chọn mẫu slide | PresentLab</title>
+    <link rel="stylesheet" href="/web/portal/styles.css" />
+  </head>
+  <body>
+    <noscript>
+      <div class="noscript-banner">Trang này cần JavaScript để tải thư viện mẫu và gửi brief.</div>
+    </noscript>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#catalog" aria-label="PresentLab - về đầu trang">
+          <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+          <span>
+            <strong>PRESENTLAB</strong>
+            <small>CLIENT WORKSPACE</small>
+          </span>
+        </a>
+        <nav class="topnav" aria-label="Điều hướng chính">
+          <a class="topnav-link is-active" href="#templates">Mẫu slide</a>
+          <a class="topnav-link" href="#process">Quy trình</a>
+          <a
+            class="topnav-link"
+            href="/resources/palettes/catalog.html"
+            target="_blank"
+            rel="noreferrer noopener"
+            >Bảng màu</a
+          >
+          <button class="button button-small button-outline" type="button" data-open-request>
+            Yêu cầu của tôi <span class="count-pill" data-selection-count>0</span>
+          </button>
+        </nav>
+        <button
+          class="menu-button"
+          type="button"
+          aria-label="Mở menu"
+          aria-expanded="false"
+          data-menu-toggle
+        >
+          <span></span><span></span><span></span>
+        </button>
+      </header>
+
+      <main>
+        <section class="hero" id="catalog" aria-labelledby="hero-title">
+          <div class="hero-copy">
+            <p class="eyebrow"><span class="eyebrow-dot"></span> PRESENTATION PRODUCTION DESK</p>
+            <h1 id="hero-title">
+              Chọn một hướng nhìn.<br /><em>Gửi phần còn lại cho đội ngũ.</em>
+            </h1>
+            <p class="hero-lede">
+              Duyệt các mẫu slide đã được chuẩn hóa, chọn hướng phù hợp với câu chuyện của bạn và
+              gửi brief để đội gia công dựng thành bộ slide hoàn chỉnh.
+            </p>
+            <div class="hero-actions">
+              <a class="button button-primary" href="#templates"
+                >Khám phá thư viện mẫu <span>↓</span></a
+              >
+              <button class="button button-ghost" type="button" data-open-request>
+                Gửi brief trực tiếp <span>↗</span>
+              </button>
+            </div>
+            <p class="hero-meta">
+              <span><strong>770</strong> mẫu có sẵn</span>
+              <span><strong>16:9</strong> chuẩn trình chiếu</span>
+              <span><strong>1–2 ngày</strong> phản hồi brief</span>
+            </p>
+          </div>
+          <div class="hero-visual" aria-label="Minh họa quy trình chọn mẫu và gửi brief">
+            <div class="hero-orbit hero-orbit-one"></div>
+            <div class="hero-orbit hero-orbit-two"></div>
+            <div class="hero-board">
+              <div class="hero-board-top"><span>PL / 2026</span><span>BRIEF 001</span></div>
+              <div class="hero-board-grid"></div>
+              <div class="hero-board-copy">
+                <span>YOUR STORY</span>
+                <strong>Make the<br /><em>idea</em> visible.</strong>
+              </div>
+              <div class="hero-board-accent"></div>
+              <div class="hero-board-footer">
+                <span>SELECT / BRIEF / BUILD</span><span>01—03</span>
+              </div>
+            </div>
+            <div class="floating-note floating-note-top">
+              <span class="note-icon">✦</span> Chọn theo mood
+            </div>
+            <div class="floating-note floating-note-bottom">
+              <span class="note-icon note-icon-check">✓</span> Brief đã rõ
+            </div>
+          </div>
+        </section>
+
+        <section class="catalog-section" id="templates" aria-labelledby="catalog-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">01 / TEMPLATE LIBRARY</p>
+              <h2 id="catalog-title">Tìm mẫu khớp với câu chuyện</h2>
+            </div>
+            <p class="section-intro">
+              Chọn một mẫu chính hoặc tối đa ba hướng để đội gia công tư vấn nhanh hơn.
+            </p>
+          </div>
+
+          <div class="catalog-layout">
+            <aside class="filter-panel" aria-label="Bộ lọc mẫu slide">
+              <div class="filter-heading">
+                <span class="filter-label">LỌC THƯ VIỆN</span>
+                <button class="text-button" type="button" data-clear-filters>Đặt lại</button>
+              </div>
+              <label class="search-field">
+                <span class="sr-only">Tìm kiếm mẫu</span>
+                <span class="search-icon" aria-hidden="true">⌕</span>
+                <input type="search" placeholder="Tìm theo tên, style, mục đích..." data-search />
+                <kbd>/</kbd>
+              </label>
+
+              <div class="filter-group">
+                <label class="field-label" for="family-filter">Hệ thống hình ảnh</label>
+                <select id="family-filter" class="select-field" data-family-filter>
+                  <option value="all">Tất cả hệ thống</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <label class="field-label" for="category-filter">Phong cách / chuyển động</label>
+                <select id="category-filter" class="select-field" data-category-filter>
+                  <option value="all">Tất cả phong cách</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <label class="field-label" for="palette-filter">Bảng màu</label>
+                <select id="palette-filter" class="select-field" data-palette-filter>
+                  <option value="all">Tất cả bảng màu</option>
+                </select>
+              </div>
+
+              <div class="filter-divider"></div>
+              <div class="filter-tip">
+                <span class="tip-mark">i</span>
+                <p>
+                  <strong>Chưa biết chọn?</strong> Hãy chọn theo mục đích trước, đội ngũ sẽ tinh
+                  chỉnh màu và nhịp slide sau.
+                </p>
+              </div>
+              <p class="source-status" data-source-status>Đang tải thư viện mẫu...</p>
+            </aside>
+
+            <div class="results-panel">
+              <div class="results-toolbar">
+                <div class="results-count">
+                  <strong data-results-count>Đang tải...</strong>
+                  <span data-selection-summary> · 0 mẫu đang chọn</span>
+                </div>
+                <label class="sort-field">
+                  <span>Sắp xếp</span>
+                  <select class="sort-select" data-sort>
+                    <option value="featured">Đề xuất trước</option>
+                    <option value="name">Tên A–Z</option>
+                    <option value="style">Phong cách</option>
+                  </select>
+                </label>
+              </div>
+              <div class="active-filters" data-active-filters hidden></div>
+              <div class="template-grid" data-template-grid aria-live="polite"></div>
+              <div class="empty-state" data-empty-state hidden>
+                <span class="empty-mark">⌁</span>
+                <h3>Chưa tìm thấy mẫu phù hợp</h3>
+                <p>Thử xóa bớt bộ lọc hoặc tìm bằng một từ khóa khác.</p>
+                <button class="button button-outline" type="button" data-clear-filters>
+                  Xóa bộ lọc
+                </button>
+              </div>
+              <div class="load-more-wrap">
+                <button class="button button-outline load-more-button" type="button" data-load-more>
+                  Tải thêm mẫu <span data-load-more-count></span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="process-section" id="process" aria-labelledby="process-title">
+          <div class="section-heading process-heading">
+            <div>
+              <p class="eyebrow">02 / HOW IT WORKS</p>
+              <h2 id="process-title">Từ lựa chọn đến file bàn giao</h2>
+            </div>
+            <p class="section-intro">
+              Bạn chỉ cần mô tả điều cần đạt được. Phần triển khai để chúng tôi lo.
+            </p>
+          </div>
+          <div class="process-grid">
+            <article class="process-card">
+              <span class="process-number">01</span>
+              <span class="process-icon">⌘</span>
+              <h3>Chọn hướng</h3>
+              <p>Chọn một mẫu phù hợp hoặc gửi vài phương án để đội ngũ tư vấn.</p>
+            </article>
+            <article class="process-card process-card-highlight">
+              <span class="process-number">02</span>
+              <span class="process-icon">↗</span>
+              <h3>Gửi brief</h3>
+              <p>Cho biết mục tiêu, số slide, deadline và tài liệu đầu vào của bạn.</p>
+            </article>
+            <article class="process-card">
+              <span class="process-number">03</span>
+              <span class="process-icon">✦</span>
+              <h3>Nhận bản dựng</h3>
+              <p>Đội gia công xác nhận phạm vi, dựng slide và gửi bản xem trước để duyệt.</p>
+            </article>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <div class="footer-brand">
+          <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span
+          ><strong>PRESENTLAB</strong>
+        </div>
+        <p>Chọn đúng nền tảng để ý tưởng được nhìn thấy.</p>
+        <span class="footer-status"><span></span> Production desk online</span>
+      </footer>
+    </div>
+
+    <aside class="selection-tray" data-selection-tray hidden aria-label="Các mẫu đã chọn">
+      <div class="tray-inner">
+        <div class="tray-info">
+          <span class="tray-check">✓</span>
+          <div>
+            <strong><span data-selection-count>0</span> mẫu đã chọn</strong>
+            <small>Tối đa 3 mẫu cho một brief</small>
+          </div>
+        </div>
+        <div class="tray-selections" data-tray-selections></div>
+        <button class="button button-primary tray-action" type="button" data-open-request>
+          Tiếp tục gửi brief <span>→</span>
+        </button>
+      </div>
+    </aside>
+
+    <div class="overlay" data-overlay hidden></div>
+
+    <aside
+      class="request-drawer"
+      data-request-drawer
+      role="dialog"
+      aria-modal="true"
+      aria-hidden="true"
+      aria-labelledby="request-title"
+      inert
+    >
+      <div class="drawer-header">
+        <div>
+          <p class="eyebrow">03 / YOUR REQUEST</p>
+          <h2 id="request-title">Gửi brief cho đội gia công</h2>
+        </div>
+        <button class="icon-button" type="button" aria-label="Đóng biểu mẫu" data-close-request>
+          ×
+        </button>
+      </div>
+
+      <div class="drawer-body" data-form-view>
+        <p class="drawer-lede">
+          Cho chúng tôi vài thông tin để bắt đầu. Bạn có thể bổ sung tài liệu sau khi đội ngũ xác
+          nhận.
+        </p>
+        <div class="selected-list" data-drawer-selections></div>
+        <p class="form-hint" data-no-selection-hint hidden>
+          Hãy chọn ít nhất một mẫu trước khi gửi brief.
+        </p>
+
+        <form class="request-form" data-request-form>
+          <div class="form-section-title"><span>01</span> Thông tin dự án</div>
+          <label class="form-field">
+            <span>Tên dự án <b>*</b></span>
+            <input
+              name="projectName"
+              type="text"
+              placeholder="Ví dụ: Pitch deck gọi vốn Q4"
+              required
+            />
+          </label>
+          <div class="form-row">
+            <label class="form-field">
+              <span>Số lượng slide <b>*</b></span>
+              <input
+                name="slideCount"
+                type="number"
+                min="1"
+                step="1"
+                inputmode="numeric"
+                placeholder="Ví dụ: 42"
+                required
+              />
+              <small class="field-hint">Nhập số nguyên dương, không giới hạn.</small>
+            </label>
+            <label class="form-field">
+              <span>Deadline dự kiến</span>
+              <input name="deadline" type="date" data-deadline />
+            </label>
+          </div>
+          <fieldset class="form-fieldset">
+            <legend>Loại hỗ trợ cần nhận <b>*</b></legend>
+            <label class="radio-option"
+              ><input type="radio" name="service" value="customize" required /><span
+                >Gia công theo nội dung có sẵn</span
+              ></label
+            >
+            <label class="radio-option"
+              ><input type="radio" name="service" value="design-and-content" /><span
+                >Dựng nội dung và thiết kế trọn gói</span
+              ></label
+            >
+            <label class="radio-option"
+              ><input type="radio" name="service" value="template-customization" /><span
+                >Chỉ tùy chỉnh mẫu / branding</span
+              ></label
+            >
+          </fieldset>
+
+          <div class="form-section-title"><span>02</span> Thông tin liên hệ</div>
+          <div class="form-row">
+            <label class="form-field">
+              <span>Người liên hệ <b>*</b></span>
+              <input name="contactName" type="text" placeholder="Tên của bạn" required />
+            </label>
+            <label class="form-field">
+              <span>Số điện thoại</span>
+              <input name="phone" type="tel" placeholder="09xx xxx xxx" />
+            </label>
+          </div>
+          <label class="form-field">
+            <span>Email nhận phản hồi <b>*</b></span>
+            <input name="email" type="email" placeholder="you@company.com" required />
+          </label>
+          <label class="form-field">
+            <span>Điều cần đội ngũ lưu ý</span>
+            <textarea
+              name="notes"
+              rows="4"
+              placeholder="Đối tượng xem, thông điệp chính, phong cách mong muốn, yêu cầu thương hiệu..."
+            ></textarea>
+          </label>
+          <label class="upload-field">
+            <input
+              name="attachments"
+              type="file"
+              accept=".ppt,.pptx,.pdf,.doc,.docx,.xls,.xlsx,.txt"
+              multiple
+              data-attachments
+            />
+            <span class="upload-icon">↑</span>
+            <span
+              ><strong>Đính kèm tài liệu đầu vào</strong
+              ><small>PPTX, PDF, DOCX, XLSX · tối đa 10 tệp / 4 MB</small></span
+            >
+            <span class="upload-button">Chọn tệp</span>
+          </label>
+          <div class="file-list" data-file-list hidden></div>
+          <label class="consent-option"
+            ><input type="checkbox" name="consent" required /><span
+              >Tôi đồng ý để PresentLab sử dụng thông tin này nhằm tư vấn và thực hiện yêu cầu gia
+              công.</span
+            ></label
+          >
+          <button class="button button-primary submit-button" type="submit" data-submit-request>
+            Gửi yêu cầu cho đội gia công <span>→</span>
+          </button>
+          <p class="submit-note">
+            <span>⌁</span> Đội ngũ thường phản hồi trong vòng một ngày làm việc.
+          </p>
+        </form>
+      </div>
+
+      <div class="success-view" data-success-view hidden>
+        <div class="success-mark">✓</div>
+        <p class="eyebrow">REQUEST RECEIVED</p>
+        <h2 data-success-title>Đã tạo brief thành công</h2>
+        <p data-success-copy>Thông tin của bạn đã được ghi nhận.</p>
+        <div class="request-reference">
+          <span>Mã yêu cầu</span><strong data-success-id>PL-000000</strong>
+        </div>
+        <div class="success-actions">
+          <button class="button button-primary" type="button" data-download-request>
+            Tải bản brief <span>↓</span>
+          </button>
+          <button class="button button-outline" type="button" data-new-request>Brief mới</button>
+          <button class="button button-outline" type="button" data-close-request>Đóng</button>
+        </div>
+        <p class="success-footnote" data-success-footnote></p>
+      </div>
+    </aside>
+
+    <div
+      class="preview-modal"
+      data-preview-modal
+      hidden
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="preview-title"
+    >
+      <div class="preview-modal-header">
+        <div>
+          <p class="eyebrow">TEMPLATE PREVIEW</p>
+          <h2 id="preview-title" data-preview-title>Template</h2>
+        </div>
+        <div class="preview-modal-actions">
+          <a
+            class="button button-small button-outline"
+            href="#"
+            target="_blank"
+            rel="noreferrer noopener"
+            data-open-template
+          >
+            Mở deck đầy đủ ↗
+          </a>
+          <button class="icon-button" type="button" aria-label="Đóng xem trước" data-close-preview>
+            ×
+          </button>
+        </div>
+      </div>
+      <div class="preview-viewport" data-preview-viewport>
+        <iframe title="Xem trước mẫu slide" data-preview-frame sandbox="allow-same-origin"></iframe>
+      </div>
+      <p class="preview-modal-note">
+        Đây là deck mẫu để tham khảo nhịp hình ảnh. Nội dung sẽ được thay bằng brief của bạn khi gia
+        công.
+      </p>
+    </div>
+
+    <div class="toast" data-toast role="status" aria-live="polite"></div>
+    <script type="module" src="/web/portal/app.js"></script>
+  </body>
+</html>

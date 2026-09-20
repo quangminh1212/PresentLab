@@ -1,0 +1,29 @@
+{
+  "name": "bauhaus-geometry",
+  "title": "Bauhaus / Bauhaus Geometry",
+  "description": "Geometric forms, functional hierarchy, and primary-color signals. Swiss-inspired grid with hard edges, red signal color, and disciplined information hierarchy.",
+  "format": "16:9",
+  "tokens": {
+    "paper": "#fff9e8",
+    "ink": "#3b2a14",
+    "accent": "#e3a316",
+    "muted": "#806d4e",
+    "radius": "20px",
+    "accentDeep": "#9d6b05",
+    "accentSoft": "#f9e5a8",
+    "line": "rgb(59 42 20 / 16%)",
+    "lineStrong": "rgb(59 42 20 / 28%)",
+    "panel": "#fffdf6",
+    "artOne": "#f7cf68",
+    "artTwo": "#e57b52",
+    "quoteInk": "#261a0c",
+    "quoteMark": "#fff1b9",
+    "artLabel": "#806d4e",
+    "overlay": "radial-gradient(circle at 92% 8%, #f9e5a8 0 14%, var(--paper) 15%)",
+    "baseFamily": "swiss",
+    "styleGroup": "bauhaus",
+    "styleCategory": "Bauhaus",
+    "styleTreatment": "geometry",
+    "stylePalette": "saffron"
+  }
+}

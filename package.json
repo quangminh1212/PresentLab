@@ -30,6 +30,7 @@
   },
   "files": [
     "dist",
+    "web",
     "resources",
     "schemas",
     "templates",
@@ -49,9 +50,12 @@
     "render": "node --enable-source-maps dist/cli.js render",
     "test": "vitest run",
     "test:integration": "vitest run --config vitest.integration.config.ts",
-    "gallery:build": "npm run build && node scripts/build-template-gallery.mjs",
-    "gallery:verify": "npm run build && node scripts/verify-template-gallery.mjs",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "gallery:build": "npm run build && node scripts/build-gallery.mjs",
+    "vercel:build": "node scripts/build-vercel.mjs",
+    "gallery:verify": "npm run build && node scripts/verify-gallery.mjs && node scripts/verify-similarity.mjs && node scripts/verify-backgrounds.mjs",
+    "gallery:similarity": "node scripts/verify-similarity.mjs",
+    "gallery:backgrounds": "node scripts/verify-backgrounds.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.vercel.json --noEmit",
     "verify": "npm run format:check && npm run lint && npm run typecheck && npm test",
     "verify:all": "npm run verify && npm run build && npm run test:integration && npm run gallery:verify && npm audit --audit-level=high"
   },

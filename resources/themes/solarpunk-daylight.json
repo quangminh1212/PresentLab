@@ -1,0 +1,29 @@
+{
+  "name": "solarpunk-daylight",
+  "title": "Solarpunk / Eco-futurism / Solarpunk Daylight",
+  "description": "Biophilic infrastructure, renewable futures, daylight, and shared commons. Warm studio system with earthy colors, serif headlines, and soft organic geometry.",
+  "format": "16:9",
+  "tokens": {
+    "paper": "#effcf7",
+    "ink": "#15372e",
+    "accent": "#20a97f",
+    "muted": "#5a766b",
+    "radius": "28px",
+    "accentDeep": "#117256",
+    "accentSoft": "#c9f0e1",
+    "line": "rgb(21 55 46 / 16%)",
+    "lineStrong": "rgb(21 55 46 / 28%)",
+    "panel": "#fbfffd",
+    "artOne": "#9addc5",
+    "artTwo": "#f3c28a",
+    "quoteInk": "#ffffff",
+    "quoteMark": "#c4f4e0",
+    "artLabel": "#5a766b",
+    "overlay": "radial-gradient(circle at 92% 8%, #c9f0e1 0 14%, var(--paper) 15%)",
+    "baseFamily": "organic",
+    "styleGroup": "solarpunk",
+    "styleCategory": "Solarpunk / Eco-futurism",
+    "styleTreatment": "solarpunk",
+    "stylePalette": "mint"
+  }
+}

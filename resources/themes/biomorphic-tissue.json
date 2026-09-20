@@ -1,0 +1,29 @@
+{
+  "name": "biomorphic-tissue",
+  "title": "Biomorphic / Organic Form / Biomorphic Tissue",
+  "description": "Cellular forms, flowing contours, growth patterns, and shapes borrowed from living matter. Light editorial system with spacious cards, indigo accents, and calm narrative pacing.",
+  "format": "16:9",
+  "tokens": {
+    "paper": "#f2f7f1",
+    "ink": "#1b3327",
+    "accent": "#1f8a62",
+    "muted": "#5e7264",
+    "radius": "26px",
+    "accentDeep": "#126044",
+    "accentSoft": "#cae8d7",
+    "line": "rgb(27 51 39 / 16%)",
+    "lineStrong": "rgb(27 51 39 / 28%)",
+    "panel": "#fbfffc",
+    "artOne": "#a5cdb3",
+    "artTwo": "#e7ae77",
+    "quoteInk": "#ffffff",
+    "quoteMark": "#bfe7cc",
+    "artLabel": "#5e7264",
+    "overlay": "radial-gradient(circle at 92% 8%, #cae8d7 0 14%, var(--paper) 15%)",
+    "baseFamily": "aurora",
+    "styleGroup": "biomorphic",
+    "styleCategory": "Biomorphic / Organic Form",
+    "styleTreatment": "biomorphic",
+    "stylePalette": "forest"
+  }
+}

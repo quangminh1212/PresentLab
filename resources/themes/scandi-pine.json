@@ -1,0 +1,29 @@
+{
+  "name": "scandi-pine",
+  "title": "Scandinavian / Nordic / Scandi Pine",
+  "description": "Functional calm, soft neutrals, generous space, and domestic warmth. Light editorial system with spacious cards, indigo accents, and calm narrative pacing.",
+  "format": "16:9",
+  "tokens": {
+    "paper": "#f1faff",
+    "ink": "#153148",
+    "accent": "#3e9bd4",
+    "muted": "#617f91",
+    "radius": "18px",
+    "accentDeep": "#276b99",
+    "accentSoft": "#cfeaf8",
+    "line": "rgb(21 49 72 / 16%)",
+    "lineStrong": "rgb(21 49 72 / 28%)",
+    "panel": "#fbfeff",
+    "artOne": "#a7d7f0",
+    "artTwo": "#edbd93",
+    "quoteInk": "#ffffff",
+    "quoteMark": "#d9f0ff",
+    "artLabel": "#617f91",
+    "overlay": "radial-gradient(circle at 92% 8%, #cfeaf8 0 14%, var(--paper) 15%)",
+    "baseFamily": "aurora",
+    "styleGroup": "scandinavian",
+    "styleCategory": "Scandinavian / Nordic",
+    "styleTreatment": "scandi",
+    "stylePalette": "ice"
+  }
+}

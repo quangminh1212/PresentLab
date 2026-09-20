@@ -13,8 +13,6 @@ import { renderDeck } from "../core/render.js";
 import { CatalogFormatSchema, OutputFormatSchema, PageFormatSchema } from "../core/schema.js";
 import type { CatalogFormat, OutputFormat } from "../core/schema.js";
 
-const MAX_SLIDES = 100;
-
 const ValidationOutputSchema = z.object({
   valid: z.boolean(),
   title: z.string(),
@@ -161,13 +159,13 @@ export function createPresentLabServer(requestedRoot?: string): McpServer {
         "Validate the PresentLab HTML deck contract, slide ids, slide count, metadata, and basic image accessibility before rendering.",
       inputSchema: z.object({
         input: z.string().min(1).describe("HTML file path relative to the PresentLab workspace."),
-        maxSlides: z.number().int().min(1).max(MAX_SLIDES).optional(),
+        maxSlides: z.number().int().min(1).optional(),
       }),
       outputSchema: ValidationOutputSchema,
     },
     async ({ input, maxSlides }) => {
       const inputPath = pathForTool(root, input, "input");
-      const { inspection } = await inspectDeckFile(inputPath, maxSlides ?? MAX_SLIDES);
+      const { inspection } = await inspectDeckFile(inputPath, maxSlides);
       const output = toValidationResult(inspection);
       return toolText(output);
     },
@@ -183,7 +181,7 @@ export function createPresentLabServer(requestedRoot?: string): McpServer {
         input: z.string().min(1),
         outputDir: z.string().min(1),
         formats: z.array(OutputFormatSchema).min(1).max(3).optional(),
-        maxSlides: z.number().int().min(1).max(MAX_SLIDES).optional(),
+        maxSlides: z.number().int().min(1).optional(),
         allowExternalAssets: z.boolean().optional(),
       }),
       outputSchema: RenderOutputSchema,
@@ -195,7 +193,7 @@ export function createPresentLabServer(requestedRoot?: string): McpServer {
         inputPath,
         outputDir: resolvedOutputDir,
         formats: (formats ?? ["png", "pdf", "pptx"]) as OutputFormat[],
-        maxSlides: maxSlides ?? MAX_SLIDES,
+        ...(maxSlides === undefined ? {} : { maxSlides }),
         ...(allowExternalAssets === undefined ? {} : { allowExternalAssets }),
         workspaceRoot: root,
       } as const;
@@ -224,7 +222,7 @@ export function createPresentLabServer(requestedRoot?: string): McpServer {
         input: z.string().min(1),
         outputDir: z.string().min(1),
         formats: z.array(CatalogFormatSchema).min(1).max(2).optional(),
-        maxSlides: z.number().int().min(1).max(MAX_SLIDES).optional(),
+        maxSlides: z.number().int().min(1).optional(),
         allowExternalAssets: z.boolean().optional(),
       }),
       outputSchema: CatalogOutputSchema,
@@ -234,7 +232,7 @@ export function createPresentLabServer(requestedRoot?: string): McpServer {
         inputPath: pathForTool(root, input, "input"),
         outputDir: pathForTool(root, outputDir, "outputDir"),
         formats: (formats ?? ["html", "pdf"]) as CatalogFormat[],
-        maxSlides: maxSlides ?? MAX_SLIDES,
+        ...(maxSlides === undefined ? {} : { maxSlides }),
         ...(allowExternalAssets === undefined ? {} : { allowExternalAssets }),
         workspaceRoot: root,
       } as const;

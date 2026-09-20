@@ -10,7 +10,8 @@ The repository also ships an MCP server, a Codex-compatible skill/plugin, reusab
 - Chromium rendering for pixel-faithful PNG and print-quality PDF output.
 - PPTX export that places each rendered slide as a full-bleed image, preserving HTML fidelity across PowerPoint viewers.
 - Catalog generation as HTML and PDF.
-- A 100-template gallery with 2,500 sample slides. Each folder contains `deck.html`, `deck.pdf`, and `deck.pptx`.
+- A 770-template gallery with 34,650 sample slides. Each folder contains `deck.html`, `deck.pdf`, and `deck.pptx`.
+- A customer request portal at [`web/portal/`](web/portal/) for choosing templates and handing a brief to a production team.
 - MCP tools, resources, and prompts for validation, rendering, catalogs, templates, and deck design guidance.
 - A repo-local `presentlab-ai` plugin with a reusable design skill.
 - Strict TypeScript, unit tests, integration smoke tests, formatting, linting, security boundaries, and GitHub Actions CI.
@@ -41,7 +42,7 @@ git submodule update --init --recursive
 
 ## Template gallery
 
-The gallery is mounted at [`templates/`](templates/) from the private [`PresentTemplate`](https://github.com/quangminh1212/PresentTemplate) repository. It contains eight structural families and 92 palette/layout variants:
+The gallery is mounted at [`templates/`](templates/) from the private [`PresentTemplate`](https://github.com/quangminh1212/PresentTemplate) repository. It contains 770 templates: eight structural families, 92 palette/layout variants, and 670 researched style presets across 67 groups. Every template has a deterministic composition profile so the gallery varies structure, rhythm, typography, and surface treatment in addition to color.
 
 | Folder        | Style                |
 | ------------- | -------------------- |
@@ -58,7 +59,13 @@ Variant folders combine these structural families with curated palettes such as 
 
 The color selection catalog is available at [`resources/palettes/`](resources/palettes/) and in the private submodule at [`templates/palettes/`](templates/palettes/). It includes machine-readable palette tokens plus `catalog.html`, `catalog.pdf`, and `catalog.pptx` for client review. MCP clients can call `presentlab_list_palettes` or read `presentlab://palettes/catalog`.
 
-Each folder is a portable handoff unit. Edit `deck.html`, then regenerate its PDF/PPTX outputs with `npm run gallery:build`. The generator is deterministic and the gallery checker enforces a minimum of twenty-five slides plus the exact three-file folder contract across all 100 folders. Template changes are committed and pushed in `PresentTemplate`; the resulting submodule pointer is then committed in this repository. See [docs/template-gallery.md](docs/template-gallery.md) for the authoring rules.
+The client-facing template selection and brief handoff flow is documented in [docs/request-portal.md](docs/request-portal.md). It can post to a configured request endpoint, open a configured handoff email, or preserve a local JSON brief when no delivery target is configured.
+
+The portal is deployable as a Vercel static site with a same-origin `/api/slide-requests` function. See [docs/vercel.md](docs/vercel.md) for the required webhook environment variables and deployment steps.
+
+The repository follows a small, predictable layout: `src/` is the rendering engine, `web/` is the customer UI, `resources/` is reusable data, `scripts/` contains build and verification commands, and `tests/` is split into `unit/` and `integration/`. See [docs/project-structure.md](docs/project-structure.md).
+
+Each folder is a portable handoff unit. Edit `deck.html`, then regenerate its PDF/PPTX outputs with `npm run gallery:build`. The generator is deterministic and the gallery checker validates every source's actual positive slide count plus the exact three-file folder contract across all 770 folders; the current generated sample uses 45 slides per template. The similarity checker rejects pairs at or above 50% shared signature features. Template changes are committed and pushed in `PresentTemplate`; the resulting submodule pointer is then committed in this repository. See [docs/template-gallery.md](docs/template-gallery.md) for the authoring rules.
 
 ## HTML contract
 
@@ -79,7 +86,7 @@ PresentLab treats each `[data-pl-slide]` or `.pl-slide` element as one page. The
 ## CLI
 
 ```text
-presentlab validate --input <deck.html> [--max-slides 100] [--allow-external-assets]
+presentlab validate --input <deck.html> [--max-slides <n>] [--allow-external-assets]
 presentlab render --input <deck.html> --output <directory> --format png,pdf,pptx [--allow-external-assets]
 presentlab catalog --input <deck.html> --output <directory> --format html,pdf [--allow-external-assets]
 presentlab templates
@@ -105,4 +112,4 @@ The repo-local plugin lives at `plugins/presentlab-ai`. Host-specific examples a
 
 The default PPTX mode is fidelity-first: slide text remains selectable in the source HTML/PDF, while the PPTX contains a full-slide image. This is deliberate because arbitrary HTML/CSS cannot be losslessly translated into editable PowerPoint shapes. The artifact manifest records the renderer inputs and output files for reproducibility.
 
-See [docs/architecture.md](docs/architecture.md), [docs/html-contract.md](docs/html-contract.md), [docs/template-gallery.md](docs/template-gallery.md), [docs/mcp.md](docs/mcp.md), [docs/release.md](docs/release.md), [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and [CHANGELOG.md](CHANGELOG.md) for release and threat-model guidance.
+See [docs/architecture.md](docs/architecture.md), [docs/html-contract.md](docs/html-contract.md), [docs/template-gallery.md](docs/template-gallery.md), [docs/mcp.md](docs/mcp.md), [docs/vercel.md](docs/vercel.md), [docs/release.md](docs/release.md), [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and [CHANGELOG.md](CHANGELOG.md) for release and threat-model guidance.

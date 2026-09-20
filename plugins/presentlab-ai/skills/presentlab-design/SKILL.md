@@ -12,7 +12,7 @@ Use this skill when an agent needs to turn a brief into a reusable HTML design s
 ## Contract
 
 - Start from a local template or theme exposed by `presentlab_list_templates`, `presentlab_list_themes`, or the `presentlab://templates` / `presentlab://themes` resources. Read the actual template with `presentlab_get_template` or its dynamic resource before writing.
-- The built-in gallery offers 100 template folders under `templates/`, combining eight structural families with curated palette/layout variants; each template has an editable HTML source plus checked-in PDF and PPTX examples.
+- The built-in gallery offers 770 template folders under `templates/`, combining eight structural families with curated palette/layout variants; each template has an editable HTML source plus checked-in PDF and PPTX examples. The current generated gallery sample uses 45 slides per template, but the renderer accepts any positive slide count.
 - Put `data-pl-format` and `data-pl-title` on `<html>` or `<body>`; supported formats are `16:9`, `4:3`, `A4-landscape`, and `A4-portrait`.
 - Make every page one `[data-pl-slide]` or `.pl-slide` element with a unique, lowercase `data-slide-id`.
 - Give every slide a meaningful heading and every `<img>` a non-empty `alt` attribute.

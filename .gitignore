@@ -1,8 +1,13 @@
 node_modules/
 dist/
+public/
 coverage/
 .artifacts/
+.template-gallery-build-lock/
+.vercel/
 .playwright/
+.env.local
+.env.*.local
 *.log
 *.tmp
 Thumbs.db

@@ -1,0 +1,5 @@
+.template-gallery-build-lock/
+.env.example
+templates/
+*.pdf
+*.pptx

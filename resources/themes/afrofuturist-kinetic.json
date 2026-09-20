@@ -1,0 +1,29 @@
+{
+  "name": "afrofuturist-kinetic",
+  "title": "Afrofuturist-inspired / Afrofuturist Kinetic",
+  "description": "Speculative futures, heritage references, bold geometry, and cosmic color. Neon retro-future system with synthwave gradients, luminous grids, and energetic pacing.",
+  "format": "16:9",
+  "tokens": {
+    "paper": "#f6f4ff",
+    "ink": "#241d45",
+    "accent": "#7357ef",
+    "muted": "#716b91",
+    "radius": "26px",
+    "accentDeep": "#4c35ba",
+    "accentSoft": "#ddd7ff",
+    "line": "rgb(36 29 69 / 16%)",
+    "lineStrong": "rgb(36 29 69 / 28%)",
+    "panel": "#ffffff",
+    "artOne": "#bcb3fb",
+    "artTwo": "#f7a3c7",
+    "quoteInk": "#ffffff",
+    "quoteMark": "#e5e0ff",
+    "artLabel": "#716b91",
+    "overlay": "radial-gradient(circle at 92% 8%, #ddd7ff 0 14%, var(--paper) 15%)",
+    "baseFamily": "retrofuture",
+    "styleGroup": "afrofuturist",
+    "styleCategory": "Afrofuturist-inspired",
+    "styleTreatment": "afrofuturist",
+    "stylePalette": "violet"
+  }
+}

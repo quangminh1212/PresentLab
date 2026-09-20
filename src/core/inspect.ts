@@ -5,8 +5,6 @@ import { readUtf8File, sha256 } from "./files.js";
 import { DeckManifestSchema } from "./schema.js";
 import type { DeckInspection, DeckManifest, SlideInspection } from "./schema.js";
 
-const DEFAULT_MAX_SLIDES = 100;
-
 function firstAttribute(element: Element | null, ...names: string[]): string | undefined {
   for (const name of names) {
     const value = element?.getAttribute(name)?.trim();
@@ -69,7 +67,7 @@ function parseManifest(document: Document, errors: string[]): DeckManifest {
   return fallback.data;
 }
 
-export function inspectDeckHtml(html: string, maxSlides = DEFAULT_MAX_SLIDES): DeckInspection {
+export function inspectDeckHtml(html: string, maxSlides?: number): DeckInspection {
   const errors: string[] = [];
   const warnings: string[] = [];
   const { document } = parseHTML(html);
@@ -79,12 +77,14 @@ export function inspectDeckHtml(html: string, maxSlides = DEFAULT_MAX_SLIDES): D
   if (nodes.length === 0) {
     errors.push("No slides found. Add at least one [data-pl-slide] or .pl-slide element.");
   }
-  if (nodes.length > maxSlides) {
+  if (maxSlides !== undefined && nodes.length > maxSlides) {
     errors.push(`Deck has ${nodes.length} slides; the configured limit is ${maxSlides}.`);
   }
 
   const seenIds = new Set<string>();
-  const slides: SlideInspection[] = nodes.slice(0, maxSlides).map((node, index) => {
+  const slides: SlideInspection[] = (
+    maxSlides === undefined ? nodes : nodes.slice(0, maxSlides)
+  ).map((node, index) => {
     const rawId = firstAttribute(node, "data-slide-id", "id");
     const id = safeIdentifier(rawId ?? `slide-${index + 1}`, `slide-${index + 1}`);
     if (!rawId) warnings.push(`Slide ${index + 1} has no data-slide-id; generated id '${id}'.`);
@@ -119,7 +119,7 @@ export function inspectDeckHtml(html: string, maxSlides = DEFAULT_MAX_SLIDES): D
 
 export async function inspectDeckFile(
   filePath: string,
-  maxSlides = DEFAULT_MAX_SLIDES,
+  maxSlides?: number,
 ): Promise<{ html: string; inspection: DeckInspection; sourceHash: string }> {
   const html = await readUtf8File(filePath);
   try {

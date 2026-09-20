@@ -33,7 +33,7 @@ Metadata can live on `<html>` or `<body>`:
 
 PresentLab selects `[data-pl-slide], .pl-slide`. Each selected element is one slide. Use a unique lowercase `data-slide-id`; an HTML `id` is accepted as a fallback, and a generated id produces a validation warning. Duplicate ids are an error after normalization.
 
-Every slide should contain a heading (`[data-slide-title]`, `h1`, `h2`, or `h3`). Every image must have meaningful `alt` text. A deck may contain at most 100 slides by default; callers can lower the limit.
+Every slide should contain a heading (`[data-slide-title]`, `h1`, `h2`, or `h3`). Every image must have meaningful `alt` text. A deck may contain any positive number of slides. Callers can pass `maxSlides` when they need an explicit operational limit; omitted limits do not truncate the deck.
 
 ## Rendering assumptions
 

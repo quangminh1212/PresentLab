@@ -1,0 +1,29 @@
+{
+  "name": "maximalist-layer",
+  "title": "Maximalism / Layered Ornament / Maximalist Layer",
+  "description": "Dense layering, pattern collisions, saturated surfaces, and deliberately abundant visual energy. Neo-brutalist system with yellow canvas, ink borders, offset shadows, and playful emphasis.",
+  "format": "16:9",
+  "tokens": {
+    "paper": "#fff9e8",
+    "ink": "#3b2a14",
+    "accent": "#e3a316",
+    "muted": "#806d4e",
+    "radius": "20px",
+    "accentDeep": "#9d6b05",
+    "accentSoft": "#f9e5a8",
+    "line": "rgb(59 42 20 / 16%)",
+    "lineStrong": "rgb(59 42 20 / 28%)",
+    "panel": "#fffdf6",
+    "artOne": "#f7cf68",
+    "artTwo": "#e57b52",
+    "quoteInk": "#261a0c",
+    "quoteMark": "#fff1b9",
+    "artLabel": "#806d4e",
+    "overlay": "radial-gradient(circle at 92% 8%, #f9e5a8 0 14%, var(--paper) 15%)",
+    "baseFamily": "brutalist",
+    "styleGroup": "maximalism",
+    "styleCategory": "Maximalism / Layered Ornament",
+    "styleTreatment": "maximalist",
+    "stylePalette": "saffron"
+  }
+}

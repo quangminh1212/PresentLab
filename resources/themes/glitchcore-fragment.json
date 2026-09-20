@@ -1,0 +1,29 @@
+{
+  "name": "glitchcore-fragment",
+  "title": "Glitchcore / Signal Error / Glitchcore Fragment",
+  "description": "Scanlines, broken registration, system noise, and intentionally unstable digital signals. Terminal-inspired dark system for product, engineering, and operational narratives.",
+  "format": "16:9",
+  "tokens": {
+    "paper": "#0b1020",
+    "ink": "#edf4ff",
+    "accent": "#55e0d0",
+    "muted": "#9aaac2",
+    "radius": "12px",
+    "accentDeep": "#1e9994",
+    "accentSoft": "#183d4a",
+    "line": "rgb(237 244 255 / 16%)",
+    "lineStrong": "rgb(85 224 208 / 52%)",
+    "panel": "#111a2b",
+    "artOne": "#173d70",
+    "artTwo": "#d86d49",
+    "quoteInk": "#081018",
+    "quoteMark": "#b9fff3",
+    "artLabel": "#9aaac2",
+    "overlay": "linear-gradient(135deg, rgb(85 224 208 / 8%), transparent 38%), radial-gradient(circle at 92% 8%, #183d4a 0 14%, var(--paper) 15%)",
+    "baseFamily": "datanoir",
+    "styleGroup": "glitchcore",
+    "styleCategory": "Glitchcore / Signal Error",
+    "styleTreatment": "glitchcore",
+    "stylePalette": "cinematic"
+  }
+}

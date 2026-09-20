@@ -17,7 +17,7 @@ import { runMcpServer } from "./mcp/server.js";
 const HELP = `PresentLab HTML-first renderer
 
 Usage:
-  presentlab validate --input <deck.html> [--max-slides 100] [--json]
+  presentlab validate --input <deck.html> [--max-slides <n>] [--json]
   presentlab render --input <deck.html> --output <dir> [--format png,pdf,pptx]
   presentlab catalog --input <deck.html> --output <dir> [--format html,pdf]
   presentlab templates
@@ -38,9 +38,9 @@ function stringOption(values: CliValues, name: string, required = true): string 
   throw new Error(`Missing required option --${name}.`);
 }
 
-function numberOption(values: CliValues, name: string, fallback: number): number {
+function numberOption(values: CliValues, name: string): number | undefined {
   const raw = values[name];
-  if (raw === undefined) return fallback;
+  if (raw === undefined) return undefined;
   if (typeof raw !== "string" || !/^\d+$/.test(raw)) {
     throw new Error(`Option --${name} must be a positive integer.`);
   }
@@ -94,7 +94,7 @@ function parseCli(args: readonly string[]) {
 
 async function commandValidate(values: CliValues, root: string): Promise<number> {
   const inputPath = resolveWorkspacePath(root, stringOption(values, "input")!, "input");
-  const maxSlides = numberOption(values, "max-slides", 100);
+  const maxSlides = numberOption(values, "max-slides");
   const { inspection } = await inspectDeckFile(inputPath, maxSlides);
   const result = toValidationResult(inspection);
   if (booleanOption(values, "json")) {
@@ -116,11 +116,12 @@ async function commandRender(values: CliValues, root: string): Promise<number> {
     OutputFormatSchema,
     ["png", "pdf", "pptx"],
   );
+  const maxSlides = numberOption(values, "max-slides");
   const result = await renderDeck({
     inputPath,
     outputDir,
     formats,
-    maxSlides: numberOption(values, "max-slides", 100),
+    ...(maxSlides === undefined ? {} : { maxSlides }),
     allowExternalAssets: booleanOption(values, "allow-external-assets"),
     workspaceRoot: root,
   });
@@ -141,11 +142,12 @@ async function commandCatalog(values: CliValues, root: string): Promise<number> 
     CatalogFormatSchema,
     ["html", "pdf"],
   );
+  const maxSlides = numberOption(values, "max-slides");
   const result = await buildCatalog({
     inputPath,
     outputDir,
     formats,
-    maxSlides: numberOption(values, "max-slides", 100),
+    ...(maxSlides === undefined ? {} : { maxSlides }),
     allowExternalAssets: booleanOption(values, "allow-external-assets"),
     workspaceRoot: root,
   });

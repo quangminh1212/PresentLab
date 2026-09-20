@@ -1,0 +1,29 @@
+{
+  "name": "moorish-lattice",
+  "title": "Islamic Geometric / Moorish / Moorish Lattice",
+  "description": "Tessellation, courtyard geometry, lattice, and ornamental spatial rhythm. Quiet luxury system with ivory paper, hairline rules, serif typography, and restrained gold.",
+  "format": "16:9",
+  "tokens": {
+    "paper": "#eefaff",
+    "ink": "#12303e",
+    "accent": "#0f9ec7",
+    "muted": "#5e7782",
+    "radius": "24px",
+    "accentDeep": "#057493",
+    "accentSoft": "#c8f0fa",
+    "line": "rgb(18 48 62 / 16%)",
+    "lineStrong": "rgb(18 48 62 / 28%)",
+    "panel": "#faffff",
+    "artOne": "#a8dfea",
+    "artTwo": "#ffcc9b",
+    "quoteInk": "#05303c",
+    "quoteMark": "#d8f8ff",
+    "artLabel": "#5e7782",
+    "overlay": "radial-gradient(circle at 92% 8%, #c8f0fa 0 14%, var(--paper) 15%)",
+    "baseFamily": "luxury",
+    "styleGroup": "islamic-geometric",
+    "styleCategory": "Islamic Geometric / Moorish",
+    "styleTreatment": "moorish",
+    "stylePalette": "ocean"
+  }
+}

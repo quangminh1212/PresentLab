@@ -1,0 +1,29 @@
+{
+  "name": "artdeco-palace",
+  "title": "Art Deco / Artdeco Palace",
+  "description": "Symmetry, stepped geometry, metallic accents, and theatrical hierarchy. Quiet luxury system with ivory paper, hairline rules, serif typography, and restrained gold.",
+  "format": "16:9",
+  "tokens": {
+    "paper": "#fff5ed",
+    "ink": "#3f2318",
+    "accent": "#c46b35",
+    "muted": "#7c5d4e",
+    "radius": "14px",
+    "accentDeep": "#8f4520",
+    "accentSoft": "#f4d0b6",
+    "line": "rgb(63 35 24 / 16%)",
+    "lineStrong": "rgb(63 35 24 / 28%)",
+    "panel": "#fffaf5",
+    "artOne": "#e6ab7f",
+    "artTwo": "#8ec4b8",
+    "quoteInk": "#ffffff",
+    "quoteMark": "#f9dac2",
+    "artLabel": "#7c5d4e",
+    "overlay": "radial-gradient(circle at 92% 8%, #f4d0b6 0 14%, var(--paper) 15%)",
+    "baseFamily": "luxury",
+    "styleGroup": "art-deco",
+    "styleCategory": "Art Deco",
+    "styleTreatment": "deco",
+    "stylePalette": "copper"
+  }
+}

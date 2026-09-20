@@ -1,0 +1,29 @@
+{
+  "name": "classical-atlas",
+  "title": "Classical / Neoclassical / Classical Atlas",
+  "description": "Measured proportion, civic structure, marble restraint, and academic clarity. Swiss-inspired grid with hard edges, red signal color, and disciplined information hierarchy.",
+  "format": "16:9",
+  "tokens": {
+    "paper": "#f7f0e5",
+    "ink": "#3d3125",
+    "accent": "#bd7043",
+    "muted": "#796c5d",
+    "radius": "34px",
+    "accentDeep": "#875034",
+    "accentSoft": "#ead4bd",
+    "line": "rgb(61 49 37 / 16%)",
+    "lineStrong": "rgb(61 49 37 / 28%)",
+    "panel": "#fffaf3",
+    "artOne": "#ddbe9b",
+    "artTwo": "#c2a773",
+    "quoteInk": "#fffaf2",
+    "quoteMark": "#f4d8bd",
+    "artLabel": "#796c5d",
+    "overlay": "radial-gradient(circle at 92% 8%, #ead4bd 0 14%, var(--paper) 15%)",
+    "baseFamily": "swiss",
+    "styleGroup": "classical",
+    "styleCategory": "Classical / Neoclassical",
+    "styleTreatment": "classical",
+    "stylePalette": "sand"
+  }
+}
