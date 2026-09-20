@@ -2,7 +2,7 @@
 
 PresentLab is a static Vercel deployment with one Node.js Function for request
 handoff. The checked-in [`vercel.json`](../vercel.json) maps `/` and `/portal` to
-[`web/portal/`](../web/portal/) and keeps `/api/slide-requests` same-origin.
+the generated `public/index.html` entry and keeps `/api/slide-requests` same-origin.
 
 ## Deploy
 

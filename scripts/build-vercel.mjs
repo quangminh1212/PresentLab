@@ -10,6 +10,8 @@ await mkdir(output, { recursive: true });
 
 const assets = [
   ["web/portal", "web/portal"],
+  ["web/portal/index.html", "index.html"],
+  ["web/portal/index.html", "portal/index.html"],
   ["resources/templates/index.json", "resources/templates/index.json"],
   ["resources/palettes/index.json", "resources/palettes/index.json"],
   ["resources/palettes/catalog.html", "resources/palettes/catalog.html"],

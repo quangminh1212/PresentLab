@@ -4,8 +4,8 @@
   "outputDirectory": "public",
   "cleanUrls": true,
   "rewrites": [
-    { "source": "/", "destination": "/web/portal/index.html" },
-    { "source": "/portal", "destination": "/web/portal/index.html" },
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/portal", "destination": "/index.html" },
     { "source": "/portal/:path*", "destination": "/web/portal/:path*" }
   ],
   "headers": [

@@ -114,7 +114,7 @@ describe("Vercel request function", () => {
     expect(config.outputDirectory).toBe("public");
     expect(config.rewrites).toContainEqual({
       source: "/",
-      destination: "/web/portal/index.html",
+      destination: "/index.html",
     });
     expect(config.functions["api/slide-requests.ts"]?.maxDuration).toBe(10);
   });
