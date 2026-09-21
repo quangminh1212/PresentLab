@@ -19,6 +19,18 @@
       <span class="page-curtain-line"></span>
     </div>
     <div class="scroll-progress" aria-hidden="true"><span data-scroll-progress></span></div>
+    <div class="scene-transition" data-scene-transition aria-hidden="true">
+      <div class="scene-transition-wash"></div>
+      <div class="scene-transition-content">
+        <span class="scene-transition-index" data-scene-transition-index>02</span>
+        <span data-i18n="sceneTransition">ĐANG CHUYỂN CẢNH</span>
+      </div>
+    </div>
+    <aside class="scene-rail" data-scene-rail aria-hidden="true">
+      <div class="scene-rail-meta"><span data-scene-index>01</span><span>03</span></div>
+      <span class="scene-rail-track"><i data-scene-progress></i></span>
+      <span class="scene-rail-label" data-scene-label data-i18n="sceneLibrary">KHÔNG GIAN</span>
+    </aside>
     <noscript>
       <div class="noscript-banner" data-i18n="noscript">
         Trang này cần JavaScript để tải thư viện mẫu và gửi brief.
@@ -87,7 +99,7 @@
       </header>
 
       <main>
-        <section class="hero" id="catalog" aria-labelledby="hero-title">
+        <section class="hero" id="catalog" aria-labelledby="hero-title" data-motion-scene="library">
           <div class="hero-copy" data-reveal="hero-copy">
             <p class="eyebrow">
               <span class="eyebrow-dot"></span>
@@ -125,6 +137,10 @@
                 <span class="meta-label" data-i18n="heroStatResponse">check và phản hồi</span></span
               >
             </p>
+            <div class="hero-scroll-cue" data-reveal="scroll-cue" aria-hidden="true">
+              <span class="hero-scroll-cue-line"></span>
+              <span data-i18n="scrollCue">CUỘN ĐỂ KHÁM PHÁ</span>
+            </div>
           </div>
           <div
             class="hero-visual"
@@ -212,6 +228,7 @@
           id="templates"
           aria-labelledby="catalog-title"
           data-reveal-section
+          data-motion-scene="templates"
         >
           <div class="section-heading" data-reveal="section-heading">
             <div>
@@ -338,6 +355,7 @@
           id="process"
           aria-labelledby="process-title"
           data-reveal-section
+          data-motion-scene="process"
         >
           <div class="section-heading process-heading" data-reveal="section-heading">
             <div>

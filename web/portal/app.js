@@ -14,6 +14,11 @@ const DEFAULT_LOCALE = "vi";
 const DEFAULT_THEME = "dark";
 const SUPPORTED_LOCALES = ["vi", "en", "zh"];
 const SUPPORTED_THEMES = ["dark", "light"];
+const MOTION_SCENES = [
+  { id: "catalog", index: "01", copy: "sceneLibrary" },
+  { id: "templates", index: "02", copy: "sceneTemplates" },
+  { id: "process", index: "03", copy: "sceneProcess" },
+];
 
 const COPY = {
   vi: {
@@ -190,6 +195,11 @@ const COPY = {
     signalMotion: "CHUYỂN ĐỘNG CÓ CHỦ ĐÍCH",
     signalBrief: "BRIEF / DỰNG / DUYỆT",
     signalOutput: "SẴN SÀNG LÊN SÂN KHẤU",
+    scrollCue: "CUỘN ĐỂ KHÁM PHÁ",
+    sceneLibrary: "KHÔNG GIAN",
+    sceneTemplates: "TUYỂN HƯỚNG",
+    sceneProcess: "THỰC THI",
+    sceneTransition: "ĐANG CHUYỂN CẢNH",
     previewLive: "KHUNG ĐANG XEM",
     previewPrevious: "Mẫu trước",
     previewPreviousShort: "TRƯỚC",
@@ -379,6 +389,11 @@ const COPY = {
     signalMotion: "MOTION WITH INTENT",
     signalBrief: "BRIEF / BUILD / REVIEW",
     signalOutput: "READY FOR THE ROOM",
+    scrollCue: "SCROLL TO EXPLORE",
+    sceneLibrary: "LIBRARY",
+    sceneTemplates: "DIRECTIONS",
+    sceneProcess: "PRODUCTION",
+    sceneTransition: "MOVING TO NEXT SCENE",
     previewLive: "LIVE FRAME",
     previewPrevious: "Previous template",
     previewPreviousShort: "PREV",
@@ -559,6 +574,11 @@ const COPY = {
     signalMotion: "有目的的动效",
     signalBrief: "简报 / 制作 / 评审",
     signalOutput: "为现场呈现准备",
+    scrollCue: "滚动探索",
+    sceneLibrary: "素材库",
+    sceneTemplates: "选择方向",
+    sceneProcess: "制作",
+    sceneTransition: "正在切换场景",
     previewLive: "实时画面",
     previewPrevious: "上一个模板",
     previewPreviousShort: "上一个",
@@ -1054,6 +1074,7 @@ const state = {
   palettes: new Map(FALLBACK_PALETTES.map((palette) => [palette.name, palette])),
   locale: getInitialLocale(),
   theme: getInitialTheme(),
+  motionScene: 0,
   query: "",
   family: "all",
   category: "all",
@@ -1111,6 +1132,16 @@ const elements = {
   themeLabel: document.querySelector("[data-theme-label]"),
   scrollProgress: document.querySelector("[data-scroll-progress]"),
   parallaxStage: document.querySelector("[data-parallax-stage]"),
+  hero: document.querySelector(".hero"),
+  heroCopy: document.querySelector('[data-reveal="hero-copy"]'),
+  catalogSection: document.querySelector('[data-motion-scene="templates"]'),
+  processSection: document.querySelector('[data-motion-scene="process"]'),
+  sceneRail: document.querySelector("[data-scene-rail]"),
+  sceneIndex: document.querySelector("[data-scene-index]"),
+  sceneLabel: document.querySelector("[data-scene-label]"),
+  sceneProgress: document.querySelector("[data-scene-progress]"),
+  sceneTransition: document.querySelector("[data-scene-transition]"),
+  sceneTransitionIndex: document.querySelector("[data-scene-transition-index]"),
 };
 
 function t(key, variables = {}) {
@@ -1161,6 +1192,7 @@ function applyLocale() {
     element.setAttribute("title", t(element.dataset.i18nTitle));
   });
   applyTheme();
+  updateMotionSceneChrome();
   elements.sourceStatus.textContent =
     state.libraryStatus === "loaded"
       ? t("sourceLoaded", { count: state.templates.length })
@@ -1440,12 +1472,58 @@ function bindCardMotion() {
       const y = (event.clientY - rect.top) / rect.height - 0.5;
       card.style.setProperty("--card-rx", `${y * -2.2}deg`);
       card.style.setProperty("--card-ry", `${x * 2.8}deg`);
+      card.style.setProperty("--pointer-x", `${(x + 0.5) * 100}%`);
+      card.style.setProperty("--pointer-y", `${(y + 0.5) * 100}%`);
     });
     card.addEventListener("pointerleave", () => {
       card.style.removeProperty("--card-rx");
       card.style.removeProperty("--card-ry");
+      card.style.removeProperty("--pointer-x");
+      card.style.removeProperty("--pointer-y");
     });
   });
+}
+
+function bindAmbientSurfaceMotion() {
+  if (isReducedMotion() || window.matchMedia("(pointer: coarse)").matches) return;
+  document.querySelectorAll(".process-card, .filter-panel").forEach((surface) => {
+    surface.addEventListener("pointermove", (event) => {
+      const rect = surface.getBoundingClientRect();
+      surface.style.setProperty(
+        "--pointer-x",
+        `${((event.clientX - rect.left) / rect.width) * 100}%`,
+      );
+      surface.style.setProperty(
+        "--pointer-y",
+        `${((event.clientY - rect.top) / rect.height) * 100}%`,
+      );
+    });
+    surface.addEventListener("pointerleave", () => {
+      surface.style.removeProperty("--pointer-x");
+      surface.style.removeProperty("--pointer-y");
+    });
+  });
+}
+
+function bindMagneticMotion() {
+  if (isReducedMotion() || window.matchMedia("(pointer: coarse)").matches) return;
+  document
+    .querySelectorAll(".hero-actions .button, [data-open-request], [data-preview-select]")
+    .forEach((target) => {
+      target.dataset.magnetic = "true";
+      target.addEventListener("pointermove", (event) => {
+        const rect = target.getBoundingClientRect();
+        const intensity = target.classList.contains("button-small") ? 3 : 5;
+        const x = ((event.clientX - rect.left) / rect.width - 0.5) * intensity;
+        const y = ((event.clientY - rect.top) / rect.height - 0.5) * intensity;
+        target.style.setProperty("--mag-x", `${x}px`);
+        target.style.setProperty("--mag-y", `${y}px`);
+      });
+      target.addEventListener("pointerleave", () => {
+        target.style.removeProperty("--mag-x");
+        target.style.removeProperty("--mag-y");
+      });
+    });
 }
 
 function renderActiveFilters() {
@@ -2027,6 +2105,110 @@ function updateScrollProgress() {
   elements.scrollProgress.style.transform = `scaleX(${progress})`;
 }
 
+function clampUnit(value) {
+  return Math.min(Math.max(value, 0), 1);
+}
+
+function sceneProgressFor(section) {
+  if (!section) return 0;
+  const rect = section.getBoundingClientRect();
+  return clampUnit((window.innerHeight - rect.top) / (window.innerHeight + rect.height));
+}
+
+function updateMotionSceneChrome(index = state.motionScene) {
+  const scene = MOTION_SCENES[index] || MOTION_SCENES[0];
+  if (elements.sceneIndex) elements.sceneIndex.textContent = scene.index;
+  if (elements.sceneLabel) elements.sceneLabel.textContent = t(scene.copy);
+  document.documentElement.dataset.motionScene = scene.id;
+}
+
+function updateMotionChoreography() {
+  const heroProgress = elements.hero
+    ? clampUnit(window.scrollY / Math.max(elements.hero.offsetHeight * 0.72, 1))
+    : 0;
+  const catalogProgress = sceneProgressFor(elements.catalogSection);
+  const processProgress = sceneProgressFor(elements.processSection);
+  const scrollable = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
+  const totalProgress = clampUnit(window.scrollY / scrollable);
+
+  document.documentElement.style.setProperty("--scroll-progress", totalProgress.toFixed(4));
+  elements.hero?.style.setProperty("--hero-progress", heroProgress.toFixed(4));
+  elements.heroCopy?.style.setProperty("--hero-copy-shift", `${heroProgress * -58}px`);
+  elements.heroCopy?.style.setProperty("--hero-copy-blur", `${heroProgress * 1.25}px`);
+  elements.parallaxStage?.style.setProperty("--hero-visual-shift", `${heroProgress * 72}px`);
+  elements.parallaxStage?.style.setProperty("--hero-visual-scale", `${1 - heroProgress * 0.055}`);
+  elements.parallaxStage?.style.setProperty("--hero-board-y", `${heroProgress * 56}px`);
+  elements.parallaxStage?.style.setProperty("--hero-board-rotate", `${heroProgress * -3.5}deg`);
+  elements.parallaxStage?.style.setProperty("--hero-grid-shift", `${heroProgress * 36}px`);
+  elements.catalogSection?.style.setProperty("--section-progress", catalogProgress.toFixed(4));
+  elements.processSection?.style.setProperty("--section-progress", processProgress.toFixed(4));
+
+  const sceneElements = [elements.hero, elements.catalogSection, elements.processSection].filter(
+    Boolean,
+  );
+  const marker = window.innerHeight * 0.42;
+  const activeIndex = Math.max(
+    0,
+    sceneElements.findIndex((section) => {
+      const rect = section.getBoundingClientRect();
+      return rect.top <= marker && rect.bottom >= marker;
+    }),
+  );
+  if (activeIndex !== state.motionScene) {
+    state.motionScene = activeIndex;
+    updateMotionSceneChrome(activeIndex);
+  }
+  const activeSection = sceneElements[state.motionScene] || sceneElements[0];
+  const activeProgress = sceneProgressFor(activeSection);
+  elements.sceneProgress?.style.setProperty(
+    "transform",
+    `scaleY(${Math.max(0.16, activeProgress)})`,
+  );
+}
+
+let motionFrame = 0;
+
+function requestMotionFrame() {
+  if (motionFrame) return;
+  motionFrame = requestAnimationFrame(() => {
+    motionFrame = 0;
+    updateScrollProgress();
+    updateMotionChoreography();
+  });
+}
+
+function bindMotionScroll() {
+  requestMotionFrame();
+  window.addEventListener("scroll", requestMotionFrame, { passive: true });
+  window.addEventListener("resize", requestMotionFrame);
+}
+
+function scrollToMotionTarget(target, href, smooth = true) {
+  target.scrollIntoView({
+    behavior: smooth && !isReducedMotion() ? "smooth" : "auto",
+    block: "start",
+  });
+  history.replaceState(null, "", href);
+}
+
+function playSceneTransition(target, href) {
+  const scene = MOTION_SCENES.find((item) => item.id === target.id);
+  if (!scene || isReducedMotion() || !elements.sceneTransition) {
+    scrollToMotionTarget(target, href);
+    return;
+  }
+  elements.sceneTransitionIndex.textContent = scene.index;
+  elements.sceneTransition.classList.remove("is-active");
+  void elements.sceneTransition.offsetWidth;
+  document.documentElement.classList.add("is-transitioning");
+  elements.sceneTransition.classList.add("is-active");
+  window.setTimeout(() => scrollToMotionTarget(target, href, false), 230);
+  window.setTimeout(() => {
+    elements.sceneTransition.classList.remove("is-active");
+    document.documentElement.classList.remove("is-transitioning");
+  }, 980);
+}
+
 function bindAnchorNavigation() {
   document.querySelectorAll('a[href^="#"]').forEach((link) => {
     link.addEventListener("click", (event) => {
@@ -2034,18 +2216,7 @@ function bindAnchorNavigation() {
       if (!target) return;
       event.preventDefault();
       elements.menu.classList.remove("is-open");
-      document.documentElement.classList.add("is-transitioning");
-      window.setTimeout(
-        () => {
-          target.scrollIntoView({
-            behavior: isReducedMotion() ? "auto" : "smooth",
-            block: "start",
-          });
-          history.replaceState(null, "", link.getAttribute("href"));
-        },
-        isReducedMotion() ? 0 : 90,
-      );
-      window.setTimeout(() => document.documentElement.classList.remove("is-transitioning"), 720);
+      playSceneTransition(target, link.getAttribute("href"));
     });
   });
 }
@@ -2098,10 +2269,14 @@ function bindStageParallax() {
     const y = (event.clientY - rect.top) / rect.height - 0.5;
     elements.parallaxStage.style.setProperty("--parallax-x", `${x * 16}px`);
     elements.parallaxStage.style.setProperty("--parallax-y", `${y * 12}px`);
+    elements.parallaxStage.style.setProperty("--pointer-x", `${(x + 0.5) * 100}%`);
+    elements.parallaxStage.style.setProperty("--pointer-y", `${(y + 0.5) * 100}%`);
   });
   elements.parallaxStage.addEventListener("pointerleave", () => {
     elements.parallaxStage.style.removeProperty("--parallax-x");
     elements.parallaxStage.style.removeProperty("--parallax-y");
+    elements.parallaxStage.style.removeProperty("--pointer-x");
+    elements.parallaxStage.style.removeProperty("--pointer-y");
   });
 }
 
@@ -2110,8 +2285,9 @@ function setupExperience() {
   bindAnchorNavigation();
   bindSectionObserver();
   bindStageParallax();
-  updateScrollProgress();
-  window.addEventListener("scroll", updateScrollProgress, { passive: true });
+  bindAmbientSurfaceMotion();
+  bindMagneticMotion();
+  bindMotionScroll();
   requestAnimationFrame(() => document.documentElement.classList.add("is-ready"));
 }
 
