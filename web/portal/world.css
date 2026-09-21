@@ -1107,3 +1107,206 @@ html[data-theme="light"] .world-copy::before {
     transform: none;
   }
 }
+
+/* Cosmic studio pass: keep the opening world cinematic in both themes. */
+.world-stage {
+  border-color: rgb(143 246 228 / 36%);
+  background:
+    radial-gradient(ellipse at 75% 16%, rgb(93 83 255 / 26%), transparent 30%),
+    radial-gradient(ellipse at 20% 76%, rgb(0 190 204 / 20%), transparent 32%),
+    radial-gradient(ellipse at 92% 92%, rgb(219 57 136 / 17%), transparent 28%),
+    linear-gradient(145deg, #01030a 0%, #050717 47%, #120621 100%);
+  box-shadow:
+    0 48px 120px rgb(0 0 0 / 48%),
+    inset 0 1px 0 rgb(255 255 255 / 10%),
+    inset 0 0 110px rgb(67 236 222 / 9%);
+}
+
+.world-stage::before {
+  position: absolute;
+  z-index: 2;
+  inset: -28%;
+  background:
+    radial-gradient(ellipse at 26% 38%, rgb(117 79 235 / 24%) 0%, transparent 32%),
+    radial-gradient(ellipse at 72% 68%, rgb(0 218 205 / 17%) 0%, transparent 30%),
+    conic-gradient(
+      from 210deg at 54% 48%,
+      transparent 0 38%,
+      rgb(96 71 219 / 15%) 46%,
+      transparent 56% 100%
+    );
+  content: "";
+  filter: blur(54px) saturate(130%);
+  mix-blend-mode: screen;
+  opacity: 0.82;
+  pointer-events: none;
+  transform: rotate(-9deg) scale(1.08);
+  animation: world-cosmic-flow 28s ease-in-out infinite alternate;
+}
+
+.world-atmosphere {
+  background:
+    radial-gradient(ellipse at 58% 48%, rgb(54 247 224 / 14%), transparent 24%),
+    radial-gradient(ellipse at 86% 21%, rgb(117 111 255 / 20%), transparent 28%),
+    radial-gradient(ellipse at 15% 88%, rgb(255 89 145 / 12%), transparent 27%),
+    linear-gradient(118deg, transparent 18%, rgb(65 89 190 / 12%) 51%, transparent 79%);
+  mix-blend-mode: screen;
+  opacity: 0.94;
+}
+
+.world-atmosphere::before {
+  background:
+    radial-gradient(ellipse at 35% 48%, rgb(111 56 220 / 38%) 0%, transparent 36%),
+    radial-gradient(ellipse at 74% 62%, rgb(0 201 207 / 28%) 0%, transparent 33%),
+    radial-gradient(ellipse at 55% 20%, rgb(61 112 250 / 16%) 0%, transparent 27%),
+    conic-gradient(
+      from 220deg at 49% 50%,
+      transparent 0 34%,
+      rgb(164 75 230 / 20%) 44%,
+      transparent 54% 100%
+    );
+  filter: blur(58px) saturate(135%);
+  opacity: 0.9;
+  transform: rotate(-11deg) scale(1.12);
+  animation: world-cosmic-flow 24s ease-in-out infinite alternate-reverse;
+}
+
+.world-atmosphere::after {
+  background:
+    radial-gradient(
+      ellipse at 51% 48%,
+      transparent 10%,
+      rgb(87 103 239 / 14%) 35%,
+      transparent 68%
+    ),
+    repeating-conic-gradient(
+      from 214deg at 51% 49%,
+      rgb(122 101 255 / 7%) 0deg 1deg,
+      transparent 1deg 12deg
+    ),
+    radial-gradient(ellipse at 53% 55%, transparent 32%, rgb(0 0 0 / 38%) 100%);
+  mix-blend-mode: screen;
+  opacity: 0.94;
+  animation: world-cosmic-pulse 16s ease-in-out infinite alternate;
+}
+
+.world-stage::after {
+  background:
+    radial-gradient(
+      ellipse at 54% 41%,
+      transparent 21%,
+      rgb(1 3 12 / 15%) 64%,
+      rgb(0 0 0 / 52%) 100%
+    ),
+    linear-gradient(180deg, transparent 48%, rgb(1 4 12 / 32%) 100%);
+}
+
+.world-scanlines {
+  opacity: 0.14;
+}
+
+html[data-theme="light"] .world-stage {
+  border-color: rgb(143 246 228 / 36%);
+  background:
+    radial-gradient(ellipse at 75% 16%, rgb(93 83 255 / 26%), transparent 30%),
+    radial-gradient(ellipse at 20% 76%, rgb(0 190 204 / 20%), transparent 32%),
+    radial-gradient(ellipse at 92% 92%, rgb(219 57 136 / 17%), transparent 28%),
+    linear-gradient(145deg, #01030a 0%, #050717 47%, #120621 100%);
+  box-shadow:
+    0 48px 120px rgb(0 0 0 / 48%),
+    inset 0 1px 0 rgb(255 255 255 / 10%),
+    inset 0 0 110px rgb(67 236 222 / 9%);
+}
+
+html[data-theme="light"] .world-atmosphere {
+  background:
+    radial-gradient(ellipse at 58% 48%, rgb(54 247 224 / 14%), transparent 24%),
+    radial-gradient(ellipse at 86% 21%, rgb(117 111 255 / 20%), transparent 28%),
+    radial-gradient(ellipse at 15% 88%, rgb(255 89 145 / 12%), transparent 27%),
+    linear-gradient(118deg, transparent 18%, rgb(65 89 190 / 12%) 51%, transparent 79%);
+  mix-blend-mode: screen;
+}
+
+html[data-theme="light"] .world-copy {
+  border-color: rgb(122 244 224 / 22%);
+  background: linear-gradient(90deg, rgb(2 7 12 / 96%) 0%, rgb(2 7 12 / 84%) 62%, transparent 100%);
+}
+
+html[data-theme="light"] .world-copy::before {
+  background: linear-gradient(90deg, rgb(2 7 12 / 86%), rgb(2 7 12 / 28%) 70%, transparent);
+}
+
+html[data-theme="light"] .world-copy h1 {
+  color: #ecfffb;
+  text-shadow: 0 15px 50px rgb(0 0 0 / 32%);
+}
+
+html[data-theme="light"] .world-copy h1 em {
+  background: linear-gradient(100deg, #e8fff9 0%, #6bf2db 48%, #a8a5ff 100%);
+  background-clip: text;
+  color: transparent;
+  text-shadow: none;
+}
+
+html[data-theme="light"] .world-lede {
+  color: rgb(213 236 235 / 74%);
+}
+
+html[data-theme="light"] .world-button-ghost,
+html[data-theme="light"] .world-location,
+html[data-theme="light"] .world-dpad button,
+html[data-theme="light"] .world-target-readout {
+  border-color: rgb(193 230 225 / 18%);
+  background: rgb(4 16 26 / 64%);
+  color: rgb(222 248 243 / 76%);
+}
+
+html[data-theme="light"] .world-stats strong,
+html[data-theme="light"] .world-target-readout strong {
+  color: #eafff8;
+}
+
+html[data-theme="light"] .world-stats small,
+html[data-theme="light"] .world-hud,
+html[data-theme="light"] .world-control-copy,
+html[data-theme="light"] .world-scroll-cue,
+html[data-theme="light"] .world-location small {
+  color: rgb(194 240 234 / 56%);
+}
+
+@keyframes world-cosmic-flow {
+  0% {
+    transform: rotate(-11deg) translate3d(-2%, -1%, 0) scale(1.08);
+  }
+
+  100% {
+    transform: rotate(-5deg) translate3d(3%, 2%, 0) scale(1.16);
+  }
+}
+
+@keyframes world-cosmic-pulse {
+  0% {
+    opacity: 0.62;
+    transform: scale(0.98);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1.045);
+  }
+}
+
+@media (max-width: 760px) {
+  html[data-theme="light"] .world-copy {
+    border-left: 0;
+    background: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-stage::before,
+  .world-atmosphere::before,
+  .world-atmosphere::after {
+    animation: none;
+  }
+}
