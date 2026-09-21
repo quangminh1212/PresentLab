@@ -223,6 +223,19 @@ function makeParticles() {
   return particles;
 }
 
+function makeStarfield(count = 360, seedOffset = 0) {
+  const vertices = [];
+  for (let index = 0; index < count; index += 1) {
+    const seed = (index + seedOffset) * 17.237 + 4.91;
+    const random = (value) => value - Math.floor(value);
+    const x = random(Math.sin(seed) * 43758.5453) * 76 - 38;
+    const y = 0.8 + random(Math.sin(seed * 1.7) * 24634.6345) * 19;
+    const z = -10 - random(Math.sin(seed * 2.3) * 12457.821) * 116;
+    vertices.push(x, y, z);
+  }
+  return new Float32Array(vertices);
+}
+
 function createShader(gl, type, source) {
   const shader = gl.createShader(type);
   if (!shader) return null;
@@ -260,6 +273,9 @@ function getColors() {
         background: [0.93, 0.97, 0.97, 1],
         grid: [0.02, 0.42, 0.44, 0.19],
         gridBright: [0.02, 0.6, 0.58, 0.38],
+        starGlow: [0.18, 0.43, 0.56, 0.08],
+        star: [0.32, 0.54, 0.62, 0.38],
+        starWarm: [0.72, 0.38, 0.3, 0.22],
         vehicle: [0.02, 0.2, 0.23, 1],
         vehicleEdge: [0, 0.54, 0.52, 0.96],
         white: [0.1, 0.2, 0.22, 0.8],
@@ -268,6 +284,9 @@ function getColors() {
         background: [0.008, 0.018, 0.03, 1],
         grid: [0.03, 0.3, 0.34, 0.22],
         gridBright: [0.05, 0.65, 0.62, 0.46],
+        starGlow: [0.2, 0.38, 0.96, 0.12],
+        star: [0.67, 0.82, 1, 0.78],
+        starWarm: [1, 0.49, 0.28, 0.62],
         vehicle: [0.02, 0.12, 0.17, 1],
         vehicleEdge: [0.13, 0.98, 0.78, 0.96],
         white: [0.75, 0.95, 0.94, 0.75],
@@ -300,6 +319,8 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
   };
   const pointer = { x: 0, y: 0, targetX: 0, targetY: 0 };
   const particles = makeParticles();
+  const stars = makeStarfield(360, 13);
+  const warmStars = makeStarfield(84, 947);
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const statusElement = stage.querySelector("[data-world-status]");
   const coordinatesElement = stage.querySelector("[data-world-coordinates]");
@@ -498,6 +519,8 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     cube: getBuffer("cube", cubeTriangles),
     cubeLines: getBuffer("cube-lines", cubeLines),
     grid: getBuffer("grid", grid),
+    stars: getBuffer("stars", stars),
+    warmStars: getBuffer("warm-stars", warmStars),
     groundRing: getBuffer("ground-ring", groundRing),
     vehicleRing: getBuffer("vehicle-ring", vehicleRing),
     verticalRing: getBuffer("vertical-ring", verticalRing),
@@ -733,7 +756,21 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
 
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.BLEND);
+    gl.disable(gl.DEPTH_TEST);
+    gl.depthMask(false);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+    drawMesh(geometry.stars, gl.POINTS, currentViewProjection, colors.starGlow, 4.8 * pixelRatio);
+    drawMesh(geometry.stars, gl.POINTS, currentViewProjection, colors.star, 1.25 * pixelRatio);
+    drawMesh(
+      geometry.warmStars,
+      gl.POINTS,
+      currentViewProjection,
+      colors.starWarm,
+      1.55 * pixelRatio,
+    );
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.enable(gl.DEPTH_TEST);
+    gl.depthMask(true);
     drawMesh(geometry.grid, gl.LINES, currentViewProjection, colors.grid);
     drawRing(geometry.groundRing, 0, 0.05, -1, 6, time * 0.00012, colors.gridBright);
     landmarks.forEach((landmark) => drawLandmark(landmark, time, colors));

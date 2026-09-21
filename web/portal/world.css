@@ -796,15 +796,74 @@ html[data-theme="light"] .world-location small {
   border-color: rgb(145 244 226 / 30%);
   border-radius: 28px;
   background:
-    radial-gradient(circle at 74% 28%, rgb(89 92 188 / 10%), transparent 27%),
-    linear-gradient(140deg, #02060b 0%, #06131c 54%, #07111d 100%);
+    radial-gradient(ellipse at 70% 34%, rgb(73 74 170 / 24%), transparent 31%),
+    radial-gradient(ellipse at 22% 78%, rgb(0 156 171 / 17%), transparent 34%),
+    radial-gradient(ellipse at 94% 94%, rgb(190 58 107 / 13%), transparent 29%),
+    linear-gradient(145deg, #01030a 0%, #05091a 48%, #11081f 100%);
 }
 
 .world-atmosphere {
+  overflow: hidden;
   background:
-    radial-gradient(circle at 67% 50%, rgb(70 247 221 / 8%), transparent 24%),
-    radial-gradient(circle at 88% 22%, rgb(120 111 255 / 10%), transparent 25%),
-    radial-gradient(circle at 18% 91%, rgb(255 143 98 / 6%), transparent 25%);
+    radial-gradient(ellipse at 67% 50%, rgb(70 247 221 / 12%), transparent 25%),
+    radial-gradient(ellipse at 88% 22%, rgb(120 111 255 / 17%), transparent 28%),
+    radial-gradient(ellipse at 18% 91%, rgb(255 105 132 / 9%), transparent 27%),
+    linear-gradient(118deg, transparent 24%, rgb(61 92 185 / 10%) 51%, transparent 76%);
+}
+
+.world-atmosphere::before {
+  position: absolute;
+  inset: -35%;
+  background:
+    radial-gradient(ellipse at 37% 54%, rgb(93 53 190 / 33%) 0%, transparent 37%),
+    radial-gradient(ellipse at 72% 64%, rgb(8 188 191 / 24%) 0%, transparent 34%),
+    conic-gradient(
+      from 225deg at 48% 50%,
+      transparent 0 38%,
+      rgb(138 65 220 / 17%) 49%,
+      transparent 60% 100%
+    );
+  content: "";
+  filter: blur(52px) saturate(120%);
+  opacity: 0.8;
+  transform: rotate(-12deg) scale(1.08);
+  animation: world-nebula-drift 22s ease-in-out infinite alternate;
+}
+
+.world-atmosphere::after {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      ellipse at 50% 48%,
+      transparent 12%,
+      rgb(84 101 216 / 11%) 42%,
+      transparent 70%
+    ),
+    radial-gradient(ellipse at 56% 58%, transparent 35%, rgb(0 0 0 / 22%) 100%);
+  content: "";
+  opacity: 0.9;
+  animation: world-space-bloom 15s ease-in-out infinite alternate;
+}
+
+.world-stage::after {
+  position: absolute;
+  z-index: 4;
+  inset: 0;
+  background:
+    radial-gradient(
+      ellipse at 54% 42%,
+      transparent 24%,
+      rgb(1 3 12 / 12%) 68%,
+      rgb(0 0 0 / 42%) 100%
+    ),
+    linear-gradient(180deg, transparent 55%, rgb(1 4 12 / 26%) 100%);
+  content: "";
+  pointer-events: none;
+}
+
+.world-scanlines {
+  opacity: 0.22;
 }
 
 .world-copy {
@@ -908,8 +967,66 @@ html[data-theme="light"] .world-location small {
 
 html[data-theme="light"] .world-stage {
   background:
-    radial-gradient(circle at 74% 28%, rgb(100 105 212 / 10%), transparent 27%),
+    radial-gradient(ellipse at 70% 34%, rgb(100 105 212 / 14%), transparent 31%),
+    radial-gradient(ellipse at 22% 78%, rgb(16 156 171 / 10%), transparent 34%),
     linear-gradient(140deg, #f3fbfa 0%, #e7f3f2 54%, #edf1fb 100%);
+}
+
+html[data-theme="light"] .world-atmosphere {
+  background:
+    radial-gradient(ellipse at 67% 50%, rgb(29 182 169 / 10%), transparent 25%),
+    radial-gradient(ellipse at 88% 22%, rgb(120 111 255 / 11%), transparent 28%),
+    radial-gradient(ellipse at 18% 91%, rgb(255 105 132 / 7%), transparent 27%);
+  mix-blend-mode: multiply;
+}
+
+html[data-theme="light"] .world-atmosphere::before {
+  background:
+    radial-gradient(ellipse at 37% 54%, rgb(126 100 204 / 17%) 0%, transparent 37%),
+    radial-gradient(ellipse at 72% 64%, rgb(8 188 191 / 14%) 0%, transparent 34%);
+  opacity: 0.55;
+}
+
+html[data-theme="light"] .world-atmosphere::after {
+  background: radial-gradient(
+    ellipse at 50% 48%,
+    transparent 12%,
+    rgb(84 101 216 / 8%) 42%,
+    transparent 70%
+  );
+}
+
+html[data-theme="light"] .world-stage::after {
+  background:
+    radial-gradient(
+      ellipse at 54% 42%,
+      transparent 24%,
+      rgb(12 67 72 / 5%) 68%,
+      rgb(12 67 72 / 14%) 100%
+    ),
+    linear-gradient(180deg, transparent 55%, rgb(12 67 72 / 7%) 100%);
+}
+
+@keyframes world-nebula-drift {
+  0% {
+    transform: rotate(-12deg) translate3d(-2%, -1%, 0) scale(1.08);
+  }
+
+  100% {
+    transform: rotate(-6deg) translate3d(3%, 2%, 0) scale(1.14);
+  }
+}
+
+@keyframes world-space-bloom {
+  0% {
+    opacity: 0.62;
+    transform: scale(0.98);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
 }
 
 html[data-theme="light"] .world-copy {
@@ -978,6 +1095,11 @@ html[data-theme="light"] .world-copy::before {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .world-atmosphere::before,
+  .world-atmosphere::after {
+    animation: none;
+  }
+
   .world-stage.is-driving .world-copy,
   .world-stage.is-driving .world-copy:hover,
   .world-stage.is-driving .world-copy:focus-within {
