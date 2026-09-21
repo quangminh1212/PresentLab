@@ -790,3 +790,198 @@ html[data-theme="light"] .world-location small {
     transform: none;
   }
 }
+
+/* Final polish: keep the slide story readable while the world moves behind it. */
+.world-stage {
+  border-color: rgb(145 244 226 / 30%);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 74% 28%, rgb(89 92 188 / 10%), transparent 27%),
+    linear-gradient(140deg, #02060b 0%, #06131c 54%, #07111d 100%);
+}
+
+.world-atmosphere {
+  background:
+    radial-gradient(circle at 67% 50%, rgb(70 247 221 / 8%), transparent 24%),
+    radial-gradient(circle at 88% 22%, rgb(120 111 255 / 10%), transparent 25%),
+    radial-gradient(circle at 18% 91%, rgb(255 143 98 / 6%), transparent 25%);
+}
+
+.world-copy {
+  width: min(700px, 52%);
+  margin-left: -22px;
+  padding: 18px 28px 24px;
+  border-left: 1px solid rgb(122 244 224 / 20%);
+  background: linear-gradient(90deg, rgb(2 7 12 / 96%) 0%, rgb(2 7 12 / 86%) 62%, transparent 100%);
+  backdrop-filter: blur(3px);
+}
+
+.world-copy::before {
+  inset: -26px -90px -30px -30px;
+  background: linear-gradient(90deg, rgb(2 7 12 / 84%), rgb(2 7 12 / 30%) 70%, transparent);
+}
+
+.world-copy h1 {
+  max-width: 680px;
+  margin-top: 20px;
+  margin-bottom: 23px;
+  font-size: clamp(44px, 4.9vw, 72px);
+  line-height: 0.94;
+}
+
+.world-lede {
+  max-width: 470px;
+  color: rgb(222 242 239 / 74%);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.world-actions {
+  margin-top: 27px;
+}
+
+.world-stats {
+  max-width: 500px;
+  margin-top: 42px;
+}
+
+.world-hud-top {
+  padding-bottom: 11px;
+  border-color: rgb(194 240 234 / 18%);
+}
+
+.world-reticle {
+  width: 54px;
+  height: 54px;
+  opacity: 0.78;
+}
+
+.world-reticle i {
+  inset: 19px;
+}
+
+.world-reticle b,
+.world-reticle em {
+  inset: 9px;
+}
+
+.world-reticle em {
+  inset: 6px;
+}
+
+.world-target-readout {
+  top: 87px;
+  min-width: 154px;
+  padding: 10px 12px;
+  border-color: rgb(121 244 222 / 22%);
+  background: rgb(3 15 24 / 60%);
+}
+
+.world-locations {
+  top: 112px;
+  right: 24px;
+  gap: 7px;
+  width: min(232px, 23%);
+}
+
+.world-location {
+  min-height: 56px;
+  border-color: rgb(193 230 225 / 17%);
+  background: rgb(4 16 26 / 62%);
+}
+
+.world-location:hover,
+.world-location.is-active {
+  transform: translateX(-4px);
+}
+
+.world-stage.is-driving .world-copy {
+  opacity: 0.92;
+  transform: translateY(-5px);
+}
+
+.world-stage.is-driving .world-copy:hover,
+.world-stage.is-driving .world-copy:focus-within {
+  opacity: 1;
+  transform: translateY(-5px);
+}
+
+html[data-theme="light"] .world-stage {
+  background:
+    radial-gradient(circle at 74% 28%, rgb(100 105 212 / 10%), transparent 27%),
+    linear-gradient(140deg, #f3fbfa 0%, #e7f3f2 54%, #edf1fb 100%);
+}
+
+html[data-theme="light"] .world-copy {
+  border-color: rgb(0 129 126 / 20%);
+  background: linear-gradient(
+    90deg,
+    rgb(243 251 250 / 95%) 0%,
+    rgb(243 251 250 / 82%) 62%,
+    transparent 100%
+  );
+}
+
+html[data-theme="light"] .world-copy::before {
+  background: linear-gradient(
+    90deg,
+    rgb(243 251 250 / 86%),
+    rgb(243 251 250 / 26%) 70%,
+    transparent
+  );
+}
+
+@media (max-width: 760px) {
+  .world-locations {
+    top: auto;
+    right: 18px;
+    bottom: 123px;
+    left: 18px;
+    width: auto;
+  }
+
+  .world-copy {
+    width: auto;
+    margin-left: 0;
+    padding: 10px 0 0;
+    border-left: 0;
+    background: none;
+    backdrop-filter: none;
+  }
+
+  .world-copy::before {
+    inset: -20px -26px -24px;
+    background: linear-gradient(
+      180deg,
+      rgb(2 7 12 / 94%) 0%,
+      rgb(2 7 12 / 84%) 78%,
+      transparent 100%
+    );
+  }
+
+  .world-copy h1 {
+    margin-top: 16px;
+    font-size: clamp(40px, 11.6vw, 64px);
+  }
+
+  .world-lede {
+    max-width: 420px;
+    font-size: 12.5px;
+  }
+
+  .world-stage.is-driving .world-copy,
+  .world-stage.is-driving .world-copy:hover,
+  .world-stage.is-driving .world-copy:focus-within {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-stage.is-driving .world-copy,
+  .world-stage.is-driving .world-copy:hover,
+  .world-stage.is-driving .world-copy:focus-within {
+    opacity: 1;
+    transform: none;
+  }
+}

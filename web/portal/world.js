@@ -6,11 +6,13 @@ const vertexShaderSource = `
   uniform mat4 u_matrix;
   uniform float u_point_size;
   varying float v_point_mode;
+  varying float v_shade;
 
   void main() {
     gl_Position = u_matrix * vec4(a_position, 1.0);
     gl_PointSize = u_point_size;
     v_point_mode = u_point_size > 1.0 ? 1.0 : 0.0;
+    v_shade = clamp(1.0 + a_position.y * 0.05 + a_position.z * 0.015, 0.86, 1.12);
   }
 `;
 
@@ -18,12 +20,13 @@ const fragmentShaderSource = `
   precision mediump float;
   uniform vec4 u_color;
   varying float v_point_mode;
+  varying float v_shade;
 
   void main() {
     if (v_point_mode > 0.5 && distance(gl_PointCoord, vec2(0.5)) > 0.5) {
       discard;
     }
-    gl_FragColor = u_color;
+    gl_FragColor = vec4(u_color.rgb * v_shade, u_color.a);
   }
 `;
 
@@ -43,7 +46,7 @@ const cubeLines = new Float32Array([
 const landmarks = [
   {
     id: "archive",
-    label: "TEMPLATE ARCHIVE",
+    label: "SLIDE LIBRARY",
     x: -9,
     z: -20,
     color: [0.18, 0.98, 0.78, 1],
@@ -51,7 +54,7 @@ const landmarks = [
   },
   {
     id: "brief",
-    label: "BRIEF LAB",
+    label: "STORY BRIEF",
     x: 9,
     z: -37,
     color: [1, 0.48, 0.27, 1],
@@ -59,7 +62,7 @@ const landmarks = [
   },
   {
     id: "process",
-    label: "PROCESS DOCK",
+    label: "DECK REVIEW",
     x: -11,
     z: -57,
     color: [0.57, 0.62, 1, 1],
@@ -287,7 +290,14 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
   if (!canvas || !stage) return;
 
   const input = { forward: false, back: false, left: false, right: false };
-  const vehicle = { x: 0, z: 5, speed: 0, heading: 0 };
+  const vehicle = {
+    x: 1.8,
+    z: 5,
+    speed: 0,
+    heading: 0,
+    targetX: null,
+    targetZ: null,
+  };
   const pointer = { x: 0, y: 0, targetX: 0, targetY: 0 };
   const particles = makeParticles();
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -306,6 +316,7 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
   let width = 1;
   let height = 1;
   let lastTime = 0;
+  let frameDelta = 0;
 
   const activateDrive = () => {
     stage.classList.add("is-driving");
@@ -376,10 +387,9 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     (target) => {
       const landmark = landmarks.find((item) => item.id === target);
       if (landmark) {
-        vehicle.x = landmark.x;
-        vehicle.z = landmark.z + 7;
+        vehicle.targetX = landmark.x;
+        vehicle.targetZ = landmark.z + 7;
         vehicle.speed = 0;
-        vehicle.heading = 0;
         stage.classList.add("is-driving");
         if (statusElement) statusElement.textContent = "SIGNAL LOCK";
       }
@@ -420,12 +430,25 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
   }
 
   function updateVehicle(delta) {
-    const acceleration = input.forward ? 13 : input.back ? -8 : 0;
-    vehicle.speed += acceleration * delta;
-    vehicle.speed *= input.forward || input.back ? 0.985 : 0.92;
-    vehicle.speed = clamp(vehicle.speed, -5, 13);
+    if (vehicle.targetX !== null && vehicle.targetZ !== null) {
+      const jumpBlend = 1 - Math.exp(-delta * 4.2);
+      vehicle.x += (vehicle.targetX - vehicle.x) * jumpBlend;
+      vehicle.z += (vehicle.targetZ - vehicle.z) * jumpBlend;
+      vehicle.heading *= 1 - jumpBlend;
+      if (Math.hypot(vehicle.targetX - vehicle.x, vehicle.targetZ - vehicle.z) < 0.04) {
+        vehicle.x = vehicle.targetX;
+        vehicle.z = vehicle.targetZ;
+        vehicle.targetX = null;
+        vehicle.targetZ = null;
+      }
+      return;
+    }
+    const targetSpeed = input.forward ? 9 : input.back ? -4.5 : 0;
+    const speedBlend = 1 - Math.exp(-delta * 5.5);
+    vehicle.speed += (targetSpeed - vehicle.speed) * speedBlend;
+    vehicle.speed = clamp(vehicle.speed, -5, 10);
     const steering = (input.left ? -1 : 0) + (input.right ? 1 : 0);
-    vehicle.heading += steering * delta * (0.9 + Math.abs(vehicle.speed) * 0.06);
+    vehicle.heading += steering * delta * (1.05 + Math.abs(vehicle.speed) * 0.08);
     vehicle.x += Math.sin(vehicle.heading) * vehicle.speed * delta;
     vehicle.z -= Math.cos(vehicle.heading) * vehicle.speed * delta;
     vehicle.x = clamp(vehicle.x, -22, 22);
@@ -508,6 +531,43 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     drawMesh(item, gl.LINE_STRIP, matrix, color);
   }
 
+  function drawSlidePanel(x, y, z, rotation, accent, secondary, scale = 1) {
+    const panel = [0.025, 0.12, 0.16, 0.96];
+    const panelEdge = [...secondary.slice(0, 3), 0.76];
+    const faceAccent = [...accent.slice(0, 3), 0.9];
+    drawCube(x, y, z, 1.45 * scale, 0.94 * scale, 0.08 * scale, rotation, panel, panelEdge);
+    drawCube(
+      x,
+      y + 0.55 * scale,
+      z + 0.12 * scale,
+      0.88 * scale,
+      0.045 * scale,
+      0.045 * scale,
+      rotation,
+      faceAccent,
+    );
+    drawCube(
+      x - 0.32 * scale,
+      y + 0.12 * scale,
+      z + 0.12 * scale,
+      0.52 * scale,
+      0.035 * scale,
+      0.04 * scale,
+      rotation,
+      [...secondary.slice(0, 3), 0.72],
+    );
+    drawCube(
+      x + 0.3 * scale,
+      y - 0.18 * scale,
+      z + 0.12 * scale,
+      0.36 * scale,
+      0.035 * scale,
+      0.04 * scale,
+      rotation,
+      [...accent.slice(0, 3), 0.58],
+    );
+  }
+
   function drawLandmark(landmark, time, colors) {
     const rotation = time * 0.00025 + landmark.x * 0.08;
     const baseColor = landmark.color;
@@ -523,18 +583,25 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
       [baseColor[0] * 0.35, baseColor[1] * 0.28, baseColor[2] * 0.32, 0.7],
       edgeColor,
     );
-    drawCube(
+    drawSlidePanel(
       landmark.x,
-      2.25,
-      landmark.z,
-      0.72,
-      1.7,
-      0.72,
-      -rotation * 1.4,
-      [baseColor[0] * 0.45, baseColor[1] * 0.34, baseColor[2] * 0.4, 0.86],
+      3.05,
+      landmark.z - 0.3,
+      rotation * 0.55,
       baseColor,
+      landmark.secondary,
+      1.08,
     );
-    drawCube(landmark.x, 4.4, landmark.z, 0.2, 1.4, 0.2, rotation, baseColor, [
+    drawSlidePanel(
+      landmark.x + 2.5,
+      1.85,
+      landmark.z + 1.6,
+      -rotation * 0.8,
+      landmark.secondary,
+      baseColor,
+      0.58,
+    );
+    drawCube(landmark.x, 5.05, landmark.z, 0.12, 1.05, 0.12, rotation, baseColor, [
       ...colors.white.slice(0, 3),
       0.62,
     ]);
@@ -568,11 +635,21 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     );
     drawCube(
       vehicle.x,
+      1.04 + bounce,
+      vehicle.z - Math.cos(vehicle.heading) * 0.12,
+      0.94,
+      0.035,
+      1.18,
+      vehicle.heading,
+      [edgeColor[0], edgeColor[1], edgeColor[2], 0.8],
+    );
+    drawCube(
+      vehicle.x,
       0.64 + bounce,
       vehicle.z,
-      1.55,
-      0.43,
-      2.5,
+      1.28,
+      0.35,
+      2.05,
       vehicle.heading,
       bodyColor,
       edgeColor,
@@ -581,48 +658,52 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
       vehicle.x,
       1.19 + bounce,
       vehicle.z + Math.cos(vehicle.heading) * 0.18,
-      1.05,
-      0.55,
-      1.12,
+      0.84,
+      0.46,
+      0.9,
       vehicle.heading,
       [0.03, 0.24, 0.28, 0.96],
       [0.7, 1, 0.93, 0.92],
     );
     drawCube(
       vehicle.x,
-      0.42,
-      vehicle.z - Math.cos(vehicle.heading) * 1.92,
-      1.3,
+      0.43,
+      vehicle.z - Math.cos(vehicle.heading) * 1.58,
+      1.08,
       0.09,
-      0.3,
+      0.24,
       vehicle.heading,
       [edgeColor[0], edgeColor[1], edgeColor[2], 0.9],
     );
-    const wheelOffsetX = Math.cos(vehicle.heading) * 1.12;
-    const wheelOffsetZ = Math.sin(vehicle.heading) * 1.12;
+    const wheelOffsetX = Math.cos(vehicle.heading) * 0.92;
+    const wheelOffsetZ = Math.sin(vehicle.heading) * 0.92;
     drawCube(
       vehicle.x - wheelOffsetX,
-      0.35,
+      0.31,
       vehicle.z - wheelOffsetZ,
-      0.25,
-      0.34,
-      0.56,
+      0.19,
+      0.27,
+      0.44,
       vehicle.heading,
       [0.01, 0.025, 0.04, 1],
     );
     drawCube(
       vehicle.x + wheelOffsetX,
-      0.35,
+      0.31,
       vehicle.z + wheelOffsetZ,
-      0.25,
-      0.34,
-      0.56,
+      0.19,
+      0.27,
+      0.44,
       vehicle.heading,
       [0.01, 0.025, 0.04, 1],
     );
   }
 
   let currentViewProjection = identityMatrix();
+  const camera = {
+    eye: [0, 6, 14],
+    target: [0, 1.2, -6],
+  };
   function draw(time) {
     const colors = getColors();
     const pixelRatio = Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO);
@@ -634,14 +715,21 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     pointer.y += (pointer.targetY - pointer.y) * (reducedMotion ? 1 : 0.06);
     const forward = [Math.sin(vehicle.heading), 0, -Math.cos(vehicle.heading)];
     const behind = [-forward[0], 0, -forward[2]];
-    const eye = [
-      vehicle.x + behind[0] * 7.2 + pointer.x * 2.1,
-      5.1 + pointer.y * 1.3,
-      vehicle.z + behind[2] * 7.2 + pointer.y * 1.5,
+    const desiredEye = [
+      vehicle.x + behind[0] * 9.3 + pointer.x * 2.1,
+      6 + pointer.y * 1.3,
+      vehicle.z + behind[2] * 9.3 + pointer.y * 1.5,
     ];
-    const target = [vehicle.x + forward[0] * 10, 1.2, vehicle.z + forward[2] * 10];
+    const desiredTarget = [vehicle.x + forward[0] * 13 - 2.4, 1.2, vehicle.z + forward[2] * 13];
+    const cameraBlend = reducedMotion ? 1 : 1 - Math.exp(-Math.max(frameDelta, 0.016) * 5);
+    camera.eye = camera.eye.map(
+      (value, index) => value + (desiredEye[index] - value) * cameraBlend,
+    );
+    camera.target = camera.target.map(
+      (value, index) => value + (desiredTarget[index] - value) * cameraBlend,
+    );
     const projection = perspectiveMatrix(Math.PI / 3.1, width / height, 0.1, 180);
-    currentViewProjection = multiplyMatrices(projection, lookAtMatrix(eye, target));
+    currentViewProjection = multiplyMatrices(projection, lookAtMatrix(camera.eye, camera.target));
 
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.BLEND);
@@ -681,6 +769,7 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     if (!isVisible || document.hidden) return;
     const delta = lastTime ? Math.min(0.05, (time - lastTime) / 1000) : 0;
     lastTime = time;
+    frameDelta = delta;
     updateVehicle(delta);
     updateHud();
     draw(time);
