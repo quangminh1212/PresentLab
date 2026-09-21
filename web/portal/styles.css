@@ -6082,16 +6082,11 @@ body::after {
   width: 92px;
   height: 46px;
   padding: 4px 7px;
-  border: 1px solid rgb(148 163 184 / 32%);
+  border: 0;
   border-radius: 12px;
   background: #f8fafc;
-  box-shadow:
-    0 10px 26px rgb(2 6 23 / 15%),
-    inset 0 0 0 1px rgb(255 255 255 / 72%);
-  transition:
-    border-color 220ms ease,
-    box-shadow 220ms ease,
-    transform 220ms ease;
+  box-shadow: none;
+  transition: transform 220ms ease;
 }
 
 .brand-logo {
@@ -6107,26 +6102,16 @@ body::after {
 
 .brand:hover .brand-logo-frame,
 .brand:focus-visible .brand-logo-frame {
-  border-color: rgb(0 212 170 / 68%);
-  box-shadow:
-    0 14px 32px rgb(0 212 170 / 16%),
-    inset 0 0 0 1px rgb(255 255 255 / 85%);
   transform: translateY(-1px);
 }
 
 html[data-theme="light"] .brand-logo-frame {
-  border-color: rgb(15 23 42 / 14%);
-  box-shadow:
-    0 10px 26px rgb(15 23 42 / 9%),
-    inset 0 0 0 1px rgb(255 255 255 / 92%);
+  box-shadow: none;
 }
 
 html[data-theme="light"] .brand:hover .brand-logo-frame,
 html[data-theme="light"] .brand:focus-visible .brand-logo-frame {
-  border-color: rgb(0 161 154 / 52%);
-  box-shadow:
-    0 14px 32px rgb(0 161 154 / 15%),
-    inset 0 0 0 1px rgb(255 255 255 / 96%);
+  transform: translateY(-1px);
 }
 
 .footer-brand .brand-logo-frame {

@@ -207,6 +207,15 @@ describe("client request portal browser flow", () => {
           .first()
           .evaluate((image) => image.naturalWidth),
       ).toBeGreaterThan(0);
+      expect(
+        await page
+          .locator(".brand-logo-frame")
+          .first()
+          .evaluate((frame) => ({
+            borderWidth: getComputedStyle(frame).borderWidth,
+            boxShadow: getComputedStyle(frame).boxShadow,
+          })),
+      ).toEqual({ borderWidth: "0px", boxShadow: "none" });
       expect(await page.locator(".topnav [data-open-request]").count()).toBe(0);
       expect(await page.locator(".hero-board-data-row").count()).toBe(3);
       expect(await page.locator(".hero-board-data-chart i").count()).toBe(7);
