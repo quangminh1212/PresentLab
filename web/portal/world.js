@@ -1,4 +1,5 @@
 const MAX_PIXEL_RATIO = 2;
+const WORLD_RENDER_SCALE = 0.8;
 const WORLD_LIMIT = 118;
 
 const vertexShaderSource = `
@@ -423,7 +424,7 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     const bounds = stage.getBoundingClientRect();
     width = Math.max(1, bounds.width);
     height = Math.max(1, bounds.height);
-    const pixelRatio = Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO);
+    const pixelRatio = Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO) * WORLD_RENDER_SCALE;
     canvas.width = Math.floor(width * pixelRatio);
     canvas.height = Math.floor(height * pixelRatio);
     canvas.style.width = `${width}px`;
@@ -478,9 +479,10 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
   }
 
   const gl = canvas.getContext("webgl", {
-    alpha: true,
-    antialias: true,
+    alpha: false,
+    antialias: false,
     premultipliedAlpha: false,
+    powerPreference: "high-performance",
   });
   if (!gl) {
     stage.classList.add("world-fallback");
@@ -729,9 +731,9 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
   };
   function draw(time) {
     const colors = getColors();
-    const pixelRatio = Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO);
+    const pixelRatio = Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO) * WORLD_RENDER_SCALE;
     gl.viewport(0, 0, canvas.width, canvas.height);
-    gl.clearColor(colors.background[0], colors.background[1], colors.background[2], 0);
+    gl.clearColor(colors.background[0], colors.background[1], colors.background[2], 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     pointer.x += (pointer.targetX - pointer.x) * (reducedMotion ? 1 : 0.06);
