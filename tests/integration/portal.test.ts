@@ -116,7 +116,7 @@ describe("client request portal browser flow", () => {
       expect(previewSrc?.includes("/templates/") || Boolean(previewSrcdoc)).toBe(true);
       await page.locator("[data-close-preview]").click();
 
-      await page.locator("[data-open-request]").first().click();
+      await page.locator(".selection-tray [data-open-request]").click();
       expect(await page.locator("[data-request-drawer].is-open").count()).toBe(1);
       expect(await page.locator("[data-drawer-selections] .selected-template").count()).toBe(3);
       await page.evaluate((endpoint) => {
@@ -195,6 +195,7 @@ describe("client request portal browser flow", () => {
           .first()
           .evaluate((image) => image.naturalWidth),
       ).toBeGreaterThan(0);
+      expect(await page.locator(".topnav [data-open-request]").count()).toBe(0);
 
       const initialTheme = (await page.locator("html").getAttribute("data-theme")) || "dark";
       const toggledTheme = initialTheme === "dark" ? "light" : "dark";
@@ -291,7 +292,7 @@ describe("client request portal browser flow", () => {
       await page.locator("[data-tray-selections] [data-remove-selected]").first().click();
       expect(await page.locator("[data-selection-count]").first().innerText()).toBe("2");
 
-      await page.locator("[data-open-request]").first().click();
+      await page.locator(".selection-tray [data-open-request]").click();
       await page.waitForFunction(() =>
         document.querySelector("[data-request-drawer]")?.classList.contains("is-open"),
       );
@@ -299,7 +300,7 @@ describe("client request portal browser flow", () => {
       await page.waitForFunction(
         () => !document.querySelector("[data-request-drawer]")?.classList.contains("is-open"),
       );
-      await page.locator("[data-open-request]").first().click();
+      await page.locator(".selection-tray [data-open-request]").click();
 
       await page.evaluate(() => {
         document.documentElement.dataset.requestEndpoint = "";
