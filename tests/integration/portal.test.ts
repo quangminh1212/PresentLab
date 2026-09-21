@@ -11,6 +11,7 @@ const contentTypes: Record<string, string> = {
   ".html": "text/html; charset=utf-8",
   ".js": "text/javascript; charset=utf-8",
   ".json": "application/json; charset=utf-8",
+  ".png": "image/png",
 };
 
 async function startPortalServer() {
@@ -167,6 +168,186 @@ describe("client request portal browser flow", () => {
           window.innerWidth,
       );
       expect(viewportOverflow).toBeLessThanOrEqual(1);
+    } finally {
+      await browser.close();
+      await new Promise<void>((resolveServer, rejectServer) =>
+        portalServer.server.close((error) => (error ? rejectServer(error) : resolveServer())),
+      );
+    }
+  }, 120_000);
+
+  it("covers preferences, library controls, preview navigation, and local handoff", async () => {
+    const portalServer = await startPortalServer();
+    const browser = await chromium.launch({ headless: true });
+    const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+    const pageErrors: string[] = [];
+    page.on("pageerror", (error) => pageErrors.push(error.message));
+
+    try {
+      await page.goto(`${portalServer.baseUrl}/web/portal/`, { waitUntil: "networkidle" });
+      await page.locator("[data-results-count]").waitFor();
+      expect(await page.locator(".brand-logo").first().getAttribute("src")).toBe(
+        "/web/portal/xlab-logo.png",
+      );
+      expect(
+        await page
+          .locator(".brand-logo")
+          .first()
+          .evaluate((image) => image.naturalWidth),
+      ).toBeGreaterThan(0);
+
+      const initialTheme = (await page.locator("html").getAttribute("data-theme")) || "dark";
+      const toggledTheme = initialTheme === "dark" ? "light" : "dark";
+      await page.locator("[data-theme-toggle]").click();
+      await page.waitForFunction(
+        (expected) => document.documentElement.dataset.theme === expected,
+        toggledTheme,
+      );
+      expect(await page.locator("html").getAttribute("data-theme")).toBe(toggledTheme);
+      const toggledPressed = toggledTheme === "light" ? "true" : "false";
+      await page.waitForFunction(
+        (expected) =>
+          document.querySelector("[data-theme-toggle]")?.getAttribute("aria-pressed") === expected,
+        toggledPressed,
+      );
+      expect(await page.locator("[data-theme-toggle]").getAttribute("aria-pressed")).toBe(
+        toggledPressed,
+      );
+      await page.waitForFunction(
+        () => !document.documentElement.classList.contains("theme-switching"),
+      );
+      await page.locator("[data-theme-toggle]").click();
+      await page.waitForFunction(
+        (expected) => document.documentElement.dataset.theme === expected,
+        initialTheme,
+      );
+      await page.waitForFunction(
+        (expected) =>
+          document.querySelector("[data-theme-toggle]")?.getAttribute("aria-pressed") === expected,
+        initialTheme === "light" ? "true" : "false",
+      );
+      expect(await page.locator("html").getAttribute("data-theme")).toBe(initialTheme);
+
+      await page.locator("select[data-locale]").selectOption("en");
+      expect(await page.locator("html").getAttribute("lang")).toBe("en");
+      await page.locator("select[data-locale]").selectOption("zh");
+      expect(await page.locator("html").getAttribute("lang")).toBe("zh-CN");
+      await page.locator("select[data-locale]").selectOption("vi");
+
+      const family = page.locator("[data-family-filter] option").nth(1);
+      const category = page.locator("[data-category-filter] option").nth(1);
+      const palette = page.locator("[data-palette-filter] option").nth(1);
+      await page.locator("[data-family-filter]").selectOption(await family.getAttribute("value"));
+      expect(await page.locator("[data-template-card]").count()).toBeGreaterThan(0);
+      await page.locator("[data-clear-filters]").first().click();
+      await page
+        .locator("[data-category-filter]")
+        .selectOption(await category.getAttribute("value"));
+      expect(await page.locator("[data-template-card]").count()).toBeGreaterThan(0);
+      await page.locator("[data-clear-filters]").first().click();
+      await page.locator("[data-palette-filter]").selectOption(await palette.getAttribute("value"));
+      expect(await page.locator("[data-template-card]").count()).toBeGreaterThan(0);
+      await page.locator("[data-clear-filters]").first().click();
+      await page.waitForFunction(
+        () => document.querySelector("[data-results-count]")?.textContent === "770 mẫu",
+      );
+
+      await page.locator("[data-sort]").selectOption("name");
+      await page.locator("[data-template-card]").first().waitFor({ state: "visible" });
+      await page.locator("[data-load-more]").click();
+      expect(await page.locator("[data-template-card]").count()).toBe(48);
+
+      await page.locator("[data-search]").fill("Bauhaus");
+      await page.waitForFunction(
+        () => document.querySelector("[data-results-count]")?.textContent === "10 mẫu",
+      );
+      await page.locator("[data-preview-template]").first().click();
+      await page.locator("[data-preview-modal]").waitFor({ state: "visible" });
+      await page.waitForFunction(() => {
+        const frame = document.querySelector("[data-preview-frame]");
+        return Boolean(frame?.getAttribute("src") || frame?.getAttribute("srcdoc"));
+      });
+      const firstPosition = await page.locator("[data-preview-position]").innerText();
+      await page.locator("[data-preview-next]").click();
+      await page.waitForFunction(
+        (previous) => document.querySelector("[data-preview-position]")?.textContent !== previous,
+        firstPosition,
+      );
+      await page.keyboard.press("ArrowLeft");
+      await page.locator("[data-preview-select]").click();
+      expect(await page.locator("[data-selection-count]").first().innerText()).toBe("1");
+      await page.keyboard.press("Escape");
+      await page.locator("[data-preview-modal]").waitFor({ state: "hidden" });
+      await page.locator("[data-clear-filters]").first().click();
+
+      for (let index = 0; index < 3; index += 1) {
+        await page.locator("[data-select-template]").nth(index).click();
+      }
+      expect(await page.locator("[data-selection-count]").first().innerText()).toBe("3");
+      await page.locator("[data-select-template]").nth(3).click();
+      await page.waitForFunction(() =>
+        document.querySelector("[data-toast].is-visible")?.textContent?.includes("tối đa 3 mẫu"),
+      );
+      await page.locator("[data-tray-selections] [data-remove-selected]").first().click();
+      expect(await page.locator("[data-selection-count]").first().innerText()).toBe("2");
+
+      await page.locator("[data-open-request]").first().click();
+      await page.waitForFunction(() =>
+        document.querySelector("[data-request-drawer]")?.classList.contains("is-open"),
+      );
+      await page.keyboard.press("Escape");
+      await page.waitForFunction(
+        () => !document.querySelector("[data-request-drawer]")?.classList.contains("is-open"),
+      );
+      await page.locator("[data-open-request]").first().click();
+
+      await page.evaluate(() => {
+        document.documentElement.dataset.requestEndpoint = "";
+        document.documentElement.dataset.handoffEmail = "";
+      });
+      await page.locator("[name=projectName]").fill("Local handoff audit");
+      await page.locator("[name=slideCount]").fill("12");
+      await page.locator("[name=service][value=customize]").check();
+      await page.locator("[name=contactName]").fill("Portal QA");
+      await page.locator("[name=email]").fill("qa@example.com");
+      await page.locator("[name=consent]").check();
+      await page.locator("[data-attachments]").setInputFiles({
+        name: "brief.txt",
+        mimeType: "text/plain",
+        buffer: Buffer.from("local handoff audit"),
+      });
+      await page.locator("[data-file-list]").waitFor({ state: "visible" });
+      const [download] = await Promise.all([
+        page.waitForEvent("download"),
+        page.locator("[data-submit-request]").click(),
+      ]);
+      await page.locator("[data-success-view]").waitFor({ state: "visible" });
+      expect(download.suggestedFilename()).toMatch(/^pl-\d{8}-[a-z0-9]{4}\.json$/);
+      expect(
+        await page.evaluate(
+          () => JSON.parse(localStorage.getItem("presentlab.slide-requests") || "[]").length,
+        ),
+      ).toBe(1);
+      await page.locator("[data-download-request]").click();
+      await page.locator("[data-new-request]").click();
+      await page.locator("[data-form-view]").waitFor({ state: "visible" });
+
+      await page.locator("[name=projectName]").fill("Attachment validation audit");
+      await page.locator("[name=slideCount]").fill("8");
+      await page.locator("[name=service][value=customize]").check();
+      await page.locator("[name=contactName]").fill("Portal QA");
+      await page.locator("[name=email]").fill("qa@example.com");
+      await page.locator("[name=consent]").check();
+      await page.locator("[data-attachments]").setInputFiles({
+        name: "too-large.txt",
+        mimeType: "text/plain",
+        buffer: Buffer.alloc(3 * 1024 * 1024 + 1),
+      });
+      await page.locator("[data-submit-request]").click();
+      await page.waitForFunction(() =>
+        document.querySelector("[data-toast].is-visible")?.textContent?.includes("too-large.txt"),
+      );
+      expect(pageErrors).toEqual([]);
     } finally {
       await browser.close();
       await new Promise<void>((resolveServer, rejectServer) =>
