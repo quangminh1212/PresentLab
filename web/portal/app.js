@@ -8,6 +8,620 @@ const MAX_ATTACHMENT_BYTES = 3 * 1024 * 1024;
 const MAX_TOTAL_ATTACHMENT_BYTES = 4 * 1024 * 1024;
 const REQUEST_TIMEOUT_MS = 15_000;
 const LOCAL_REQUEST_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+const LOCALE_STORAGE_KEY = "presentlab.locale";
+const DEFAULT_LOCALE = "vi";
+const SUPPORTED_LOCALES = ["vi", "en", "zh"];
+
+const COPY = {
+  vi: {
+    noscript: "Trang này cần JavaScript để tải thư viện mẫu và gửi brief.",
+    brandWorkspace: "CLIENT WORKSPACE",
+    brandAria: "PresentLab - về đầu trang",
+    navAria: "Điều hướng chính",
+    navTemplates: "Mẫu slide",
+    navProcess: "Quy trình",
+    navPalette: "Bảng màu",
+    navRequest: "Yêu cầu của tôi",
+    languageLabel: "Ngôn ngữ",
+    menuOpen: "Mở menu",
+    menuClose: "Đóng menu",
+    heroEyebrow: "PRESENTATION PRODUCTION DESK",
+    heroTitleA: "Chọn một hướng nhìn.",
+    heroTitleB: "Gửi phần còn lại cho đội ngũ.",
+    heroLede:
+      "Duyệt các mẫu slide đã được chuẩn hóa, chọn hướng phù hợp với câu chuyện của bạn và gửi brief để đội gia công dựng thành bộ slide hoàn chỉnh.",
+    heroExplore: "Khám phá thư viện mẫu",
+    heroBrief: "Gửi brief trực tiếp",
+    heroStatTemplates: "mẫu có sẵn",
+    heroStatFormat: "chuẩn trình chiếu",
+    heroStatResponse: "check và phản hồi",
+    heroVisualLibrary: "LIVE LIBRARY",
+    heroVisualPath: "CURATED PATH",
+    heroVisualStoryKicker: "YOUR STORY",
+    heroVisualStoryA: "Make the",
+    heroVisualStoryB: "idea",
+    heroVisualStoryC: "visible.",
+    heroVisualFooter: "SELECT / BRIEF / BUILD",
+    heroVisualStart: "Start with",
+    heroVisualPoint: "a point of view.",
+    heroVisualMood: "Mood",
+    heroVisualMoodValue: "Editorial / precise",
+    heroVisualFormat: "Format",
+    heroVisualFormatValue: "16:9 presentation",
+    heroVisualOutput: "Output",
+    heroVisualOutputValue: "Ready to build",
+    heroNoteMood: "Chọn theo mood",
+    heroNoteBrief: "Brief đã rõ",
+    catalogEyebrow: "01 / TEMPLATE LIBRARY",
+    catalogTitle: "Tìm mẫu khớp với câu chuyện",
+    catalogIntro: "Chọn một mẫu chính hoặc tối đa ba hướng để đội gia công tư vấn nhanh hơn.",
+    filterAria: "Bộ lọc mẫu slide",
+    filterLabel: "LỌC THƯ VIỆN",
+    resetFilters: "Đặt lại",
+    searchLabel: "Tìm kiếm mẫu",
+    searchPlaceholder: "Tìm theo tên, style, mục đích...",
+    familyLabel: "Hệ thống hình ảnh",
+    familyAll: "Tất cả hệ thống",
+    categoryLabel: "Phong cách / chuyển động",
+    categoryAll: "Tất cả phong cách",
+    paletteLabel: "Bảng màu",
+    paletteAll: "Tất cả bảng màu",
+    filterTipTitle: "Chưa biết chọn?",
+    filterTipCopy: "Hãy chọn theo mục đích trước, đội ngũ sẽ tinh chỉnh màu và nhịp slide sau.",
+    sourceLoading: "Đang tải thư viện mẫu...",
+    sourceLoaded: "{{count}} mẫu · dữ liệu local của PresentLab",
+    sourceFallback: "Đang dùng 8 mẫu nền tảng · chạy qua web server để xem toàn bộ thư viện.",
+    resultsLoading: "Đang tải...",
+    resultsCount: "{{count}} mẫu",
+    selectionSummary: " · {{count}} mẫu đang chọn",
+    sortLabel: "Sắp xếp",
+    sortFeatured: "Đề xuất trước",
+    sortName: "Tên A–Z",
+    sortStyle: "Phong cách",
+    emptyTitle: "Chưa tìm thấy mẫu phù hợp",
+    emptyCopy: "Thử xóa bớt bộ lọc hoặc tìm bằng một từ khóa khác.",
+    clearFilters: "Xóa bộ lọc",
+    loadMore: "Tải thêm mẫu",
+    remaining: "({{count}} còn lại)",
+    processEyebrow: "02 / HOW IT WORKS",
+    processTitle: "Từ lựa chọn đến file bàn giao",
+    processIntro: "Bạn chỉ cần mô tả điều cần đạt được. Phần triển khai để chúng tôi lo.",
+    processOneTitle: "Chọn hướng",
+    processOneCopy: "Chọn một mẫu phù hợp hoặc gửi vài phương án để đội ngũ tư vấn.",
+    processTwoTitle: "Gửi brief",
+    processTwoCopy: "Cho biết mục tiêu, số slide, deadline và tài liệu đầu vào của bạn.",
+    processThreeTitle: "Nhận bản dựng",
+    processThreeCopy: "Đội gia công xác nhận phạm vi, dựng slide và gửi bản xem trước để duyệt.",
+    footerCopy: "Chọn đúng nền tảng để ý tưởng được nhìn thấy.",
+    footerStatus: "Production desk online",
+    trayAria: "Các mẫu đã chọn",
+    traySelectedLabel: "mẫu đã chọn",
+    trayMax: "Tối đa 3 mẫu cho một brief",
+    trayAction: "Tiếp tục gửi brief",
+    drawerEyebrow: "03 / YOUR REQUEST",
+    drawerTitle: "Gửi brief cho đội gia công",
+    drawerClose: "Đóng biểu mẫu",
+    drawerLede:
+      "Cho chúng tôi vài thông tin để bắt đầu. Bạn có thể bổ sung tài liệu sau khi đội ngũ xác nhận.",
+    noSelectionHint: "Hãy chọn ít nhất một mẫu trước khi gửi brief.",
+    projectSection: "Thông tin dự án",
+    projectNameLabel: "Tên dự án",
+    projectNamePlaceholder: "Ví dụ: Pitch deck gọi vốn Q4",
+    slideCountLabel: "Số lượng slide",
+    slideCountPlaceholder: "Ví dụ: 42",
+    slideCountHint: "Nhập số nguyên dương, không giới hạn.",
+    deadlineLabel: "Deadline dự kiến",
+    serviceLegend: "Loại hỗ trợ cần nhận",
+    serviceCustomize: "Gia công theo nội dung có sẵn",
+    serviceContent: "Dựng nội dung và thiết kế trọn gói",
+    serviceBrand: "Chỉ tùy chỉnh mẫu / branding",
+    contactSection: "Thông tin liên hệ",
+    contactNameLabel: "Người liên hệ",
+    contactNamePlaceholder: "Tên của bạn",
+    phoneLabel: "Số điện thoại",
+    phonePlaceholder: "09xx xxx xxx",
+    emailLabel: "Email nhận phản hồi",
+    emailPlaceholder: "you@company.com",
+    notesLabel: "Điều cần đội ngũ lưu ý",
+    notesPlaceholder:
+      "Đối tượng xem, thông điệp chính, phong cách mong muốn, yêu cầu thương hiệu...",
+    uploadTitle: "Đính kèm tài liệu đầu vào",
+    uploadHint: "PPTX, PDF, DOCX, XLSX · tối đa 10 tệp / 4 MB",
+    uploadButton: "Chọn tệp",
+    consent:
+      "Tôi đồng ý để PresentLab sử dụng thông tin này nhằm tư vấn và thực hiện yêu cầu gia công.",
+    submitButton: "Gửi yêu cầu cho đội gia công",
+    submitLoading: "Đang gửi brief...",
+    submitNote: "Đội ngũ sẽ check brief và phản hồi trong vòng 1–2 tiếng.",
+    successEyebrow: "REQUEST RECEIVED",
+    successTitle: "Đã tạo brief thành công",
+    successCopy: "Thông tin của bạn đã được ghi nhận.",
+    requestCode: "Mã yêu cầu",
+    downloadRequest: "Tải bản brief",
+    newRequest: "Brief mới",
+    closeButton: "Đóng",
+    successFootnote: "",
+    previewEyebrow: "TEMPLATE PREVIEW",
+    previewTitleFallback: "Template",
+    previewOpen: "Mở deck đầy đủ",
+    previewClose: "Đóng xem trước",
+    previewFrameTitle: "Xem trước mẫu slide",
+    previewNote:
+      "Đây là deck mẫu để tham khảo nhịp hình ảnh. Nội dung sẽ được thay bằng brief của bạn khi gia công.",
+    categoryCore: "Hệ thống cốt lõi",
+    paletteBase: "Hệ cơ sở",
+    filterQuery: "Từ khóa: {{query}}",
+    removeFilter: "Xóa bộ lọc {{label}}",
+    removeSelection: "Bỏ chọn {{name}}",
+    selectButton: "Chọn mẫu",
+    selectedButton: "Đã chọn",
+    previewButton: "Xem mẫu",
+    defaultDescription: "Một hệ thống hình ảnh sẵn sàng để đội ngũ tùy chỉnh theo brief.",
+    maxSelections: "Bạn có thể chọn tối đa 3 mẫu cho một brief.",
+    noSelectionToast: "Hãy chọn ít nhất một mẫu trước khi gửi brief.",
+    attachmentMaxFiles: "Bạn chỉ có thể đính kèm tối đa {{count}} tệp.",
+    attachmentMaxSingle: "{{name}} vượt quá giới hạn 3 MB mỗi tệp.",
+    attachmentMaxTotal: "Tổng dung lượng tài liệu không được vượt quá 4 MB khi gửi qua Vercel.",
+    requestSavedError:
+      "Không thể kết nối đội gia công. Brief đã được lưu cục bộ, bạn có thể thử gửi lại.",
+    requestGenericError: "Không thể gửi tự động. Vui lòng thử lại hoặc liên hệ đội ngũ.",
+    endpointSuccessTitle: "Đã gửi yêu cầu thành công",
+    endpointSuccessCopy:
+      "Brief đã được chuyển tới đội gia công. Chúng tôi sẽ phản hồi qua email của bạn sau khi xem phạm vi công việc.",
+    endpointSuccessFootnote: "Bạn có thể tải lại bản brief để lưu vào hồ sơ dự án.",
+    emailSuccessTitle: "Đã chuẩn bị email yêu cầu",
+    emailSuccessCopy:
+      "Ứng dụng email của bạn đã được mở với nội dung brief. Hãy bấm Send để hoàn tất việc gửi cho đội gia công.",
+    emailSuccessFootnote: "Nếu cửa sổ email không mở, bạn có thể tải bản brief JSON bên dưới.",
+    localSuccessTitle: "Đã tạo bản brief thành công",
+    localSuccessCopy:
+      "Chưa cấu hình endpoint nhận yêu cầu, nên brief đã được lưu trên thiết bị và tải xuống để bạn chuyển cho đội gia công.",
+    localSuccessFootnote:
+      "Để gửi tự động, cấu hình data-request-endpoint hoặc data-handoff-email trên thẻ html của trang.",
+  },
+  en: {
+    noscript: "JavaScript is required to load the template library and send a brief.",
+    brandWorkspace: "CLIENT WORKSPACE",
+    brandAria: "PresentLab - back to top",
+    navAria: "Main navigation",
+    navTemplates: "Templates",
+    navProcess: "Process",
+    navPalette: "Palettes",
+    navRequest: "My request",
+    languageLabel: "Language",
+    menuOpen: "Open menu",
+    menuClose: "Close menu",
+    heroEyebrow: "PRESENTATION PRODUCTION DESK",
+    heroTitleA: "Choose a point of view.",
+    heroTitleB: "Leave the rest to the studio.",
+    heroLede:
+      "Browse standardized slide systems, choose a direction that fits your story, and send a brief for our production team to turn into a finished deck.",
+    heroExplore: "Explore template library",
+    heroBrief: "Send a brief directly",
+    heroStatTemplates: "templates ready",
+    heroStatFormat: "presentation standard",
+    heroStatResponse: "hours to review",
+    heroVisualLibrary: "LIVE LIBRARY",
+    heroVisualPath: "CURATED PATH",
+    heroVisualStoryKicker: "YOUR STORY",
+    heroVisualStoryA: "Make the",
+    heroVisualStoryB: "idea",
+    heroVisualStoryC: "visible.",
+    heroVisualFooter: "SELECT / BRIEF / BUILD",
+    heroVisualStart: "Start with",
+    heroVisualPoint: "a point of view.",
+    heroVisualMood: "Mood",
+    heroVisualMoodValue: "Editorial / precise",
+    heroVisualFormat: "Format",
+    heroVisualFormatValue: "16:9 presentation",
+    heroVisualOutput: "Output",
+    heroVisualOutputValue: "Ready to build",
+    heroNoteMood: "Choose by mood",
+    heroNoteBrief: "Brief is clear",
+    catalogEyebrow: "01 / TEMPLATE LIBRARY",
+    catalogTitle: "Find a visual system for your story",
+    catalogIntro:
+      "Choose one lead direction or up to three options for a faster production recommendation.",
+    filterAria: "Slide template filters",
+    filterLabel: "LIBRARY FILTERS",
+    resetFilters: "Reset",
+    searchLabel: "Search templates",
+    searchPlaceholder: "Search by name, style, purpose...",
+    familyLabel: "Visual system",
+    familyAll: "All systems",
+    categoryLabel: "Style / movement",
+    categoryAll: "All styles",
+    paletteLabel: "Color palette",
+    paletteAll: "All palettes",
+    filterTipTitle: "Not sure where to start?",
+    filterTipCopy: "Choose by purpose first. The studio can refine color and slide rhythm later.",
+    sourceLoading: "Loading template library...",
+    sourceLoaded: "{{count}} templates · PresentLab local data",
+    sourceFallback: "Using 8 base systems · run through a web server to browse the full library.",
+    resultsLoading: "Loading...",
+    resultsCount: "{{count}} templates",
+    selectionSummary: " · {{count}} selected",
+    sortLabel: "Sort",
+    sortFeatured: "Featured first",
+    sortName: "Name A–Z",
+    sortStyle: "Style",
+    emptyTitle: "No matching templates",
+    emptyCopy: "Try removing a filter or searching with a different keyword.",
+    clearFilters: "Clear filters",
+    loadMore: "Load more templates",
+    remaining: "({{count}} left)",
+    processEyebrow: "02 / HOW IT WORKS",
+    processTitle: "From direction to delivered deck",
+    processIntro: "Tell us what the deck needs to achieve. We will take care of the build.",
+    processOneTitle: "Choose a direction",
+    processOneCopy: "Pick a fitting template or send a few options for the studio to advise on.",
+    processTwoTitle: "Send a brief",
+    processTwoCopy: "Share the goal, slide count, deadline, and source material.",
+    processThreeTitle: "Receive the build",
+    processThreeCopy:
+      "The studio confirms scope, builds the deck, and sends a preview for approval.",
+    footerCopy: "Choose the right system and make the idea visible.",
+    footerStatus: "Production desk online",
+    trayAria: "Selected templates",
+    traySelectedLabel: "selected",
+    trayMax: "Up to 3 templates per brief",
+    trayAction: "Continue to brief",
+    drawerEyebrow: "03 / YOUR REQUEST",
+    drawerTitle: "Send a brief to the production team",
+    drawerClose: "Close request form",
+    drawerLede:
+      "Give us a few details to get started. You can add source material after the team confirms scope.",
+    noSelectionHint: "Choose at least one template before sending a brief.",
+    projectSection: "Project details",
+    projectNameLabel: "Project name",
+    projectNamePlaceholder: "Example: Q4 fundraising pitch deck",
+    slideCountLabel: "Slide count",
+    slideCountPlaceholder: "Example: 42",
+    slideCountHint: "Enter a positive whole number.",
+    deadlineLabel: "Expected deadline",
+    serviceLegend: "Support needed",
+    serviceCustomize: "Build from existing content",
+    serviceContent: "Content and design package",
+    serviceBrand: "Template / branding customization",
+    contactSection: "Contact details",
+    contactNameLabel: "Contact person",
+    contactNamePlaceholder: "Your name",
+    phoneLabel: "Phone number",
+    phonePlaceholder: "+84 ...",
+    emailLabel: "Reply email",
+    emailPlaceholder: "you@company.com",
+    notesLabel: "Notes for the studio",
+    notesPlaceholder: "Audience, key message, desired mood, brand requirements...",
+    uploadTitle: "Attach source material",
+    uploadHint: "PPTX, PDF, DOCX, XLSX · up to 10 files / 4 MB",
+    uploadButton: "Choose files",
+    consent:
+      "I agree that PresentLab may use this information to advise on and deliver the requested work.",
+    submitButton: "Send request to the studio",
+    submitLoading: "Sending brief...",
+    submitNote: "The studio will review and reply within 1–2 hours.",
+    successEyebrow: "REQUEST RECEIVED",
+    successTitle: "Brief created successfully",
+    successCopy: "Your information has been recorded.",
+    requestCode: "Request code",
+    downloadRequest: "Download brief",
+    newRequest: "New brief",
+    closeButton: "Close",
+    successFootnote: "",
+    previewEyebrow: "TEMPLATE PREVIEW",
+    previewTitleFallback: "Template",
+    previewOpen: "Open full deck",
+    previewClose: "Close preview",
+    previewFrameTitle: "Slide template preview",
+    previewNote:
+      "This sample deck shows the visual rhythm. Your content will be replaced with your brief during production.",
+    categoryCore: "Core systems",
+    paletteBase: "Base system",
+    filterQuery: "Keyword: {{query}}",
+    removeFilter: "Remove filter {{label}}",
+    removeSelection: "Remove {{name}}",
+    selectButton: "Select",
+    selectedButton: "Selected",
+    previewButton: "Preview",
+    defaultDescription: "A ready-made visual system the studio can tailor to your brief.",
+    maxSelections: "You can select up to 3 templates for one brief.",
+    noSelectionToast: "Choose at least one template before sending a brief.",
+    attachmentMaxFiles: "You can attach up to {{count}} files.",
+    attachmentMaxSingle: "{{name}} exceeds the 3 MB per-file limit.",
+    attachmentMaxTotal: "Total attachments must stay under 4 MB when sent through Vercel.",
+    requestSavedError:
+      "We could not reach the studio. The brief was saved locally so you can try again.",
+    requestGenericError: "Automatic delivery failed. Please try again or contact the studio.",
+    endpointSuccessTitle: "Request sent successfully",
+    endpointSuccessCopy:
+      "Your brief was sent to the production team. We will reply by email after reviewing the scope.",
+    endpointSuccessFootnote: "You can download a copy of the brief for your project records.",
+    emailSuccessTitle: "Request email prepared",
+    emailSuccessCopy:
+      "Your email app opened with the brief. Press Send to finish delivering it to the studio.",
+    emailSuccessFootnote: "If the email window did not open, download the JSON brief below.",
+    localSuccessTitle: "Brief created successfully",
+    localSuccessCopy:
+      "No request endpoint is configured, so the brief was saved on this device and downloaded for you to share with the studio.",
+    localSuccessFootnote:
+      "For automatic delivery, configure data-request-endpoint or data-handoff-email on the html element.",
+  },
+  zh: {
+    noscript: "需要启用 JavaScript 才能加载模板库并提交简报。",
+    brandWorkspace: "客户工作台",
+    brandAria: "PresentLab - 返回顶部",
+    navAria: "主导航",
+    navTemplates: "幻灯片模板",
+    navProcess: "流程",
+    navPalette: "配色",
+    navRequest: "我的需求",
+    languageLabel: "语言",
+    menuOpen: "打开菜单",
+    menuClose: "关闭菜单",
+    heroEyebrow: "演示文稿制作工作台",
+    heroTitleA: "选择一种视角。",
+    heroTitleB: "其余交给我们。",
+    heroLede:
+      "浏览经过标准化的幻灯片模板，选择适合你故事的方向，提交简报，由制作团队完成整套演示文稿。",
+    heroExplore: "探索模板库",
+    heroBrief: "直接提交简报",
+    heroStatTemplates: "套模板可选",
+    heroStatFormat: "演示文稿标准",
+    heroStatResponse: "小时内检查并回复",
+    heroVisualLibrary: "实时模板库",
+    heroVisualPath: "精选路径",
+    heroVisualStoryKicker: "你的故事",
+    heroVisualStoryA: "让想法",
+    heroVisualStoryB: "被看见",
+    heroVisualStoryC: "。",
+    heroVisualFooter: "选择 / 简报 / 制作",
+    heroVisualStart: "从一个",
+    heroVisualPoint: "清晰的观点开始。",
+    heroVisualMood: "氛围",
+    heroVisualMoodValue: "编辑感 / 精确",
+    heroVisualFormat: "格式",
+    heroVisualFormatValue: "16:9 演示文稿",
+    heroVisualOutput: "交付",
+    heroVisualOutputValue: "准备制作",
+    heroNoteMood: "按氛围选择",
+    heroNoteBrief: "简报已清晰",
+    catalogEyebrow: "01 / 模板库",
+    catalogTitle: "找到适合故事的视觉系统",
+    catalogIntro: "选择一个主方向，或最多选择三个方案，让制作团队更快给出建议。",
+    filterAria: "幻灯片模板筛选",
+    filterLabel: "筛选模板库",
+    resetFilters: "重置",
+    searchLabel: "搜索模板",
+    searchPlaceholder: "按名称、风格、用途搜索……",
+    familyLabel: "视觉系统",
+    familyAll: "全部系统",
+    categoryLabel: "风格 / 动势",
+    categoryAll: "全部风格",
+    paletteLabel: "色彩方案",
+    paletteAll: "全部配色",
+    filterTipTitle: "不知道如何选择？",
+    filterTipCopy: "先按用途选择，之后团队可以继续调整色彩和页面节奏。",
+    sourceLoading: "正在加载模板库……",
+    sourceLoaded: "{{count}} 套模板 · PresentLab 本地数据",
+    sourceFallback: "正在使用 8 套基础系统 · 通过 web server 可浏览完整模板库。",
+    resultsLoading: "正在加载……",
+    resultsCount: "{{count}} 套模板",
+    selectionSummary: " · 已选择 {{count}} 套",
+    sortLabel: "排序",
+    sortFeatured: "优先推荐",
+    sortName: "名称 A–Z",
+    sortStyle: "风格",
+    emptyTitle: "没有找到匹配模板",
+    emptyCopy: "可以减少筛选条件，或尝试其他关键词。",
+    clearFilters: "清除筛选",
+    loadMore: "加载更多模板",
+    remaining: "（还剩 {{count}} 套）",
+    processEyebrow: "02 / 工作流程",
+    processTitle: "从选择方向到交付文件",
+    processIntro: "告诉我们演示文稿要达成什么目标，制作交给我们。",
+    processOneTitle: "选择方向",
+    processOneCopy: "选择合适的模板，或发送几个方案让团队提供建议。",
+    processTwoTitle: "提交简报",
+    processTwoCopy: "说明目标、页数、截止时间和已有资料。",
+    processThreeTitle: "收到初稿",
+    processThreeCopy: "团队确认范围、制作页面，并发送预览供你确认。",
+    footerCopy: "选择正确的视觉系统，让想法被看见。",
+    footerStatus: "制作工作台在线",
+    trayAria: "已选择的模板",
+    traySelectedLabel: "套已选择",
+    trayMax: "一次简报最多选择 3 套模板",
+    trayAction: "继续提交简报",
+    drawerEyebrow: "03 / 你的需求",
+    drawerTitle: "向制作团队提交简报",
+    drawerClose: "关闭需求表单",
+    drawerLede: "提供一些信息即可开始。团队确认范围后，你还可以补充资料。",
+    noSelectionHint: "提交简报前至少选择一套模板。",
+    projectSection: "项目资料",
+    projectNameLabel: "项目名称",
+    projectNamePlaceholder: "例如：Q4 融资路演",
+    slideCountLabel: "幻灯片页数",
+    slideCountPlaceholder: "例如：42",
+    slideCountHint: "请输入正整数。",
+    deadlineLabel: "预计截止时间",
+    serviceLegend: "需要的支持类型",
+    serviceCustomize: "根据已有内容制作",
+    serviceContent: "内容与设计一体化",
+    serviceBrand: "模板 / 品牌定制",
+    contactSection: "联系信息",
+    contactNameLabel: "联系人",
+    contactNamePlaceholder: "你的姓名",
+    phoneLabel: "电话号码",
+    phonePlaceholder: "+86 ...",
+    emailLabel: "接收回复的邮箱",
+    emailPlaceholder: "you@company.com",
+    notesLabel: "希望团队注意的事项",
+    notesPlaceholder: "受众、核心信息、期望风格、品牌要求……",
+    uploadTitle: "附加已有资料",
+    uploadHint: "PPTX、PDF、DOCX、XLSX · 最多 10 个文件 / 4 MB",
+    uploadButton: "选择文件",
+    consent: "我同意 PresentLab 使用这些信息来提供咨询并完成本次制作需求。",
+    submitButton: "提交制作需求",
+    submitLoading: "正在提交简报……",
+    submitNote: "团队将在 1–2 小时内检查简报并回复。",
+    successEyebrow: "已收到需求",
+    successTitle: "简报创建成功",
+    successCopy: "你的信息已被记录。",
+    requestCode: "需求编号",
+    downloadRequest: "下载简报",
+    newRequest: "新建简报",
+    closeButton: "关闭",
+    successFootnote: "",
+    previewEyebrow: "模板预览",
+    previewTitleFallback: "模板",
+    previewOpen: "打开完整演示文稿",
+    previewClose: "关闭预览",
+    previewFrameTitle: "幻灯片模板预览",
+    previewNote: "这是用于参考视觉节奏的示例演示文稿，制作时会根据你的简报替换内容。",
+    categoryCore: "核心系统",
+    paletteBase: "基础系统",
+    filterQuery: "关键词：{{query}}",
+    removeFilter: "移除筛选 {{label}}",
+    removeSelection: "移除 {{name}}",
+    selectButton: "选择模板",
+    selectedButton: "已选择",
+    previewButton: "查看预览",
+    defaultDescription: "可由制作团队根据简报定制的视觉系统。",
+    maxSelections: "一次简报最多选择 3 套模板。",
+    noSelectionToast: "提交简报前至少选择一套模板。",
+    attachmentMaxFiles: "最多可以附加 {{count}} 个文件。",
+    attachmentMaxSingle: "{{name}} 超过了每个文件 3 MB 的限制。",
+    attachmentMaxTotal: "通过 Vercel 发送时，附件总大小不能超过 4 MB。",
+    requestSavedError: "无法连接制作团队。简报已保存在本地，可以稍后重试。",
+    requestGenericError: "自动发送失败，请重试或联系制作团队。",
+    endpointSuccessTitle: "需求提交成功",
+    endpointSuccessCopy: "简报已发送给制作团队。我们会在查看范围后通过邮箱回复。",
+    endpointSuccessFootnote: "你可以下载一份简报副本保存到项目资料中。",
+    emailSuccessTitle: "需求邮件已准备好",
+    emailSuccessCopy: "邮件应用已打开并填入简报内容，点击发送即可完成提交。",
+    emailSuccessFootnote: "如果邮件窗口没有打开，可以下载下面的 JSON 简报。",
+    localSuccessTitle: "简报创建成功",
+    localSuccessCopy: "当前未配置需求接收接口，简报已保存在设备并下载，可转发给制作团队。",
+    localSuccessFootnote:
+      "如需自动发送，请在 html 元素上配置 data-request-endpoint 或 data-handoff-email。",
+  },
+};
+
+const FAMILY_LABELS = {
+  vi: {
+    aurora: "Aurora / Biên tập sáng",
+    midnight: "Midnight / Điện ảnh tối",
+    swiss: "Swiss / Lưới quốc tế",
+    brutalist: "Brutalist / Tân thô mộc",
+    organic: "Organic / Studio tự nhiên",
+    datanoir: "Data Noir / Dữ liệu tối",
+    luxury: "Luxury / Tối giản cao cấp",
+    retrofuture: "Retro Future / Tương lai hoài niệm",
+  },
+  en: {
+    aurora: "Aurora / Light editorial",
+    midnight: "Midnight / Dark cinematic",
+    swiss: "Swiss / International grid",
+    brutalist: "Brutalist / Neo-brutalist",
+    organic: "Organic / Studio warmth",
+    datanoir: "Data Noir / Dark data",
+    luxury: "Luxury / Quiet luxury",
+    retrofuture: "Retro Future / Neon future",
+  },
+  zh: {
+    aurora: "Aurora / 明亮编辑感",
+    midnight: "Midnight / 深色电影感",
+    swiss: "Swiss / 国际网格",
+    brutalist: "Brutalist / 新粗野主义",
+    organic: "Organic / 自然工作室",
+    datanoir: "Data Noir / 暗色数据",
+    luxury: "Luxury / 静谧奢华",
+    retrofuture: "Retro Future / 霓虹未来",
+  },
+};
+
+const PALETTE_LABELS = {
+  vi: {
+    cinematic: "Điện ảnh",
+    cobalt: "Cobalt",
+    coral: "Coral",
+    forest: "Rừng",
+    saffron: "Saffron",
+    plum: "Mận",
+    ocean: "Đại dương",
+    mono: "Đơn sắc",
+    mint: "Bạc hà",
+    copper: "Đồng",
+    sand: "Cát",
+    violet: "Tím",
+    ice: "Băng",
+  },
+  en: {
+    cinematic: "Cinematic",
+    cobalt: "Cobalt",
+    coral: "Coral",
+    forest: "Forest",
+    saffron: "Saffron",
+    plum: "Plum",
+    ocean: "Ocean",
+    mono: "Mono",
+    mint: "Mint",
+    copper: "Copper",
+    sand: "Sand",
+    violet: "Violet",
+    ice: "Ice",
+  },
+  zh: {
+    cinematic: "电影感",
+    cobalt: "钴蓝",
+    coral: "珊瑚",
+    forest: "森林",
+    saffron: "藏红花",
+    plum: "梅紫",
+    ocean: "海洋",
+    mono: "单色",
+    mint: "薄荷",
+    copper: "铜色",
+    sand: "沙色",
+    violet: "紫罗兰",
+    ice: "冰蓝",
+  },
+};
+
+const FAMILY_DESCRIPTIONS = {
+  vi: {
+    aurora: "Hệ thống biên tập sáng, thoáng và có nhịp kể chuyện nhẹ nhàng.",
+    midnight: "Hệ thống điện ảnh tối với điểm sáng nổi bật và tương phản rõ.",
+    swiss: "Hệ thống lưới kỷ luật, sắc nét cho câu chuyện có cấu trúc.",
+    brutalist: "Hệ thống mạnh, nhiều đường viền và nhấn hình học trực diện.",
+    organic: "Hệ thống ấm áp với chất liệu tự nhiên và hình khối mềm.",
+    datanoir: "Hệ thống dữ liệu tối cho sản phẩm, kỹ thuật và vận hành.",
+    luxury: "Hệ thống tối giản cao cấp với khoảng thở và chi tiết tinh tế.",
+    retrofuture: "Hệ thống tương lai hoài niệm với lưới sáng và nhịp năng lượng.",
+  },
+  zh: {
+    aurora: "明亮通透的编辑感系统，适合平静、有节奏的叙事。",
+    midnight: "深色电影感系统，以发光重点和强对比建立注意力。",
+    swiss: "秩序清晰的网格系统，适合结构化表达。",
+    brutalist: "大胆直接的系统，使用粗线条和鲜明几何强调重点。",
+    organic: "温暖自然的系统，搭配柔和形状和工作室质感。",
+    datanoir: "适合产品、工程和运营叙事的深色数据系统。",
+    luxury: "克制高级的系统，强调留白、细线和精致细节。",
+    retrofuture: "带有霓虹网格和能量节奏的复古未来系统。",
+  },
+};
+
+function getInitialLocale() {
+  try {
+    const saved = localStorage.getItem(LOCALE_STORAGE_KEY);
+    return SUPPORTED_LOCALES.includes(saved) ? saved : DEFAULT_LOCALE;
+  } catch {
+    return DEFAULT_LOCALE;
+  }
+}
+
+function interpolate(value, variables = {}) {
+  return String(value).replaceAll(/\{\{(\w+)\}\}/g, (_, key) => String(variables[key] ?? ""));
+}
 
 const FALLBACK_TEMPLATES = [
   {
@@ -359,6 +973,7 @@ const FAMILY_TOKENS = {
 const state = {
   templates: FALLBACK_TEMPLATES,
   palettes: new Map(FALLBACK_PALETTES.map((palette) => [palette.name, palette])),
+  locale: getInitialLocale(),
   query: "",
   family: "all",
   category: "all",
@@ -366,7 +981,10 @@ const state = {
   sort: "featured",
   visibleCount: PAGE_SIZE,
   selected: new Map(),
+  libraryStatus: "loading",
   lastRequest: null,
+  lastRequestResult: null,
+  previewTemplate: null,
   previewRequestId: 0,
   toastTimer: null,
 };
@@ -400,6 +1018,81 @@ const elements = {
   toast: document.querySelector("[data-toast]"),
   menu: document.querySelector(".topnav"),
 };
+
+function t(key, variables = {}) {
+  const localeCopy = COPY[state.locale] || COPY[DEFAULT_LOCALE];
+  return interpolate(localeCopy[key] ?? COPY[DEFAULT_LOCALE][key] ?? key, variables);
+}
+
+function localizedFamily(name) {
+  return (
+    FAMILY_LABELS[state.locale]?.[name] || FAMILY_LABELS[DEFAULT_LOCALE][name] || humanize(name)
+  );
+}
+
+function localizedCategory(value) {
+  return value === "Core systems" ? t("categoryCore") : value;
+}
+
+function localizedPalette(name) {
+  if (name === "base") return t("paletteBase");
+  return PALETTE_LABELS[state.locale]?.[name] || state.palettes.get(name)?.title || humanize(name);
+}
+
+function templateDescription(template) {
+  if (state.locale === "en" && template.description) return template.description;
+  return (
+    FAMILY_DESCRIPTIONS[state.locale]?.[templateFamily(template)] ||
+    template.description ||
+    t("defaultDescription")
+  );
+}
+
+function applyLocale() {
+  const locale = state.locale;
+  document.documentElement.lang = locale === "zh" ? "zh-CN" : locale;
+  document.documentElement.dataset.locale = locale;
+  const localeSelect = document.querySelector("select[data-locale]");
+  if (localeSelect) localeSelect.value = locale;
+  document.querySelectorAll("[data-i18n]").forEach((element) => {
+    element.textContent = t(element.dataset.i18n);
+  });
+  document.querySelectorAll("[data-i18n-placeholder]").forEach((element) => {
+    element.placeholder = t(element.dataset.i18nPlaceholder);
+  });
+  document.querySelectorAll("[data-i18n-aria-label]").forEach((element) => {
+    element.setAttribute("aria-label", t(element.dataset.i18nAriaLabel));
+  });
+  document.querySelectorAll("[data-i18n-title]").forEach((element) => {
+    element.setAttribute("title", t(element.dataset.i18nTitle));
+  });
+  elements.sourceStatus.textContent =
+    state.libraryStatus === "loaded"
+      ? t("sourceLoaded", { count: state.templates.length })
+      : state.libraryStatus === "fallback"
+        ? t("sourceFallback")
+        : t("sourceLoading");
+  renderFilterOptions();
+  renderTemplates();
+  updateSelectionUi();
+  if (state.previewTemplate && !elements.previewModal.hidden) {
+    elements.previewTitle.textContent = templateName(state.previewTemplate);
+    elements.previewFrame.srcdoc = previewDocument(state.previewTemplate);
+  }
+  if (state.lastRequest && state.lastRequestResult)
+    showSuccess(state.lastRequest, state.lastRequestResult);
+}
+
+function setLocale(locale) {
+  if (!SUPPORTED_LOCALES.includes(locale)) return;
+  state.locale = locale;
+  try {
+    localStorage.setItem(LOCALE_STORAGE_KEY, locale);
+  } catch {
+    // The UI can still switch languages when storage is unavailable.
+  }
+  applyLocale();
+}
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -444,7 +1137,7 @@ function templateFamily(template) {
 }
 
 function paletteTitle(name) {
-  return state.palettes.get(name)?.title || (name === "base" ? "Base system" : humanize(name));
+  return localizedPalette(name);
 }
 
 function themeFor(template) {
@@ -456,7 +1149,7 @@ function themeFor(template) {
 function previewMarkup(template, theme) {
   const familyClass = `family-${slug(templateFamily(template))}`;
   const safeTitle = escapeHtml(templateName(template).replace(/\s+\/\s+.*/, ""));
-  const category = escapeHtml(template.styleCategory || humanize(templateFamily(template)));
+  const category = escapeHtml(template.styleCategory || localizedFamily(templateFamily(template)));
   return `<div class="template-visual ${familyClass}" style="--preview-paper:${escapeHtml(theme.paper)};--preview-ink:${escapeHtml(theme.ink)};--preview-muted:${escapeHtml(theme.muted)};--preview-accent:${escapeHtml(theme.accent)};--preview-art:${escapeHtml(theme.artOne)};--preview-soft:${escapeHtml(theme.accentSoft)}">
     <div class="visual-top"><span>PL / 01</span><span>${escapeHtml(paletteTitle(templatePalette(template)))}</span></div>
     <div class="visual-shape"></div>
@@ -467,7 +1160,7 @@ function previewMarkup(template, theme) {
 
 function previewDocument(template) {
   return `<!doctype html>
-<html lang="en">
+<html lang="${state.locale === "zh" ? "zh-CN" : state.locale}">
   <head>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="/web/portal/styles.css" />
@@ -484,7 +1177,7 @@ function previewDocument(template) {
 function cardMarkup(template) {
   const theme = themeFor(template);
   const selected = state.selected.has(template.name);
-  const category = template.styleCategory || humanize(templateFamily(template));
+  const category = template.styleCategory || localizedFamily(templateFamily(template));
   const treatment = template.styleTreatment || template.modifier || "base";
   return `<article class="template-card${selected ? " is-selected" : ""}" data-template-card="${escapeHtml(template.name)}">
     <span class="card-check" aria-hidden="true">✓</span>
@@ -492,10 +1185,10 @@ function cardMarkup(template) {
     <div class="card-content">
       <div class="card-kicker"><span>${escapeHtml(category)}</span><span>${escapeHtml(paletteTitle(templatePalette(template)))}</span></div>
       <h3 title="${escapeHtml(templateName(template))}">${escapeHtml(templateName(template))}</h3>
-      <p>${escapeHtml(template.description || "Một hệ thống hình ảnh sẵn sàng để đội ngũ tùy chỉnh theo brief.")}</p>
+      <p>${escapeHtml(templateDescription(template))}</p>
       <div class="card-actions">
-        <button class="card-action card-action-primary" type="button" data-select-template="${escapeHtml(template.name)}">${selected ? "Đã chọn ✓" : "Chọn mẫu"}</button>
-        <button class="card-action" type="button" data-preview-template="${escapeHtml(template.name)}">Xem mẫu</button>
+        <button class="card-action card-action-primary" type="button" data-select-template="${escapeHtml(template.name)}">${selected ? `${escapeHtml(t("selectedButton"))} ✓` : escapeHtml(t("selectButton"))}</button>
+        <button class="card-action" type="button" data-preview-template="${escapeHtml(template.name)}">${escapeHtml(t("previewButton"))}</button>
       </div>
       <span class="sr-only">${escapeHtml(humanize(treatment))}</span>
     </div>
@@ -528,12 +1221,12 @@ function filteredTemplates() {
 
   if (state.sort === "name") {
     return results.sort((left, right) =>
-      templateName(left).localeCompare(templateName(right), "vi"),
+      templateName(left).localeCompare(templateName(right), state.locale),
     );
   }
   if (state.sort === "style") {
     return results.sort((left, right) =>
-      templateCategory(left).localeCompare(templateCategory(right), "vi"),
+      templateCategory(left).localeCompare(templateCategory(right), state.locale),
     );
   }
   return results;
@@ -545,10 +1238,12 @@ function renderTemplates() {
   elements.grid.innerHTML = visible.map(cardMarkup).join("");
   elements.emptyState.hidden = results.length !== 0;
   elements.grid.hidden = results.length === 0;
-  elements.resultsCount.textContent = `${results.length} mẫu`;
+  elements.resultsCount.textContent = t("resultsCount", { count: results.length });
   elements.loadMore.hidden = visible.length >= results.length || results.length === 0;
   elements.loadMoreCount.textContent =
-    results.length > visible.length ? `(${results.length - visible.length} còn lại)` : "";
+    results.length > visible.length
+      ? t("remaining", { count: results.length - visible.length })
+      : "";
   renderActiveFilters();
   elements.grid.querySelectorAll("[data-select-template]").forEach((button) => {
     button.addEventListener("click", () => toggleSelection(button.dataset.selectTemplate));
@@ -560,16 +1255,17 @@ function renderTemplates() {
 
 function renderActiveFilters() {
   const filters = [];
-  if (state.query) filters.push({ key: "query", label: `Từ khóa: ${state.query}` });
-  if (state.family !== "all") filters.push({ key: "family", label: humanize(state.family) });
-  if (state.category !== "all") filters.push({ key: "category", label: state.category });
+  if (state.query) filters.push({ key: "query", label: t("filterQuery", { query: state.query }) });
+  if (state.family !== "all") filters.push({ key: "family", label: localizedFamily(state.family) });
+  if (state.category !== "all")
+    filters.push({ key: "category", label: localizedCategory(state.category) });
   if (state.palette !== "all") filters.push({ key: "palette", label: paletteTitle(state.palette) });
   const container = document.querySelector("[data-active-filters]");
   container.hidden = filters.length === 0;
   container.innerHTML = filters
     .map(
       (filter) =>
-        `<span class="filter-chip">${escapeHtml(filter.label)} <button type="button" aria-label="Xóa bộ lọc ${escapeHtml(filter.label)}" data-remove-filter="${filter.key}">×</button></span>`,
+        `<span class="filter-chip">${escapeHtml(filter.label)} <button type="button" aria-label="${escapeHtml(t("removeFilter", { label: filter.label }))}" data-remove-filter="${filter.key}">×</button></span>`,
     )
     .join("");
   container.querySelectorAll("[data-remove-filter]").forEach((button) => {
@@ -594,17 +1290,20 @@ function renderFilterOptions() {
   const categorySelect = document.querySelector("[data-category-filter]");
   const paletteSelect = document.querySelector("[data-palette-filter]");
   const families = [...new Set(state.templates.map(templateFamily))].sort((left, right) =>
-    left.localeCompare(right, "vi"),
+    localizedFamily(left).localeCompare(localizedFamily(right), state.locale),
   );
   const categories = [...new Set(state.templates.map(templateCategory))].sort((left, right) =>
-    left.localeCompare(right, "vi"),
+    left.localeCompare(right, state.locale),
   );
   const palettes = [...new Set(state.templates.map(templatePalette))].sort((left, right) =>
-    paletteTitle(left).localeCompare(paletteTitle(right), "vi"),
+    paletteTitle(left).localeCompare(paletteTitle(right), state.locale),
   );
-  familySelect.innerHTML = `<option value="all">Tất cả hệ thống</option>${families.map((family) => `<option value="${escapeHtml(family)}">${escapeHtml(humanize(family))}</option>`).join("")}`;
-  categorySelect.innerHTML = `<option value="all">Tất cả phong cách</option>${categories.map((category) => `<option value="${escapeHtml(category)}">${escapeHtml(category)}</option>`).join("")}`;
-  paletteSelect.innerHTML = `<option value="all">Tất cả bảng màu</option>${palettes.map((palette) => `<option value="${escapeHtml(palette)}">${escapeHtml(paletteTitle(palette))}</option>`).join("")}`;
+  familySelect.innerHTML = `<option value="all">${escapeHtml(t("familyAll"))}</option>${families.map((family) => `<option value="${escapeHtml(family)}">${escapeHtml(localizedFamily(family))}</option>`).join("")}`;
+  categorySelect.innerHTML = `<option value="all">${escapeHtml(t("categoryAll"))}</option>${categories.map((category) => `<option value="${escapeHtml(category)}">${escapeHtml(localizedCategory(category))}</option>`).join("")}`;
+  paletteSelect.innerHTML = `<option value="all">${escapeHtml(t("paletteAll"))}</option>${palettes.map((palette) => `<option value="${escapeHtml(palette)}">${escapeHtml(paletteTitle(palette))}</option>`).join("")}`;
+  familySelect.value = state.family;
+  categorySelect.value = state.category;
+  paletteSelect.value = state.palette;
 }
 
 function updateSelectionUi() {
@@ -612,12 +1311,12 @@ function updateSelectionUi() {
   elements.selectionCounts.forEach((element) => {
     element.textContent = String(selected.length);
   });
-  elements.selectionSummary.textContent = ` · ${selected.length} mẫu đang chọn`;
+  elements.selectionSummary.textContent = t("selectionSummary", { count: selected.length });
   elements.selectionTray.hidden = selected.length === 0;
   elements.traySelections.innerHTML = selected
     .map(
       (template) =>
-        `<div class="tray-chip"><span>${escapeHtml(templateName(template))}</span><button type="button" aria-label="Bỏ chọn ${escapeHtml(templateName(template))}" data-remove-selected="${escapeHtml(template.name)}">×</button></div>`,
+        `<div class="tray-chip"><span>${escapeHtml(templateName(template))}</span><button type="button" aria-label="${escapeHtml(t("removeSelection", { name: templateName(template) }))}" data-remove-selected="${escapeHtml(template.name)}">×</button></div>`,
     )
     .join("");
   elements.traySelections.querySelectorAll("[data-remove-selected]").forEach((button) => {
@@ -626,7 +1325,7 @@ function updateSelectionUi() {
   elements.drawerSelections.innerHTML = selected
     .map(
       (template, index) =>
-        `<div class="selected-template"><span class="selected-template-index">0${index + 1}</span><span title="${escapeHtml(templateName(template))}">${escapeHtml(templateName(template))}</span><button type="button" aria-label="Bỏ chọn ${escapeHtml(templateName(template))}" data-remove-selected="${escapeHtml(template.name)}">×</button></div>`,
+        `<div class="selected-template"><span class="selected-template-index">0${index + 1}</span><span title="${escapeHtml(templateName(template))}">${escapeHtml(templateName(template))}</span><button type="button" aria-label="${escapeHtml(t("removeSelection", { name: templateName(template) }))}" data-remove-selected="${escapeHtml(template.name)}">×</button></div>`,
     )
     .join("");
   elements.drawerSelections.querySelectorAll("[data-remove-selected]").forEach((button) => {
@@ -640,7 +1339,7 @@ function toggleSelection(name) {
   if (state.selected.has(name)) {
     state.selected.delete(name);
   } else if (state.selected.size >= MAX_SELECTIONS) {
-    showToast("Bạn có thể chọn tối đa 3 mẫu cho một brief.");
+    showToast(t("maxSelections"));
     return;
   } else {
     state.selected.set(name, template);
@@ -651,7 +1350,7 @@ function toggleSelection(name) {
 
 function openDrawer() {
   if (state.selected.size === 0) {
-    showToast("Hãy chọn ít nhất một mẫu trước khi gửi brief.");
+    showToast(t("noSelectionToast"));
     document.querySelector("#templates").scrollIntoView({ behavior: "smooth", block: "start" });
     return;
   }
@@ -687,6 +1386,7 @@ async function templateIsAvailable(url) {
 async function openPreview(name) {
   const template = state.templates.find((candidate) => candidate.name === name);
   if (!template) return;
+  state.previewTemplate = template;
   const previewRequestId = ++state.previewRequestId;
   const templatePath = template.path.startsWith("templates/")
     ? template.path
@@ -712,6 +1412,7 @@ async function openPreview(name) {
 
 function closePreview() {
   state.previewRequestId += 1;
+  state.previewTemplate = null;
   elements.previewModal.hidden = true;
   elements.openTemplate.hidden = false;
   elements.openTemplate.removeAttribute("href");
@@ -756,15 +1457,15 @@ function attachmentFiles(form) {
 function attachmentValidationError(form) {
   const files = attachmentFiles(form);
   if (files.length > MAX_ATTACHMENT_FILES) {
-    return `Bạn chỉ có thể đính kèm tối đa ${MAX_ATTACHMENT_FILES} tệp.`;
+    return t("attachmentMaxFiles", { count: MAX_ATTACHMENT_FILES });
   }
   const oversizedFile = files.find((file) => file.size > MAX_ATTACHMENT_BYTES);
   if (oversizedFile) {
-    return `${oversizedFile.name} vượt quá giới hạn 3 MB mỗi tệp.`;
+    return t("attachmentMaxSingle", { name: oversizedFile.name });
   }
   const totalBytes = files.reduce((total, file) => total + file.size, 0);
   if (totalBytes > MAX_TOTAL_ATTACHMENT_BYTES) {
-    return "Tổng dung lượng tài liệu không được vượt quá 4 MB khi gửi qua Vercel.";
+    return t("attachmentMaxTotal");
   }
   return "";
 }
@@ -841,20 +1542,20 @@ function downloadRequest(payload) {
 
 function mailtoUrl(email, payload) {
   const subject = encodeURIComponent(
-    `[PresentLab] ${payload.project.name || "Yêu cầu gia công slide"} — ${payload.id}`,
+    `[PresentLab] ${payload.project.name || t("drawerTitle")} — ${payload.id}`,
   );
   const body = encodeURIComponent(
     [
-      `Mã yêu cầu: ${payload.id}`,
-      `Dự án: ${payload.project.name}`,
-      `Người liên hệ: ${payload.customer.name}`,
-      `Email: ${payload.customer.email}`,
-      `Số slide: ${payload.project.slideCount}`,
-      `Deadline: ${payload.project.deadline || "Chưa chốt"}`,
-      `Dịch vụ: ${payload.project.service}`,
-      `Mẫu đã chọn: ${payload.templates.map((template) => template.title).join(", ")}`,
+      `${t("requestCode")}: ${payload.id}`,
+      `${t("projectNameLabel")}: ${payload.project.name}`,
+      `${t("contactNameLabel")}: ${payload.customer.name}`,
+      `${t("emailLabel")}: ${payload.customer.email}`,
+      `${t("slideCountLabel")}: ${payload.project.slideCount}`,
+      `${t("deadlineLabel")}: ${payload.project.deadline || "—"}`,
+      `${t("serviceLegend")}: ${payload.project.service}`,
+      `${t("navTemplates")}: ${payload.templates.map((template) => template.title).join(", ")}`,
       "",
-      payload.project.notes || "Không có ghi chú thêm.",
+      payload.project.notes || t("notesLabel"),
     ].join("\n"),
   );
   return `mailto:${encodeURIComponent(email)}?subject=${subject}&body=${body}`;
@@ -904,26 +1605,22 @@ async function sendRequest(payload, form) {
 
 function showSuccess(payload, result) {
   state.lastRequest = payload;
+  state.lastRequestResult = result;
   elements.formView.hidden = true;
   elements.successView.hidden = false;
   elements.successId.textContent = payload.id;
   if (result.mode === "endpoint") {
-    elements.successTitle.textContent = "Đã gửi yêu cầu thành công";
-    elements.successCopy.textContent =
-      "Brief đã được chuyển tới đội gia công. Chúng tôi sẽ phản hồi qua email của bạn sau khi xem phạm vi công việc.";
-    elements.successFootnote.textContent = "Bạn có thể tải lại bản brief để lưu vào hồ sơ dự án.";
+    elements.successTitle.textContent = t("endpointSuccessTitle");
+    elements.successCopy.textContent = t("endpointSuccessCopy");
+    elements.successFootnote.textContent = t("endpointSuccessFootnote");
   } else if (result.mode === "email") {
-    elements.successTitle.textContent = "Đã chuẩn bị email yêu cầu";
-    elements.successCopy.textContent =
-      "Ứng dụng email của bạn đã được mở với nội dung brief. Hãy bấm Send để hoàn tất việc gửi cho đội gia công.";
-    elements.successFootnote.textContent =
-      "Nếu cửa sổ email không mở, bạn có thể tải bản brief JSON bên dưới.";
+    elements.successTitle.textContent = t("emailSuccessTitle");
+    elements.successCopy.textContent = t("emailSuccessCopy");
+    elements.successFootnote.textContent = t("emailSuccessFootnote");
   } else {
-    elements.successTitle.textContent = "Đã tạo bản brief thành công";
-    elements.successCopy.textContent =
-      "Chưa cấu hình endpoint nhận yêu cầu, nên brief đã được lưu trên thiết bị và tải xuống để bạn chuyển cho đội gia công.";
-    elements.successFootnote.textContent =
-      "Để gửi tự động, cấu hình data-request-endpoint hoặc data-handoff-email trên thẻ html của trang.";
+    elements.successTitle.textContent = t("localSuccessTitle");
+    elements.successCopy.textContent = t("localSuccessCopy");
+    elements.successFootnote.textContent = t("localSuccessFootnote");
   }
 }
 
@@ -976,6 +1673,10 @@ function bindEvents() {
     const button = event.currentTarget;
     const open = elements.menu.classList.toggle("is-open");
     button.setAttribute("aria-expanded", String(open));
+    button.setAttribute("aria-label", t(open ? "menuClose" : "menuOpen"));
+  });
+  document.querySelector("[data-locale]").addEventListener("change", (event) => {
+    setLocale(event.target.value);
   });
   document
     .querySelectorAll(".topnav-link")
@@ -1027,7 +1728,7 @@ function bindEvents() {
     const form = event.currentTarget;
     const button = document.querySelector("[data-submit-request]");
     button.disabled = true;
-    button.innerHTML = "Đang gửi brief... <span>↗</span>";
+    button.innerHTML = `${escapeHtml(t("submitLoading"))} <span>↗</span>`;
     let payload;
     try {
       const attachmentError = attachmentValidationError(form);
@@ -1041,14 +1742,10 @@ function bindEvents() {
     } catch (error) {
       console.error(error);
       const saved = payload ? saveRequestLocally(payload) : false;
-      showToast(
-        saved
-          ? "Không thể kết nối đội gia công. Brief đã được lưu cục bộ, bạn có thể thử gửi lại."
-          : "Không thể gửi tự động. Vui lòng thử lại hoặc liên hệ đội ngũ.",
-      );
+      showToast(saved ? t("requestSavedError") : t("requestGenericError"));
     } finally {
       button.disabled = false;
-      button.innerHTML = "Gửi yêu cầu cho đội gia công <span>→</span>";
+      button.innerHTML = `${escapeHtml(t("submitButton"))} <span>→</span>`;
     }
   });
   document.querySelector("[data-download-request]").addEventListener("click", () => {
@@ -1093,11 +1790,12 @@ async function loadLibrary() {
     state.templates = templates;
     if (Array.isArray(paletteIndex.palettes))
       state.palettes = new Map(paletteIndex.palettes.map((palette) => [palette.name, palette]));
-    elements.sourceStatus.textContent = `${templates.length} mẫu · dữ liệu local của PresentLab`;
+    state.libraryStatus = "loaded";
+    elements.sourceStatus.textContent = t("sourceLoaded", { count: templates.length });
   } catch (error) {
     console.warn("PresentLab template library fallback:", error);
-    elements.sourceStatus.textContent =
-      "Đang dùng 8 mẫu nền tảng · chạy qua web server để xem toàn bộ thư viện.";
+    state.libraryStatus = "fallback";
+    elements.sourceStatus.textContent = t("sourceFallback");
   }
   renderFilterOptions();
   renderTemplates();
@@ -1106,7 +1804,5 @@ async function loadLibrary() {
 window.addEventListener("resize", scalePreviewFrame);
 
 bindEvents();
-renderFilterOptions();
-renderTemplates();
-updateSelectionUi();
+applyLocale();
 loadLibrary();

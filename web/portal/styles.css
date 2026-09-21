@@ -3134,3 +3134,68 @@ body::after {
     min-height: 190px;
   }
 }
+
+/* Locale switcher */
+.locale-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 38px;
+  padding: 0 8px 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 3%);
+  color: var(--muted);
+}
+
+.locale-globe {
+  color: var(--accent);
+  font-size: 13px;
+  line-height: 1;
+}
+
+.locale-picker select {
+  min-width: 42px;
+  padding: 0 2px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.locale-picker option {
+  background: #0b1c2e;
+  color: var(--ink);
+}
+
+.locale-picker:focus-within {
+  border-color: rgb(140 232 216 / 65%);
+}
+
+.hero-meta > span {
+  display: grid;
+}
+
+.hero-meta .meta-label {
+  display: block;
+}
+
+@media (max-width: 760px) {
+  .locale-picker {
+    justify-content: center;
+    min-height: 40px;
+  }
+
+  .topnav .locale-picker {
+    width: 100%;
+    border-radius: 10px;
+  }
+
+  .topnav .locale-picker select {
+    flex: 1;
+  }
+}
