@@ -208,6 +208,18 @@ describe("client request portal browser flow", () => {
           .evaluate((image) => image.naturalWidth),
       ).toBeGreaterThan(0);
       expect(await page.locator(".topnav [data-open-request]").count()).toBe(0);
+      expect(await page.locator(".hero-board-data-row").count()).toBe(3);
+      expect(await page.locator(".hero-board-data-chart i").count()).toBe(7);
+      expect(
+        await page
+          .locator(".hero-board")
+          .evaluate((element) => getComputedStyle(element).animationName),
+      ).toContain("board-hover");
+      expect(
+        await page
+          .locator(".hero-board-scan")
+          .evaluate((element) => getComputedStyle(element).animationName),
+      ).toContain("board-scan");
 
       const initialTheme = (await page.locator("html").getAttribute("data-theme")) || "dark";
       const toggledTheme = initialTheme === "dark" ? "light" : "dark";
