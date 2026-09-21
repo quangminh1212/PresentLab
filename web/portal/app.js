@@ -1104,6 +1104,8 @@ const state = {
   locale: getInitialLocale(),
   theme: getInitialTheme(),
   motionScene: 0,
+  lastScrollY: window.scrollY,
+  motionVelocity: 0,
   query: "",
   family: "all",
   category: "all",
@@ -1499,8 +1501,8 @@ function bindCardMotion() {
       const rect = card.getBoundingClientRect();
       const x = (event.clientX - rect.left) / rect.width - 0.5;
       const y = (event.clientY - rect.top) / rect.height - 0.5;
-      card.style.setProperty("--card-rx", `${y * -2.2}deg`);
-      card.style.setProperty("--card-ry", `${x * 2.8}deg`);
+      card.style.setProperty("--card-rx", `${y * -4.2}deg`);
+      card.style.setProperty("--card-ry", `${x * 5.2}deg`);
       card.style.setProperty("--pointer-x", `${(x + 0.5) * 100}%`);
       card.style.setProperty("--pointer-y", `${(y + 0.5) * 100}%`);
     });
@@ -1542,7 +1544,7 @@ function bindMagneticMotion() {
       target.dataset.magnetic = "true";
       target.addEventListener("pointermove", (event) => {
         const rect = target.getBoundingClientRect();
-        const intensity = target.classList.contains("button-small") ? 3 : 5;
+        const intensity = target.classList.contains("button-small") ? 4 : 7;
         const x = ((event.clientX - rect.left) / rect.width - 0.5) * intensity;
         const y = ((event.clientY - rect.top) / rect.height - 0.5) * intensity;
         target.style.setProperty("--mag-x", `${x}px`);
@@ -2152,6 +2154,10 @@ function updateMotionSceneChrome(index = state.motionScene) {
 }
 
 function updateMotionChoreography() {
+  const scrollDelta = window.scrollY - state.lastScrollY;
+  state.motionVelocity =
+    state.motionVelocity * 0.72 + Math.min(Math.max(scrollDelta, -40), 40) * 0.28;
+  state.lastScrollY = window.scrollY;
   const heroProgress = elements.hero
     ? clampUnit(window.scrollY / Math.max(elements.hero.offsetHeight * 0.72, 1))
     : 0;
@@ -2161,6 +2167,12 @@ function updateMotionChoreography() {
   const totalProgress = clampUnit(window.scrollY / scrollable);
 
   document.documentElement.style.setProperty("--scroll-progress", totalProgress.toFixed(4));
+  document.documentElement.style.setProperty(
+    "--motion-velocity",
+    String(state.motionVelocity.toFixed(2)) + "px",
+  );
+  document.documentElement.dataset.scrollDirection =
+    state.motionVelocity >= 0 ? "forward" : "backward";
   elements.hero?.style.setProperty("--hero-progress", heroProgress.toFixed(4));
   elements.heroCopy?.style.setProperty("--hero-copy-shift", `${heroProgress * -58}px`);
   elements.heroCopy?.style.setProperty("--hero-copy-blur", `${heroProgress * 1.25}px`);
@@ -2171,6 +2183,14 @@ function updateMotionChoreography() {
   elements.parallaxStage?.style.setProperty("--hero-grid-shift", `${heroProgress * 36}px`);
   elements.catalogSection?.style.setProperty("--section-progress", catalogProgress.toFixed(4));
   elements.processSection?.style.setProperty("--section-progress", processProgress.toFixed(4));
+  elements.catalogSection?.style.setProperty(
+    "--scene-shift",
+    String((0.5 - catalogProgress) * 72 + state.motionVelocity * 0.4) + "px",
+  );
+  elements.processSection?.style.setProperty(
+    "--scene-shift",
+    String((0.5 - processProgress) * 84 + state.motionVelocity * 0.4) + "px",
+  );
 
   const sceneElements = [elements.hero, elements.catalogSection, elements.processSection].filter(
     Boolean,
@@ -2183,6 +2203,9 @@ function updateMotionChoreography() {
       return rect.top <= marker && rect.bottom >= marker;
     }),
   );
+  sceneElements.forEach((section, index) => {
+    section.classList.toggle("is-active-scene", index === activeIndex);
+  });
   if (activeIndex !== state.motionScene) {
     state.motionScene = activeIndex;
     updateMotionSceneChrome(activeIndex);
@@ -2273,6 +2296,9 @@ function bindSectionObserver() {
 
 function bindRevealMotion() {
   const revealItems = [...document.querySelectorAll("[data-reveal]")];
+  document.querySelectorAll('[data-reveal="process-card"]').forEach((element, index) => {
+    element.style.setProperty("--reveal-index", String(index));
+  });
   if (isReducedMotion() || !("IntersectionObserver" in window)) {
     revealItems.forEach((element) => element.classList.add("is-visible"));
     return;
@@ -2296,8 +2322,8 @@ function bindStageParallax() {
     const rect = elements.parallaxStage.getBoundingClientRect();
     const x = (event.clientX - rect.left) / rect.width - 0.5;
     const y = (event.clientY - rect.top) / rect.height - 0.5;
-    elements.parallaxStage.style.setProperty("--parallax-x", `${x * 16}px`);
-    elements.parallaxStage.style.setProperty("--parallax-y", `${y * 12}px`);
+    elements.parallaxStage.style.setProperty("--parallax-x", `${x * 24}px`);
+    elements.parallaxStage.style.setProperty("--parallax-y", `${y * 18}px`);
     elements.parallaxStage.style.setProperty("--pointer-x", `${(x + 0.5) * 100}%`);
     elements.parallaxStage.style.setProperty("--pointer-y", `${(y + 0.5) * 100}%`);
   });
