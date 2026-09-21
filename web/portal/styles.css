@@ -6055,6 +6055,24 @@ body::after {
   overflow: visible;
 }
 
+@media (max-width: 760px) {
+  .topnav {
+    right: 0;
+    left: 0;
+    border-radius: 0 0 16px 16px;
+    background: #071422;
+  }
+
+  .topnav .topnav-link {
+    color: rgb(222 242 242 / 82%);
+  }
+
+  .topnav .topnav-link:hover,
+  .topnav .topnav-link.is-active {
+    color: var(--accent);
+  }
+}
+
 .topbar::after {
   position: absolute;
   right: -12%;
