@@ -2347,18 +2347,26 @@ function bindRevealMotion() {
 
 function bindStageParallax() {
   if (!elements.parallaxStage || isReducedMotion()) return;
+  elements.parallaxStage.addEventListener("pointerenter", () => {
+    elements.parallaxStage.classList.add("is-pointer-active");
+  });
   elements.parallaxStage.addEventListener("pointermove", (event) => {
     const rect = elements.parallaxStage.getBoundingClientRect();
     const x = (event.clientX - rect.left) / rect.width - 0.5;
     const y = (event.clientY - rect.top) / rect.height - 0.5;
     elements.parallaxStage.style.setProperty("--parallax-x", `${x * 24}px`);
     elements.parallaxStage.style.setProperty("--parallax-y", `${y * 18}px`);
+    elements.parallaxStage.style.setProperty("--pointer-angle", `${Math.atan2(y, x)}rad`);
+    elements.parallaxStage.style.setProperty("--pointer-depth", `${Math.hypot(x, y).toFixed(3)}`);
     elements.parallaxStage.style.setProperty("--pointer-x", `${(x + 0.5) * 100}%`);
     elements.parallaxStage.style.setProperty("--pointer-y", `${(y + 0.5) * 100}%`);
   });
   elements.parallaxStage.addEventListener("pointerleave", () => {
+    elements.parallaxStage.classList.remove("is-pointer-active");
     elements.parallaxStage.style.removeProperty("--parallax-x");
     elements.parallaxStage.style.removeProperty("--parallax-y");
+    elements.parallaxStage.style.removeProperty("--pointer-angle");
+    elements.parallaxStage.style.removeProperty("--pointer-depth");
     elements.parallaxStage.style.removeProperty("--pointer-x");
     elements.parallaxStage.style.removeProperty("--pointer-y");
   });

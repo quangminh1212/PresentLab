@@ -219,6 +219,9 @@ describe("client request portal browser flow", () => {
       expect(await page.locator(".topnav [data-open-request]").count()).toBe(0);
       expect(await page.locator(".hero-board-data-row").count()).toBe(3);
       expect(await page.locator(".hero-board-data-chart i").count()).toBe(7);
+      expect(await page.locator(".hero-command-card").count()).toBe(1);
+      expect(await page.locator(".hero-route span").count()).toBe(3);
+      expect(await page.locator(".hero-field-particle").count()).toBe(4);
       expect(
         await page
           .locator(".hero-board")
@@ -229,6 +232,11 @@ describe("client request portal browser flow", () => {
           .locator(".hero-board-scan")
           .evaluate((element) => getComputedStyle(element).animationName),
       ).toContain("board-scan");
+      expect(
+        await page
+          .locator(".hero-command-card")
+          .evaluate((element) => getComputedStyle(element).animationName),
+      ).toContain("command-float");
 
       const initialTheme = (await page.locator("html").getAttribute("data-theme")) || "dark";
       const toggledTheme = initialTheme === "dark" ? "light" : "dark";
