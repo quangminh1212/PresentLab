@@ -10,13 +10,21 @@ const index = JSON.parse(await readFile(join(templatesRoot, "index.json"), "utf8
 const expectedTemplateCount = 770;
 const expectedStylePresetCount = 670;
 const templateEntries = Array.isArray(index) ? index : [];
-const familyNames = new Set(templateEntries.map((entry) => entry.family));
+const indexedRootNames = new Set(templateEntries.map((entry) => entry.path.split("/")[0]));
+const legacyVariantRootNames = new Set(
+  templateEntries
+    .filter((entry) => !entry.styleCategory && entry.name !== entry.family)
+    .map((entry) => entry.name),
+);
 const allTemplateDirectories = (await readdir(templatesRoot, { withFileTypes: true })).filter(
   (entry) => entry.isDirectory(),
 );
 const familyDirectories = allTemplateDirectories.filter((entry) => entry.name !== "palettes");
 const unexpectedFamilyDirectories = familyDirectories.filter(
-  (entry) => !familyNames.has(entry.name),
+  (entry) => !indexedRootNames.has(entry.name) && !legacyVariantRootNames.has(entry.name),
+);
+const missingRootDirectories = [...indexedRootNames].filter(
+  (name) => !familyDirectories.some((entry) => entry.name === name),
 );
 
 if (!Array.isArray(index) || index.length !== expectedTemplateCount) {
@@ -24,10 +32,8 @@ if (!Array.isArray(index) || index.length !== expectedTemplateCount) {
     `Expected ${expectedTemplateCount} gallery templates, found ${Array.isArray(index) ? index.length : "invalid index"}.`,
   );
 }
-if (familyDirectories.length !== familyNames.size) {
-  throw new Error(
-    `Expected ${familyNames.size} family directories, found ${familyDirectories.length}.`,
-  );
+if (missingRootDirectories.length > 0) {
+  throw new Error(`Missing indexed template directories: ${missingRootDirectories.join(", ")}.`);
 }
 if (unexpectedFamilyDirectories.length > 0) {
   throw new Error(
@@ -98,16 +104,30 @@ for (const palette of paletteIndex.palettes) {
     throw new Error(`${palette.name} palette metadata is incomplete.`);
   }
 }
-for (const artifact of ["catalog.pdf", "catalog.pptx"]) {
+for (const artifact of ["catalog.pptx"]) {
   const artifactPath = join(palettesRoot, artifact);
   const bytes = await readFile(artifactPath);
-  const signature = artifact.endsWith(".pdf") ? "%PDF" : "PK";
+  const signature = "PK";
   if (bytes.subarray(0, signature.length).toString() !== signature) {
     throw new Error(`Palette catalog ${artifact} does not have the expected signature.`);
   }
   if ((await stat(artifactPath)).size < 10_000) {
     throw new Error(`Palette catalog ${artifact} is unexpectedly small.`);
   }
+}
+for (const forbiddenPdf of [
+  join(palettesRoot, "catalog.pdf"),
+  join(templatesRoot, "palettes", "catalog.pdf"),
+]) {
+  try {
+    await stat(forbiddenPdf);
+  } catch (error) {
+    if (error?.code === "ENOENT") {
+      continue;
+    }
+    throw error;
+  }
+  throw new Error(`PDF artifact must not exist: ${forbiddenPdf}`);
 }
 
 for (const entry of index) {
@@ -124,9 +144,12 @@ for (const entry of index) {
     .filter((child) => child.isFile())
     .map((child) => child.name)
     .sort();
-  const expectedNames = ["deck.html", "deck.pdf", "deck.pptx"];
-  if (names.join("|") !== expectedNames.join("|")) {
-    throw new Error(`${entry.name} must contain exactly deck.html, deck.pdf, and deck.pptx.`);
+  const sourceOnly = Boolean(entry.styleCategory) || entry.name !== entry.family;
+  const expectedNames = sourceOnly ? "deck.html" : "deck.html|deck.pptx";
+  if (names.join("|") !== expectedNames) {
+    throw new Error(
+      `${entry.name} must contain exactly ${sourceOnly ? "deck.html" : "deck.html and deck.pptx"}.`,
+    );
   }
 
   const { inspection } = await inspectDeckFile(htmlPath);
@@ -157,21 +180,18 @@ for (const entry of index) {
     throw new Error(`${entry.name} must expose a deterministic diversity profile.`);
   }
 
-  const pdf = await readFile(join(templateDir, "deck.pdf"));
-  const pptx = await readFile(join(templateDir, "deck.pptx"));
-  if (pdf.subarray(0, 4).toString() !== "%PDF") {
-    throw new Error(`${entry.name} PDF does not have a PDF signature.`);
+  if (!sourceOnly) {
+    const pptx = await readFile(join(templateDir, "deck.pptx"));
+    if (pptx.subarray(0, 2).toString() !== "PK") {
+      throw new Error(`${entry.name} PPTX does not have a ZIP signature.`);
+    }
+    if ((await stat(join(templateDir, "deck.pptx"))).size < 10_000) {
+      throw new Error(`${entry.name} PPTX is unexpectedly small.`);
+    }
   }
-  if (pptx.subarray(0, 2).toString() !== "PK") {
-    throw new Error(`${entry.name} PPTX does not have a ZIP signature.`);
-  }
-  if ((await stat(join(templateDir, "deck.pdf"))).size < 10_000) {
-    throw new Error(`${entry.name} PDF is unexpectedly small.`);
-  }
-  if ((await stat(join(templateDir, "deck.pptx"))).size < 10_000) {
-    throw new Error(`${entry.name} PPTX is unexpectedly small.`);
-  }
-  console.log(`OK ${entry.name}: ${inspection.slides.length} slides, HTML/PDF/PPTX present`);
+  console.log(
+    `OK ${entry.name}: ${inspection.slides.length} slides, ${sourceOnly ? "HTML source" : "HTML/PPTX present"}`,
+  );
 }
 
 console.log("Template gallery verification passed.");

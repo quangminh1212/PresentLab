@@ -95,7 +95,6 @@ const PaletteCatalogSchema = z.object({
   description: z.string(),
   slideCount: z.number().int().positive(),
   html: z.string(),
-  pdf: z.string(),
   pptx: z.string(),
 });
 

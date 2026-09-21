@@ -10,7 +10,7 @@ The repository also ships an MCP server, a Codex-compatible skill/plugin, reusab
 - Chromium rendering for pixel-faithful PNG and print-quality PDF output.
 - PPTX export that places each rendered slide as a full-bleed image, preserving HTML fidelity across PowerPoint viewers.
 - Catalog generation as HTML and PDF.
-- A 770-template gallery with 34,650 sample slides. Each folder contains `deck.html`, `deck.pdf`, and `deck.pptx`.
+- A 770-template gallery with 34,650 sample slides. Every published folder contains `deck.html`; core examples may retain `deck.pptx`, while selected variants render handoff files on demand.
 - A customer request portal at [`web/portal/`](web/portal/) for choosing templates and handing a brief to a production team.
 - MCP tools, resources, and prompts for validation, rendering, catalogs, templates, and deck design guidance.
 - A repo-local `presentlab-ai` plugin with a reusable design skill.
@@ -42,7 +42,7 @@ git submodule update --init --recursive
 
 ## Template gallery
 
-The gallery is mounted at [`templates/`](templates/) from the private [`PresentTemplate`](https://github.com/quangminh1212/PresentTemplate) repository. It contains 770 templates: eight structural families, 92 palette/layout variants, and 670 researched style presets across 67 groups. Every template has a deterministic composition profile so the gallery varies structure, rhythm, typography, and surface treatment in addition to color.
+The gallery is mounted at [`templates/`](templates/) from the private [`PresentTemplate`](https://github.com/quangminh1212/PresentTemplate) repository. It contains 770 templates: eight structural families, 92 palette/layout variants, and 670 researched style presets across 67 groups. Every template has a deterministic composition profile so the gallery varies structure, rhythm, typography, and surface treatment in addition to color. A separate background engine assigns 44 structural background modes with independent geometry, repetition, position, blend, and texture parameters; `npm run gallery:backgrounds` audits all pairs and currently keeps the maximum structural similarity at 9.09%, below the 10% threshold.
 
 | Folder        | Style                |
 | ------------- | -------------------- |
@@ -57,7 +57,7 @@ The gallery is mounted at [`templates/`](templates/) from the private [`PresentT
 
 Variant folders combine these structural families with curated palettes such as Cobalt, Coral, Forest, Saffron, Plum, Ocean, Sand, Mono, Mint, Copper, Violet, and Ice. The standalone Cinematic palette uses deep navy, teal signal light, and ember orange for film-led storytelling, premium launches, and keynote moments. The generated index records each template's `family`, `palette`, and `modifier` so an AI agent can select by visual intent.
 
-The color selection catalog is available at [`resources/palettes/`](resources/palettes/) and in the private submodule at [`templates/palettes/`](templates/palettes/). It includes machine-readable palette tokens plus `catalog.html`, `catalog.pdf`, and `catalog.pptx` for client review. MCP clients can call `presentlab_list_palettes` or read `presentlab://palettes/catalog`.
+The color selection catalog is available at [`resources/palettes/`](resources/palettes/) and in the private submodule at [`templates/palettes/`](templates/palettes/). It includes machine-readable palette tokens plus `catalog.html` and `catalog.pptx` for client review. MCP clients can call `presentlab_list_palettes` or read `presentlab://palettes/catalog`.
 
 The client-facing template selection and brief handoff flow is documented in [docs/request-portal.md](docs/request-portal.md). It can post to a configured request endpoint, open a configured handoff email, or preserve a local JSON brief when no delivery target is configured.
 
@@ -65,7 +65,7 @@ The portal is deployable as a Vercel static site with a same-origin `/api/slide-
 
 The repository follows a small, predictable layout: `src/` is the rendering engine, `web/` is the customer UI, `resources/` is reusable data, `scripts/` contains build and verification commands, and `tests/` is split into `unit/` and `integration/`. See [docs/project-structure.md](docs/project-structure.md).
 
-Each folder is a portable handoff unit. Edit `deck.html`, then regenerate its PDF/PPTX outputs with `npm run gallery:build`. The generator is deterministic and the gallery checker validates every source's actual positive slide count plus the exact three-file folder contract across all 770 folders; the current generated sample uses 45 slides per template. The similarity checker rejects pairs at or above 50% shared signature features. Template changes are committed and pushed in `PresentTemplate`; the resulting submodule pointer is then committed in this repository. See [docs/template-gallery.md](docs/template-gallery.md) for the authoring rules.
+Each folder is an HTML-first source unit. Edit `deck.html`, then render PDF/PPTX on demand for the selected template. The generator is deterministic and the gallery checker validates every source's actual positive slide count plus the source-only/core handoff contract across all 770 folders; the current generated sample uses 45 slides per template. The similarity checker rejects pairs at or above 50% shared signature features. Template changes are committed and pushed in `PresentTemplate`; the resulting submodule pointer is then committed in this repository. See [docs/template-gallery.md](docs/template-gallery.md) for the authoring rules.
 
 ## HTML contract
 

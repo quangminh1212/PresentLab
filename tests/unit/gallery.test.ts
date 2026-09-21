@@ -9,10 +9,12 @@ const root = resolve("templates");
 const workspaceRoot = resolve(".");
 
 describe("template gallery", () => {
-  it("contains 770 templates with 670 researched style presets and three handoff artifacts", async () => {
+  it("contains 770 templates with 670 researched style presets and HTML-first sources", async () => {
     const index = JSON.parse(await readFile(join(root, "index.json"), "utf8")) as Array<{
       name: string;
       path: string;
+      family: string;
+      styleCategory?: string;
     }>;
     expect(index).toHaveLength(770);
     expect(new Set(index.map((entry) => entry.name)).size).toBe(770);
@@ -31,7 +33,11 @@ describe("template gallery", () => {
         .filter((child) => child.isFile())
         .map((child) => child.name)
         .sort();
-      expect(files).toEqual(["deck.html", "deck.pdf", "deck.pptx"]);
+      const sourceOnly = Boolean(entry.styleCategory) || entry.name !== entry.family;
+      expect(files).toContain("deck.html");
+      if (!sourceOnly) {
+        expect(files).toEqual(["deck.html", "deck.pptx"]);
+      }
 
       const html = await readFile(join(folder, "deck.html"), "utf8");
       const inspection = inspectDeckHtml(html);
@@ -53,8 +59,9 @@ describe("template gallery", () => {
       expect(html).toContain('data-pl-profile="');
       expect(html).toContain('data-pl-diversity-signature="');
 
-      expect((await stat(join(folder, "deck.pdf"))).size).toBeGreaterThan(10_000);
-      expect((await stat(join(folder, "deck.pptx"))).size).toBeGreaterThan(10_000);
+      if (!sourceOnly) {
+        expect((await stat(join(folder, "deck.pptx"))).size).toBeGreaterThan(10_000);
+      }
     }
   }, 120_000);
 
@@ -84,9 +91,6 @@ describe("template gallery", () => {
       expect((await stat(join(workspaceRoot, palette.path))).size).toBeGreaterThan(100);
       expect(palette.swatches).toHaveLength(7);
     }
-    expect(
-      (await stat(join(workspaceRoot, "resources", "palettes", "catalog.pdf"))).size,
-    ).toBeGreaterThan(10_000);
     expect(
       (await stat(join(workspaceRoot, "resources", "palettes", "catalog.pptx"))).size,
     ).toBeGreaterThan(10_000);

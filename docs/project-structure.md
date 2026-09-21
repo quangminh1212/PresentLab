@@ -7,21 +7,21 @@ names and stable public contracts.
 
 ## Directory map
 
-| Path                 | Responsibility                                                                | Naming rule                                             |
-| -------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------- |
-| `src/`               | TypeScript renderer, CLI, and MCP adapter                                     | `camelCase` functions, PascalCase types/classes         |
-| `src/core/`          | Pure deck inspection, rendering orchestration, filesystem and format adapters | one focused module per capability                       |
-| `src/mcp/`           | MCP protocol boundary                                                         | keep MCP tool/resource identifiers stable               |
-| `api/`               | Vercel serverless request boundary                                            | validate and relay; never persist to local disk         |
-| `web/portal/`        | Static customer-facing template selection and request handoff UI              | `index.html`, `app.js`, `styles.css`                    |
-| `resources/`         | Reusable themes, palettes, indexes, and shared CSS                            | data grouped by domain, lowercase filenames             |
-| `templates/`         | Private `PresentTemplate` Git submodule                                       | each template uses `deck.html`, `deck.pdf`, `deck.pptx` |
-| `scripts/`           | Build and verification entrypoints                                            | lowercase kebab-case `.mjs` names                       |
-| `tests/unit/`        | Fast isolated tests                                                           | `<capability>.test.ts`                                  |
-| `tests/integration/` | Browser, artifact, and MCP tests                                              | `<capability>.test.ts`                                  |
-| `docs/`              | Contracts, architecture, operations, and release guidance                     | lowercase kebab-case Markdown                           |
-| `schemas/`           | Versioned machine-readable contracts                                          | descriptive lowercase filenames                         |
-| `plugins/`           | Host integrations and reusable agent skills                                   | keep plugin IDs stable once published                   |
+| Path                 | Responsibility                                                                | Naming rule                                     |
+| -------------------- | ----------------------------------------------------------------------------- | ----------------------------------------------- |
+| `src/`               | TypeScript renderer, CLI, and MCP adapter                                     | `camelCase` functions, PascalCase types/classes |
+| `src/core/`          | Pure deck inspection, rendering orchestration, filesystem and format adapters | one focused module per capability               |
+| `src/mcp/`           | MCP protocol boundary                                                         | keep MCP tool/resource identifiers stable       |
+| `api/`               | Vercel serverless request boundary                                            | validate and relay; never persist to local disk |
+| `web/portal/`        | Static customer-facing template selection and request handoff UI              | `index.html`, `app.js`, `styles.css`            |
+| `resources/`         | Reusable themes, palettes, indexes, and shared CSS                            | data grouped by domain, lowercase filenames     |
+| `templates/`         | Private `PresentTemplate` Git submodule                                       | HTML-first sources; optional handoff artifacts  |
+| `scripts/`           | Build and verification entrypoints                                            | lowercase kebab-case `.mjs` names               |
+| `tests/unit/`        | Fast isolated tests                                                           | `<capability>.test.ts`                          |
+| `tests/integration/` | Browser, artifact, and MCP tests                                              | `<capability>.test.ts`                          |
+| `docs/`              | Contracts, architecture, operations, and release guidance                     | lowercase kebab-case Markdown                   |
+| `schemas/`           | Versioned machine-readable contracts                                          | descriptive lowercase filenames                 |
+| `plugins/`           | Host integrations and reusable agent skills                                   | keep plugin IDs stable once published           |
 
 ## Ownership boundaries
 
