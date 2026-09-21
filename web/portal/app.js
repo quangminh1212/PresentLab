@@ -23,8 +23,8 @@ const MOTION_SCENES = [
 const COPY = {
   vi: {
     noscript: "Trang này cần JavaScript để tải thư viện mẫu và gửi brief.",
-    brandWorkspace: "CLIENT WORKSPACE",
-    brandAria: "PresentLab - về đầu trang",
+    brandWorkspace: "PRESENTLAB / CLIENT WORKSPACE",
+    brandAria: "XLab Web - về đầu trang",
     navAria: "Điều hướng chính",
     navTemplates: "Mẫu slide",
     navProcess: "Quy trình",
@@ -226,8 +226,8 @@ const COPY = {
   },
   en: {
     noscript: "JavaScript is required to load the template library and send a brief.",
-    brandWorkspace: "CLIENT WORKSPACE",
-    brandAria: "PresentLab - back to top",
+    brandWorkspace: "PRESENTLAB / CLIENT WORKSPACE",
+    brandAria: "XLab Web - back to top",
     navAria: "Main navigation",
     navTemplates: "Templates",
     navProcess: "Process",
@@ -430,8 +430,8 @@ const COPY = {
   },
   zh: {
     noscript: "需要启用 JavaScript 才能加载模板库并提交简报。",
-    brandWorkspace: "客户工作台",
-    brandAria: "PresentLab - 返回顶部",
+    brandWorkspace: "PRESENTLAB / 客户工作台",
+    brandAria: "XLab Web - 返回顶部",
     navAria: "主导航",
     navTemplates: "幻灯片模板",
     navProcess: "流程",
@@ -742,9 +742,9 @@ function getInitialTheme() {
     const saved = localStorage.getItem(THEME_STORAGE_KEY);
     if (SUPPORTED_THEMES.includes(saved)) return saved;
   } catch {
-    // Fall back to the system preference when storage is unavailable.
+    // Keep the XLab opening scene dark when storage is unavailable.
   }
-  return window.matchMedia?.("(prefers-color-scheme: light)").matches ? "light" : DEFAULT_THEME;
+  return DEFAULT_THEME;
 }
 
 function interpolate(value, variables = {}) {
@@ -1177,6 +1177,7 @@ const elements = {
   sceneProgress: document.querySelector("[data-scene-progress]"),
   sceneTransition: document.querySelector("[data-scene-transition]"),
   sceneTransitionIndex: document.querySelector("[data-scene-transition-index]"),
+  xlabCanvas: document.querySelector("[data-xlab-space-canvas]"),
 };
 
 function t(key, variables = {}) {
@@ -2372,6 +2373,288 @@ function bindStageParallax() {
   });
 }
 
+function setupXLabSpace() {
+  const canvas = elements.xlabCanvas;
+  const stage = elements.parallaxStage;
+  if (!canvas || !stage) return;
+
+  const context = canvas.getContext("2d");
+  if (!context) return;
+
+  const reducedMotion = isReducedMotion();
+  const points = Array.from({ length: 112 }, (_, index) => {
+    const golden = 0.61803398875;
+    const latitude = ((index * golden) % 1) * Math.PI * 2;
+    const longitude = ((index * golden * golden) % 1) * Math.PI * 2;
+    const radius = 0.62 + ((index * 17) % 37) / 100;
+    return {
+      x: Math.cos(latitude) * Math.sin(longitude) * radius,
+      y: Math.cos(longitude) * radius * 0.86,
+      z: Math.sin(latitude) * Math.sin(longitude) * radius,
+      size: 0.8 + ((index * 13) % 9) / 10,
+    };
+  });
+  const edges = [];
+  for (let index = 0; index < points.length; index += 1) {
+    let nearest = null;
+    let nearestDistance = Number.POSITIVE_INFINITY;
+    for (let candidate = index + 1; candidate < points.length; candidate += 1) {
+      const dx = points[index].x - points[candidate].x;
+      const dy = points[index].y - points[candidate].y;
+      const dz = points[index].z - points[candidate].z;
+      const distance = dx * dx + dy * dy + dz * dz;
+      if (distance < nearestDistance) {
+        nearest = candidate;
+        nearestDistance = distance;
+      }
+    }
+    if (nearest !== null && nearestDistance < 0.32) edges.push([index, nearest]);
+  }
+
+  const cubeVertices = [
+    [-1, -1, -1],
+    [1, -1, -1],
+    [1, 1, -1],
+    [-1, 1, -1],
+    [-1, -1, 1],
+    [1, -1, 1],
+    [1, 1, 1],
+    [-1, 1, 1],
+  ];
+  const cubeEdges = [
+    [0, 1],
+    [1, 2],
+    [2, 3],
+    [3, 0],
+    [4, 5],
+    [5, 6],
+    [6, 7],
+    [7, 4],
+    [0, 4],
+    [1, 5],
+    [2, 6],
+    [3, 7],
+  ];
+  const pointer = { x: 0.48, y: 0.42, targetX: 0.48, targetY: 0.42 };
+  let width = 0;
+  let height = 0;
+  let pixelRatio = 1;
+  let animationFrame = 0;
+  let isVisible = true;
+
+  const accent = () =>
+    document.documentElement.dataset.theme === "light" ? [0, 161, 154] : [140, 232, 216];
+  const secondary = () =>
+    document.documentElement.dataset.theme === "light" ? [47, 80, 183] : [147, 152, 255];
+  const warm = [246, 183, 141];
+  const color = (value, alpha) => `rgba(${value.join(",")},${alpha})`;
+
+  function resize() {
+    const bounds = stage.getBoundingClientRect();
+    width = Math.max(1, bounds.width);
+    height = Math.max(1, bounds.height);
+    pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.floor(width * pixelRatio);
+    canvas.height = Math.floor(height * pixelRatio);
+    canvas.style.width = `${width}px`;
+    canvas.style.height = `${height}px`;
+    context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+    draw(Date.now());
+  }
+
+  function project(point, spin, tilt) {
+    const cosY = Math.cos(spin);
+    const sinY = Math.sin(spin);
+    const rotatedX = point.x * cosY - point.z * sinY;
+    const rotatedZ = point.x * sinY + point.z * cosY;
+    const cosX = Math.cos(tilt);
+    const sinX = Math.sin(tilt);
+    const rotatedY = point.y * cosX - rotatedZ * sinX;
+    const depth = point.y * sinX + rotatedZ * cosX;
+    const perspective = 3.8 / (3.8 - depth);
+    const scale = Math.min(width, height) * 0.34 * perspective;
+    return {
+      x: width * 0.51 + rotatedX * scale,
+      y: height * 0.48 + rotatedY * scale,
+      depth,
+      alpha: Math.max(0.18, Math.min(1, 0.48 + perspective * 0.32)),
+    };
+  }
+
+  function draw(time) {
+    if (!width || !height) return;
+    pointer.x += (pointer.targetX - pointer.x) * (reducedMotion ? 1 : 0.08);
+    pointer.y += (pointer.targetY - pointer.y) * (reducedMotion ? 1 : 0.08);
+    const stageProgress = Math.min(
+      1,
+      Math.max(
+        0,
+        (window.innerHeight - stage.getBoundingClientRect().top) / (window.innerHeight + height),
+      ),
+    );
+    const spin = (reducedMotion ? 0.42 : time * 0.00016) + pointer.x * 0.18;
+    const tilt = (pointer.y - 0.5) * 0.35 + (stageProgress - 0.5) * 0.1;
+    const primary = accent();
+    const secondaryColor = secondary();
+
+    context.clearRect(0, 0, width, height);
+    const halo = context.createRadialGradient(
+      width * 0.5,
+      height * 0.48,
+      0,
+      width * 0.5,
+      height * 0.48,
+      Math.max(width, height) * 0.58,
+    );
+    halo.addColorStop(0, color(primary, 0.12));
+    halo.addColorStop(0.42, color(secondaryColor, 0.045));
+    halo.addColorStop(1, color(primary, 0));
+    context.fillStyle = halo;
+    context.fillRect(0, 0, width, height);
+
+    context.save();
+    context.globalCompositeOperation = "screen";
+    context.strokeStyle = color(primary, 0.13);
+    context.lineWidth = 1;
+    const horizon = height * 0.68;
+    for (let index = 0; index < 7; index += 1) {
+      const y = horizon + index * index * 8 + stageProgress * 12;
+      context.beginPath();
+      context.moveTo(width * 0.08, y);
+      context.lineTo(width * 0.94, y);
+      context.stroke();
+    }
+    for (let index = -7; index <= 7; index += 1) {
+      context.beginPath();
+      context.moveTo(width * 0.51, horizon);
+      context.lineTo(width * (0.51 + index * 0.12), height);
+      context.stroke();
+    }
+    context.restore();
+
+    const projected = points.map((point) => project(point, spin, tilt));
+    context.save();
+    context.globalCompositeOperation = "screen";
+    edges.forEach(([from, to]) => {
+      const start = projected[from];
+      const end = projected[to];
+      context.beginPath();
+      context.moveTo(start.x, start.y);
+      context.lineTo(end.x, end.y);
+      context.strokeStyle = color(primary, 0.08 + ((start.alpha + end.alpha) / 2) * 0.12);
+      context.lineWidth = 0.7;
+      context.stroke();
+    });
+    projected.forEach((point, index) => {
+      const radius = (points[index].size + point.alpha) * 1.1;
+      context.beginPath();
+      context.arc(point.x, point.y, radius, 0, Math.PI * 2);
+      context.fillStyle = color(index % 7 === 0 ? warm : primary, 0.18 + point.alpha * 0.44);
+      context.shadowBlur = 10;
+      context.shadowColor = color(index % 7 === 0 ? warm : primary, 0.8);
+      context.fill();
+    });
+    context.restore();
+
+    const cube = cubeVertices.map(([x, y, z]) =>
+      project({ x: x * 0.48, y: y * 0.48, z: z * 0.48 }, -spin * 1.35, tilt * 0.72),
+    );
+    context.save();
+    context.globalCompositeOperation = "screen";
+    context.strokeStyle = color(warm, 0.38);
+    context.lineWidth = 1;
+    cubeEdges.forEach(([from, to]) => {
+      context.beginPath();
+      context.moveTo(cube[from].x, cube[from].y);
+      context.lineTo(cube[to].x, cube[to].y);
+      context.stroke();
+    });
+    context.strokeStyle = color(primary, 0.82);
+    context.lineWidth = 1.4;
+    context.beginPath();
+    context.moveTo(width * 0.42, height * 0.34);
+    context.lineTo(width * 0.6, height * 0.62);
+    context.moveTo(width * 0.6, height * 0.34);
+    context.lineTo(width * 0.42, height * 0.62);
+    context.stroke();
+    context.restore();
+
+    context.save();
+    context.translate(width * 0.51, height * 0.48);
+    context.rotate(spin * 0.42);
+    context.scale(1, 0.28);
+    context.strokeStyle = color(primary, 0.4);
+    context.lineWidth = 1;
+    context.shadowBlur = 18;
+    context.shadowColor = color(primary, 0.65);
+    context.beginPath();
+    context.ellipse(
+      0,
+      0,
+      Math.min(width, height) * 0.34,
+      Math.min(width, height) * 0.34,
+      0,
+      0,
+      Math.PI * 2,
+    );
+    context.stroke();
+    context.rotate(Math.PI / 2);
+    context.strokeStyle = color(secondaryColor, 0.28);
+    context.beginPath();
+    context.ellipse(
+      0,
+      0,
+      Math.min(width, height) * 0.26,
+      Math.min(width, height) * 0.26,
+      0,
+      0,
+      Math.PI * 2,
+    );
+    context.stroke();
+    context.restore();
+  }
+
+  function loop(time) {
+    animationFrame = 0;
+    if (!isVisible || document.hidden) return;
+    draw(time);
+    animationFrame = window.requestAnimationFrame(loop);
+  }
+
+  function start() {
+    if (reducedMotion || animationFrame || !isVisible) return;
+    animationFrame = window.requestAnimationFrame(loop);
+  }
+
+  stage.addEventListener("pointermove", (event) => {
+    if (reducedMotion) return;
+    const bounds = stage.getBoundingClientRect();
+    pointer.targetX = (event.clientX - bounds.left) / bounds.width;
+    pointer.targetY = (event.clientY - bounds.top) / bounds.height;
+    start();
+  });
+  stage.addEventListener("pointerleave", () => {
+    pointer.targetX = 0.48;
+    pointer.targetY = 0.42;
+  });
+  window.addEventListener("resize", resize, { passive: true });
+  document.addEventListener("visibilitychange", start);
+
+  if ("IntersectionObserver" in window) {
+    const observer = new window.IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+        if (isVisible) start();
+      },
+      { threshold: 0.05 },
+    );
+    observer.observe(stage);
+  }
+
+  resize();
+  start();
+}
+
 function setupExperience() {
   bindRevealMotion();
   bindAnchorNavigation();
@@ -2380,6 +2663,7 @@ function setupExperience() {
   bindAmbientSurfaceMotion();
   bindMagneticMotion();
   bindMotionScroll();
+  setupXLabSpace();
   requestAnimationFrame(() => document.documentElement.classList.add("is-ready"));
 }
 

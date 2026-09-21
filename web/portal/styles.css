@@ -8603,3 +8603,158 @@ html[data-theme="light"] .hero-command-readout strong {
     transform: none !important;
   }
 }
+
+/* XLab Web space: a lightweight 3D layer that keeps the portal fast and self-contained. */
+.hero-visual {
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 74% 38%, rgb(140 232 216 / 12%), transparent 24%),
+    radial-gradient(circle at 16% 86%, rgb(246 183 141 / 10%), transparent 28%),
+    linear-gradient(135deg, #0c1e2b 0%, #06101c 58%, #090e1d 100%);
+  box-shadow:
+    0 40px 100px rgb(0 0 0 / 38%),
+    inset 0 1px 0 rgb(255 255 255 / 12%),
+    inset 0 0 0 1px rgb(140 232 216 / 7%);
+}
+
+.hero-space-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.9;
+  mix-blend-mode: screen;
+}
+
+.hero-space-stamp {
+  position: absolute;
+  top: 24px;
+  left: 26px;
+  z-index: 8;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: rgb(205 245 240 / 56%);
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: 0.18em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.hero-space-stamp i {
+  display: block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--warm);
+  box-shadow: 0 0 14px rgb(246 183 141 / 80%);
+}
+
+.hero-space-stamp::after {
+  position: absolute;
+  top: 17px;
+  left: 0;
+  width: 84px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+  content: "";
+  opacity: 0.7;
+}
+
+.hero-visual::after {
+  z-index: 3;
+  opacity: 0.52;
+}
+
+.hero-visual .hero-board,
+.hero-visual .hero-board-shadow {
+  transform-style: preserve-3d;
+}
+
+.hero-visual .hero-board {
+  border-radius: 2px;
+  box-shadow:
+    24px 26px 0 rgb(140 232 216 / 12%),
+    0 40px 92px rgb(0 0 0 / 56%),
+    inset 0 1px 0 rgb(255 255 255 / 18%);
+}
+
+.hero-visual .hero-board::before {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(115deg, transparent 22%, rgb(255 255 255 / 12%) 46%, transparent 58%);
+  content: "";
+  mix-blend-mode: screen;
+  pointer-events: none;
+  transform: translateX(calc(var(--pointer-depth, 0) * 20%));
+  transition: transform 280ms ease-out;
+}
+
+.hero-visual .hero-command-card,
+.hero-visual .floating-note,
+.hero-space-stamp {
+  backdrop-filter: blur(18px) saturate(130%);
+}
+
+.hero-visual .floating-note {
+  border-color: rgb(140 232 216 / 28%);
+  background: rgb(5 16 28 / 78%);
+}
+
+.hero-visual .hero-route {
+  padding: 7px 10px;
+  border: 1px solid rgb(140 232 216 / 20%);
+  border-radius: 999px;
+  background: rgb(5 16 28 / 54%);
+  backdrop-filter: blur(12px);
+}
+
+html[data-theme="light"] .hero-visual {
+  background:
+    radial-gradient(circle at 74% 38%, rgb(0 161 154 / 10%), transparent 24%),
+    radial-gradient(circle at 16% 86%, rgb(200 117 46 / 10%), transparent 28%),
+    linear-gradient(135deg, #fbfffd 0%, #eef5f4 58%, #eef0fb 100%);
+}
+
+html[data-theme="light"] .hero-space-stamp {
+  color: rgb(15 64 72 / 66%);
+}
+
+html[data-theme="light"] .hero-visual .floating-note,
+html[data-theme="light"] .hero-visual .hero-route {
+  border-color: rgb(0 161 154 / 22%);
+  background: rgb(255 255 255 / 72%);
+}
+
+@media (max-width: 760px) {
+  .hero-space-stamp {
+    top: 18px;
+    left: 18px;
+    font-size: 7px;
+  }
+
+  .hero-visual {
+    border-radius: 24px;
+  }
+
+  .hero-space-canvas {
+    opacity: 0.72;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-space-canvas {
+    opacity: 0.56;
+  }
+
+  .hero-visual .hero-board::before {
+    transform: none;
+  }
+}
