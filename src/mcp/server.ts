@@ -46,8 +46,13 @@ const TemplateSchema = z.object({
   title: z.string(),
   description: z.string(),
   family: z.string(),
+  baseFamily: z.string(),
   palette: z.string(),
   modifier: z.string(),
+  styleGroup: z.string().optional(),
+  styleCategory: z.string().optional(),
+  styleTreatment: z.string().optional(),
+  stylePalette: z.string().optional(),
   path: z.string(),
 });
 
@@ -95,7 +100,6 @@ const PaletteCatalogSchema = z.object({
   description: z.string(),
   slideCount: z.number().int().positive(),
   html: z.string(),
-  pptx: z.string(),
 });
 
 const PalettesOutputSchema = z.object({

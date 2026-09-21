@@ -1,48 +1,86 @@
-import { readdir, readFile, stat } from "node:fs/promises";
-import { dirname, join, resolve } from "node:path";
+import { readdir, readFile } from "node:fs/promises";
+import { join, resolve } from "node:path";
 
 import { inspectDeckFile } from "../dist/core/inspect.js";
 
 const root = resolve(import.meta.dirname, "..");
 const templatesRoot = join(root, "templates");
 const palettesRoot = join(root, "resources", "palettes");
-const index = JSON.parse(await readFile(join(templatesRoot, "index.json"), "utf8"));
 const expectedTemplateCount = 770;
 const expectedStylePresetCount = 670;
+const index = JSON.parse(await readFile(join(templatesRoot, "index.json"), "utf8"));
 const templateEntries = Array.isArray(index) ? index : [];
-const indexedRootNames = new Set(templateEntries.map((entry) => entry.path.split("/")[0]));
-const legacyVariantRootNames = new Set(
-  templateEntries
-    .filter((entry) => !entry.styleCategory && entry.name !== entry.family)
-    .map((entry) => entry.name),
-);
-const allTemplateDirectories = (await readdir(templatesRoot, { withFileTypes: true })).filter(
-  (entry) => entry.isDirectory(),
-);
-const familyDirectories = allTemplateDirectories.filter((entry) => entry.name !== "palettes");
-const unexpectedFamilyDirectories = familyDirectories.filter(
-  (entry) => !indexedRootNames.has(entry.name) && !legacyVariantRootNames.has(entry.name),
-);
-const missingRootDirectories = [...indexedRootNames].filter(
-  (name) => !familyDirectories.some((entry) => entry.name === name),
-);
+const categoryForEntry = (entry) => entry.styleGroup ?? entry.family;
+const sourceNameForEntry = (entry) => {
+  const category = categoryForEntry(entry);
+  const name =
+    entry.name === category || entry.name.startsWith(`${category}-`)
+      ? entry.name
+      : `${category}-${entry.name}`;
+  return `${name}.html`;
+};
 
 if (!Array.isArray(index) || index.length !== expectedTemplateCount) {
   throw new Error(
     `Expected ${expectedTemplateCount} gallery templates, found ${Array.isArray(index) ? index.length : "invalid index"}.`,
   );
 }
-if (missingRootDirectories.length > 0) {
-  throw new Error(`Missing indexed template directories: ${missingRootDirectories.join(", ")}.`);
-}
-if (unexpectedFamilyDirectories.length > 0) {
-  throw new Error(
-    `Unexpected family directories under the template repository: ${unexpectedFamilyDirectories.map((entry) => entry.name).join(", ")}.`,
-  );
-}
 if (new Set(index.map((entry) => entry.name)).size !== expectedTemplateCount) {
   throw new Error("Template index contains duplicate names.");
 }
+
+const expectedCategoryNames = new Set(templateEntries.map(categoryForEntry));
+const templateChildren = await readdir(templatesRoot, { withFileTypes: true });
+const categoryDirectories = templateChildren.filter(
+  (entry) => entry.isDirectory() && entry.name !== "palettes",
+);
+const actualCategoryNames = new Set(categoryDirectories.map((entry) => entry.name));
+const missingCategories = [...expectedCategoryNames].filter(
+  (name) => !actualCategoryNames.has(name),
+);
+const unexpectedCategories = [...actualCategoryNames].filter(
+  (name) => !expectedCategoryNames.has(name),
+);
+const rootTemplateHtml = templateChildren
+  .filter((entry) => entry.isFile() && entry.name.endsWith(".html"))
+  .map((entry) => entry.name);
+
+if (missingCategories.length > 0) {
+  throw new Error(`Missing indexed design-style directories: ${missingCategories.join(", ")}.`);
+}
+if (unexpectedCategories.length > 0) {
+  throw new Error(
+    `Unexpected design-style directories under the template repository: ${unexpectedCategories.join(", ")}.`,
+  );
+}
+if (rootTemplateHtml.length > 0) {
+  throw new Error(
+    `Template HTML must live inside design-style directories: ${rootTemplateHtml.join(", ")}.`,
+  );
+}
+
+for (const category of expectedCategoryNames) {
+  const categoryPath = join(templatesRoot, category);
+  const expectedNames = templateEntries
+    .filter((entry) => categoryForEntry(entry) === category)
+    .map(sourceNameForEntry)
+    .sort();
+  const children = await readdir(categoryPath, { withFileTypes: true });
+  const unexpectedNestedDirectories = children.filter((entry) => entry.isDirectory());
+  if (unexpectedNestedDirectories.length > 0) {
+    throw new Error(`${category} must contain template files directly, not nested directories.`);
+  }
+  const actualNames = children
+    .filter((entry) => entry.isFile() && entry.name.endsWith(".html"))
+    .map((entry) => entry.name)
+    .sort();
+  if (actualNames.join("|") !== expectedNames.join("|")) {
+    throw new Error(
+      `${category} contains ${actualNames.length} HTML sources; expected ${expectedNames.length}.`,
+    );
+  }
+}
+
 const styleEntries = index.filter((entry) => entry.styleCategory);
 if (styleEntries.length !== expectedStylePresetCount) {
   throw new Error(
@@ -57,13 +95,19 @@ if (
 ) {
   throw new Error("The style catalog does not contain the expected 670 style presets.");
 }
+for (const style of styleCatalog.styles) {
+  const entry = templateEntries.find((candidate) => candidate.name === style.name);
+  if (!entry || style.path !== `${style.styleGroup}/${sourceNameForEntry(entry)}`) {
+    throw new Error(`${style.name} must expose a categorized HTML source path.`);
+  }
+}
 
 const themeIndex = JSON.parse(
   await readFile(join(root, "resources", "themes", "index.json"), "utf8"),
 );
 if (!Array.isArray(themeIndex) || themeIndex.length !== expectedTemplateCount) {
   throw new Error(
-    `Expected ${expectedTemplateCount} theme entries, found ${Array.isArray(themeIndex) ? themeIndex.length : "invalid index"}.`,
+    `Expected ${expectedTemplateCount} theme entries, found ${Array.isArray(themeIndex) ? themeIndex.length : "invalid"}.`,
   );
 }
 
@@ -75,13 +119,16 @@ if (
   paletteIndex.palettes.length !== expectedPaletteCount
 ) {
   throw new Error(
-    `Expected ${expectedPaletteCount} palette entries, found ${Array.isArray(paletteIndex.palettes) ? paletteIndex.palettes.length : "invalid index"}.`,
+    `Expected ${expectedPaletteCount} palette entries, found ${Array.isArray(paletteIndex.palettes) ? paletteIndex.palettes.length : "invalid"}.`,
   );
 }
 if (paletteIndex.catalog?.slideCount !== expectedPaletteCatalogSlideCount) {
   throw new Error(
     `Expected the palette catalog to contain ${expectedPaletteCatalogSlideCount} slides, found ${paletteIndex.catalog?.slideCount ?? "invalid metadata"}.`,
   );
+}
+if (paletteIndex.catalog?.html !== "resources/palettes/catalog.html") {
+  throw new Error("Palette catalog metadata must expose HTML only.");
 }
 const paletteCatalogPath = join(palettesRoot, "catalog.html");
 const { inspection: paletteCatalogInspection } = await inspectDeckFile(paletteCatalogPath);
@@ -104,54 +151,41 @@ for (const palette of paletteIndex.palettes) {
     throw new Error(`${palette.name} palette metadata is incomplete.`);
   }
 }
-for (const artifact of ["catalog.pptx"]) {
-  const artifactPath = join(palettesRoot, artifact);
-  const bytes = await readFile(artifactPath);
-  const signature = "PK";
-  if (bytes.subarray(0, signature.length).toString() !== signature) {
-    throw new Error(`Palette catalog ${artifact} does not have the expected signature.`);
-  }
-  if ((await stat(artifactPath)).size < 10_000) {
-    throw new Error(`Palette catalog ${artifact} is unexpectedly small.`);
-  }
-}
-for (const forbiddenPdf of [
-  join(palettesRoot, "catalog.pdf"),
-  join(templatesRoot, "palettes", "catalog.pdf"),
-]) {
+
+async function findForbiddenArtifacts(directory) {
+  const found = [];
+  let entries;
   try {
-    await stat(forbiddenPdf);
+    entries = await readdir(directory, { withFileTypes: true });
   } catch (error) {
-    if (error?.code === "ENOENT") {
-      continue;
-    }
+    if (error?.code === "ENOENT") return found;
     throw error;
   }
-  throw new Error(`PDF artifact must not exist: ${forbiddenPdf}`);
+  for (const entry of entries) {
+    const entryPath = join(directory, entry.name);
+    if (entry.isDirectory()) {
+      found.push(...(await findForbiddenArtifacts(entryPath)));
+    } else if (/\.(?:pdf|pptx)$/i.test(entry.name)) {
+      found.push(entryPath);
+    }
+  }
+  return found;
+}
+
+const forbiddenArtifacts = [
+  ...(await findForbiddenArtifacts(templatesRoot)),
+  ...(await findForbiddenArtifacts(palettesRoot)),
+];
+if (forbiddenArtifacts.length > 0) {
+  throw new Error(`Cached PDF/PPTX artifacts must not exist: ${forbiddenArtifacts.join(", ")}.`);
 }
 
 for (const entry of index) {
-  const expectedPath =
-    entry.name === entry.family
-      ? `${entry.family}/deck.html`
-      : `${entry.family}/${entry.palette}/deck.html`;
+  const expectedPath = `${categoryForEntry(entry)}/${sourceNameForEntry(entry)}`;
   if (entry.path !== expectedPath) {
-    throw new Error(`${entry.name} must expose a repository-relative deck.html path.`);
+    throw new Error(`${entry.name} must expose the categorized HTML path ${expectedPath}.`);
   }
   const htmlPath = join(templatesRoot, entry.path);
-  const templateDir = dirname(htmlPath);
-  const names = (await readdir(templateDir, { withFileTypes: true }))
-    .filter((child) => child.isFile())
-    .map((child) => child.name)
-    .sort();
-  const sourceOnly = Boolean(entry.styleCategory) || entry.name !== entry.family;
-  const expectedNames = sourceOnly ? "deck.html" : "deck.html|deck.pptx";
-  if (names.join("|") !== expectedNames) {
-    throw new Error(
-      `${entry.name} must contain exactly ${sourceOnly ? "deck.html" : "deck.html and deck.pptx"}.`,
-    );
-  }
-
   const { inspection } = await inspectDeckFile(htmlPath);
   if (inspection.errors.length > 0 || inspection.slides.length === 0) {
     throw new Error(
@@ -179,19 +213,7 @@ for (const entry of index) {
   if (!html.includes('data-pl-profile="') || !html.includes('data-pl-diversity-signature="')) {
     throw new Error(`${entry.name} must expose a deterministic diversity profile.`);
   }
-
-  if (!sourceOnly) {
-    const pptx = await readFile(join(templateDir, "deck.pptx"));
-    if (pptx.subarray(0, 2).toString() !== "PK") {
-      throw new Error(`${entry.name} PPTX does not have a ZIP signature.`);
-    }
-    if ((await stat(join(templateDir, "deck.pptx"))).size < 10_000) {
-      throw new Error(`${entry.name} PPTX is unexpectedly small.`);
-    }
-  }
-  console.log(
-    `OK ${entry.name}: ${inspection.slides.length} slides, ${sourceOnly ? "HTML source" : "HTML/PPTX present"}`,
-  );
+  console.log(`OK ${entry.name}: ${inspection.slides.length} slides, categorized HTML source`);
 }
 
 console.log("Template gallery verification passed.");

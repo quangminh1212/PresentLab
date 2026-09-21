@@ -48,7 +48,7 @@ by default and receives a JSON `POST` with this shape:
     {
       "name": "aurora",
       "title": "Aurora",
-      "path": "aurora/deck.html",
+      "path": "aurora/aurora.html",
       "family": "aurora",
       "palette": "base",
       "category": "Core systems",

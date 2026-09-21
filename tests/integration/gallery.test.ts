@@ -8,16 +8,21 @@ import { renderDeck } from "../../src/core/render.js";
 const root = resolve(".");
 
 describe("template gallery browser render", () => {
-  it("renders representative core, variant, and style sources to every PNG page, PDF, and PPTX", async () => {
+  it("renders representative core, variant, and style sources to every PNG page", async () => {
     const index = JSON.parse(
       await readFile(join(root, "templates", "index.json"), "utf8"),
-    ) as Array<{ name: string; path: string; styleCategory?: string }>;
+    ) as Array<{
+      name: string;
+      path: string;
+      family: string;
+      styleCategory?: string;
+    }>;
 
     const coreEntries = index.filter(
-      (entry) => !entry.styleCategory && entry.path.split("/").length === 2,
+      (entry) => !entry.styleCategory && entry.name === entry.family,
     );
     const variantEntries = index.filter(
-      (entry) => !entry.styleCategory && entry.path.split("/").length === 3,
+      (entry) => !entry.styleCategory && entry.name !== entry.family,
     );
     const styleEntries = index.filter((entry) => entry.styleCategory);
     const sampleIndexes = [
@@ -44,7 +49,7 @@ describe("template gallery browser render", () => {
       const result = await renderDeck({
         inputPath: join(root, "templates", entry.path),
         outputDir,
-        formats: ["png", "pdf", "pptx"],
+        formats: ["png"],
         workspaceRoot: root,
       });
 

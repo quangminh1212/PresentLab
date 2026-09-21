@@ -1,5 +1,5 @@
-import { readdir, readFile, stat } from "node:fs/promises";
-import { dirname, join, resolve } from "node:path";
+import { readFile, stat } from "node:fs/promises";
+import { join, resolve } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
@@ -14,6 +14,7 @@ describe("template gallery", () => {
       name: string;
       path: string;
       family: string;
+      styleGroup?: string;
       styleCategory?: string;
     }>;
     expect(index).toHaveLength(770);
@@ -28,18 +29,13 @@ describe("template gallery", () => {
     expect(styleCatalog.styles).toHaveLength(670);
 
     for (const entry of index) {
-      const folder = dirname(join(root, entry.path));
-      const files = (await readdir(folder, { withFileTypes: true }))
-        .filter((child) => child.isFile())
-        .map((child) => child.name)
-        .sort();
-      const sourceOnly = Boolean(entry.styleCategory) || entry.name !== entry.family;
-      expect(files).toContain("deck.html");
-      if (!sourceOnly) {
-        expect(files).toEqual(["deck.html", "deck.pptx"]);
-      }
-
-      const html = await readFile(join(folder, "deck.html"), "utf8");
+      const category = entry.styleGroup ?? entry.family;
+      const sourceName =
+        entry.name === category || entry.name.startsWith(`${category}-`)
+          ? entry.name
+          : `${category}-${entry.name}`;
+      expect(entry.path).toBe(`${category}/${sourceName}.html`);
+      const html = await readFile(join(root, entry.path), "utf8");
       const inspection = inspectDeckHtml(html);
       expect(inspection.errors).toEqual([]);
       expect(inspection.slides.length).toBeGreaterThan(0);
@@ -58,10 +54,6 @@ describe("template gallery", () => {
       expect(new Set(diversityTokens).size).toBe(inspection.slides.length);
       expect(html).toContain('data-pl-profile="');
       expect(html).toContain('data-pl-diversity-signature="');
-
-      if (!sourceOnly) {
-        expect((await stat(join(folder, "deck.pptx"))).size).toBeGreaterThan(10_000);
-      }
     }
   }, 120_000);
 
@@ -91,8 +83,5 @@ describe("template gallery", () => {
       expect((await stat(join(workspaceRoot, palette.path))).size).toBeGreaterThan(100);
       expect(palette.swatches).toHaveLength(7);
     }
-    expect(
-      (await stat(join(workspaceRoot, "resources", "palettes", "catalog.pptx"))).size,
-    ).toBeGreaterThan(10_000);
   }, 30_000);
 });

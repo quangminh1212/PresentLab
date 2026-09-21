@@ -3,8 +3,7 @@
     "title": "PresentLab color palette catalog",
     "description": "Thirteen curated color systems for clients, designers, and AI agents choosing a slide direction.",
     "slideCount": 15,
-    "html": "resources/palettes/catalog.html",
-    "pptx": "resources/palettes/catalog.pptx"
+    "html": "resources/palettes/catalog.html"
   },
   "palettes": [
     {

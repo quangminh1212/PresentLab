@@ -9,7 +9,7 @@ const payload = {
   id: "PL-20260920-AB12",
   customer: { name: "Nguyen Van A", email: "a@example.com" },
   project: { name: "Q4 pitch", slideCount: 137 },
-  templates: [{ name: "aurora", path: "templates/aurora/deck.html" }],
+  templates: [{ name: "aurora", path: "templates/aurora/aurora.html" }],
 };
 
 afterEach(() => {

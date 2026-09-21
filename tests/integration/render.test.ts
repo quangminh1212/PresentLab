@@ -39,12 +39,12 @@ describe("Chromium artifact smoke test", () => {
     expect((await stat(join(root, "catalog", "catalog.pdf"))).size).toBeGreaterThan(100);
 
     const templateResult = await renderDeck({
-      inputPath: resolve("resources/templates/aurora/deck.html"),
+      inputPath: resolve("templates/aurora/aurora.html"),
       outputDir: join(root, "template"),
       formats: ["png"],
       workspaceRoot: resolve("."),
     });
-    expect(templateResult.inspection.slides).toHaveLength(2);
+    expect(templateResult.inspection.slides).toHaveLength(45);
   }, 120_000);
 
   it("blocks local file assets outside the workspace root", async () => {

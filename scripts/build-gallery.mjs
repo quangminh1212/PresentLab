@@ -1,6 +1,6 @@
-import { copyFile, mkdir, readdir, readFile, rm, stat, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { readFileSync, rmSync, writeFileSync } from "node:fs";
-import { execFileSync, spawn } from "node:child_process";
+import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -1202,7 +1202,7 @@ function commonSlides(name, label) {
     ),
     slide(
       "metrics",
-      `<div class="section-head"><div><p class="kicker">02 / Evidence</p><h1 class="section-title">A small set of metrics can anchor a large idea.</h1><p class="section-lede">The same component can present a scorecard, a benchmark, or a design-system health check.</p></div><span class="page-no">03</span></div><div class="stat-grid"><article class="stat"><span class="value">${galleryTemplateCount}</span><span class="label">distinct visual systems in this gallery</span></article><article class="stat"><span class="value">${gallerySlideCount}</span><span class="label">sample slides rendered from HTML sources</span></article><article class="stat"><span class="value">3</span><span class="label">handoff formats per template folder</span></article></div><div class="bar-layout"><div class="bar-chart"><div class="bar"><i style="height: 42%"></i><span>Brief</span></div><div class="bar"><i style="height: 66%"></i><span>Design</span></div><div class="bar"><i style="height: 84%"></i><span>Render</span></div><div class="bar"><i style="height: 100%"></i><span>Review</span></div></div><p class="bar-note">The workflow gets stronger when validation and visual review happen before delivery.</p></div><p class="footer">03 / Metric board</p>`,
+      `<div class="section-head"><div><p class="kicker">02 / Evidence</p><h1 class="section-title">A small set of metrics can anchor a large idea.</h1><p class="section-lede">The same component can present a scorecard, a benchmark, or a design-system health check.</p></div><span class="page-no">03</span></div><div class="stat-grid"><article class="stat"><span class="value">${galleryTemplateCount}</span><span class="label">distinct visual systems in this gallery</span></article><article class="stat"><span class="value">${gallerySlideCount}</span><span class="label">sample slides rendered from HTML sources</span></article><article class="stat"><span class="value">01</span><span class="label">inspectable HTML source per template</span></article></div><div class="bar-layout"><div class="bar-chart"><div class="bar"><i style="height: 42%"></i><span>Brief</span></div><div class="bar"><i style="height: 66%"></i><span>Design</span></div><div class="bar"><i style="height: 84%"></i><span>Render</span></div><div class="bar"><i style="height: 100%"></i><span>Review</span></div></div><p class="bar-note">The workflow gets stronger when validation and visual review happen before delivery.</p></div><p class="footer">03 / Metric board</p>`,
     ),
     slide(
       "comparison",
@@ -1210,7 +1210,7 @@ function commonSlides(name, label) {
     ),
     slide(
       "process",
-      `<div class="section-head"><div><p class="kicker">04 / Workflow</p><h1 class="section-title">From brief to handoff, the system stays inspectable.</h1><p class="section-lede">The template gives an AI agent a stable surface for content while the renderer protects output quality.</p></div><span class="page-no">05</span></div><div class="steps"><article class="step"><span class="number">01</span><h2>Frame</h2><p>Choose a style and write a direct narrative outline.</p></article><article class="step"><span class="number">02</span><h2>Compose</h2><p>Place content into an HTML slide contract with local tokens.</p></article><article class="step"><span class="number">03</span><h2>Validate</h2><p>Check metadata, ids, readability, and image accessibility.</p></article><article class="step"><span class="number">04</span><h2>Deliver</h2><p>Render HTML and PPTX, then review the actual pages.</p></article></div><p class="footer">05 / Four-step workflow</p>`,
+      `<div class="section-head"><div><p class="kicker">04 / Workflow</p><h1 class="section-title">From brief to review, the system stays inspectable.</h1><p class="section-lede">The template gives an AI agent a stable surface for content while the renderer protects output quality.</p></div><span class="page-no">05</span></div><div class="steps"><article class="step"><span class="number">01</span><h2>Frame</h2><p>Choose a style and write a direct narrative outline.</p></article><article class="step"><span class="number">02</span><h2>Compose</h2><p>Place content into an HTML slide contract with local tokens.</p></article><article class="step"><span class="number">03</span><h2>Validate</h2><p>Check metadata, ids, readability, and image accessibility.</p></article><article class="step"><span class="number">04</span><h2>Review</h2><p>Inspect the rendered pages and keep the HTML source ready for the next edit.</p></article></div><p class="footer">05 / Four-step workflow</p>`,
     ),
     slide(
       "audience",
@@ -1222,7 +1222,7 @@ function commonSlides(name, label) {
     ),
     slide(
       "roadmap",
-      `<div class="section-head"><div><p class="kicker">07 / Roadmap</p><h1 class="section-title">Move from a good first draft to a dependable release.</h1><p class="section-lede">The same four checkpoints work for an AI-generated presentation, catalog, or printable report.</p></div><span class="page-no">08</span></div><div class="steps"><article class="step"><span class="number">01</span><h2>Discover</h2><p>Choose the family, palette, and narrative job for the deck.</p></article><article class="step"><span class="number">02</span><h2>Compose</h2><p>Write semantic HTML with stable ids and meaningful headings.</p></article><article class="step"><span class="number">03</span><h2>Review</h2><p>Inspect the rendered pages for rhythm, contrast, and overflow.</p></article><article class="step"><span class="number">04</span><h2>Ship</h2><p>Commit the source and handoff formats as one portable unit.</p></article></div><p class="footer">08 / Release roadmap</p>`,
+      `<div class="section-head"><div><p class="kicker">07 / Roadmap</p><h1 class="section-title">Move from a good first draft to a dependable release.</h1><p class="section-lede">The same four checkpoints work for an AI-generated presentation, catalog, or printable report.</p></div><span class="page-no">08</span></div><div class="steps"><article class="step"><span class="number">01</span><h2>Discover</h2><p>Choose the family, palette, and narrative job for the deck.</p></article><article class="step"><span class="number">02</span><h2>Compose</h2><p>Write semantic HTML with stable ids and meaningful headings.</p></article><article class="step"><span class="number">03</span><h2>Review</h2><p>Inspect the rendered pages for rhythm, contrast, and overflow.</p></article><article class="step"><span class="number">04</span><h2>Publish</h2><p>Keep the categorized HTML source portable and ready to render on demand.</p></article></div><p class="footer">08 / Release roadmap</p>`,
     ),
     slide(
       "quality",
@@ -1262,15 +1262,15 @@ function commonSlides(name, label) {
     ),
     slide(
       "review",
-      `<div class="section-head"><div><p class="kicker">17 / Review</p><h1 class="section-title">Review the page the way the audience will experience it.</h1><p class="section-lede">Source-level confidence is not enough. Render early, inspect the rhythm, and fix what the exported artifact reveals.</p></div><span class="page-no">18</span></div><div class="compare"><article class="panel"><span class="label">At a glance</span><h2>Does the page have a job?</h2><p>Read only the title, labels, and focal elements. The intended takeaway should still be visible.</p><ul class="list"><li>Claim is specific</li><li>Visual priority is clear</li><li>Page belongs in the sequence</li></ul></article><article class="panel"><span class="label">Up close</span><h2>Can the detail carry trust?</h2><p>Check the line lengths, contrast, labels, and exported page order before the deck becomes a dependency.</p><ul class="list"><li>No collisions or clipping</li><li>Evidence has context</li><li>HTML and PPTX remain aligned</li></ul></article></div><p class="footer">18 / Review checklist</p>`,
+      `<div class="section-head"><div><p class="kicker">17 / Review</p><h1 class="section-title">Review the page the way the audience will experience it.</h1><p class="section-lede">Source-level confidence is not enough. Render early, inspect the rhythm, and fix what the exported artifact reveals.</p></div><span class="page-no">18</span></div><div class="compare"><article class="panel"><span class="label">At a glance</span><h2>Does the page have a job?</h2><p>Read only the title, labels, and focal elements. The intended takeaway should still be visible.</p><ul class="list"><li>Claim is specific</li><li>Visual priority is clear</li><li>Page belongs in the sequence</li></ul></article><article class="panel"><span class="label">Up close</span><h2>Can the detail carry trust?</h2><p>Check the line lengths, contrast, labels, and exported page order before the deck becomes a dependency.</p><ul class="list"><li>No collisions or clipping</li><li>Evidence has context</li><li>HTML source remains deterministic</li></ul></article></div><p class="footer">18 / Review checklist</p>`,
     ),
     slide(
       "implementation",
-      `<div class="section-head"><div><p class="kicker">18 / Build</p><h1 class="section-title">Implementation should preserve intent from source to export.</h1><p class="section-lede">The renderer is part of the design system: it translates semantic HTML into artifacts that people can share, edit, and review.</p></div><span class="page-no">19</span></div><div class="hero-grid"><article class="panel"><span class="label">Source contract</span><h2>Keep the input explicit</h2><p>Declare format, title, theme, and slide ids so tooling can inspect the deck without guessing.</p><ul class="list"><li>Local CSS and fonts</li><li>Stable identifiers</li><li>Readable source order</li></ul></article><article class="panel"><span class="label">Output contract</span><h2>Keep the handoff complete</h2><p>Export every page in the same order and retain the source beside the editable presentation.</p><ul class="list"><li>HTML for agents</li><li>PPTX for editing</li></ul></article></div><p class="footer">19 / Implementation contract</p>`,
+      `<div class="section-head"><div><p class="kicker">18 / Build</p><h1 class="section-title">Implementation should preserve intent from source to render.</h1><p class="section-lede">The renderer is part of the design system: it translates semantic HTML into artifacts that people can share and review.</p></div><span class="page-no">19</span></div><div class="hero-grid"><article class="panel"><span class="label">Source contract</span><h2>Keep the input explicit</h2><p>Declare format, title, theme, and slide ids so tooling can inspect the deck without guessing.</p><ul class="list"><li>Local CSS and fonts</li><li>Stable identifiers</li><li>Readable source order</li></ul></article><article class="panel"><span class="label">Render contract</span><h2>Keep the output reviewable</h2><p>Render pages on demand in the format needed for the next review, while the categorized HTML source remains the source of truth.</p><ul class="list"><li>HTML for agents</li><li>PNG/PDF/PPTX on demand</li></ul></article></div><p class="footer">19 / Implementation contract</p>`,
     ),
     slide(
       "operations",
-      `<div class="section-head"><div><p class="kicker">19 / Operate</p><h1 class="section-title">A resource library becomes valuable when it stays easy to refresh.</h1><p class="section-lede">Treat templates as maintained assets: version the source, verify the exports, and make the catalog searchable for the next agent.</p></div><span class="page-no">20</span></div><div class="steps"><article class="step"><span class="number">01</span><h2>Index</h2><p>Record the family, palette, layout modifier, and source path.</p></article><article class="step"><span class="number">02</span><h2>Build</h2><p>Regenerate HTML and PPTX from one deterministic command.</p></article><article class="step"><span class="number">03</span><h2>Verify</h2><p>Count pages, inspect signatures, and test the contract across the gallery.</p></article><article class="step"><span class="number">04</span><h2>Publish</h2><p>Push the template repository and update the parent submodule pointer.</p></article></div><p class="footer">20 / Library operations</p>`,
+      `<div class="section-head"><div><p class="kicker">19 / Operate</p><h1 class="section-title">A resource library becomes valuable when it stays easy to refresh.</h1><p class="section-lede">Treat templates as maintained assets: version the source, verify the renders, and make the catalog searchable for the next agent.</p></div><span class="page-no">20</span></div><div class="steps"><article class="step"><span class="number">01</span><h2>Index</h2><p>Record the family, palette, layout modifier, and categorized source path.</p></article><article class="step"><span class="number">02</span><h2>Build</h2><p>Regenerate HTML metadata and render formats on demand from one deterministic command.</p></article><article class="step"><span class="number">03</span><h2>Verify</h2><p>Count pages, inspect backgrounds, and test the contract across the gallery.</p></article><article class="step"><span class="number">04</span><h2>Publish</h2><p>Push the template repository and update the parent submodule pointer.</p></article></div><p class="footer">20 / Library operations</p>`,
     ),
     slide(
       "risks",
@@ -1282,7 +1282,7 @@ function commonSlides(name, label) {
     ),
     slide(
       "handoff",
-      `<div class="section-head"><div><p class="kicker">10 / Handoff</p><h1 class="section-title">A template becomes useful when the next person can pick it up.</h1><p class="section-lede">Keep the editable source and the rendered examples together so an agent, designer, or reviewer can continue the work without guessing.</p></div><span class="page-no">11</span></div><div class="hero-grid"><article class="panel"><span class="label">Source</span><h2>deck.html</h2><p>Semantic markup, local styles, metadata, and named slide ids make the starting point inspectable and adaptable.</p><ul class="list"><li>Easy to diff and review</li><li>Safe for deterministic rendering</li><li>Ready for agent composition</li></ul></article><article class="panel"><span class="label">Handoff</span><h2>deck.html + deck.pptx</h2><p>Source and rendered artifacts show exactly how the deck behaves when reviewed or opened in a presentation viewer.</p><ul class="list"><li>One folder, two portable files</li><li>Same page order in every format</li><li>Fast visual comparison</li></ul></article></div><p class="footer">11 / Portable handoff</p>`,
+      `<div class="section-head"><div><p class="kicker">10 / Handoff</p><h1 class="section-title">A template becomes useful when the next person can pick it up.</h1><p class="section-lede">Keep the categorized HTML source and render examples on demand so an agent, designer, or reviewer can continue the work without guessing.</p></div><span class="page-no">11</span></div><div class="hero-grid"><article class="panel"><span class="label">Source</span><h2>style/template.html</h2><p>Semantic markup, local styles, metadata, and named slide ids make the starting point inspectable and adaptable.</p><ul class="list"><li>Easy to diff and review</li><li>Safe for deterministic rendering</li><li>Ready for agent composition</li></ul></article><article class="panel"><span class="label">On demand</span><h2>Render when needed</h2><p>Generate PNG, PDF, or PPTX only for the selected source and review the actual pages before handoff.</p><ul class="list"><li>One categorized source of truth</li><li>Same page order in every format</li><li>Fast visual comparison</li></ul></article></div><p class="footer">11 / Portable handoff</p>`,
     ),
     slide(
       "catalog",
@@ -1290,7 +1290,7 @@ function commonSlides(name, label) {
     ),
     slide(
       "close",
-      `<div class="cover-copy"><p class="kicker">PresentLab / Handoff</p><h1 class="title">Choose a style.<br /><em>Keep the story clear.</em></h1><p class="lede">Every folder in this gallery contains the HTML source plus a rendered PPTX output for a fast, inspectable starting point.</p><div class="meta-line"><span>Validate first</span><span>Review every page</span></div></div><p class="footer">12 / Closing frame</p>`,
+      `<div class="cover-copy"><p class="kicker">PresentLab / Handoff</p><h1 class="title">Choose a style.<br /><em>Keep the story clear.</em></h1><p class="lede">Every category folder in this gallery contains an inspectable HTML source for a fast, reliable starting point.</p><div class="meta-line"><span>Validate first</span><span>Render on demand</span></div></div><p class="footer">12 / Closing frame</p>`,
     ),
   ];
 }
@@ -1483,20 +1483,30 @@ process.on("exit", () => {
 });
 const prettierOptions = (await prettier.resolveConfig(join(root, "package.json"))) ?? {};
 
-const templateDirectory = (template) =>
-  template.name === template.family
-    ? join(templatesRoot, template.family)
-    : join(templatesRoot, template.family, template.palette);
-const repositoryDeckPath = (template) =>
-  template.name === template.family
-    ? `${template.family}/deck.html`
-    : `${template.family}/${template.palette}/deck.html`;
+const templateCategory = (template) => template.styleGroup ?? template.family;
+const templateDirectory = (template) => join(templatesRoot, templateCategory(template));
+const templateSourceName = (template) => {
+  const category = templateCategory(template);
+  const name =
+    template.name === category || template.name.startsWith(`${category}-`)
+      ? template.name
+      : `${category}-${template.name}`;
+  return `${name}.html`;
+};
+const templateSourcePath = (template) =>
+  join(templateDirectory(template), templateSourceName(template));
+const repositoryTemplatePath = (template) =>
+  `${templateCategory(template)}/${templateSourceName(template)}`;
 
 const templateNames = new Set(templates.map((template) => template.name));
+const templateCategories = new Set(templates.map(templateCategory));
 
 for (const entry of await readdir(templatesRoot, { withFileTypes: true })) {
-  if (entry.isDirectory() && entry.name !== "palettes" && !templateNames.has(entry.name)) {
+  if (entry.isDirectory() && entry.name !== "palettes" && !templateCategories.has(entry.name)) {
     await rm(join(templatesRoot, entry.name), { recursive: true, force: true });
+  }
+  if (entry.isFile() && entry.name.endsWith(".html")) {
+    await rm(join(templatesRoot, entry.name), { force: true });
   }
 }
 
@@ -1517,12 +1527,37 @@ function sourceHash(value) {
   return createHash("sha256").update(value, "utf8").digest("hex");
 }
 
+async function removeGeneratedBinaryOutputs(directory) {
+  let entries;
+  try {
+    entries = await readdir(directory, { withFileTypes: true });
+  } catch (error) {
+    if (error?.code === "ENOENT") return;
+    throw error;
+  }
+  for (const entry of entries) {
+    const entryPath = join(directory, entry.name);
+    if (entry.isDirectory()) {
+      await removeGeneratedBinaryOutputs(entryPath);
+      continue;
+    }
+    if (/^(?:deck|catalog)\.(?:pdf|pptx)$/i.test(entry.name)) {
+      await rm(entryPath, { force: true });
+    }
+  }
+}
+
+await Promise.all([
+  removeGeneratedBinaryOutputs(templatesRoot),
+  removeGeneratedBinaryOutputs(paletteResourceRoot),
+  removeGeneratedBinaryOutputs(artifactsRoot),
+]);
+
 async function hasCompleteArtifact(artifactDir, expectedSourceHash) {
   const keepRenderedSlides = process.env.PRESENTLAB_GALLERY_KEEP_SLIDES !== "0";
   try {
-    const [manifest, pptxStats, slideEntries] = await Promise.all([
+    const [manifest, slideEntries] = await Promise.all([
       readFile(join(artifactDir, "render-manifest.json"), "utf8").then(JSON.parse),
-      stat(join(artifactDir, "deck.pptx")),
       keepRenderedSlides
         ? readdir(join(artifactDir, "slides"), { withFileTypes: true })
         : Promise.resolve([]),
@@ -1531,7 +1566,6 @@ async function hasCompleteArtifact(artifactDir, expectedSourceHash) {
       manifest.sourceHash === expectedSourceHash &&
       Number.isSafeInteger(manifest.slideCount) &&
       manifest.slideCount > 0 &&
-      pptxStats.size > 10_000 &&
       (!keepRenderedSlides ||
         slideEntries.filter((entry) => entry.isFile() && entry.name.endsWith(".png")).length ===
           manifest.slideCount)
@@ -1545,10 +1579,9 @@ const preparedTemplates = [];
 const resumeExistingSources = process.env.PRESENTLAB_GALLERY_RESUME === "1";
 
 for (const template of renderTemplates) {
-  const templateDir = templateDirectory(template);
   const artifactDir = join(artifactsRoot, template.name);
-  await mkdir(templateDir, { recursive: true });
-  const htmlPath = join(templateDir, "deck.html");
+  const htmlPath = templateSourcePath(template);
+  await mkdir(templateDirectory(template), { recursive: true });
   let formattedHtml;
   let canReuseArtifact = false;
   if (resumeExistingSources) {
@@ -1580,7 +1613,7 @@ for (const template of renderTemplates) {
     "utf8",
   );
 
-  preparedTemplates.push({ artifactDir, canReuseArtifact, template, templateDir });
+  preparedTemplates.push({ artifactDir, canReuseArtifact, template });
   if (preparedTemplates.length % 25 === 0 || preparedTemplates.length === renderTemplates.length) {
     console.log(`Prepared ${preparedTemplates.length}/${renderTemplates.length} gallery sources`);
   }
@@ -1597,11 +1630,11 @@ async function renderArtifact(template) {
             join(root, "dist", "cli.js"),
             "render",
             "--input",
-            "templates/" + repositoryDeckPath(template),
+            "templates/" + repositoryTemplatePath(template),
             "--output",
             ".artifacts/template-gallery/" + template.name,
             "--format",
-            "png,pptx",
+            "png",
           ],
           { cwd: root, stdio: ["ignore", "ignore", "pipe"], windowsHide: true },
         );
@@ -1631,20 +1664,12 @@ async function renderArtifact(template) {
   }
 }
 
-const renderTemplate = ({ artifactDir, canReuseArtifact, template, templateDir }) =>
+const renderTemplate = ({ artifactDir, canReuseArtifact, template }) =>
   (canReuseArtifact ? Promise.resolve() : renderArtifact(template)).then(async () => {
-    const publishHandoff = template.name === template.family && !template.styleCategory;
-    if (publishHandoff) {
-      await copyFile(join(artifactDir, "deck.pptx"), join(templateDir, "deck.pptx"));
-    }
     if (process.env.PRESENTLAB_GALLERY_COMPACT_ARTIFACTS === "1") {
       await rm(join(artifactDir, "slides"), { recursive: true, force: true });
     }
-    console.log(
-      (canReuseArtifact ? "Reused " : "Built ") +
-        template.name +
-        (publishHandoff ? ": HTML + PPTX" : ": HTML source"),
-    );
+    console.log((canReuseArtifact ? "Reused " : "Built ") + template.name + ": HTML source");
   });
 
 for (let offset = 0; offset < preparedTemplates.length; offset += renderConcurrency) {
@@ -1676,18 +1701,11 @@ const templateMetadata = ({
 });
 const templateIndex = templates.map((template) => ({
   ...templateMetadata(template),
-  path:
-    "templates/" +
-    (template.name === template.family
-      ? `${template.family}/deck.html`
-      : `${template.family}/${template.palette}/deck.html`),
+  path: `templates/${repositoryTemplatePath(template)}`,
 }));
 const repositoryTemplateIndex = templates.map((template) => ({
   ...templateMetadata(template),
-  path:
-    template.name === template.family
-      ? `${template.family}/deck.html`
-      : `${template.family}/${template.palette}/deck.html`,
+  path: repositoryTemplatePath(template),
 }));
 await writeFile(
   join(templatesRoot, "index.json"),
@@ -1730,11 +1748,12 @@ const styleCatalog = {
     name: template.name,
     label: template.label,
     description: template.description,
+    styleGroup: template.styleGroup,
     category: template.styleCategory,
     baseFamily: template.baseFamily,
     treatment: template.styleTreatment,
     palette: template.stylePalette,
-    path: `${template.name}/deck.html`,
+    path: `${templateCategory(template)}/${templateSourceName(template)}`,
   })),
 };
 await writeFile(
@@ -1769,7 +1788,7 @@ const paletteRecords = paletteCatalog.map((palette, index) => ({
 }));
 if (process.env.PRESENTLAB_GALLERY_SKIP_CATALOG === "1") {
   console.log(
-    `Built ${renderTemplates.length} template folders for range ${galleryStart}-${galleryEnd} under ${templatesRoot}.`,
+    `Built ${renderTemplates.length} template sources for range ${galleryStart}-${galleryEnd} under ${templatesRoot}.`,
   );
   process.exit(0);
 }
@@ -1780,7 +1799,6 @@ const repositoryPaletteIndex = {
       "Thirteen curated color systems for clients, designers, and AI agents choosing a slide direction.",
     slideCount: paletteRecords.length + 2,
     html: "palettes/catalog.html",
-    pptx: "palettes/catalog.pptx",
   },
   palettes: paletteRecords.map((palette) => ({
     ...palette,
@@ -1792,7 +1810,6 @@ const resourcePaletteIndex = {
   catalog: {
     ...repositoryPaletteIndex.catalog,
     html: "resources/palettes/catalog.html",
-    pptx: "resources/palettes/catalog.pptx",
   },
   palettes: repositoryPaletteIndex.palettes.map((palette) => ({
     ...palette,
@@ -1829,30 +1846,5 @@ const formattedPaletteCatalog = await prettier.format(paletteCatalogHtml(), {
 });
 await writeFile(paletteCatalogHtmlPath, formattedPaletteCatalog, "utf8");
 await writeFile(join(paletteResourceRoot, "catalog.html"), formattedPaletteCatalog, "utf8");
-const paletteCatalogArtifactDir = join(artifactsRoot, "palette-catalog");
-await rm(paletteCatalogArtifactDir, { recursive: true, force: true });
-await mkdir(paletteCatalogArtifactDir, { recursive: true });
-execFileSync(
-  process.execPath,
-  [
-    join(root, "dist", "cli.js"),
-    "render",
-    "--input",
-    "templates/palettes/catalog.html",
-    "--output",
-    ".artifacts/template-gallery/palette-catalog",
-    "--format",
-    "png,pptx",
-  ],
-  { cwd: root, stdio: "inherit" },
-);
-await copyFile(
-  join(paletteCatalogArtifactDir, "deck.pptx"),
-  join(paletteRepositoryRoot, "catalog.pptx"),
-);
-await copyFile(
-  join(paletteCatalogArtifactDir, "deck.pptx"),
-  join(paletteResourceRoot, "catalog.pptx"),
-);
 
-console.log("Built " + renderTemplates.length + " template folders under " + templatesRoot + ".");
+console.log("Built " + renderTemplates.length + " template sources under " + templatesRoot + ".");

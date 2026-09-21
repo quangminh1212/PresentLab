@@ -761,7 +761,7 @@ const FALLBACK_TEMPLATES = [
     baseFamily: "aurora",
     palette: "base",
     modifier: "base",
-    path: "aurora/deck.html",
+    path: "aurora/aurora.html",
   },
   {
     name: "midnight",
@@ -772,7 +772,7 @@ const FALLBACK_TEMPLATES = [
     baseFamily: "midnight",
     palette: "cinematic",
     modifier: "base",
-    path: "midnight/deck.html",
+    path: "midnight/midnight.html",
   },
   {
     name: "swiss",
@@ -783,7 +783,7 @@ const FALLBACK_TEMPLATES = [
     baseFamily: "swiss",
     palette: "base",
     modifier: "base",
-    path: "swiss/deck.html",
+    path: "swiss/swiss.html",
   },
   {
     name: "brutalist",
@@ -793,7 +793,7 @@ const FALLBACK_TEMPLATES = [
     baseFamily: "brutalist",
     palette: "base",
     modifier: "base",
-    path: "brutalist/deck.html",
+    path: "brutalist/brutalist.html",
   },
   {
     name: "organic",
@@ -803,7 +803,7 @@ const FALLBACK_TEMPLATES = [
     baseFamily: "organic",
     palette: "base",
     modifier: "base",
-    path: "organic/deck.html",
+    path: "organic/organic.html",
   },
   {
     name: "datanoir",
@@ -814,7 +814,7 @@ const FALLBACK_TEMPLATES = [
     baseFamily: "datanoir",
     palette: "base",
     modifier: "base",
-    path: "datanoir/deck.html",
+    path: "datanoir/datanoir.html",
   },
   {
     name: "luxury",
@@ -824,7 +824,7 @@ const FALLBACK_TEMPLATES = [
     baseFamily: "luxury",
     palette: "base",
     modifier: "base",
-    path: "luxury/deck.html",
+    path: "luxury/luxury.html",
   },
   {
     name: "retrofuture",
@@ -834,7 +834,7 @@ const FALLBACK_TEMPLATES = [
     baseFamily: "retrofuture",
     palette: "base",
     modifier: "base",
-    path: "retrofuture/deck.html",
+    path: "retrofuture/retrofuture.html",
   },
 ];
 
@@ -2217,7 +2217,7 @@ function scrollToMotionTarget(target, href, smooth = true) {
     behavior: smooth && !isReducedMotion() ? "smooth" : "auto",
     block: "start",
   });
-  history.replaceState(null, "", href);
+  window.history.replaceState(null, "", href);
 }
 
 function playSceneTransition(target, href) {
@@ -2256,7 +2256,7 @@ function bindSectionObserver() {
     .map((link) => document.querySelector(link.getAttribute("href")))
     .filter(Boolean);
   if (!("IntersectionObserver" in window) || sections.length === 0) return;
-  const observer = new IntersectionObserver(
+  const observer = new window.IntersectionObserver(
     (entries) => {
       const visible = entries
         .filter((entry) => entry.isIntersecting)
@@ -2277,7 +2277,7 @@ function bindRevealMotion() {
     revealItems.forEach((element) => element.classList.add("is-visible"));
     return;
   }
-  const observer = new IntersectionObserver(
+  const observer = new window.IntersectionObserver(
     (entries, instance) => {
       entries.forEach((entry) => {
         if (!entry.isIntersecting) return;
