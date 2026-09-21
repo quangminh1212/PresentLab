@@ -137,10 +137,16 @@
                 <span class="meta-label" data-i18n="heroStatResponse">check và phản hồi</span></span
               >
             </p>
-            <div class="hero-scroll-cue" data-reveal="scroll-cue" aria-hidden="true">
+            <a
+              class="hero-scroll-cue"
+              href="#templates"
+              data-reveal="scroll-cue"
+              aria-label="Lướt xuống thư viện mẫu"
+              data-i18n-aria-label="scrollToTemplates"
+            >
               <span class="hero-scroll-cue-line"></span>
               <span data-i18n="scrollCue">CUỘN ĐỂ KHÁM PHÁ</span>
-            </div>
+            </a>
           </div>
           <div
             class="hero-visual"
@@ -346,6 +352,24 @@
                   <span data-i18n="loadMore">Tải thêm mẫu</span> <span data-load-more-count></span>
                 </button>
               </div>
+              <a
+                class="next-scene-cue"
+                href="#process"
+                data-reveal="next-scene-cue"
+                aria-label="Lướt xuống xem quy trình"
+                data-i18n-aria-label="scrollToProcess"
+              >
+                <span class="next-scene-kicker" data-i18n="nextSceneKicker">03 / CHẶNG CUỐI</span>
+                <span class="next-scene-copy">
+                  <strong class="next-scene-title" data-i18n="nextSceneTitle"
+                    >Lướt xuống để xem quy trình</strong
+                  >
+                  <small data-i18n="nextSceneCopy"
+                    >Từ hướng nhìn đã chọn đến bản dựng hoàn chỉnh.</small
+                  >
+                </span>
+                <span class="next-scene-arrow" aria-hidden="true">↓</span>
+              </a>
             </div>
           </div>
         </section>
@@ -391,6 +415,18 @@
                 Đội gia công xác nhận phạm vi, dựng slide và gửi bản xem trước để duyệt.
               </p>
             </article>
+          </div>
+          <div class="process-close" data-reveal="process-close">
+            <div class="process-close-copy">
+              <p class="eyebrow" data-i18n="processCloseEyebrow">03 / SẴN SÀNG DỰNG</p>
+              <h3 data-i18n="processCloseTitle">Để phần còn lại cho đội ngũ.</h3>
+              <p data-i18n="processCloseCopy">
+                Gửi brief, mục tiêu và deadline. Chúng tôi sẽ check và phản hồi trong 1–2 tiếng.
+              </p>
+            </div>
+            <button class="button button-primary" type="button" data-open-request>
+              <span data-i18n="processCloseAction">Gửi brief ngay</span> <span>↗</span>
+            </button>
           </div>
         </section>
       </main>
