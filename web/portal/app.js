@@ -9,8 +9,11 @@ const MAX_TOTAL_ATTACHMENT_BYTES = 4 * 1024 * 1024;
 const REQUEST_TIMEOUT_MS = 15_000;
 const LOCAL_REQUEST_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 const LOCALE_STORAGE_KEY = "presentlab.locale";
+const THEME_STORAGE_KEY = "presentlab.theme";
 const DEFAULT_LOCALE = "vi";
+const DEFAULT_THEME = "dark";
 const SUPPORTED_LOCALES = ["vi", "en", "zh"];
+const SUPPORTED_THEMES = ["dark", "light"];
 
 const COPY = {
   vi: {
@@ -178,6 +181,11 @@ const COPY = {
       "Chưa cấu hình endpoint nhận yêu cầu, nên brief đã được lưu trên thiết bị và tải xuống để bạn chuyển cho đội gia công.",
     localSuccessFootnote:
       "Để gửi tự động, cấu hình data-request-endpoint hoặc data-handoff-email trên thẻ html của trang.",
+    themeLabel: "Chủ đề",
+    themeDark: "Tối",
+    themeLight: "Sáng",
+    themeSwitchToLight: "Chuyển sang giao diện sáng",
+    themeSwitchToDark: "Chuyển sang giao diện tối",
     signalTemplates: "770 HỆ THỐNG ĐÃ TUYỂN",
     signalMotion: "CHUYỂN ĐỘNG CÓ CHỦ ĐÍCH",
     signalBrief: "BRIEF / DỰNG / DUYỆT",
@@ -362,6 +370,11 @@ const COPY = {
       "No request endpoint is configured, so the brief was saved on this device and downloaded for you to share with the studio.",
     localSuccessFootnote:
       "For automatic delivery, configure data-request-endpoint or data-handoff-email on the html element.",
+    themeLabel: "Theme",
+    themeDark: "Dark",
+    themeLight: "Light",
+    themeSwitchToLight: "Switch to light mode",
+    themeSwitchToDark: "Switch to dark mode",
     signalTemplates: "770 CURATED SYSTEMS",
     signalMotion: "MOTION WITH INTENT",
     signalBrief: "BRIEF / BUILD / REVIEW",
@@ -537,6 +550,11 @@ const COPY = {
     localSuccessCopy: "当前未配置需求接收接口，简报已保存在设备并下载，可转发给制作团队。",
     localSuccessFootnote:
       "如需自动发送，请在 html 元素上配置 data-request-endpoint 或 data-handoff-email。",
+    themeLabel: "主题",
+    themeDark: "深色",
+    themeLight: "浅色",
+    themeSwitchToLight: "切换到浅色模式",
+    themeSwitchToDark: "切换到深色模式",
     signalTemplates: "770 套精选系统",
     signalMotion: "有目的的动效",
     signalBrief: "简报 / 制作 / 评审",
@@ -668,6 +686,16 @@ function getInitialLocale() {
   } catch {
     return DEFAULT_LOCALE;
   }
+}
+
+function getInitialTheme() {
+  try {
+    const saved = localStorage.getItem(THEME_STORAGE_KEY);
+    if (SUPPORTED_THEMES.includes(saved)) return saved;
+  } catch {
+    // Fall back to the system preference when storage is unavailable.
+  }
+  return window.matchMedia?.("(prefers-color-scheme: light)").matches ? "light" : DEFAULT_THEME;
 }
 
 function interpolate(value, variables = {}) {
@@ -1025,6 +1053,7 @@ const state = {
   templates: FALLBACK_TEMPLATES,
   palettes: new Map(FALLBACK_PALETTES.map((palette) => [palette.name, palette])),
   locale: getInitialLocale(),
+  theme: getInitialTheme(),
   query: "",
   family: "all",
   category: "all",
@@ -1077,6 +1106,9 @@ const elements = {
   sourceStatus: document.querySelector("[data-source-status]"),
   toast: document.querySelector("[data-toast]"),
   menu: document.querySelector(".topnav"),
+  themeToggle: document.querySelector("[data-theme-toggle]"),
+  themeIcon: document.querySelector("[data-theme-icon]"),
+  themeLabel: document.querySelector("[data-theme-label]"),
   scrollProgress: document.querySelector("[data-scroll-progress]"),
   parallaxStage: document.querySelector("[data-parallax-stage]"),
 };
@@ -1128,6 +1160,7 @@ function applyLocale() {
   document.querySelectorAll("[data-i18n-title]").forEach((element) => {
     element.setAttribute("title", t(element.dataset.i18nTitle));
   });
+  applyTheme();
   elements.sourceStatus.textContent =
     state.libraryStatus === "loaded"
       ? t("sourceLoaded", { count: state.templates.length })
@@ -1155,6 +1188,44 @@ function setLocale(locale) {
     // The UI can still switch languages when storage is unavailable.
   }
   applyLocale();
+}
+
+function applyTheme() {
+  const theme = SUPPORTED_THEMES.includes(state.theme) ? state.theme : DEFAULT_THEME;
+  state.theme = theme;
+  document.documentElement.dataset.theme = theme;
+  document.documentElement.style.colorScheme = theme;
+  if (!elements.themeToggle) return;
+  elements.themeToggle.dataset.theme = theme;
+  elements.themeToggle.setAttribute(
+    "aria-label",
+    t(theme === "dark" ? "themeSwitchToLight" : "themeSwitchToDark"),
+  );
+  elements.themeToggle.setAttribute("aria-pressed", String(theme === "light"));
+  elements.themeIcon.textContent = theme === "dark" ? "☾" : "☀";
+  elements.themeLabel.textContent = t(theme === "dark" ? "themeDark" : "themeLight");
+}
+
+function setTheme(theme) {
+  if (!SUPPORTED_THEMES.includes(theme) || theme === state.theme) return;
+  const commit = () => {
+    state.theme = theme;
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, theme);
+    } catch {
+      // The theme still applies when storage is unavailable.
+    }
+    applyTheme();
+  };
+  if (typeof document.startViewTransition === "function" && !isReducedMotion()) {
+    document.startViewTransition(commit);
+    return;
+  }
+  document.documentElement.classList.add("theme-switching");
+  window.setTimeout(() => {
+    commit();
+    window.setTimeout(() => document.documentElement.classList.remove("theme-switching"), 520);
+  }, 24);
 }
 
 function escapeHtml(value) {
@@ -1819,6 +1890,9 @@ function bindEvents() {
   });
   document.querySelector("[data-locale]").addEventListener("change", (event) => {
     setLocale(event.target.value);
+  });
+  elements.themeToggle.addEventListener("click", () => {
+    setTheme(state.theme === "dark" ? "light" : "dark");
   });
   document
     .querySelectorAll(".topnav-link")
