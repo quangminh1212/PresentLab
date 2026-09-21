@@ -15,6 +15,10 @@
     <link rel="stylesheet" href="/web/portal/styles.css" />
   </head>
   <body>
+    <div class="page-curtain" data-page-curtain aria-hidden="true">
+      <span class="page-curtain-line"></span>
+    </div>
+    <div class="scroll-progress" aria-hidden="true"><span data-scroll-progress></span></div>
     <noscript>
       <div class="noscript-banner" data-i18n="noscript">
         Trang này cần JavaScript để tải thư viện mẫu và gửi brief.
@@ -72,7 +76,7 @@
 
       <main>
         <section class="hero" id="catalog" aria-labelledby="hero-title">
-          <div class="hero-copy">
+          <div class="hero-copy" data-reveal="hero-copy">
             <p class="eyebrow">
               <span class="eyebrow-dot"></span>
               <span data-i18n="heroEyebrow">PRESENTATION PRODUCTION DESK</span>
@@ -110,7 +114,12 @@
               >
             </p>
           </div>
-          <div class="hero-visual" aria-label="Minh họa quy trình chọn mẫu và gửi brief">
+          <div
+            class="hero-visual"
+            aria-label="Minh họa quy trình chọn mẫu và gửi brief"
+            data-reveal="hero-visual"
+            data-parallax-stage
+          >
             <div class="hero-visual-caption">
               <span data-i18n="heroVisualLibrary">LIVE LIBRARY</span>
               <span>01 — 770</span>
@@ -171,8 +180,28 @@
           </div>
         </section>
 
-        <section class="catalog-section" id="templates" aria-labelledby="catalog-title">
-          <div class="section-heading">
+        <div class="signal-rail" aria-hidden="true">
+          <div class="signal-track">
+            <span data-i18n="signalTemplates">770 CURATED SYSTEMS</span><i>✳</i>
+            <span data-i18n="signalMotion">MOTION WITH INTENT</span><i>✳</i>
+            <span data-i18n="signalBrief">BRIEF / BUILD / REVIEW</span><i>✳</i>
+            <span data-i18n="signalOutput">READY FOR THE ROOM</span><i>✳</i>
+          </div>
+          <div class="signal-track" aria-hidden="true">
+            <span data-i18n="signalTemplates">770 CURATED SYSTEMS</span><i>✳</i>
+            <span data-i18n="signalMotion">MOTION WITH INTENT</span><i>✳</i>
+            <span data-i18n="signalBrief">BRIEF / BUILD / REVIEW</span><i>✳</i>
+            <span data-i18n="signalOutput">READY FOR THE ROOM</span><i>✳</i>
+          </div>
+        </div>
+
+        <section
+          class="catalog-section"
+          id="templates"
+          aria-labelledby="catalog-title"
+          data-reveal-section
+        >
+          <div class="section-heading" data-reveal="section-heading">
             <div>
               <p class="eyebrow" data-i18n="catalogEyebrow">01 / TEMPLATE LIBRARY</p>
               <h2 id="catalog-title" data-i18n="catalogTitle">Tìm mẫu khớp với câu chuyện</h2>
@@ -185,6 +214,7 @@
           <div class="catalog-layout">
             <aside
               class="filter-panel"
+              data-reveal="filter-panel"
               aria-label="Bộ lọc mẫu slide"
               data-i18n-aria-label="filterAria"
             >
@@ -252,7 +282,7 @@
               </p>
             </aside>
 
-            <div class="results-panel">
+            <div class="results-panel" data-reveal="results-panel">
               <div class="results-toolbar">
                 <div class="results-count">
                   <strong data-results-count data-i18n="resultsLoading">Đang tải...</strong>
@@ -291,8 +321,13 @@
           </div>
         </section>
 
-        <section class="process-section" id="process" aria-labelledby="process-title">
-          <div class="section-heading process-heading">
+        <section
+          class="process-section"
+          id="process"
+          aria-labelledby="process-title"
+          data-reveal-section
+        >
+          <div class="section-heading process-heading" data-reveal="section-heading">
             <div>
               <p class="eyebrow" data-i18n="processEyebrow">02 / HOW IT WORKS</p>
               <h2 id="process-title" data-i18n="processTitle">Từ lựa chọn đến file bàn giao</h2>
@@ -302,7 +337,7 @@
             </p>
           </div>
           <div class="process-grid">
-            <article class="process-card">
+            <article class="process-card" data-reveal="process-card">
               <span class="process-number">01</span>
               <span class="process-icon">⌘</span>
               <h3 data-i18n="processOneTitle">Chọn hướng</h3>
@@ -310,7 +345,7 @@
                 Chọn một mẫu phù hợp hoặc gửi vài phương án để đội ngũ tư vấn.
               </p>
             </article>
-            <article class="process-card process-card-highlight">
+            <article class="process-card process-card-highlight" data-reveal="process-card">
               <span class="process-number">02</span>
               <span class="process-icon">↗</span>
               <h3 data-i18n="processTwoTitle">Gửi brief</h3>
@@ -318,7 +353,7 @@
                 Cho biết mục tiêu, số slide, deadline và tài liệu đầu vào của bạn.
               </p>
             </article>
-            <article class="process-card">
+            <article class="process-card" data-reveal="process-card">
               <span class="process-number">03</span>
               <span class="process-icon">✦</span>
               <h3 data-i18n="processThreeTitle">Nhận bản dựng</h3>
@@ -330,7 +365,7 @@
         </section>
       </main>
 
-      <footer class="site-footer">
+      <footer class="site-footer" data-reveal="footer">
         <div class="footer-brand">
           <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span
           ><strong>PRESENTLAB</strong>
@@ -583,11 +618,29 @@
       aria-labelledby="preview-title"
     >
       <div class="preview-modal-header">
-        <div>
+        <div class="preview-modal-heading">
           <p class="eyebrow" data-i18n="previewEyebrow">TEMPLATE PREVIEW</p>
           <h2 id="preview-title" data-preview-title data-i18n="previewTitleFallback">Template</h2>
         </div>
         <div class="preview-modal-actions">
+          <button
+            class="preview-nav-button"
+            type="button"
+            aria-label="Mẫu trước"
+            data-i18n-aria-label="previewPrevious"
+            data-preview-previous
+          >
+            <span>←</span><small data-i18n="previewPreviousShort">PREV</small>
+          </button>
+          <button
+            class="preview-nav-button"
+            type="button"
+            aria-label="Mẫu tiếp theo"
+            data-i18n-aria-label="previewNext"
+            data-preview-next
+          >
+            <small data-i18n="previewNextShort">NEXT</small><span>→</span>
+          </button>
           <a
             class="button button-small button-outline"
             href="#"
@@ -608,13 +661,53 @@
           </button>
         </div>
       </div>
-      <div class="preview-viewport" data-preview-viewport>
-        <iframe
-          title="Xem trước mẫu slide"
-          data-i18n-title="previewFrameTitle"
-          data-preview-frame
-          sandbox="allow-same-origin"
-        ></iframe>
+      <div class="preview-layout">
+        <div class="preview-stage">
+          <div class="preview-browser-bar">
+            <div class="preview-browser-dots"><span></span><span></span><span></span></div>
+            <span data-i18n="previewStageLabel">PRESENTLAB / VISUAL SYSTEM</span>
+            <span class="preview-browser-index" data-preview-position>01 / 770</span>
+          </div>
+          <div class="preview-viewport" data-preview-viewport>
+            <iframe
+              title="Xem trước mẫu slide"
+              data-i18n-title="previewFrameTitle"
+              data-preview-frame
+              sandbox="allow-same-origin"
+            ></iframe>
+          </div>
+          <div class="preview-stage-footer">
+            <span data-i18n="previewStageHint">Use ← → để lướt qua các hệ thống</span>
+            <span class="preview-progress"><i data-preview-progress></i></span>
+            <span data-preview-format>16:9</span>
+          </div>
+        </div>
+        <aside class="preview-details">
+          <p class="preview-detail-kicker" data-i18n="previewSystemLabel">VISUAL SYSTEM</p>
+          <h3 data-preview-family>Editorial system</h3>
+          <p class="preview-detail-copy" data-preview-description></p>
+          <dl class="preview-specs">
+            <div>
+              <dt data-i18n="previewCategoryLabel">Style</dt>
+              <dd data-preview-category>Core systems</dd>
+            </div>
+            <div>
+              <dt data-i18n="previewPaletteLabel">Palette</dt>
+              <dd data-preview-palette>Base system</dd>
+            </div>
+            <div>
+              <dt data-i18n="previewFormatLabel">Format</dt>
+              <dd>16:9 / deck</dd>
+            </div>
+          </dl>
+          <button
+            class="button button-primary preview-select-button"
+            type="button"
+            data-preview-select
+          >
+            <span data-i18n="previewSelect">Chọn hướng này</span><span>↗</span>
+          </button>
+        </aside>
       </div>
       <p class="preview-modal-note" data-i18n="previewNote">
         Đây là deck mẫu để tham khảo nhịp hình ảnh. Nội dung sẽ được thay bằng brief của bạn khi gia

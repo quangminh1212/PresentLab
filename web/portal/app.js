@@ -178,6 +178,23 @@ const COPY = {
       "Chưa cấu hình endpoint nhận yêu cầu, nên brief đã được lưu trên thiết bị và tải xuống để bạn chuyển cho đội gia công.",
     localSuccessFootnote:
       "Để gửi tự động, cấu hình data-request-endpoint hoặc data-handoff-email trên thẻ html của trang.",
+    signalTemplates: "770 HỆ THỐNG ĐÃ TUYỂN",
+    signalMotion: "CHUYỂN ĐỘNG CÓ CHỦ ĐÍCH",
+    signalBrief: "BRIEF / DỰNG / DUYỆT",
+    signalOutput: "SẴN SÀNG LÊN SÂN KHẤU",
+    previewLive: "KHUNG ĐANG XEM",
+    previewPrevious: "Mẫu trước",
+    previewPreviousShort: "TRƯỚC",
+    previewNext: "Mẫu tiếp theo",
+    previewNextShort: "TIẾP",
+    previewStageLabel: "PRESENTLAB / HỆ THỐNG HÌNH ẢNH",
+    previewStageHint: "Dùng ← → để lướt qua các hệ thống",
+    previewSystemLabel: "HỆ THỐNG HÌNH ẢNH",
+    previewCategoryLabel: "Phong cách",
+    previewPaletteLabel: "Bảng màu",
+    previewFormatLabel: "Định dạng",
+    previewSelect: "Chọn hướng này",
+    previewSelected: "Đã chọn",
   },
   en: {
     noscript: "JavaScript is required to load the template library and send a brief.",
@@ -345,6 +362,23 @@ const COPY = {
       "No request endpoint is configured, so the brief was saved on this device and downloaded for you to share with the studio.",
     localSuccessFootnote:
       "For automatic delivery, configure data-request-endpoint or data-handoff-email on the html element.",
+    signalTemplates: "770 CURATED SYSTEMS",
+    signalMotion: "MOTION WITH INTENT",
+    signalBrief: "BRIEF / BUILD / REVIEW",
+    signalOutput: "READY FOR THE ROOM",
+    previewLive: "LIVE FRAME",
+    previewPrevious: "Previous template",
+    previewPreviousShort: "PREV",
+    previewNext: "Next template",
+    previewNextShort: "NEXT",
+    previewStageLabel: "PRESENTLAB / VISUAL SYSTEM",
+    previewStageHint: "Use ← → to browse the systems",
+    previewSystemLabel: "VISUAL SYSTEM",
+    previewCategoryLabel: "Style",
+    previewPaletteLabel: "Palette",
+    previewFormatLabel: "Format",
+    previewSelect: "Choose this direction",
+    previewSelected: "Selected",
   },
   zh: {
     noscript: "需要启用 JavaScript 才能加载模板库并提交简报。",
@@ -503,6 +537,23 @@ const COPY = {
     localSuccessCopy: "当前未配置需求接收接口，简报已保存在设备并下载，可转发给制作团队。",
     localSuccessFootnote:
       "如需自动发送，请在 html 元素上配置 data-request-endpoint 或 data-handoff-email。",
+    signalTemplates: "770 套精选系统",
+    signalMotion: "有目的的动效",
+    signalBrief: "简报 / 制作 / 评审",
+    signalOutput: "为现场呈现准备",
+    previewLive: "实时画面",
+    previewPrevious: "上一个模板",
+    previewPreviousShort: "上一个",
+    previewNext: "下一个模板",
+    previewNextShort: "下一个",
+    previewStageLabel: "PRESENTLAB / 视觉系统",
+    previewStageHint: "使用 ← → 浏览视觉系统",
+    previewSystemLabel: "视觉系统",
+    previewCategoryLabel: "风格",
+    previewPaletteLabel: "配色",
+    previewFormatLabel: "格式",
+    previewSelect: "选择这个方向",
+    previewSelected: "已选择",
   },
 };
 
@@ -1011,12 +1062,23 @@ const elements = {
   previewFrame: document.querySelector("[data-preview-frame]"),
   previewTitle: document.querySelector("[data-preview-title]"),
   openTemplate: document.querySelector("[data-open-template]"),
+  previewPrevious: document.querySelector("[data-preview-previous]"),
+  previewNext: document.querySelector("[data-preview-next]"),
+  previewPosition: document.querySelector("[data-preview-position]"),
+  previewProgress: document.querySelector("[data-preview-progress]"),
+  previewFamily: document.querySelector("[data-preview-family]"),
+  previewDescription: document.querySelector("[data-preview-description]"),
+  previewCategory: document.querySelector("[data-preview-category]"),
+  previewPalette: document.querySelector("[data-preview-palette]"),
+  previewSelect: document.querySelector("[data-preview-select]"),
   emptyState: document.querySelector("[data-empty-state]"),
   loadMore: document.querySelector("[data-load-more]"),
   loadMoreCount: document.querySelector("[data-load-more-count]"),
   sourceStatus: document.querySelector("[data-source-status]"),
   toast: document.querySelector("[data-toast]"),
   menu: document.querySelector(".topnav"),
+  scrollProgress: document.querySelector("[data-scroll-progress]"),
+  parallaxStage: document.querySelector("[data-parallax-stage]"),
 };
 
 function t(key, variables = {}) {
@@ -1077,6 +1139,7 @@ function applyLocale() {
   updateSelectionUi();
   if (state.previewTemplate && !elements.previewModal.hidden) {
     elements.previewTitle.textContent = templateName(state.previewTemplate);
+    updatePreviewMeta(state.previewTemplate);
     elements.previewFrame.srcdoc = previewDocument(state.previewTemplate);
   }
   if (state.lastRequest && state.lastRequestResult)
@@ -1174,6 +1237,43 @@ function previewDocument(template) {
 </html>`;
 }
 
+function previewCandidates() {
+  return filteredTemplates();
+}
+
+function updatePreviewMeta(template) {
+  if (!template) return;
+  const candidates = previewCandidates();
+  const index = Math.max(
+    0,
+    candidates.findIndex((candidate) => candidate.name === template.name),
+  );
+  const total = Math.max(candidates.length, 1);
+  elements.previewPosition.textContent = `${String(index + 1).padStart(2, "0")} / ${String(total).padStart(3, "0")}`;
+  elements.previewProgress.style.width = `${((index + 1) / total) * 100}%`;
+  elements.previewFamily.textContent = localizedFamily(templateFamily(template));
+  elements.previewDescription.textContent = templateDescription(template);
+  elements.previewCategory.textContent = localizedCategory(templateCategory(template));
+  elements.previewPalette.textContent = paletteTitle(templatePalette(template));
+  const selected = state.selected.has(template.name);
+  elements.previewSelect.querySelector("span").textContent = t(
+    selected ? "previewSelected" : "previewSelect",
+  );
+  elements.previewSelect.setAttribute("aria-pressed", String(selected));
+  elements.previewPrevious.disabled = total < 2;
+  elements.previewNext.disabled = total < 2;
+}
+
+function navigatePreview(direction) {
+  const candidates = previewCandidates();
+  if (candidates.length < 2 || !state.previewTemplate) return;
+  const currentIndex = candidates.findIndex(
+    (candidate) => candidate.name === state.previewTemplate.name,
+  );
+  const nextIndex = (currentIndex + direction + candidates.length) % candidates.length;
+  void openPreview(candidates[nextIndex].name, { switching: true });
+}
+
 function cardMarkup(template) {
   const theme = themeFor(template);
   const selected = state.selected.has(template.name);
@@ -1236,6 +1336,13 @@ function renderTemplates() {
   const results = filteredTemplates();
   const visible = results.slice(0, state.visibleCount);
   elements.grid.innerHTML = visible.map(cardMarkup).join("");
+  requestAnimationFrame(() => {
+    elements.grid.querySelectorAll(".template-card").forEach((card, index) => {
+      card.style.setProperty("--card-index", String(index));
+      card.classList.add("is-in");
+    });
+    bindCardMotion();
+  });
   elements.emptyState.hidden = results.length !== 0;
   elements.grid.hidden = results.length === 0;
   elements.resultsCount.textContent = t("resultsCount", { count: results.length });
@@ -1250,6 +1357,23 @@ function renderTemplates() {
   });
   elements.grid.querySelectorAll("[data-preview-template]").forEach((button) => {
     button.addEventListener("click", () => openPreview(button.dataset.previewTemplate));
+  });
+}
+
+function bindCardMotion() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  elements.grid.querySelectorAll(".template-card").forEach((card) => {
+    card.addEventListener("pointermove", (event) => {
+      const rect = card.getBoundingClientRect();
+      const x = (event.clientX - rect.left) / rect.width - 0.5;
+      const y = (event.clientY - rect.top) / rect.height - 0.5;
+      card.style.setProperty("--card-rx", `${y * -2.2}deg`);
+      card.style.setProperty("--card-ry", `${x * 2.8}deg`);
+    });
+    card.addEventListener("pointerleave", () => {
+      card.style.removeProperty("--card-rx");
+      card.style.removeProperty("--card-ry");
+    });
   });
 }
 
@@ -1346,6 +1470,8 @@ function toggleSelection(name) {
   }
   updateSelectionUi();
   renderTemplates();
+  if (state.previewTemplate && !elements.previewModal.hidden)
+    updatePreviewMeta(state.previewTemplate);
 }
 
 function openDrawer() {
@@ -1383,21 +1509,29 @@ async function templateIsAvailable(url) {
   }
 }
 
-async function openPreview(name) {
+async function openPreview(name, options = {}) {
   const template = state.templates.find((candidate) => candidate.name === name);
   if (!template) return;
   state.previewTemplate = template;
   const previewRequestId = ++state.previewRequestId;
+  if (options.switching) {
+    elements.previewModal.classList.remove("is-switching");
+    void elements.previewModal.offsetWidth;
+    elements.previewModal.classList.add("is-switching");
+    window.setTimeout(() => elements.previewModal.classList.remove("is-switching"), 420);
+  }
   const templatePath = template.path.startsWith("templates/")
     ? template.path
     : `templates/${template.path}`;
   const templateUrl = new URL(`/${templatePath}`, window.location.origin).href;
   elements.previewTitle.textContent = templateName(template);
+  updatePreviewMeta(template);
   elements.openTemplate.hidden = true;
   elements.openTemplate.removeAttribute("href");
   elements.previewFrame.removeAttribute("src");
   elements.previewFrame.srcdoc = previewDocument(template);
   elements.previewModal.hidden = false;
+  elements.previewModal.classList.add("is-open");
   elements.overlay.hidden = false;
   requestAnimationFrame(scalePreviewFrame);
 
@@ -1405,7 +1539,7 @@ async function openPreview(name) {
     return;
   elements.openTemplate.hidden = false;
   elements.openTemplate.href = templateUrl;
-  elements.previewFrame.srcdoc = "";
+  elements.previewFrame.removeAttribute("srcdoc");
   elements.previewFrame.src = templateUrl;
   requestAnimationFrame(scalePreviewFrame);
 }
@@ -1413,10 +1547,11 @@ async function openPreview(name) {
 function closePreview() {
   state.previewRequestId += 1;
   state.previewTemplate = null;
+  elements.previewModal.classList.remove("is-open", "is-switching");
   elements.previewModal.hidden = true;
   elements.openTemplate.hidden = false;
   elements.openTemplate.removeAttribute("href");
-  elements.previewFrame.srcdoc = "";
+  elements.previewFrame.removeAttribute("srcdoc");
   elements.previewFrame.src = "about:blank";
   if (!elements.drawer.classList.contains("is-open")) elements.overlay.hidden = true;
 }
@@ -1652,6 +1787,11 @@ function bindEvents() {
     .querySelectorAll("[data-close-request]")
     .forEach((button) => button.addEventListener("click", closeDrawer));
   document.querySelector("[data-close-preview]").addEventListener("click", closePreview);
+  elements.previewPrevious.addEventListener("click", () => navigatePreview(-1));
+  elements.previewNext.addEventListener("click", () => navigatePreview(1));
+  elements.previewSelect.addEventListener("click", () => {
+    if (state.previewTemplate) toggleSelection(state.previewTemplate.name);
+  });
   elements.overlay.addEventListener("click", () => {
     closePreview();
     closeDrawer();
@@ -1661,6 +1801,8 @@ function bindEvents() {
       closePreview();
       closeDrawer();
     }
+    if (!elements.previewModal.hidden && event.key === "ArrowLeft") navigatePreview(-1);
+    if (!elements.previewModal.hidden && event.key === "ArrowRight") navigatePreview(1);
     if (
       event.key === "/" &&
       !["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName)
@@ -1801,8 +1943,108 @@ async function loadLibrary() {
   renderTemplates();
 }
 
+function isReducedMotion() {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function updateScrollProgress() {
+  const scrollable = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
+  const progress = Math.min(Math.max(window.scrollY / scrollable, 0), 1);
+  elements.scrollProgress.style.transform = `scaleX(${progress})`;
+}
+
+function bindAnchorNavigation() {
+  document.querySelectorAll('a[href^="#"]').forEach((link) => {
+    link.addEventListener("click", (event) => {
+      const target = document.querySelector(link.getAttribute("href"));
+      if (!target) return;
+      event.preventDefault();
+      elements.menu.classList.remove("is-open");
+      document.documentElement.classList.add("is-transitioning");
+      window.setTimeout(
+        () => {
+          target.scrollIntoView({
+            behavior: isReducedMotion() ? "auto" : "smooth",
+            block: "start",
+          });
+          history.replaceState(null, "", link.getAttribute("href"));
+        },
+        isReducedMotion() ? 0 : 90,
+      );
+      window.setTimeout(() => document.documentElement.classList.remove("is-transitioning"), 720);
+    });
+  });
+}
+
+function bindSectionObserver() {
+  const links = [...document.querySelectorAll('.topnav-link[href^="#"]')];
+  const sections = links
+    .map((link) => document.querySelector(link.getAttribute("href")))
+    .filter(Boolean);
+  if (!("IntersectionObserver" in window) || sections.length === 0) return;
+  const observer = new IntersectionObserver(
+    (entries) => {
+      const visible = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((left, right) => right.intersectionRatio - left.intersectionRatio)[0];
+      if (!visible) return;
+      links.forEach((link) =>
+        link.classList.toggle("is-active", link.getAttribute("href") === `#${visible.target.id}`),
+      );
+    },
+    { rootMargin: "-28% 0px -56% 0px", threshold: [0.1, 0.35, 0.7] },
+  );
+  sections.forEach((section) => observer.observe(section));
+}
+
+function bindRevealMotion() {
+  const revealItems = [...document.querySelectorAll("[data-reveal]")];
+  if (isReducedMotion() || !("IntersectionObserver" in window)) {
+    revealItems.forEach((element) => element.classList.add("is-visible"));
+    return;
+  }
+  const observer = new IntersectionObserver(
+    (entries, instance) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-visible");
+        instance.unobserve(entry.target);
+      });
+    },
+    { rootMargin: "0px 0px -10% 0px", threshold: 0.08 },
+  );
+  revealItems.forEach((element) => observer.observe(element));
+}
+
+function bindStageParallax() {
+  if (!elements.parallaxStage || isReducedMotion()) return;
+  elements.parallaxStage.addEventListener("pointermove", (event) => {
+    const rect = elements.parallaxStage.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width - 0.5;
+    const y = (event.clientY - rect.top) / rect.height - 0.5;
+    elements.parallaxStage.style.setProperty("--parallax-x", `${x * 16}px`);
+    elements.parallaxStage.style.setProperty("--parallax-y", `${y * 12}px`);
+  });
+  elements.parallaxStage.addEventListener("pointerleave", () => {
+    elements.parallaxStage.style.removeProperty("--parallax-x");
+    elements.parallaxStage.style.removeProperty("--parallax-y");
+  });
+}
+
+function setupExperience() {
+  bindRevealMotion();
+  bindAnchorNavigation();
+  bindSectionObserver();
+  bindStageParallax();
+  updateScrollProgress();
+  window.addEventListener("scroll", updateScrollProgress, { passive: true });
+  requestAnimationFrame(() => document.documentElement.classList.add("is-ready"));
+}
+
 window.addEventListener("resize", scalePreviewFrame);
 
+document.documentElement.classList.add("js");
 bindEvents();
 applyLocale();
+setupExperience();
 loadLibrary();
