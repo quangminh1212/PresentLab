@@ -168,6 +168,18 @@ describe("client request portal browser flow", () => {
           window.innerWidth,
       );
       expect(viewportOverflow).toBeLessThanOrEqual(1);
+      await page.locator("[data-menu-toggle]").click();
+      await page.evaluate(() => {
+        document.querySelector("#templates")?.scrollIntoView({ behavior: "auto", block: "start" });
+      });
+      await page.waitForFunction(() =>
+        document.querySelector("[data-scene-transition]")?.classList.contains("is-active"),
+      );
+      await page.waitForFunction(
+        () => !document.querySelector("[data-scene-transition]")?.classList.contains("is-active"),
+        undefined,
+        { timeout: 3_000 },
+      );
     } finally {
       await browser.close();
       await new Promise<void>((resolveServer, rejectServer) =>

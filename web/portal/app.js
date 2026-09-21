@@ -1104,8 +1104,12 @@ const state = {
   locale: getInitialLocale(),
   theme: getInitialTheme(),
   motionScene: 0,
-  lastScrollY: window.scrollY,
+  motionInitialized: false,
+  lastScrollY: getScrollTop(),
   motionVelocity: 0,
+  sceneTransitioning: false,
+  sceneTransitionFinishTimer: 0,
+  sceneTransitionScrollTimer: 0,
   query: "",
   family: "all",
   category: "all",
@@ -2130,9 +2134,13 @@ function isReducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
+function getScrollTop() {
+  return Math.max(window.scrollY, document.documentElement.scrollTop, document.body.scrollTop, 0);
+}
+
 function updateScrollProgress() {
   const scrollable = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
-  const progress = Math.min(Math.max(window.scrollY / scrollable, 0), 1);
+  const progress = Math.min(Math.max(getScrollTop() / scrollable, 0), 1);
   elements.scrollProgress.style.transform = `scaleX(${progress})`;
 }
 
@@ -2154,17 +2162,18 @@ function updateMotionSceneChrome(index = state.motionScene) {
 }
 
 function updateMotionChoreography() {
-  const scrollDelta = window.scrollY - state.lastScrollY;
+  const scrollTop = getScrollTop();
+  const scrollDelta = scrollTop - state.lastScrollY;
   state.motionVelocity =
     state.motionVelocity * 0.72 + Math.min(Math.max(scrollDelta, -40), 40) * 0.28;
-  state.lastScrollY = window.scrollY;
+  state.lastScrollY = scrollTop;
   const heroProgress = elements.hero
-    ? clampUnit(window.scrollY / Math.max(elements.hero.offsetHeight * 0.72, 1))
+    ? clampUnit(scrollTop / Math.max(elements.hero.offsetHeight * 0.72, 1))
     : 0;
   const catalogProgress = sceneProgressFor(elements.catalogSection);
   const processProgress = sceneProgressFor(elements.processSection);
   const scrollable = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
-  const totalProgress = clampUnit(window.scrollY / scrollable);
+  const totalProgress = clampUnit(scrollTop / scrollable);
 
   document.documentElement.style.setProperty("--scroll-progress", totalProgress.toFixed(4));
   document.documentElement.style.setProperty(
@@ -2207,9 +2216,12 @@ function updateMotionChoreography() {
     section.classList.toggle("is-active-scene", index === activeIndex);
   });
   if (activeIndex !== state.motionScene) {
+    const nextScene = MOTION_SCENES[activeIndex] || MOTION_SCENES[0];
     state.motionScene = activeIndex;
     updateMotionSceneChrome(activeIndex);
+    if (state.motionInitialized) triggerSceneCurtain(nextScene);
   }
+  state.motionInitialized = true;
   const activeSection = sceneElements[state.motionScene] || sceneElements[0];
   const activeProgress = sceneProgressFor(activeSection);
   elements.sceneProgress?.style.setProperty(
@@ -2232,6 +2244,7 @@ function requestMotionFrame() {
 function bindMotionScroll() {
   requestMotionFrame();
   window.addEventListener("scroll", requestMotionFrame, { passive: true });
+  document.addEventListener("scroll", requestMotionFrame, { passive: true, capture: true });
   window.addEventListener("resize", requestMotionFrame);
 }
 
@@ -2243,22 +2256,38 @@ function scrollToMotionTarget(target, href, smooth = true) {
   window.history.replaceState(null, "", href);
 }
 
+function triggerSceneCurtain(scene) {
+  if (!scene || isReducedMotion() || !elements.sceneTransition) return false;
+
+  elements.sceneTransitionIndex.textContent = scene.index;
+  if (state.sceneTransitioning) return true;
+
+  window.clearTimeout(state.sceneTransitionFinishTimer);
+  state.sceneTransitioning = true;
+  elements.sceneTransition.classList.remove("is-active");
+  void elements.sceneTransition.offsetWidth;
+  document.documentElement.classList.add("is-transitioning");
+  elements.sceneTransition.classList.add("is-active");
+  state.sceneTransitionFinishTimer = window.setTimeout(() => {
+    elements.sceneTransition.classList.remove("is-active");
+    document.documentElement.classList.remove("is-transitioning");
+    state.sceneTransitioning = false;
+  }, 1240);
+  return true;
+}
+
 function playSceneTransition(target, href) {
   const scene = MOTION_SCENES.find((item) => item.id === target.id);
   if (!scene || isReducedMotion() || !elements.sceneTransition) {
     scrollToMotionTarget(target, href);
     return;
   }
-  elements.sceneTransitionIndex.textContent = scene.index;
-  elements.sceneTransition.classList.remove("is-active");
-  void elements.sceneTransition.offsetWidth;
-  document.documentElement.classList.add("is-transitioning");
-  elements.sceneTransition.classList.add("is-active");
-  window.setTimeout(() => scrollToMotionTarget(target, href, false), 230);
-  window.setTimeout(() => {
-    elements.sceneTransition.classList.remove("is-active");
-    document.documentElement.classList.remove("is-transitioning");
-  }, 980);
+  triggerSceneCurtain(scene);
+  window.clearTimeout(state.sceneTransitionScrollTimer);
+  state.sceneTransitionScrollTimer = window.setTimeout(
+    () => scrollToMotionTarget(target, href, false),
+    280,
+  );
 }
 
 function bindAnchorNavigation() {
