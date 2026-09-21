@@ -13,6 +13,7 @@
     />
     <title>XLAB WEB / Visual systems for ideas</title>
     <link rel="stylesheet" href="/web/portal/styles.css" />
+    <link rel="stylesheet" href="/web/portal/world.css" />
   </head>
   <body>
     <div class="page-curtain" data-page-curtain aria-hidden="true">
@@ -99,175 +100,116 @@
       </header>
 
       <main>
-        <section class="hero" id="catalog" aria-labelledby="hero-title" data-motion-scene="library">
-          <div class="hero-copy" data-reveal="hero-copy">
-            <p class="eyebrow">
-              <span class="eyebrow-dot"></span>
-              <span data-i18n="heroEyebrow">PRESENTATION PRODUCTION DESK</span>
-            </p>
-            <h1 id="hero-title">
-              <span data-i18n="heroTitleA">Chọn một hướng nhìn.</span><br /><em
-                data-i18n="heroTitleB"
-                >Gửi phần còn lại cho đội ngũ.</em
-              >
-            </h1>
-            <p class="hero-lede" data-i18n="heroLede">
-              Duyệt các mẫu slide đã được chuẩn hóa, chọn hướng phù hợp với câu chuyện của bạn và
-              gửi brief để đội gia công dựng thành bộ slide hoàn chỉnh.
-            </p>
-            <div class="hero-actions">
-              <a class="button button-primary" href="#templates"
-                ><span data-i18n="heroExplore">Khám phá thư viện mẫu</span> <span>↓</span></a
-              >
-              <button class="button button-ghost" type="button" data-open-request>
-                <span data-i18n="heroBrief">Gửi brief trực tiếp</span> <span>↗</span>
-              </button>
+        <section
+          class="hero hero-world"
+          id="catalog"
+          aria-labelledby="hero-title"
+          data-motion-scene="library"
+        >
+          <div class="world-stage" data-xlab-world data-parallax-stage tabindex="0">
+            <canvas
+              class="world-canvas"
+              data-xlab-world-canvas
+              role="img"
+              aria-label="Không gian 3D XLab có thể điều khiển bằng bàn phím, chuột hoặc các nút điều hướng"
+            ></canvas>
+            <div class="world-atmosphere" aria-hidden="true"></div>
+            <div class="world-scanlines" aria-hidden="true"></div>
+
+            <div class="world-copy">
+              <p class="eyebrow">
+                <span class="eyebrow-dot"></span
+                ><span data-i18n="heroEyebrow">INTERACTIVE PRESENTATION WORLD</span>
+              </p>
+              <h1 id="hero-title">
+                <span data-i18n="heroTitleA">Lái ý tưởng đi xa.</span><br />
+                <em data-i18n="heroTitleB">Khám phá thế giới XLab.</em>
+              </h1>
+              <p class="world-lede" data-i18n="heroLede">
+                Điều khiển một không gian 3D, ghé qua các hệ thống hình ảnh và gửi brief khi bạn đã
+                tìm thấy đúng hướng cho câu chuyện của mình.
+              </p>
+              <div class="world-actions">
+                <button class="world-button world-button-primary" type="button" data-world-start>
+                  <span data-i18n="heroExplore">Bắt đầu lái</span><b>↗</b>
+                </button>
+                <button class="world-button world-button-ghost" type="button" data-open-request>
+                  <span data-i18n="heroBrief">Mở brief lab</span><b>⌁</b>
+                </button>
+              </div>
+              <div class="world-stats">
+                <span
+                  ><strong>770</strong
+                  ><small data-i18n="heroStatTemplates">hệ thống để khám phá</small></span
+                >
+                <span
+                  ><strong>WASD</strong
+                  ><small data-i18n="heroStatFormat">drive / discover</small></span
+                >
+                <span
+                  ><strong>1–2H</strong
+                  ><small data-i18n="heroStatResponse">phản hồi từ studio</small></span
+                >
+              </div>
             </div>
-            <p class="hero-meta">
-              <span
-                ><strong>770</strong>
-                <span class="meta-label" data-i18n="heroStatTemplates">mẫu có sẵn</span></span
-              >
-              <span
-                ><strong>16:9</strong>
-                <span class="meta-label" data-i18n="heroStatFormat">chuẩn trình chiếu</span></span
-              >
-              <span
-                ><strong>1–2 tiếng</strong>
-                <span class="meta-label" data-i18n="heroStatResponse">check và phản hồi</span></span
-              >
-            </p>
+
+            <div class="world-hud" aria-hidden="true">
+              <div class="world-hud-top">
+                <span><i></i> XLAB WORLD / 01</span>
+                <span>BUILD 0.7.70</span>
+                <span data-world-status>ROAM MODE</span>
+              </div>
+              <div class="world-coordinates">
+                <span>COORD <b data-world-coordinates>00.00 / 04.00</b></span>
+                <span>SPEED <b data-world-speed>00</b> KM/H</span>
+              </div>
+              <div class="world-reticle"><i></i><b></b><em></em></div>
+              <div class="world-target-readout">
+                <small>NEAREST SIGNAL</small>
+                <strong data-world-target-label>NO SIGNAL</strong>
+                <span><i></i> CLICK A NODE TO JUMP</span>
+              </div>
+            </div>
+
+            <nav class="world-locations" aria-label="Điểm đến trong thế giới XLab">
+              <button type="button" class="world-location is-active" data-world-target="archive">
+                <span class="world-location-index">01</span>
+                <span><strong>TEMPLATE ARCHIVE</strong><small>770 visual systems</small></span>
+                <b>↗</b>
+              </button>
+              <button type="button" class="world-location" data-world-target="brief">
+                <span class="world-location-index">02</span>
+                <span><strong>BRIEF LAB</strong><small>send a mission</small></span>
+                <b>↗</b>
+              </button>
+              <button type="button" class="world-location" data-world-target="process">
+                <span class="world-location-index">03</span>
+                <span><strong>PROCESS DOCK</strong><small>build / review / deliver</small></span>
+                <b>↗</b>
+              </button>
+            </nav>
+
+            <div class="world-controls" aria-label="Điều khiển không gian 3D">
+              <div class="world-control-copy">
+                <span>MOVE VEHICLE</span><small>WASD / ARROWS</small>
+              </div>
+              <div class="world-dpad">
+                <button type="button" aria-label="Tiến" data-world-command="forward">↑</button>
+                <button type="button" aria-label="Rẽ trái" data-world-command="left">←</button>
+                <button type="button" aria-label="Lùi" data-world-command="back">↓</button>
+                <button type="button" aria-label="Rẽ phải" data-world-command="right">→</button>
+              </div>
+            </div>
+
             <a
-              class="hero-scroll-cue"
+              class="world-scroll-cue"
               href="#templates"
-              data-reveal="scroll-cue"
               aria-label="Lướt xuống thư viện mẫu"
               data-i18n-aria-label="scrollToTemplates"
             >
-              <span class="hero-scroll-cue-line"></span>
-              <span data-i18n="scrollCue">CUỘN ĐỂ KHÁM PHÁ</span>
+              <span><i></i><i></i><i></i></span
+              ><small data-i18n="scrollCue">CUỘN ĐỂ KHÁM PHÁ</small>
             </a>
-          </div>
-          <div
-            class="hero-visual"
-            aria-label="Không gian 3D minh họa hệ thống hình ảnh và quy trình chọn mẫu"
-            data-reveal="hero-visual"
-            data-parallax-stage
-          >
-            <canvas class="hero-space-canvas" data-xlab-space-canvas aria-hidden="true"></canvas>
-            <div class="hero-space-stamp" aria-hidden="true">
-              <span>XLAB / WEB</span>
-              <i></i>
-              <span>SPACE 01</span>
-            </div>
-            <div class="hero-visual-field" aria-hidden="true">
-              <span class="hero-field-orbit hero-field-orbit-one"></span>
-              <span class="hero-field-orbit hero-field-orbit-two"></span>
-              <span class="hero-field-cross hero-field-cross-one">+</span>
-              <span class="hero-field-cross hero-field-cross-two">+</span>
-              <span class="hero-field-particle hero-field-particle-one"></span>
-              <span class="hero-field-particle hero-field-particle-two"></span>
-              <span class="hero-field-particle hero-field-particle-three"></span>
-              <span class="hero-field-particle hero-field-particle-four"></span>
-            </div>
-            <div class="hero-visual-cursor" aria-hidden="true"><span></span></div>
-            <div class="hero-visual-caption">
-              <span data-i18n="heroVisualLibrary">LIVE LIBRARY</span>
-              <span>01 — 770</span>
-            </div>
-            <div class="hero-command-card" aria-hidden="true">
-              <div class="hero-command-head"><span>CURATION ENGINE</span><span>04 / 04</span></div>
-              <div class="hero-command-readout">
-                <strong>770</strong><span>systems indexed</span>
-              </div>
-              <div class="hero-command-meter"><i></i></div>
-              <div class="hero-command-foot"><span>READY TO BUILD</span><b>98%</b></div>
-            </div>
-            <div class="hero-orbit hero-orbit-one"></div>
-            <div class="hero-orbit hero-orbit-two"></div>
-            <div class="hero-board-shadow" aria-hidden="true"></div>
-            <div class="hero-board">
-              <div class="hero-board-top"><span>PL / 2026</span><span>BRIEF 001</span></div>
-              <div class="hero-board-grid"></div>
-              <div class="hero-board-scan" aria-hidden="true"></div>
-              <div class="hero-board-data" aria-label="Live brief data">
-                <div class="hero-board-data-head">
-                  <span>LIVE BRIEF / 001</span><b><i></i> READY</b>
-                </div>
-                <div class="hero-board-data-rule"></div>
-                <div class="hero-board-data-row">
-                  <span>MOOD</span><strong>EDITORIAL</strong><b>98%</b>
-                </div>
-                <div class="hero-board-data-row">
-                  <span>FORMAT</span><strong>16:9 DECK</strong><b>HD</b>
-                </div>
-                <div class="hero-board-data-row">
-                  <span>OUTPUT</span><strong>READY TO BUILD</strong><b>01</b>
-                </div>
-                <div class="hero-board-data-chart" aria-hidden="true">
-                  <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-                </div>
-                <div class="hero-board-data-foot">
-                  <span>CHECK RESPONSE</span><strong>1–2 H</strong>
-                </div>
-              </div>
-              <div class="hero-board-signal" aria-hidden="true">
-                <span>LIVE SIGNAL</span><i></i><b>+24.8</b>
-              </div>
-              <div class="hero-board-copy">
-                <span data-i18n="heroVisualStoryKicker">YOUR STORY</span>
-                <strong
-                  ><span data-i18n="heroVisualStoryA">Make the</span><br /><em
-                    data-i18n="heroVisualStoryB"
-                    >idea</em
-                  >
-                  <span data-i18n="heroVisualStoryC">visible.</span></strong
-                >
-              </div>
-              <div class="hero-board-accent"></div>
-              <div class="hero-board-footer">
-                <span data-i18n="heroVisualFooter">SELECT / BRIEF / BUILD</span><span>01—03</span>
-              </div>
-            </div>
-            <div class="hero-spec-card">
-              <div class="hero-spec-top">
-                <span data-i18n="heroVisualPath">CURATED PATH</span><span>01 / 03</span>
-              </div>
-              <strong
-                ><span data-i18n="heroVisualStart">Start with</span><br /><em
-                  data-i18n="heroVisualPoint"
-                  >a point of view.</em
-                ></strong
-              >
-              <div class="hero-spec-list">
-                <div>
-                  <span data-i18n="heroVisualMood">Mood</span
-                  ><b data-i18n="heroVisualMoodValue">Editorial / precise</b>
-                </div>
-                <div>
-                  <span data-i18n="heroVisualFormat">Format</span
-                  ><b data-i18n="heroVisualFormatValue">16:9 presentation</b>
-                </div>
-                <div>
-                  <span data-i18n="heroVisualOutput">Output</span
-                  ><b data-i18n="heroVisualOutputValue">Ready to build</b>
-                </div>
-              </div>
-            </div>
-            <div class="floating-note floating-note-top">
-              <span class="note-icon">✦</span> <span data-i18n="heroNoteMood">Chọn theo mood</span>
-            </div>
-            <div class="floating-note floating-note-bottom">
-              <span class="note-icon note-icon-check">✓</span>
-              <span data-i18n="heroNoteBrief">Brief đã rõ</span>
-            </div>
-            <div class="hero-route" aria-hidden="true">
-              <span class="is-active"><i>01</i> CHOOSE</span>
-              <b></b>
-              <span><i>02</i> BRIEF</span>
-              <b></b>
-              <span><i>03</i> BUILD</span>
-            </div>
           </div>
         </section>
 

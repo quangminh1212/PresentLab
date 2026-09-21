@@ -25,7 +25,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ["web/portal/app.js"],
+    files: ["web/portal/app.js", "web/portal/world.js"],
     languageOptions: {
       globals: {
         AbortController: "readonly",
