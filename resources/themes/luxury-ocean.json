@@ -2,6 +2,7 @@
   "name": "luxury-ocean",
   "title": "Luxury / Ocean / Mono",
   "description": "Fresh cyan palette for research, customer insight, and service design narratives. Quiet luxury system with ivory paper, hairline rules, serif typography, and restrained gold. Monospace-led typography for technical, analytical, and product narratives.",
+  "archetype": "pitch",
   "format": "16:9",
   "tokens": {
     "paper": "#eefaff",

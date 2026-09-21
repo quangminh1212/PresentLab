@@ -2,6 +2,7 @@
   "name": "luxury-copper",
   "title": "Luxury / Copper / Editorial",
   "description": "Confident copper palette for architecture, craft, and product storytelling. Quiet luxury system with ivory paper, hairline rules, serif typography, and restrained gold. Serif-led hierarchy for essays, research, portfolios, and considered proposals.",
+  "archetype": "editorial",
   "format": "16:9",
   "tokens": {
     "paper": "#fff5ed",

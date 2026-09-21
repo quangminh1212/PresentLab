@@ -2,6 +2,7 @@
   "name": "luxury-sand",
   "title": "Luxury / Sand / Soft",
   "description": "Natural terracotta palette for consulting, hospitality, and considered brand stories. Quiet luxury system with ivory paper, hairline rules, serif typography, and restrained gold. Rounded surfaces and translucent panels for friendly collaborative work.",
+  "archetype": "pitch",
   "format": "16:9",
   "tokens": {
     "paper": "#f7f0e5",

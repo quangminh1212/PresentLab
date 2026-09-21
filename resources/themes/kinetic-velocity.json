@@ -2,6 +2,7 @@
   "name": "kinetic-velocity",
   "title": "Kinetic Type / Moving Letter / Kinetic Velocity",
   "description": "Type as motion, rhythm, repetition, and directional force rather than static labeling. Neon retro-future system with synthwave gradients, luminous grids, and energetic pacing.",
+  "archetype": "keynote",
   "format": "16:9",
   "tokens": {
     "paper": "#f4f7ff",

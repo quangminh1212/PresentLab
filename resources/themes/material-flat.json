@@ -2,6 +2,7 @@
   "name": "material-flat",
   "title": "Material / Digital Surface / Material Flat",
   "description": "Surface depth, soft elevation, responsive cards, and product clarity. Light editorial system with spacious cards, indigo accents, and calm narrative pacing.",
+  "archetype": "product",
   "format": "16:9",
   "tokens": {
     "paper": "#effcf7",

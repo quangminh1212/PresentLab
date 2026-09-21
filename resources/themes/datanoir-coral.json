@@ -2,6 +2,7 @@
   "name": "datanoir-coral",
   "title": "Data Noir / Coral / Poster",
   "description": "Warm coral palette for human-centered launches, brands, and community narratives. Terminal-inspired dark system for product, engineering, and operational narratives. Poster-like capitalization and borders for campaigns and bold announcements.",
+  "archetype": "research",
   "format": "16:9",
   "tokens": {
     "paper": "#fff7f4",

@@ -2,6 +2,7 @@
   "name": "aurora-mint",
   "title": "Aurora / Mint / Soft",
   "description": "Bright mint palette for product growth, wellness, and collaborative planning. Light editorial system with spacious cards, indigo accents, and calm narrative pacing. Rounded surfaces and translucent panels for friendly collaborative work.",
+  "archetype": "product",
   "format": "16:9",
   "tokens": {
     "paper": "#effcf7",

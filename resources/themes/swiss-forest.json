@@ -2,6 +2,7 @@
   "name": "swiss-forest",
   "title": "Swiss / Forest / Editorial",
   "description": "Grounded green palette for sustainability, operations, and long-term growth stories. Swiss-inspired grid with hard edges, red signal color, and disciplined information hierarchy. Serif-led hierarchy for essays, research, portfolios, and considered proposals.",
+  "archetype": "editorial",
   "format": "16:9",
   "tokens": {
     "paper": "#f2f7f1",

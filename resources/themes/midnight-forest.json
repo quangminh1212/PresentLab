@@ -2,6 +2,7 @@
   "name": "midnight-forest",
   "title": "Midnight / Forest / Glow",
   "description": "Grounded green palette for sustainability, operations, and long-term growth stories. Dark cinematic system with luminous cyan highlights, grid structure, and contrast-led storytelling. A luminous accent treatment for launches, demos, and future-facing concepts.",
+  "archetype": "keynote",
   "format": "16:9",
   "tokens": {
     "paper": "#f2f7f1",

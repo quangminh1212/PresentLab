@@ -2,6 +2,7 @@
   "name": "biophilic-water",
   "title": "Biophilic / Living Systems / Biophilic Water",
   "description": "Daylight, natural textures, living edges, and calm systems that reconnect the page to nature. Warm studio system with earthy colors, serif headlines, and soft organic geometry.",
+  "archetype": "product",
   "format": "16:9",
   "tokens": {
     "paper": "#effcf7",

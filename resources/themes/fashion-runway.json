@@ -2,6 +2,7 @@
   "name": "fashion-runway",
   "title": "Fashion / Couture / Fashion Runway",
   "description": "Runway restraint, image-led hierarchy, high contrast, and refined spacing. Quiet luxury system with ivory paper, hairline rules, serif typography, and restrained gold.",
+  "archetype": "editorial",
   "format": "16:9",
   "tokens": {
     "paper": "#f5f5f3",

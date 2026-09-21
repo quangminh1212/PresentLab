@@ -2,6 +2,7 @@
   "name": "artdeco-chrome",
   "title": "Art Deco / Artdeco Chrome",
   "description": "Symmetry, stepped geometry, metallic accents, and theatrical hierarchy. Quiet luxury system with ivory paper, hairline rules, serif typography, and restrained gold.",
+  "archetype": "culture",
   "format": "16:9",
   "tokens": {
     "paper": "#fff5ed",

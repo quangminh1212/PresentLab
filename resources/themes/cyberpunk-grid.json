@@ -2,6 +2,7 @@
   "name": "cyberpunk-grid",
   "title": "Cyberpunk / Neon Systems / Cyberpunk Grid",
   "description": "Neon signal, terminal texture, hard contrast, and networked futures. Terminal-inspired dark system for product, engineering, and operational narratives.",
+  "archetype": "keynote",
   "format": "16:9",
   "tokens": {
     "paper": "#0b1020",

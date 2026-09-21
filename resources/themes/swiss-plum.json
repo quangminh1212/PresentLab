@@ -2,6 +2,7 @@
   "name": "swiss-plum",
   "title": "Swiss / Plum / Soft",
   "description": "Expressive plum palette for culture, editorial, and premium creative work. Swiss-inspired grid with hard edges, red signal color, and disciplined information hierarchy. Rounded surfaces and translucent panels for friendly collaborative work.",
+  "archetype": "pitch",
   "format": "16:9",
   "tokens": {
     "paper": "#fbf7fc",

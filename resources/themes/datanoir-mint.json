@@ -2,6 +2,7 @@
   "name": "datanoir-mint",
   "title": "Data Noir / Mint / Compact",
   "description": "Bright mint palette for product growth, wellness, and collaborative planning. Terminal-inspired dark system for product, engineering, and operational narratives. Denser spacing for information-rich reviews where every page must carry more detail.",
+  "archetype": "research",
   "format": "16:9",
   "tokens": {
     "paper": "#effcf7",

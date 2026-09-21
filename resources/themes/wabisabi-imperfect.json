@@ -2,6 +2,7 @@
   "name": "wabisabi-imperfect",
   "title": "Wabi-sabi / Imperfection / Wabisabi Imperfect",
   "description": "Quiet imperfection, patina, natural material, and unforced asymmetry. Light editorial system with spacious cards, indigo accents, and calm narrative pacing.",
+  "archetype": "editorial",
   "format": "16:9",
   "tokens": {
     "paper": "#f7f0e5",

@@ -2,6 +2,7 @@
   "name": "organic-coral",
   "title": "Organic / Coral / Grid",
   "description": "Warm coral palette for human-centered launches, brands, and community narratives. Warm studio system with earthy colors, serif headlines, and soft organic geometry. A visible modular grid for systems thinking and operational storytelling.",
+  "archetype": "product",
   "format": "16:9",
   "tokens": {
     "paper": "#fff7f4",

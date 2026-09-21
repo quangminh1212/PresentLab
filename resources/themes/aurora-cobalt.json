@@ -2,6 +2,7 @@
   "name": "aurora-cobalt",
   "title": "Aurora / Cobalt / Airy",
   "description": "Clear blue product palette for confident strategy and technology stories. Light editorial system with spacious cards, indigo accents, and calm narrative pacing. More breathing room and a quieter surface for reflective narratives.",
+  "archetype": "product",
   "format": "16:9",
   "tokens": {
     "paper": "#f4f7ff",

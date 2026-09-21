@@ -2,6 +2,7 @@
   "name": "aurora-copper",
   "title": "Aurora / Copper / Grid",
   "description": "Confident copper palette for architecture, craft, and product storytelling. Light editorial system with spacious cards, indigo accents, and calm narrative pacing. A visible modular grid for systems thinking and operational storytelling.",
+  "archetype": "product",
   "format": "16:9",
   "tokens": {
     "paper": "#fff5ed",

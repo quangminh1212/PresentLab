@@ -2,6 +2,7 @@
   "name": "midnight-copper",
   "title": "Midnight / Copper / Poster",
   "description": "Confident copper palette for architecture, craft, and product storytelling. Dark cinematic system with luminous cyan highlights, grid structure, and contrast-led storytelling. Poster-like capitalization and borders for campaigns and bold announcements.",
+  "archetype": "keynote",
   "format": "16:9",
   "tokens": {
     "paper": "#fff5ed",

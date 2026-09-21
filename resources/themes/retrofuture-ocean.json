@@ -2,6 +2,7 @@
   "name": "retrofuture-ocean",
   "title": "Retro Future / Ocean / Glow",
   "description": "Fresh cyan palette for research, customer insight, and service design narratives. Neon retro-future system with synthwave gradients, luminous grids, and energetic pacing. A luminous accent treatment for launches, demos, and future-facing concepts.",
+  "archetype": "keynote",
   "format": "16:9",
   "tokens": {
     "paper": "#eefaff",

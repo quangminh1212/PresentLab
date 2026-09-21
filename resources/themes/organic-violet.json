@@ -2,6 +2,7 @@
   "name": "organic-violet",
   "title": "Organic / Violet / Soft",
   "description": "Modern violet palette for AI, innovation, and future-facing product narratives. Warm studio system with earthy colors, serif headlines, and soft organic geometry. Rounded surfaces and translucent panels for friendly collaborative work.",
+  "archetype": "product",
   "format": "16:9",
   "tokens": {
     "paper": "#f6f4ff",

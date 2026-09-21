@@ -2,6 +2,7 @@
   "name": "webcore-webring",
   "title": "Webcore / Internet Nostalgia / Webcore Webring",
   "description": "Browser chrome, pixel cues, hyperlink logic, and hand-built web memory. Terminal-inspired dark system for product, engineering, and operational narratives.",
+  "archetype": "research",
   "format": "16:9",
   "tokens": {
     "paper": "#eefaff",

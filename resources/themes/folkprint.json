@@ -2,6 +2,7 @@
   "name": "folkprint",
   "title": "Arts & Crafts / Folkprint",
   "description": "Handmade texture, printed edges, material warmth, and craft detail. Warm studio system with earthy colors, serif headlines, and soft organic geometry.",
+  "archetype": "culture",
   "format": "16:9",
   "tokens": {
     "paper": "#f7f0e5",

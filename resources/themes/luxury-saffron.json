@@ -2,6 +2,7 @@
   "name": "luxury-saffron",
   "title": "Luxury / Saffron / Airy",
   "description": "Optimistic golden palette for education, change management, and opportunity maps. Quiet luxury system with ivory paper, hairline rules, serif typography, and restrained gold. More breathing room and a quieter surface for reflective narratives.",
+  "archetype": "pitch",
   "format": "16:9",
   "tokens": {
     "paper": "#fff9e8",

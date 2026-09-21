@@ -2,6 +2,7 @@
   "name": "artnouveau-jugendstil",
   "title": "Art Nouveau / Jugendstil / Artnouveau Jugendstil",
   "description": "Botanical curves, flowing linework, and ornamental natural forms. Warm studio system with earthy colors, serif headlines, and soft organic geometry.",
+  "archetype": "editorial",
   "format": "16:9",
   "tokens": {
     "paper": "#fbf7fc",

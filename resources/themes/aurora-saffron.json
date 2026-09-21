@@ -2,6 +2,7 @@
   "name": "aurora-saffron",
   "title": "Aurora / Saffron / Soft",
   "description": "Optimistic golden palette for education, change management, and opportunity maps. Light editorial system with spacious cards, indigo accents, and calm narrative pacing. Rounded surfaces and translucent panels for friendly collaborative work.",
+  "archetype": "product",
   "format": "16:9",
   "tokens": {
     "paper": "#fff9e8",

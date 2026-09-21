@@ -2,6 +2,7 @@
   "name": "brutalist-mono",
   "title": "Brutalist / Mono / Compact",
   "description": "Neutral monochrome palette for legal, finance, and highly focused information design. Neo-brutalist system with yellow canvas, ink borders, offset shadows, and playful emphasis. Denser spacing for information-rich reviews where every page must carry more detail.",
+  "archetype": "manifesto",
   "format": "16:9",
   "tokens": {
     "paper": "#f5f5f3",

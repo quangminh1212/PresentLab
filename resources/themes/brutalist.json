@@ -2,6 +2,7 @@
   "name": "brutalist",
   "title": "Brutalist",
   "description": "Neo-brutalist system with yellow canvas, ink borders, offset shadows, and playful emphasis.",
+  "archetype": "manifesto",
   "format": "16:9",
   "tokens": {
     "paper": "#f4e94c",

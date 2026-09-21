@@ -2,6 +2,7 @@
   "name": "midnight-sand",
   "title": "Midnight / Sand / Compact",
   "description": "Natural terracotta palette for consulting, hospitality, and considered brand stories. Dark cinematic system with luminous cyan highlights, grid structure, and contrast-led storytelling. Denser spacing for information-rich reviews where every page must carry more detail.",
+  "archetype": "keynote",
   "format": "16:9",
   "tokens": {
     "paper": "#f7f0e5",

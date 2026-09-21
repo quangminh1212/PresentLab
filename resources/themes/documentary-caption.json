@@ -2,6 +2,7 @@
   "name": "documentary-caption",
   "title": "Documentary / Observational / Documentary Caption",
   "description": "Contact sheets, captions, evidence fragments, and a restrained observational narrative. Dark cinematic system with luminous cyan highlights, grid structure, and contrast-led storytelling.",
+  "archetype": "keynote",
   "format": "16:9",
   "tokens": {
     "paper": "#0b1020",

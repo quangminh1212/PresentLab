@@ -2,6 +2,7 @@
   "name": "vaporwave-chrome",
   "title": "Vaporwave / Y2K / Vaporwave Chrome",
   "description": "Chrome gradients, mall nostalgia, digital sunset, and early-web surrealism. Neon retro-future system with synthwave gradients, luminous grids, and energetic pacing.",
+  "archetype": "keynote",
   "format": "16:9",
   "tokens": {
     "paper": "#f6f4ff",

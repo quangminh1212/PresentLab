@@ -2,6 +2,7 @@
   "name": "biomorphic-spore",
   "title": "Biomorphic / Organic Form / Biomorphic Spore",
   "description": "Cellular forms, flowing contours, growth patterns, and shapes borrowed from living matter. Light editorial system with spacious cards, indigo accents, and calm narrative pacing.",
+  "archetype": "product",
   "format": "16:9",
   "tokens": {
     "paper": "#f2f7f1",

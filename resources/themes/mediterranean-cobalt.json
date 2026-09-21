@@ -2,6 +2,7 @@
   "name": "mediterranean-cobalt",
   "title": "Mediterranean / Riviera / Mediterranean Cobalt",
   "description": "Sun-washed surfaces, terracotta contrast, arches, and relaxed hospitality. Warm studio system with earthy colors, serif headlines, and soft organic geometry.",
+  "archetype": "product",
   "format": "16:9",
   "tokens": {
     "paper": "#f7f0e5",

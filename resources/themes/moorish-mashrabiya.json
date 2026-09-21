@@ -2,6 +2,7 @@
   "name": "moorish-mashrabiya",
   "title": "Islamic Geometric / Moorish / Moorish Mashrabiya",
   "description": "Tessellation, courtyard geometry, lattice, and ornamental spatial rhythm. Quiet luxury system with ivory paper, hairline rules, serif typography, and restrained gold.",
+  "archetype": "culture",
   "format": "16:9",
   "tokens": {
     "paper": "#eefaff",

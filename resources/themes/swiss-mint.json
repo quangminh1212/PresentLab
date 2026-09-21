@@ -2,6 +2,7 @@
   "name": "swiss-mint",
   "title": "Swiss / Mint / Mono",
   "description": "Bright mint palette for product growth, wellness, and collaborative planning. Swiss-inspired grid with hard edges, red signal color, and disciplined information hierarchy. Monospace-led typography for technical, analytical, and product narratives.",
+  "archetype": "pitch",
   "format": "16:9",
   "tokens": {
     "paper": "#effcf7",

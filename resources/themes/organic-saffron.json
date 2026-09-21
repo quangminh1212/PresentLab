@@ -2,6 +2,7 @@
   "name": "organic-saffron",
   "title": "Organic / Saffron / Editorial",
   "description": "Optimistic golden palette for education, change management, and opportunity maps. Warm studio system with earthy colors, serif headlines, and soft organic geometry. Serif-led hierarchy for essays, research, portfolios, and considered proposals.",
+  "archetype": "editorial",
   "format": "16:9",
   "tokens": {
     "paper": "#fff9e8",

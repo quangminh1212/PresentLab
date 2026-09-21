@@ -2,6 +2,7 @@
   "name": "surreal-uncanny",
   "title": "Surrealism / Dream Logic / Surreal Uncanny",
   "description": "Unexpected scale, dreamlike juxtaposition, portals, and a sense of productive estrangement. Quiet luxury system with ivory paper, hairline rules, serif typography, and restrained gold.",
+  "archetype": "culture",
   "format": "16:9",
   "tokens": {
     "paper": "#fbf7fc",

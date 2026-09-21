@@ -2,6 +2,7 @@
   "name": "memphis-pastel",
   "title": "Memphis / Postmodern Play / Memphis Pastel",
   "description": "Playful pattern, irregular geometry, and colorful postmodern surfaces. Neo-brutalist system with yellow canvas, ink borders, offset shadows, and playful emphasis.",
+  "archetype": "culture",
   "format": "16:9",
   "tokens": {
     "paper": "#fff7f4",

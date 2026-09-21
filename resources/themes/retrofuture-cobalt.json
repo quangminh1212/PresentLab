@@ -2,6 +2,7 @@
   "name": "retrofuture-cobalt",
   "title": "Retro Future / Cobalt / Glow",
   "description": "Clear blue product palette for confident strategy and technology stories. Neon retro-future system with synthwave gradients, luminous grids, and energetic pacing. A luminous accent treatment for launches, demos, and future-facing concepts.",
+  "archetype": "keynote",
   "format": "16:9",
   "tokens": {
     "paper": "#f4f7ff",

@@ -2,6 +2,7 @@
   "name": "swiss-cobalt",
   "title": "Swiss / Cobalt / Grid",
   "description": "Clear blue product palette for confident strategy and technology stories. Swiss-inspired grid with hard edges, red signal color, and disciplined information hierarchy. A visible modular grid for systems thinking and operational storytelling.",
+  "archetype": "pitch",
   "format": "16:9",
   "tokens": {
     "paper": "#f4f7ff",

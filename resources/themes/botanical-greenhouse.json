@@ -2,6 +2,7 @@
   "name": "botanical-greenhouse",
   "title": "Editorial Botanical / Herbarium / Botanical Greenhouse",
   "description": "Specimen labels, pressed forms, botanical linework, and an archival editorial pace. Quiet luxury system with ivory paper, hairline rules, serif typography, and restrained gold.",
+  "archetype": "editorial",
   "format": "16:9",
   "tokens": {
     "paper": "#f2f7f1",

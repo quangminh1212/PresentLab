@@ -2,6 +2,7 @@
   "name": "retrofuture-violet",
   "title": "Retro Future / Violet / Glow",
   "description": "Modern violet palette for AI, innovation, and future-facing product narratives. Neon retro-future system with synthwave gradients, luminous grids, and energetic pacing. A luminous accent treatment for launches, demos, and future-facing concepts.",
+  "archetype": "keynote",
   "format": "16:9",
   "tokens": {
     "paper": "#f6f4ff",

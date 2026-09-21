@@ -2,6 +2,7 @@
   "name": "midnight-ocean",
   "title": "Midnight / Ocean / Signal",
   "description": "Fresh cyan palette for research, customer insight, and service design narratives. Dark cinematic system with luminous cyan highlights, grid structure, and contrast-led storytelling. Larger type and stronger labels for high-attention executive moments.",
+  "archetype": "keynote",
   "format": "16:9",
   "tokens": {
     "paper": "#eefaff",

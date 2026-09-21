@@ -2,6 +2,7 @@
   "name": "psychedelic-vinyl",
   "title": "Psychedelic / Psychedelic Vinyl",
   "description": "Fluid color, optical rhythm, and expressive poster movement. Neon retro-future system with synthwave gradients, luminous grids, and energetic pacing.",
+  "archetype": "culture",
   "format": "16:9",
   "tokens": {
     "paper": "#f6f4ff",

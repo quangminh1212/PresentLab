@@ -2,6 +2,7 @@
   "name": "lowpoly-crystal",
   "title": "Low-poly / Faceted Render / Lowpoly Crystal",
   "description": "Angular facets, simplified volumes, crystalline surfaces, and clean spatial depth. Light editorial system with spacious cards, indigo accents, and calm narrative pacing.",
+  "archetype": "product",
   "format": "16:9",
   "tokens": {
     "paper": "#eefaff",

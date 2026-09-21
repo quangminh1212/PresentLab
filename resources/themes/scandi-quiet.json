@@ -2,6 +2,7 @@
   "name": "scandi-quiet",
   "title": "Scandinavian / Nordic / Scandi Quiet",
   "description": "Functional calm, soft neutrals, generous space, and domestic warmth. Light editorial system with spacious cards, indigo accents, and calm narrative pacing.",
+  "archetype": "editorial",
   "format": "16:9",
   "tokens": {
     "paper": "#f1faff",

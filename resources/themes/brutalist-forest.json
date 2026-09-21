@@ -2,6 +2,7 @@
   "name": "brutalist-forest",
   "title": "Brutalist / Forest / Compact",
   "description": "Grounded green palette for sustainability, operations, and long-term growth stories. Neo-brutalist system with yellow canvas, ink borders, offset shadows, and playful emphasis. Denser spacing for information-rich reviews where every page must carry more detail.",
+  "archetype": "manifesto",
   "format": "16:9",
   "tokens": {
     "paper": "#f2f7f1",

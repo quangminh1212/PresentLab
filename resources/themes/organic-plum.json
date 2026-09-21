@@ -2,6 +2,7 @@
   "name": "organic-plum",
   "title": "Organic / Plum / Mono",
   "description": "Expressive plum palette for culture, editorial, and premium creative work. Warm studio system with earthy colors, serif headlines, and soft organic geometry. Monospace-led typography for technical, analytical, and product narratives.",
+  "archetype": "product",
   "format": "16:9",
   "tokens": {
     "paper": "#fbf7fc",

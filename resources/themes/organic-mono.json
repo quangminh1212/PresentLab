@@ -2,6 +2,7 @@
   "name": "organic-mono",
   "title": "Organic / Mono / Airy",
   "description": "Neutral monochrome palette for legal, finance, and highly focused information design. Warm studio system with earthy colors, serif headlines, and soft organic geometry. More breathing room and a quieter surface for reflective narratives.",
+  "archetype": "product",
   "format": "16:9",
   "tokens": {
     "paper": "#f5f5f3",

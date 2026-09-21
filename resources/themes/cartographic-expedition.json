@@ -2,6 +2,7 @@
   "name": "cartographic-expedition",
   "title": "Cartographic / Atlas Systems / Cartographic Expedition",
   "description": "Contours, coordinates, routes, legends, and spatial evidence organized like a field atlas. Terminal-inspired dark system for product, engineering, and operational narratives.",
+  "archetype": "research",
   "format": "16:9",
   "tokens": {
     "paper": "#f1faff",

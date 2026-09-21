@@ -2,6 +2,7 @@
   "name": "datavis-trend",
   "title": "Data Visualization / Analytical / Datavis Trend",
   "description": "Chart-first hierarchy, analytical grids, annotations, and evidence density. Terminal-inspired dark system for product, engineering, and operational narratives.",
+  "archetype": "research",
   "format": "16:9",
   "tokens": {
     "paper": "#f1faff",

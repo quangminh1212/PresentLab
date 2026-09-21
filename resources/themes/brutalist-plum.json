@@ -2,6 +2,7 @@
   "name": "brutalist-plum",
   "title": "Brutalist / Plum / Frame",
   "description": "Expressive plum palette for culture, editorial, and premium creative work. Neo-brutalist system with yellow canvas, ink borders, offset shadows, and playful emphasis. A strong outer frame that gives every page a distinct poster boundary.",
+  "archetype": "manifesto",
   "format": "16:9",
   "tokens": {
     "paper": "#fbf7fc",

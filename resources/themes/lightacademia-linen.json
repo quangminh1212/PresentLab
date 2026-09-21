@@ -2,6 +2,7 @@
   "name": "lightacademia-linen",
   "title": "Light Academia / Lightacademia Linen",
   "description": "Sunlit scholarship, parchment, museum calm, and classical softness. Light editorial system with spacious cards, indigo accents, and calm narrative pacing.",
+  "archetype": "editorial",
   "format": "16:9",
   "tokens": {
     "paper": "#f7f0e5",

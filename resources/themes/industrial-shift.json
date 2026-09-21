@@ -2,6 +2,7 @@
   "name": "industrial-shift",
   "title": "Industrial / Factory / Industrial Shift",
   "description": "Utility systems, steel surfaces, hard rules, and operational structure. Terminal-inspired dark system for product, engineering, and operational narratives.",
+  "archetype": "research",
   "format": "16:9",
   "tokens": {
     "paper": "#f2f7f1",

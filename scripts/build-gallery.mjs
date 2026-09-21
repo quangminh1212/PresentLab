@@ -29,6 +29,22 @@ const renderConcurrency = Math.max(
   1,
   Number.parseInt(process.env.PRESENTLAB_GALLERY_CONCURRENCY ?? "3", 10) || 3,
 );
+const sourceOnlyBuild = process.env.PRESENTLAB_GALLERY_SOURCE_ONLY === "1";
+
+async function writeTextFile(filePath, data, encoding = "utf8") {
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    try {
+      await writeFile(filePath, data, encoding);
+      return;
+    } catch (error) {
+      const retryable = ["UNKNOWN", "EBUSY", "EPERM"].includes(error?.code);
+      if (!retryable || attempt === 4) {
+        throw error;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 50 * (attempt + 1)));
+    }
+  }
+}
 
 const baseCss = `
 :root { color-scheme: light; }
@@ -261,6 +277,289 @@ const additionalCss = `
 .family-midnight .layout-signal .signal-main, .family-retrofuture .layout-signal .signal-main { box-shadow: 0 0 48px rgb(0 0 0 / 22%); }
 .family-luxury .layout-table .data-table th, .family-luxury .layout-scorecard .score-row { font-family: var(--serif); }
 .family-datanoir .layout-table .data-table, .family-datanoir .layout-scorecard .scorecard { font-family: var(--sans); }
+`;
+
+const storyCss = `
+.story-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 34px; }
+.story-head-copy { max-width: 1080px; }
+.story-eyebrow { margin-bottom: 18px; color: var(--accent); font-size: 15px; font-weight: 900; letter-spacing: .18em; line-height: 1.1; text-transform: uppercase; }
+.story-title { max-width: 1100px; font-size: 62px; font-weight: 850; letter-spacing: -.06em; line-height: .97; }
+.story-title em { color: var(--accent); font-style: normal; }
+.story-deck { max-width: 760px; margin-top: 18px; color: var(--muted); font-size: 21px; line-height: 1.4; }
+.story-page { color: var(--accent); font-size: 16px; font-weight: 900; letter-spacing: .14em; }
+.story-footer { margin-top: auto; color: var(--muted); font-size: 13px; font-weight: 900; letter-spacing: .11em; text-transform: uppercase; }
+.story-rule { height: 2px; margin-top: 26px; background: var(--accent); }
+.opening-scene { justify-content: center; }
+.opening-layout { display: grid; grid-template-columns: minmax(0, 1.06fr) minmax(440px, .94fr); gap: 66px; align-items: center; min-height: 700px; }
+.opening-copy { max-width: 900px; }
+.opening-kicker { color: var(--accent); font-size: 16px; font-weight: 900; letter-spacing: .2em; text-transform: uppercase; }
+.opening-title { max-width: 920px; margin-top: 24px; font-size: 88px; font-weight: 900; letter-spacing: -.08em; line-height: .9; }
+.opening-title em { color: var(--accent); font-style: normal; }
+.opening-deck { max-width: 700px; margin-top: 30px; color: var(--muted); font-size: 25px; line-height: 1.32; }
+.opening-meta { display: flex; flex-wrap: wrap; gap: 28px; margin-top: 44px; color: var(--muted); font-size: 13px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; }
+.opening-visual { position: relative; height: 590px; }
+.opening-surface { position: absolute; inset: 54px 10px 28px 68px; border: 1px solid var(--line-strong); background: linear-gradient(145deg, var(--panel), color-mix(in srgb, var(--accent-soft) 52%, var(--paper))); transform: rotate(-5deg); box-shadow: var(--shadow); }
+.opening-surface::before { position: absolute; inset: 20px; border: 1px solid var(--accent); content: ""; opacity: .55; }
+.opening-surface::after { position: absolute; right: 34px; bottom: 34px; width: 150px; height: 150px; border: 2px solid var(--accent); border-radius: 50%; content: ""; }
+.opening-orbit { position: absolute; left: 0; top: 0; width: 210px; height: 210px; border: 2px solid var(--accent); border-radius: 50%; opacity: .7; }
+.opening-orbit::after { position: absolute; right: -15px; top: 90px; width: 30px; height: 30px; border-radius: 50%; background: var(--accent); content: ""; box-shadow: 0 0 0 8px var(--paper); }
+.opening-figure { position: absolute; right: 76px; top: 144px; color: var(--accent); font-size: 180px; font-weight: 900; letter-spacing: -.12em; line-height: .8; transform: rotate(-5deg); }
+.opening-bars { position: absolute; left: 66px; right: 56px; bottom: 76px; display: flex; align-items: end; gap: 8px; height: 130px; }
+.opening-bars i { flex: 1; min-width: 12px; background: var(--accent); opacity: .75; }
+.opening-bars i:nth-child(2n) { background: var(--accent-deep); }
+.opening-caption { position: absolute; right: 20px; bottom: 2px; color: var(--muted); font-size: 12px; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; transform: rotate(-5deg); }
+.cold-open-scene { justify-content: center; }
+.cold-open-wrap { max-width: 1230px; }
+.cold-open-number { color: var(--accent); font-size: 236px; font-weight: 900; letter-spacing: -.14em; line-height: .72; }
+.cold-open-title { max-width: 1040px; margin-top: 34px; font-size: 75px; font-weight: 900; letter-spacing: -.075em; line-height: .94; }
+.cold-open-note { max-width: 660px; margin-top: 26px; color: var(--muted); font-size: 22px; line-height: 1.4; }
+.cold-open-foot { display: flex; justify-content: space-between; margin-top: 72px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
+.problem-scene, .solution-scene, .feature-scene, .proof-scene, .comparison-scene, .case-scene, .research-scene, .operating-scene, .ask-scene { gap: 30px; }
+.problem-layout, .solution-layout, .feature-layout, .proof-layout, .comparison-layout, .case-layout, .research-layout, .operating-layout, .ask-layout { display: grid; grid-template-columns: minmax(0, 1.04fr) minmax(0, .96fr); gap: 34px; align-items: stretch; margin-top: 42px; flex: 1; min-height: 0; }
+.problem-statement, .solution-claim, .proof-quote, .research-quote { display: flex; flex-direction: column; justify-content: center; min-height: 390px; padding: 40px; border-left: 8px solid var(--accent); background: var(--panel); box-shadow: var(--shadow); }
+.problem-statement .label, .solution-claim .label, .proof-quote .label, .research-quote .label { color: var(--accent); font-size: 14px; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; }
+.problem-statement h2, .solution-claim h2, .proof-quote h2 { max-width: 650px; margin-top: 26px; font-size: 52px; font-weight: 850; letter-spacing: -.065em; line-height: .96; }
+.problem-statement p, .solution-claim p { max-width: 590px; margin-top: 22px; color: var(--muted); font-size: 20px; line-height: 1.4; }
+.problem-context, .solution-visual, .feature-visual, .proof-rail, .case-facts, .research-aside, .operating-map, .ask-visual { position: relative; min-height: 390px; overflow: hidden; padding: 32px; border: 1px solid var(--line-strong); background: var(--accent-soft); }
+.problem-context::before, .solution-visual::before, .feature-visual::before, .ask-visual::before { position: absolute; inset: 0; background: repeating-linear-gradient(135deg, transparent 0 28px, color-mix(in srgb, var(--accent) 22%, transparent) 29px 30px); content: ""; opacity: .42; }
+.problem-context > *, .solution-visual > *, .feature-visual > *, .ask-visual > * { position: relative; z-index: 1; }
+.context-stamp, .visual-stamp { display: inline-flex; align-items: center; padding: 9px 12px; border: 1px solid var(--accent); color: var(--accent-deep); font-size: 12px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
+.context-quote { max-width: 450px; margin-top: 58px; font-family: var(--serif); font-size: 44px; font-weight: 700; letter-spacing: -.04em; line-height: 1.03; }
+.context-note { position: absolute; right: 30px; bottom: 26px; max-width: 210px; color: var(--muted); font-size: 14px; line-height: 1.35; }
+.scene-layout { display: grid; grid-template-columns: 1.25fr .75fr; gap: 22px; margin-top: 40px; flex: 1; min-height: 0; }
+.scene-frame { position: relative; min-height: 420px; overflow: hidden; background: linear-gradient(150deg, var(--accent-deep), var(--accent)); color: var(--quote-ink); }
+.scene-frame::before { position: absolute; inset: 0; background: radial-gradient(circle at 72% 30%, rgb(255 255 255 / 40%) 0 3%, transparent 3.5%), radial-gradient(circle at 24% 72%, rgb(255 255 255 / 20%) 0 2%, transparent 2.5%), linear-gradient(115deg, transparent 0 45%, rgb(255 255 255 / 12%) 45% 46%, transparent 46%); content: ""; }
+.scene-frame h2 { position: absolute; left: 32px; bottom: 30px; max-width: 650px; font-size: 48px; letter-spacing: -.06em; line-height: .95; }
+.scene-caption { display: flex; flex-direction: column; justify-content: end; min-height: 420px; padding: 28px; border-top: 4px solid var(--accent); background: var(--panel); }
+.scene-caption .big-quote { font-family: var(--serif); font-size: 31px; font-weight: 700; letter-spacing: -.04em; line-height: 1.1; }
+.scene-caption small { margin-top: 24px; color: var(--muted); font-size: 13px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+.before-after-scene { justify-content: center; }
+.before-after-head { max-width: 920px; }
+.before-after-title { margin-top: 14px; font-size: 64px; font-weight: 900; letter-spacing: -.075em; line-height: .94; }
+.before-after-grid { display: grid; grid-template-columns: 1fr 90px 1fr; gap: 20px; align-items: center; margin-top: 50px; }
+.state-frame { min-height: 285px; padding: 30px; border: 2px solid var(--line-strong); background: var(--panel); }
+.state-frame.after { border-color: var(--accent); background: var(--accent-soft); }
+.state-frame small { color: var(--accent); font-size: 13px; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; }
+.state-frame h2 { margin-top: 22px; font-size: 36px; letter-spacing: -.05em; }
+.state-frame p { margin-top: 14px; color: var(--muted); font-size: 18px; line-height: 1.38; }
+.state-divider { color: var(--accent); font-size: 58px; font-weight: 900; text-align: center; }
+.why-now-scene { justify-content: center; }
+.why-now-layout { display: grid; grid-template-columns: 1fr 1.12fr; gap: 70px; align-items: center; }
+.why-now-statement { max-width: 720px; font-size: 70px; font-weight: 900; letter-spacing: -.08em; line-height: .91; }
+.why-now-statement em { color: var(--accent); font-style: normal; }
+.why-now-rail { border-top: 2px solid var(--accent); }
+.why-now-row { display: grid; grid-template-columns: 110px 1fr; gap: 24px; align-items: center; min-height: 92px; border-bottom: 1px solid var(--line); }
+.why-now-row strong { color: var(--accent); font-size: 24px; letter-spacing: -.04em; }
+.why-now-row p { color: var(--muted); font-size: 18px; line-height: 1.3; }
+.solution-claim { background: var(--accent); color: var(--quote-ink); border-left-color: var(--quote-ink); }
+.solution-claim .label, .solution-claim p { color: color-mix(in srgb, var(--quote-ink) 78%, transparent); }
+.solution-claim h2 { max-width: 650px; }
+.solution-object { position: absolute; left: 50%; top: 50%; width: 300px; height: 210px; border: 8px solid var(--accent); border-radius: 24px; background: var(--panel); box-shadow: 24px 24px 0 color-mix(in srgb, var(--ink) 30%, transparent); transform: translate(-50%, -50%) rotate(-6deg); }
+.solution-object::before { position: absolute; left: 24px; right: 24px; top: 28px; height: 12px; background: var(--accent-soft); box-shadow: 0 35px 0 var(--accent-soft), 0 70px 0 var(--accent-soft); content: ""; }
+.solution-object::after { position: absolute; right: 28px; bottom: 24px; width: 44px; height: 44px; border-radius: 50%; background: var(--accent); content: ""; }
+.triple-scene { justify-content: center; }
+.triple-head { max-width: 900px; }
+.triple-title { margin-top: 12px; font-size: 68px; font-weight: 900; letter-spacing: -.08em; line-height: .92; }
+.triple-reveal { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 58px; }
+.reveal-item { position: relative; min-height: 260px; padding: 26px; border-top: 10px solid var(--accent); background: var(--panel); }
+.reveal-item:nth-child(2) { border-color: var(--accent-deep); transform: translateY(28px); }
+.reveal-item:nth-child(3) { border-color: var(--ink); transform: translateY(56px); }
+.reveal-item .reveal-no { color: var(--accent); font-size: 56px; font-weight: 900; letter-spacing: -.08em; }
+.reveal-item h2 { margin-top: 18px; font-size: 29px; letter-spacing: -.045em; }
+.reveal-item p { margin-top: 10px; color: var(--muted); font-size: 17px; line-height: 1.35; }
+.feature-visual { display: flex; align-items: center; justify-content: center; background: linear-gradient(145deg, var(--accent-soft), var(--panel)); }
+.feature-visual::before { background: radial-gradient(circle at 25% 25%, var(--accent) 0 9%, transparent 9.5%), linear-gradient(120deg, transparent 0 48%, color-mix(in srgb, var(--accent) 25%, transparent) 48% 49%, transparent 49%); opacity: .35; }
+.device-frame { position: relative; width: 310px; height: 430px; padding: 18px; border: 6px solid var(--ink); border-radius: 34px; background: var(--paper); box-shadow: 28px 28px 0 color-mix(in srgb, var(--accent) 42%, transparent); transform: rotate(7deg); }
+.device-frame::before { display: block; width: 80px; height: 10px; margin: 2px auto 22px; border-radius: 999px; background: var(--ink); content: ""; opacity: .8; }
+.device-screen { height: 330px; padding: 18px; background: linear-gradient(160deg, var(--accent), var(--accent-deep)); color: var(--quote-ink); }
+.device-screen strong { display: block; font-size: 46px; letter-spacing: -.08em; line-height: .9; }
+.device-screen span { display: block; margin-top: 150px; font-size: 13px; font-weight: 900; letter-spacing: .11em; text-transform: uppercase; }
+.feature-copy { display: flex; flex-direction: column; justify-content: center; padding: 32px; }
+.feature-copy .feature-index { color: var(--accent); font-size: 14px; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; }
+.feature-copy h2 { max-width: 530px; margin-top: 18px; font-size: 55px; font-weight: 900; letter-spacing: -.07em; line-height: .94; }
+.feature-copy p { max-width: 490px; margin-top: 20px; color: var(--muted); font-size: 20px; line-height: 1.4; }
+.journey-scene { justify-content: center; }
+.journey-head { max-width: 980px; }
+.journey-title { margin-top: 12px; font-size: 67px; font-weight: 900; letter-spacing: -.08em; line-height: .93; }
+.journey-line { display: grid; grid-template-columns: repeat(5, 1fr); margin-top: 70px; border-top: 3px solid var(--accent); }
+.journey-step { position: relative; min-height: 230px; padding: 38px 18px 0 0; border-right: 1px solid var(--line); }
+.journey-step:not(:first-child) { padding-left: 18px; }
+.journey-step:last-child { border-right: 0; }
+.journey-step::before { position: absolute; left: -1px; top: -12px; width: 20px; height: 20px; border: 4px solid var(--paper); border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 1px var(--accent); content: ""; }
+.journey-step strong { color: var(--accent); font-size: 14px; letter-spacing: .14em; text-transform: uppercase; }
+.journey-step h2 { margin-top: 18px; font-size: 25px; letter-spacing: -.04em; }
+.journey-step p { margin-top: 10px; color: var(--muted); font-size: 17px; line-height: 1.35; }
+.proof-quote { background: var(--ink); color: var(--paper); border-left-color: var(--accent); }
+.proof-quote .label { color: var(--accent); }
+.proof-quote h2 { font-family: var(--serif); font-size: 49px; font-weight: 700; }
+.proof-quote cite { margin-top: 28px; color: var(--muted); font-size: 13px; font-style: normal; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+.proof-rail { display: flex; flex-direction: column; justify-content: space-between; background: var(--panel); }
+.proof-stat { color: var(--accent); font-size: 88px; font-weight: 900; letter-spacing: -.11em; line-height: .8; }
+.proof-rail h2 { max-width: 330px; margin-top: 20px; font-size: 28px; letter-spacing: -.05em; }
+.proof-rail p { max-width: 360px; color: var(--muted); font-size: 17px; line-height: 1.35; }
+.funnel-scene { justify-content: center; }
+.funnel-head { max-width: 900px; }
+.funnel-title { margin-top: 12px; font-size: 66px; font-weight: 900; letter-spacing: -.08em; line-height: .94; }
+.funnel-stage { display: grid; grid-template-columns: 1fr .8fr; gap: 60px; align-items: center; margin-top: 48px; }
+.market-funnel { display: flex; flex-direction: column; gap: 9px; align-items: center; }
+.market-funnel .funnel-band { display: flex; min-height: 58px; align-items: center; justify-content: space-between; padding: 0 22px; border: 1px solid var(--line-strong); background: var(--accent-soft); }
+.market-funnel .funnel-band:nth-child(1) { width: 100%; background: var(--panel); }
+.market-funnel .funnel-band:nth-child(2) { width: 82%; }
+.market-funnel .funnel-band:nth-child(3) { width: 64%; background: var(--accent); color: var(--quote-ink); }
+.market-funnel .funnel-band:nth-child(4) { width: 46%; background: var(--accent-deep); color: var(--quote-ink); }
+.market-funnel .funnel-band:nth-child(5) { width: 30%; background: var(--ink); color: var(--paper); }
+.market-funnel strong { font-size: 18px; letter-spacing: -.02em; }
+.market-funnel span { font-size: 12px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+.funnel-note { padding-left: 24px; border-left: 5px solid var(--accent); color: var(--muted); font-size: 20px; line-height: 1.4; }
+.traction-scene { justify-content: center; }
+.traction-title { max-width: 960px; margin-top: 12px; font-size: 68px; font-weight: 900; letter-spacing: -.08em; line-height: .92; }
+.traction-stage { display: grid; grid-template-columns: 1.22fr .78fr; gap: 34px; align-items: end; margin-top: 48px; }
+.traction-chart { display: flex; align-items: end; gap: 20px; height: 320px; padding: 24px 24px 0; border-bottom: 2px solid var(--ink); border-left: 2px solid var(--ink); }
+.traction-bar { display: flex; flex: 1; flex-direction: column; justify-content: end; gap: 12px; height: 100%; }
+.traction-bar i { display: block; min-height: 20px; background: linear-gradient(180deg, var(--accent), var(--accent-deep)); }
+.traction-bar span { color: var(--muted); font-size: 13px; font-weight: 900; letter-spacing: .08em; text-align: center; text-transform: uppercase; }
+.traction-callout { min-height: 250px; padding: 30px; border: 1px solid var(--line); background: var(--panel); }
+.traction-callout strong { display: block; color: var(--accent); font-size: 76px; font-weight: 900; letter-spacing: -.1em; line-height: .8; }
+.traction-callout h2 { margin-top: 22px; font-size: 27px; letter-spacing: -.04em; }
+.traction-callout p { margin-top: 12px; color: var(--muted); font-size: 17px; line-height: 1.35; }
+.comparison-layout { grid-template-columns: 1fr 1fr; }
+.comparison-column { min-height: 390px; padding: 28px; border-top: 10px solid var(--line-strong); background: var(--panel); }
+.comparison-column.highlight { border-color: var(--accent); background: var(--accent-soft); }
+.comparison-column .label { color: var(--accent); font-size: 14px; font-weight: 900; letter-spacing: .15em; text-transform: uppercase; }
+.comparison-column h2 { margin-top: 20px; font-size: 42px; letter-spacing: -.06em; line-height: .96; }
+.comparison-column ul { display: grid; gap: 13px; margin: 30px 0 0; padding: 0; list-style: none; }
+.comparison-column li { padding-top: 13px; border-top: 1px solid var(--line); color: var(--muted); font-size: 17px; line-height: 1.25; }
+.moat-scene { justify-content: center; }
+.moat-layout { display: grid; grid-template-columns: .8fr 1.2fr; gap: 60px; align-items: center; margin-top: 34px; }
+.moat-copy { max-width: 520px; }
+.moat-title { margin-top: 15px; font-size: 60px; font-weight: 900; letter-spacing: -.07em; line-height: .92; }
+.moat-copy p { margin-top: 22px; color: var(--muted); font-size: 19px; line-height: 1.4; }
+.moat-rings { position: relative; display: flex; min-height: 460px; align-items: center; justify-content: center; }
+.moat-ring { position: absolute; display: flex; align-items: center; justify-content: center; border: 1px solid var(--accent); border-radius: 50%; color: var(--accent-deep); font-size: 14px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+.moat-ring.outer { width: 430px; height: 430px; opacity: .35; }
+.moat-ring.middle { width: 300px; height: 300px; background: color-mix(in srgb, var(--accent-soft) 40%, transparent); }
+.moat-ring.inner { width: 155px; height: 155px; border: 4px solid var(--accent); background: var(--panel); color: var(--accent); }
+.bridge-scene { justify-content: center; }
+.bridge-title { max-width: 950px; margin-top: 12px; font-size: 66px; font-weight: 900; letter-spacing: -.08em; line-height: .94; }
+.bridge-layout { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; margin-top: 62px; border-top: 3px solid var(--accent); }
+.bridge-step { min-height: 190px; padding: 28px 18px 0 0; border-right: 1px solid var(--line); }
+.bridge-step:not(:first-child) { padding-left: 18px; }
+.bridge-step:last-child { border-right: 0; }
+.bridge-step strong { color: var(--accent); font-size: 14px; letter-spacing: .12em; text-transform: uppercase; }
+.bridge-step h2 { margin-top: 18px; font-size: 25px; letter-spacing: -.04em; }
+.bridge-step p { margin-top: 9px; color: var(--muted); font-size: 16px; line-height: 1.3; }
+.pricing-scene { justify-content: center; }
+.pricing-head { max-width: 870px; }
+.pricing-title { margin-top: 12px; font-size: 66px; font-weight: 900; letter-spacing: -.08em; line-height: .94; }
+.price-ladder { display: grid; grid-template-columns: repeat(3, 1fr); align-items: end; gap: 16px; margin-top: 58px; }
+.price-tier { min-height: 220px; padding: 25px; border: 1px solid var(--line-strong); background: var(--panel); }
+.price-tier:nth-child(2) { min-height: 290px; border-color: var(--accent); background: var(--accent-soft); }
+.price-tier:nth-child(3) { min-height: 360px; background: var(--ink); color: var(--paper); }
+.price-tier small { color: var(--accent); font-size: 13px; font-weight: 900; letter-spacing: .15em; text-transform: uppercase; }
+.price-tier h2 { margin-top: 24px; font-size: 31px; letter-spacing: -.06em; }
+.price-tier strong { display: block; margin-top: 20px; font-size: 56px; letter-spacing: -.1em; }
+.price-tier p { margin-top: 13px; color: var(--muted); font-size: 16px; line-height: 1.3; }
+.gtm-scene { justify-content: center; }
+.gtm-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 42px; }
+.gtm-channel { min-height: 250px; padding: 25px; border-top: 8px solid var(--accent); background: var(--panel); }
+.gtm-channel:nth-child(2) { border-color: var(--accent-deep); transform: translateY(30px); }
+.gtm-channel:nth-child(3) { border-color: var(--ink); transform: translateY(-12px); }
+.gtm-channel:nth-child(4) { border-color: var(--accent); transform: translateY(46px); }
+.gtm-channel strong { color: var(--accent); font-size: 42px; letter-spacing: -.08em; }
+.gtm-channel h2 { margin-top: 22px; font-size: 27px; letter-spacing: -.04em; }
+.gtm-channel p { margin-top: 10px; color: var(--muted); font-size: 17px; line-height: 1.35; }
+.case-facts { display: flex; flex-direction: column; justify-content: center; background: var(--ink); color: var(--paper); }
+.case-facts strong { color: var(--accent); font-size: 120px; font-weight: 900; letter-spacing: -.12em; line-height: .78; }
+.case-facts h2 { margin-top: 26px; font-size: 29px; letter-spacing: -.04em; }
+.case-facts p { max-width: 320px; margin-top: 12px; color: var(--muted); font-size: 17px; line-height: 1.35; }
+.case-story { display: grid; gap: 12px; }
+.case-step { display: grid; grid-template-columns: 150px 1fr; gap: 22px; align-items: center; min-height: 108px; padding: 15px 18px; border-bottom: 1px solid var(--line); }
+.case-step small { color: var(--accent); font-size: 13px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
+.case-step h2 { font-size: 28px; letter-spacing: -.04em; }
+.case-step p { grid-column: 2; margin-top: -16px; color: var(--muted); font-size: 16px; line-height: 1.3; }
+.customer-scene { justify-content: center; }
+.customer-title { max-width: 930px; margin-top: 12px; font-size: 66px; font-weight: 900; letter-spacing: -.08em; line-height: .94; }
+.customer-journey { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: 56px; border-top: 2px solid var(--ink); }
+.customer-step { min-height: 240px; padding: 28px 18px 0 0; border-right: 1px solid var(--line); }
+.customer-step:not(:first-child) { padding-left: 18px; }
+.customer-step:last-child { border-right: 0; }
+.customer-step span { color: var(--accent); font-size: 45px; font-weight: 900; letter-spacing: -.08em; }
+.customer-step h2 { margin-top: 16px; font-size: 25px; letter-spacing: -.04em; }
+.customer-step p { margin-top: 9px; color: var(--muted); font-size: 16px; line-height: 1.32; }
+.research-quote { background: var(--accent-soft); }
+.research-quote h2 { max-width: 680px; margin-top: 24px; font-family: var(--serif); font-size: 48px; font-weight: 700; letter-spacing: -.045em; line-height: 1.04; }
+.research-quote cite { margin-top: 24px; color: var(--muted); font-size: 13px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+.research-aside { display: flex; flex-direction: column; justify-content: end; background: var(--panel); }
+.research-aside strong { color: var(--accent); font-size: 82px; letter-spacing: -.1em; line-height: .8; }
+.research-aside h2 { margin-top: 24px; font-size: 27px; letter-spacing: -.05em; }
+.research-aside p { margin-top: 10px; color: var(--muted); font-size: 17px; line-height: 1.35; }
+.choice-scene { justify-content: center; }
+.choice-title { max-width: 910px; margin-top: 12px; font-size: 65px; font-weight: 900; letter-spacing: -.08em; line-height: .94; }
+.choice-map { display: grid; grid-template-columns: 34px 1fr; grid-template-rows: 26px 1fr; gap: 12px; margin-top: 44px; }
+.choice-axis-y { display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 12px; font-weight: 900; letter-spacing: .13em; text-transform: uppercase; writing-mode: vertical-rl; transform: rotate(180deg); }
+.choice-axis-x { display: grid; grid-template-columns: 1fr 1fr; color: var(--muted); font-size: 12px; font-weight: 900; letter-spacing: .13em; text-align: center; text-transform: uppercase; }
+.choice-grid-plot { position: relative; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 9px; min-height: 350px; }
+.choice-cell { padding: 18px; border: 1px solid var(--line); background: var(--panel); }
+.choice-cell:nth-child(2), .choice-cell:nth-child(3) { background: var(--accent-soft); }
+.choice-cell strong { color: var(--accent-deep); font-size: 21px; letter-spacing: -.04em; }
+.choice-cell p { max-width: 260px; margin-top: 8px; color: var(--muted); font-size: 15px; line-height: 1.3; }
+.choice-dot { position: absolute; right: 23%; bottom: 28%; width: 28px; height: 28px; border: 6px solid var(--paper); border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.operating-map { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; background: var(--accent-soft); }
+.operating-cell { min-height: 170px; padding: 20px; border: 1px solid var(--line-strong); background: var(--panel); }
+.operating-cell:nth-child(2) { transform: translateY(24px); }
+.operating-cell:nth-child(3) { transform: translateX(24px); }
+.operating-cell strong { color: var(--accent); font-size: 24px; letter-spacing: -.04em; }
+.operating-cell p { margin-top: 10px; color: var(--muted); font-size: 16px; line-height: 1.3; }
+.operating-copy { display: flex; flex-direction: column; justify-content: center; padding: 32px; }
+.operating-copy h2 { max-width: 500px; margin-top: 18px; font-size: 52px; font-weight: 900; letter-spacing: -.07em; line-height: .94; }
+.ask-visual { display: flex; flex-direction: column; justify-content: space-between; background: var(--ink); color: var(--paper); }
+.ask-visual strong { color: var(--accent); font-size: 146px; letter-spacing: -.13em; line-height: .72; }
+.ask-visual h2 { max-width: 380px; font-size: 31px; letter-spacing: -.05em; }
+.ask-visual p { max-width: 370px; color: var(--muted); font-size: 17px; line-height: 1.35; }
+.ask-list { display: grid; gap: 13px; margin: 0; padding: 0; list-style: none; }
+.ask-list li { display: grid; grid-template-columns: 48px 1fr; gap: 15px; align-items: start; padding: 15px 0; border-bottom: 1px solid var(--line); }
+.ask-list span { color: var(--accent); font-size: 22px; font-weight: 900; }
+.ask-list strong { font-size: 23px; letter-spacing: -.04em; }
+.ask-list p { margin-top: 4px; color: var(--muted); font-size: 16px; line-height: 1.3; }
+.close-scene { justify-content: end; background: var(--ink); color: var(--paper); }
+.close-scene::before { background: radial-gradient(circle at 82% 20%, var(--accent) 0 14%, transparent 14.5%), linear-gradient(135deg, transparent 0 64%, color-mix(in srgb, var(--accent-deep) 55%, transparent) 64% 65%, transparent 65%); opacity: .7; }
+body[data-pl-archetype][data-pl-profile] .close-scene::before { background: radial-gradient(circle at 82% 20%, var(--accent) 0 14%, transparent 14.5%), linear-gradient(135deg, transparent 0 64%, color-mix(in srgb, var(--accent-deep) 55%, transparent) 64% 65%, transparent 65%); background-blend-mode: normal; background-position: initial; background-repeat: no-repeat; background-size: auto; }
+.close-layout { position: relative; z-index: 1; max-width: 1000px; }
+.close-kicker { color: var(--quote-mark); font-size: 15px; font-weight: 900; letter-spacing: .2em; text-transform: uppercase; }
+.close-title { margin-top: 22px; font-size: 90px; font-weight: 900; letter-spacing: -.09em; line-height: .86; }
+.close-title em { color: var(--quote-mark); font-style: normal; }
+.close-deck { max-width: 650px; margin-top: 26px; color: color-mix(in srgb, var(--paper) 76%, transparent); font-size: 24px; line-height: 1.35; }
+.close-meta { display: flex; gap: 28px; margin-top: 54px; color: var(--quote-mark); font-size: 13px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; }
+.close-scene .story-footer { color: var(--quote-mark); }
+
+/* The reference decks use different modes of attention, not one universal card grid. */
+body[data-pl-archetype="keynote"] .story-title,
+body[data-pl-archetype="keynote"] .opening-title,
+body[data-pl-archetype="keynote"] .cold-open-title,
+body[data-pl-archetype="keynote"] .close-title { text-transform: none; }
+body[data-pl-archetype="keynote"] .slide { background-image: radial-gradient(circle at 84% 22%, color-mix(in srgb, var(--accent) 17%, transparent) 0 1px, transparent 2px); }
+body[data-pl-archetype="keynote"] .panel, body[data-pl-archetype="keynote"] .stat { border: 0; background: color-mix(in srgb, var(--panel) 80%, transparent); box-shadow: none; }
+body[data-pl-archetype="pitch"] .story-title, body[data-pl-archetype="pitch"] .opening-title { font-weight: 800; }
+body[data-pl-archetype="pitch"] .story-deck, body[data-pl-archetype="pitch"] .opening-deck { max-width: 610px; }
+body[data-pl-archetype="pitch"] .problem-statement, body[data-pl-archetype="pitch"] .solution-claim { box-shadow: none; border-left-width: 5px; }
+body[data-pl-archetype="editorial"] .story-title, body[data-pl-archetype="editorial"] .opening-title, body[data-pl-archetype="editorial"] .cold-open-title, body[data-pl-archetype="editorial"] .close-title { font-family: var(--serif); font-weight: 600; letter-spacing: -.065em; }
+body[data-pl-archetype="editorial"] .story-deck, body[data-pl-archetype="editorial"] .opening-deck { font-family: var(--serif); }
+body[data-pl-archetype="editorial"] .scene-frame { min-height: 480px; }
+body[data-pl-archetype="strategy"] .story-title, body[data-pl-archetype="strategy"] .opening-title { letter-spacing: -.055em; }
+body[data-pl-archetype="strategy"] .story-head { padding-bottom: 16px; border-bottom: 3px solid var(--ink); }
+body[data-pl-archetype="strategy"] .panel, body[data-pl-archetype="strategy"] .stat { border-radius: 0; box-shadow: none; }
+body[data-pl-archetype="research"] .story-title, body[data-pl-archetype="research"] .opening-title { font-family: var(--serif); font-weight: 600; }
+body[data-pl-archetype="research"] .story-eyebrow { font-family: var(--sans); }
+body[data-pl-archetype="research"] .story-rule { background: var(--ink); }
+body[data-pl-archetype="product"] .opening-layout, body[data-pl-archetype="product"] .solution-layout { align-items: end; }
+body[data-pl-archetype="product"] .device-frame { box-shadow: 0 28px 80px color-mix(in srgb, var(--accent) 36%, transparent); }
+body[data-pl-archetype="product"] .feature-copy h2 { max-width: 660px; }
+body[data-pl-archetype="manifesto"] .slide { border: 5px solid var(--ink); }
+body[data-pl-archetype="manifesto"] .opening-title, body[data-pl-archetype="manifesto"] .close-title { text-transform: uppercase; }
+body[data-pl-archetype="manifesto"] .opening-surface, body[data-pl-archetype="manifesto"] .state-frame { box-shadow: 14px 14px 0 var(--ink); }
+body[data-pl-archetype="culture"] .reveal-item:nth-child(2), body[data-pl-archetype="culture"] .gtm-channel:nth-child(2) { transform: rotate(-2deg) translateY(28px); }
+body[data-pl-archetype="culture"] .reveal-item:nth-child(3), body[data-pl-archetype="culture"] .gtm-channel:nth-child(4) { transform: rotate(2deg) translateY(48px); }
+body[data-pl-archetype="culture"] .story-title { text-transform: uppercase; }
 `;
 
 const styleCss = {
@@ -926,6 +1225,106 @@ const familyLabels = {
   retrofuture: "Retro Future",
 };
 
+function deckArchetype(template) {
+  const group = String(template.styleGroup ?? "").toLowerCase();
+  const family = String(template.baseFamily ?? template.family ?? "").toLowerCase();
+  const variant = String(template.family ?? "").toLowerCase();
+  const modifier = String(template.modifier ?? "").toLowerCase();
+  const key = `${group} ${family} ${variant} ${modifier}`;
+  if (/strategy|operating|consult|corporate/.test(key)) {
+    return "strategy";
+  }
+  if (
+    /abstract|afrofutur|artbrut|artdeco|baroque|collage|cubist|dada|folk|gothic|impressionist|latin|memphis|moorish|paper-cut|papercut|pop-art|popart|postmodern|psychedelic|rococo|surreal/.test(
+      key,
+    )
+  ) {
+    return "culture";
+  }
+  if (/midnight|cinematic|synthwave|vaporwave|retrofuture|cyberpunk|glitchcore|kinetic/.test(key)) {
+    return "keynote";
+  }
+  if (
+    /editorial|fashion|japanese|scandi|botanical|victorian|art-nouveau|arts-and-crafts|wabi|quietluxury|lightacademia/.test(
+      key,
+    )
+  ) {
+    return "editorial";
+  }
+  if (
+    /scientific|research|data|cartographic|industrial|architectural|academic|datanoir|skeuo/.test(
+      key,
+    )
+  ) {
+    return "research";
+  }
+  if (/product|material|techno-organic|organic|aurora|midcentury|biophilic|solarpunk/.test(key)) {
+    return "product";
+  }
+  if (/pitch|startup|market|business|swiss|luxury/.test(key)) {
+    return "pitch";
+  }
+  if (/brutalist|constructivist|bauhaus|destijl|suprematism|neobrutalist|minimalist/.test(key)) {
+    return "manifesto";
+  }
+  return "strategy";
+}
+
+function storyArchetypeCss(archetype) {
+  const common = {
+    keynote: `
+      body[data-pl-archetype="keynote"] .opening-scene,
+      body[data-pl-archetype="keynote"] .cold-open-scene,
+      body[data-pl-archetype="keynote"] .close-scene { background: var(--paper); }
+      body[data-pl-archetype="keynote"] .opening-figure { font-size: 210px; }
+      body[data-pl-archetype="keynote"] .scene-frame { background: linear-gradient(145deg, var(--ink), var(--accent-deep)); }
+      body[data-pl-archetype="keynote"] .close-scene { background: var(--paper); color: var(--ink); }
+      body[data-pl-archetype="keynote"] .close-deck { color: var(--muted); }
+      body[data-pl-archetype="keynote"] .close-title em,
+      body[data-pl-archetype="keynote"] .close-kicker,
+      body[data-pl-archetype="keynote"] .close-meta,
+      body[data-pl-archetype="keynote"] .close-scene .story-footer { color: var(--accent); }
+      body[data-pl-archetype="keynote"] .close-scene::before { opacity: .25; }
+    `,
+    pitch: `
+      body[data-pl-archetype="pitch"] .opening-surface { transform: rotate(3deg); }
+      body[data-pl-archetype="pitch"] .cold-open-number { font-size: 260px; }
+      body[data-pl-archetype="pitch"] .story-rule { width: 180px; }
+    `,
+    editorial: `
+      body[data-pl-archetype="editorial"] .opening-surface { transform: rotate(-1deg); }
+      body[data-pl-archetype="editorial"] .scene-frame { border-radius: 2px 70px 2px 70px; }
+      body[data-pl-archetype="editorial"] .opening-caption { font-family: var(--serif); }
+    `,
+    strategy: `
+      body[data-pl-archetype="strategy"] .opening-surface { transform: rotate(0deg); }
+      body[data-pl-archetype="strategy"] .opening-bars { gap: 3px; }
+      body[data-pl-archetype="strategy"] .story-title { max-width: 980px; }
+    `,
+    research: `
+      body[data-pl-archetype="research"] .opening-surface { transform: rotate(0deg); background: var(--panel); }
+      body[data-pl-archetype="research"] .opening-orbit { border-style: dashed; }
+      body[data-pl-archetype="research"] .context-quote { font-family: var(--serif); }
+    `,
+    product: `
+      body[data-pl-archetype="product"] .opening-surface { transform: rotate(-8deg); }
+      body[data-pl-archetype="product"] .opening-figure { color: var(--ink); text-shadow: 8px 8px 0 var(--accent); }
+      body[data-pl-archetype="product"] .solution-object { transform: translate(-50%, -50%) rotate(4deg); }
+    `,
+    manifesto: `
+      body[data-pl-archetype="manifesto"] .opening-surface { transform: rotate(7deg); }
+      body[data-pl-archetype="manifesto"] .opening-figure { color: var(--accent); }
+      body[data-pl-archetype="manifesto"] .cold-open-number { color: var(--ink); }
+    `,
+    culture: `
+      body[data-pl-archetype="culture"] .opening-surface { transform: rotate(-11deg); }
+      body[data-pl-archetype="culture"] .opening-orbit { transform: rotate(18deg); }
+      body[data-pl-archetype="culture"] .scene-frame { transform: rotate(-1deg); }
+    `,
+  };
+  return common[archetype] ?? common.strategy;
+}
+
 function paletteCss(tokens) {
   return `
     :root {
@@ -949,8 +1348,9 @@ function paletteCss(tokens) {
   `;
 }
 
-function slide(id, body) {
-  return `<section class="slide" data-pl-slide data-slide-id="${id}">${body}</section>`;
+function slide(id, body, className = "") {
+  const classes = className ? ` slide ${className}` : " slide";
+  return `<section class="${classes.trim()}" data-pl-slide data-slide-id="${id}">${body}</section>`;
 }
 
 function layoutSlide(id, layout, body) {
@@ -1085,7 +1485,7 @@ function additionalSlides(label) {
     `<div class="section-head"><div><p class="kicker">${kicker}</p><h1 class="section-title">${title}</h1><p class="section-lede">${lede}</p></div><span class="page-no">${page}</span></div>`;
   const foot = (page, title) => `<p class="footer">${page} / ${title}</p>`;
 
-  return [
+  const slides = [
     layoutSlide(
       "statement",
       "layout-statement",
@@ -1187,6 +1587,16 @@ function additionalSlides(label) {
       `${head("43 / Reference", "The appendix should make the work easier to continue.", "Use a reference page for definitions, source notes, or the next set of practical questions.", "44")}<div class="appendix"><div class="appendix-column"><div class="appendix-row"><span class="appendix-no">A1</span><div><h2>Family</h2><p>The structural direction that sets the visual grammar.</p></div></div><div class="appendix-row"><span class="appendix-no">A2</span><div><h2>Palette</h2><p>The color system that changes the atmosphere and contrast.</p></div></div><div class="appendix-row"><span class="appendix-no">A3</span><div><h2>Modifier</h2><p>The spacing, type, or surface treatment that sharpens the job.</p></div></div></div><div class="appendix-column"><div class="appendix-row"><span class="appendix-no">B1</span><div><h2>Source</h2><p>HTML remains the inspectable starting point for the template.</p></div></div><div class="appendix-row"><span class="appendix-no">B2</span><div><h2>Review</h2><p>Rendered pages reveal issues the source alone cannot show.</p></div></div><div class="appendix-row"><span class="appendix-no">B3</span><div><h2>Next</h2><p>Choose a layout by the job it needs to perform.</p></div></div></div></div>${foot("44", "Appendix layout")}`,
     ),
   ];
+  return slides.map((html, index) => {
+    const oldKicker = String(24 + index).padStart(2, "0");
+    const newKicker = String(25 + index).padStart(2, "0");
+    const oldPage = String(25 + index).padStart(2, "0");
+    const newPage = String(26 + index).padStart(2, "0");
+    return html
+      .replaceAll(`>${oldPage}<`, `>${newPage}<`)
+      .replaceAll(`${oldPage} /`, `${newPage} /`)
+      .replaceAll(`${oldKicker} /`, `${newKicker} /`);
+  });
 }
 
 function commonSlides(name, label) {
@@ -1295,6 +1705,141 @@ function commonSlides(name, label) {
   ];
 }
 
+void commonSlides;
+
+function reframedCommonSlides(name, label) {
+  const head = (eyebrow, title, deck, page) =>
+    `<div class="story-head"><div class="story-head-copy"><p class="story-eyebrow">${eyebrow}</p><h1 class="story-title">${title}</h1><p class="story-deck">${deck}</p><div class="story-rule"></div></div><span class="story-page">${page}</span></div>`;
+  const foot = (page, title) => `<p class="story-footer">${page} / ${title}</p>`;
+  return [
+    slide(
+      "cover",
+      `<div class="opening-layout"><div class="opening-copy"><p class="opening-kicker">PresentLab / ${label}</p><h1 class="opening-title">Make the next idea <em>impossible to miss.</em></h1><p class="opening-deck">A narrative-first starting point for a deck that earns attention, shows proof, and leaves the next move easy to name.</p><div class="opening-meta"><span>16:9 canvas</span><span>${name.toUpperCase()}</span><span>Source / HTML</span></div></div><div class="opening-visual" aria-hidden="true"><div class="opening-orbit"></div><div class="opening-surface"></div><strong class="opening-figure">01</strong><div class="opening-bars"><i style="height:34%"></i><i style="height:57%"></i><i style="height:43%"></i><i style="height:78%"></i><i style="height:66%"></i><i style="height:92%"></i></div><span class="opening-caption">A point of view / 01</span></div></div>${foot("01", "Opening frame")}`,
+      "opening-scene",
+    ),
+    slide(
+      "cold-open",
+      `<div class="cold-open-wrap"><p class="story-eyebrow">01 / The point</p><div class="cold-open-number">1</div><h1 class="cold-open-title">One decisive idea per slide.</h1><p class="cold-open-note">The strongest decks make the first glance do useful work. The rest of the page earns the second glance.</p><div class="cold-open-foot"><span>Signal before detail</span><span>02</span></div></div>`,
+      "cold-open-scene",
+    ),
+    slide(
+      "problem",
+      `${head("02 / Problem", "The audience should not have to build the hierarchy alone.", "A page becomes tiring when every element competes for the first glance and the claim arrives after the explanation.", "03")}<div class="problem-layout"><article class="problem-statement"><span class="label">The friction</span><h2>Too many equal-weight elements turn a simple point into a scavenger hunt.</h2><p>Start with the tension the deck needs to resolve, then give the audience one clear place to look.</p></article><aside class="problem-context"><span class="context-stamp">Observed pattern</span><p class="context-quote">“Where should I look first?”</p><p class="context-note">A useful template answers this question through spacing, scale, and sequence.</p></aside></div>${foot("03", "Problem frame")}`,
+      "problem-scene",
+    ),
+    slide(
+      "scene",
+      `${head("03 / Context", "Show the moment before you explain the system.", "A scene gives the audience a human entry point and keeps the abstract claim connected to a recognizable situation.", "04")}<div class="scene-layout"><div class="scene-frame"><span class="visual-stamp">The room / before</span><h2>A decision is waiting, but the story has no focal point.</h2></div><aside class="scene-caption"><p class="big-quote">The page should feel like a door, not a filing cabinet.</p><small>Opening scene / narrative context</small></aside></div>${foot("04", "Context scene")}`,
+      "scene-scene",
+    ),
+    slide(
+      "contrast",
+      `<div class="before-after-head"><p class="story-eyebrow">04 / Contrast</p><h1 class="before-after-title">The visual system earns its place when the reading path gets shorter.</h1><p class="story-deck">Use contrast to make the change tangible before the audience gets lost in implementation detail.</p></div><div class="before-after-grid"><article class="state-frame"><small>Before</small><h2>Fragmented story</h2><p>The reader has to decide what matters, what supports it, and where the conclusion lives.</p></article><div class="state-divider">+</div><article class="state-frame after"><small>After</small><h2>One visible thread</h2><p>The title states the point, the proof sits nearby, and the next action has a clear place.</p></article></div>${foot("05", "Before and after")}`,
+      "before-after-scene",
+    ),
+    slide(
+      "why-now",
+      `<div class="why-now-layout"><div><p class="story-eyebrow">05 / Timing</p><h1 class="why-now-statement">The right idea needs <em>the right moment.</em></h1><p class="story-deck">A persuasive sequence explains why this problem matters now, not only why it exists.</p></div><div class="why-now-rail"><div class="why-now-row"><strong>Then</strong><p>The old way was familiar, but it made the important signal hard to see.</p></div><div class="why-now-row"><strong>Now</strong><p>Attention is shorter and the decision needs a more direct visual path.</p></div><div class="why-now-row"><strong>Next</strong><p>A reusable grammar can make the next conversation easier to enter.</p></div></div></div>${foot("06", "Why now")}`,
+      "why-now-scene",
+    ),
+    slide(
+      "solution",
+      `${head("06 / Solution", "Make the claim visible before the machinery arrives.", "The system is useful when it turns a complicated brief into a sequence the room can follow without decoding.", "07")}<div class="solution-layout"><article class="solution-claim"><span class="label">The answer</span><h2>Give every page one job, one focal point, and one next question.</h2><p>The template becomes a stage for the idea instead of another object the audience must learn.</p></article><div class="solution-visual" aria-hidden="true"><div class="solution-object"></div><span class="visual-stamp">Reusable / inspectable / ready</span></div></div>${foot("07", "Solution reveal")}`,
+      "solution-scene",
+    ),
+    slide(
+      "three-reveal",
+      `<div class="triple-head"><p class="story-eyebrow">07 / Reveal</p><h1 class="triple-title">Three moves make the story easier to carry.</h1><p class="story-deck">Use a small set of memorable beats instead of a wall of instructions.</p></div><div class="triple-reveal"><article class="reveal-item"><span class="reveal-no">01</span><h2>Frame the question</h2><p>Name the subject and the decision before evidence enters.</p></article><article class="reveal-item"><span class="reveal-no">02</span><h2>Show the proof</h2><p>Put the number, quote, or example close enough to matter.</p></article><article class="reveal-item"><span class="reveal-no">03</span><h2>Open the next move</h2><p>Leave the audience with a consequence they can discuss.</p></article></div>${foot("08", "Three-part reveal")}`,
+      "triple-scene",
+    ),
+    slide(
+      "feature",
+      `${head("08 / Feature", "One feature deserves a stage of its own.", "Keynote decks create anticipation by removing everything that does not help the room notice the reveal.", "09")}<div class="feature-layout"><div class="feature-visual"><div class="device-frame"><div class="device-screen"><strong>01</strong><span>Focus the signal</span></div></div></div><div class="feature-copy"><span class="feature-index">Feature / focal object</span><h2>Let the visual carry the sentence.</h2><p>When the object is the argument, surround it with enough quiet space for the audience to recognize the change.</p></div></div>${foot("09", "Feature stage")}`,
+      "feature-scene",
+    ),
+    slide(
+      "journey",
+      `<div class="journey-head"><p class="story-eyebrow">09 / Experience</p><h1 class="journey-title">The audience should know where the story is going.</h1><p class="story-deck">A journey layout gives each turn a job and makes the movement visible without resorting to navigation chrome.</p></div><div class="journey-line"><article class="journey-step"><strong>01 / Enter</strong><h2>Context</h2><p>Give the room a reason to care.</p></article><article class="journey-step"><strong>02 / Notice</strong><h2>Signal</h2><p>Make the change visible.</p></article><article class="journey-step"><strong>03 / Believe</strong><h2>Proof</h2><p>Earn trust with evidence.</p></article><article class="journey-step"><strong>04 / Weigh</strong><h2>Trade-off</h2><p>Keep the hard part honest.</p></article><article class="journey-step"><strong>05 / Move</strong><h2>Action</h2><p>Name what happens next.</p></article></div>${foot("10", "Audience journey")}`,
+      "journey-scene",
+    ),
+    slide(
+      "proof",
+      `${head("10 / Proof", "A believable story lets the evidence speak in its own register.", "Quotes, numbers, and examples work best when the layout gives them enough room to feel specific.", "11")}<div class="proof-layout"><blockquote class="proof-quote"><span class="label">Reader signal</span><h2>“I knew what mattered before I knew how the system worked.”</h2><cite>Review note / representative quote</cite></blockquote><aside class="proof-rail"><div><strong class="proof-stat">01</strong><h2>Clear focal point</h2></div><p>One visible anchor reduces the amount of interpretation the audience has to do before the conversation can begin.</p></aside></div>${foot("11", "Proof moment")}`,
+      "proof-scene",
+    ),
+    slide(
+      "market",
+      `<div class="funnel-head"><p class="story-eyebrow">11 / Scale</p><h1 class="funnel-title">Start broad, then show where the real opportunity lives.</h1><p class="story-deck">A market slide earns trust when the narrowing logic is visible and each layer has a clear definition.</p></div><div class="funnel-stage"><div class="market-funnel"><div class="funnel-band"><strong>Everyone with the problem</strong><span>Context</span></div><div class="funnel-band"><strong>People actively looking</strong><span>Need</span></div><div class="funnel-band"><strong>Reachable audience</strong><span>Focus</span></div><div class="funnel-band"><strong>First wedge</strong><span>Entry</span></div><div class="funnel-band"><strong>Beachhead</strong><span>Now</span></div></div><p class="funnel-note">The point is not the shape alone. The point is to show why this audience, this moment, and this first move belong together.</p></div>${foot("12", "Opportunity funnel")}`,
+      "funnel-scene",
+    ),
+    slide(
+      "traction",
+      `<div><p class="story-eyebrow">12 / Evidence</p><h1 class="traction-title">A trend is useful when its meaning is visible beside it.</h1><p class="story-deck">Keep the chart simple enough to read in a room, then use the callout to state the implication plainly.</p></div><div class="traction-stage"><div class="traction-chart"><div class="traction-bar"><i style="height:28%"></i><span>Q1</span></div><div class="traction-bar"><i style="height:46%"></i><span>Q2</span></div><div class="traction-bar"><i style="height:61%"></i><span>Q3</span></div><div class="traction-bar"><i style="height:77%"></i><span>Q4</span></div><div class="traction-bar"><i style="height:96%"></i><span>Q5</span></div></div><aside class="traction-callout"><strong>+64%</strong><h2>More signal, less decoding</h2><p>The chart gives the direction; the sentence gives the reason the audience should care.</p></aside></div>${foot("13", "Traction chart")}`,
+      "traction-scene",
+    ),
+    slide(
+      "comparison-story",
+      `${head("13 / Alternatives", "A comparison should clarify the choice, not decorate the debate.", "Use the same measure on both sides so the audience can see where the meaningful difference actually sits.", "14")}<div class="comparison-layout"><article class="comparison-column"><span class="label">Familiar path</span><h2>More surface, more explanation.</h2><ul><li>Easy to recognize</li><li>Harder to scan under pressure</li><li>Requires the audience to assemble the hierarchy</li></ul></article><article class="comparison-column highlight"><span class="label">Focused path</span><h2>Less surface, more signal.</h2><ul><li>One focal point per page</li><li>Evidence sits beside the claim</li><li>Next move remains visible</li></ul></article></div>${foot("14", "Comparison")}`,
+      "comparison-scene",
+    ),
+    slide(
+      "moat",
+      `<div class="moat-layout"><div class="moat-copy"><p class="story-eyebrow">14 / Advantage</p><h1 class="moat-title">The strongest advantage compounds around the user.</h1><p>A system becomes hard to replace when the experience, the proof, and the learning loop reinforce one another.</p></div><div class="moat-rings" aria-label="Three concentric advantage layers"><span class="moat-ring outer">Context</span><span class="moat-ring middle">Experience</span><span class="moat-ring inner">Trust</span></div></div>${foot("15", "Compounding advantage")}`,
+      "moat-scene",
+    ),
+    slide(
+      "model",
+      `<div><p class="story-eyebrow">15 / Model</p><h1 class="bridge-title">The result depends on how the parts reinforce each other.</h1><p class="story-deck">A bridge layout is useful when the argument is relational: changing one part changes the value of the next.</p></div><div class="bridge-layout"><article class="bridge-step"><strong>Input</strong><h2>Signal</h2><p>Start from a real question.</p></article><article class="bridge-step"><strong>Translate</strong><h2>Frame</h2><p>Give the question a shape.</p></article><article class="bridge-step"><strong>Prove</strong><h2>Evidence</h2><p>Make belief possible.</p></article><article class="bridge-step"><strong>Choose</strong><h2>Decision</h2><p>Keep the trade-off visible.</p></article><article class="bridge-step"><strong>Repeat</strong><h2>Learning</h2><p>Use the next cycle to improve.</p></article></div>${foot("16", "Operating model")}`,
+      "bridge-scene",
+    ),
+    slide(
+      "pricing",
+      `<div class="pricing-head"><p class="story-eyebrow">16 / Offer</p><h1 class="pricing-title">Make the value ladder visible.</h1><p class="story-deck">A good pricing slide shows the progression in responsibility, not only the number attached to each tier.</p></div><div class="price-ladder"><article class="price-tier"><small>Start</small><h2>Essential</h2><strong>01</strong><p>For the first useful outcome.</p></article><article class="price-tier"><small>Grow</small><h2>Expanded</h2><strong>02</strong><p>For a team that needs repeatability.</p></article><article class="price-tier"><small>Scale</small><h2>System</h2><strong>03</strong><p>For an organization building the capability.</p></article></div>${foot("17", "Offer ladder")}`,
+      "pricing-scene",
+    ),
+    slide(
+      "go-to-market",
+      `<div><p class="story-eyebrow">17 / Reach</p><h1 class="story-title">A strong route to market has a first conversation in it.</h1><p class="story-deck">Separate the channel from the reason someone trusts the message enough to take the next step.</p></div><div class="gtm-layout"><article class="gtm-channel"><strong>01</strong><h2>Earn attention</h2><p>Lead with the problem people already feel.</p></article><article class="gtm-channel"><strong>02</strong><h2>Prove the shift</h2><p>Show the smallest credible outcome.</p></article><article class="gtm-channel"><strong>03</strong><h2>Invite a trial</h2><p>Make the first action concrete and low-friction.</p></article><article class="gtm-channel"><strong>04</strong><h2>Expand the trust</h2><p>Use the first win to open the next use case.</p></article></div>${foot("18", "Route to market")}`,
+      "gtm-scene",
+    ),
+    slide(
+      "case",
+      `${head("18 / Case", "A concrete example gives the system something to prove.", "Keep the story close to the change: what was difficult, what shifted, and what the audience can repeat.", "19")}<div class="case-layout"><aside class="case-facts"><strong>3×</strong><h2>More useful choices</h2><p>One family, three distinct jobs: orientation, evidence, and action.</p></aside><div class="case-story"><article class="case-step"><small>01 / Before</small><h2>Too many options</h2><p>Every page asked the reader to decide how to read it.</p></article><article class="case-step"><small>02 / Change</small><h2>Name the layout</h2><p>Each pattern received a clear purpose and a stable visual cue.</p></article><article class="case-step"><small>03 / After</small><h2>Faster selection</h2><p>The next author could choose a starting point without guessing.</p></article></div></div>${foot("19", "Case study")}`,
+      "case-scene",
+    ),
+    slide(
+      "customer",
+      `<div><p class="story-eyebrow">19 / Adoption</p><h1 class="customer-title">The customer journey is a sequence of confidence.</h1><p class="story-deck">Map the moments where the audience moves from recognition to action, and show what the system must make easier at each step.</p></div><div class="customer-journey"><article class="customer-step"><span>01</span><h2>Recognize</h2><p>I can name the problem.</p></article><article class="customer-step"><span>02</span><h2>Believe</h2><p>I can see why this works.</p></article><article class="customer-step"><span>03</span><h2>Try</h2><p>I know the first step.</p></article><article class="customer-step"><span>04</span><h2>Return</h2><p>I have a reason to continue.</p></article></div>${foot("20", "Customer journey")}`,
+      "customer-scene",
+    ),
+    slide(
+      "research",
+      `${head("20 / Research", "A useful insight changes the shape of the page.", "Use a pull quote for the finding that deserves memory, then keep the method close enough to protect trust.", "21")}<div class="research-layout"><blockquote class="research-quote"><span class="label">Finding</span><h2>“The audience did not need more information. It needed a clearer order.”</h2><cite>Representative research note</cite></blockquote><aside class="research-aside"><strong>04</strong><h2>Signals behind the finding</h2><p>Repeated questions, delayed decisions, and crowded first glances all pointed to the same design problem.</p></aside></div>${foot("21", "Research finding")}`,
+      "research-scene",
+    ),
+    slide(
+      "choice",
+      `<div><p class="story-eyebrow">21 / Decision</p><h1 class="choice-title">Put the hard choice where the audience can see it.</h1><p class="story-deck">A two-by-two works when the axes describe a real trade-off and the highlighted point has a reason to be there.</p></div><div class="choice-map"><span class="choice-axis-y">Impact</span><div class="choice-axis-x"><span>Lower effort</span><span>Higher effort</span></div><div></div><div class="choice-grid-plot"><article class="choice-cell"><strong>Maintain</strong><p>Useful when stability carries the value.</p></article><article class="choice-cell"><strong>Invest</strong><p>Useful when the upside earns the work.</p></article><article class="choice-cell"><strong>Watch</strong><p>Visible, but not yet worth the cost.</p></article><article class="choice-cell"><strong>Decide</strong><p>Requires an owner and a next move.</p></article><span class="choice-dot"></span></div></div>${foot("22", "Decision map")}`,
+      "choice-scene",
+    ),
+    slide(
+      "operating",
+      `${head("22 / Operations", "A system is real when ownership remains visible.", "Use a simple map to connect the work, the person who holds it, and the evidence that tells the team it is moving.", "23")}<div class="operating-layout"><div class="operating-map"><article class="operating-cell"><strong>Frame</strong><p>Owner: lead / Evidence: clear question</p></article><article class="operating-cell"><strong>Compose</strong><p>Owner: maker / Evidence: coherent page</p></article><article class="operating-cell"><strong>Review</strong><p>Owner: reviewer / Evidence: visible proof</p></article><article class="operating-cell"><strong>Release</strong><p>Owner: team / Evidence: usable handoff</p></article></div><div class="operating-copy"><p class="story-eyebrow">The operating idea</p><h2>Keep the work legible while it is still changeable.</h2><p class="story-deck">A polished output matters, but a dependable process makes the next output easier.</p></div></div>${foot("23", "Operating map")}`,
+      "operating-scene",
+    ),
+    slide(
+      "ask",
+      `<div class="ask-layout"><div><p class="story-eyebrow">23 / Ask</p><h1 class="story-title">The next move should fit on one page.</h1><p class="story-deck">Close the argument by naming what the audience should decide, who carries it, and what evidence comes next.</p><ul class="ask-list"><li><span>01</span><div><strong>Choose the direction</strong><p>Pick the visual grammar that matches the room.</p></div></li><li><span>02</span><div><strong>Protect the focal point</strong><p>Keep the key claim larger than its support.</p></div></li><li><span>03</span><div><strong>Review the real artifact</strong><p>Render the page before it becomes a dependency.</p></div></li></ul></div><aside class="ask-visual"><strong>01</strong><h2>One owner. One next question.</h2><p>A clear close makes the story useful after the meeting ends.</p></aside></div>${foot("24", "Decision ask")}`,
+      "ask-scene",
+    ),
+    slide(
+      "close",
+      `<div class="close-layout"><p class="close-kicker">PresentLab / Handoff</p><h1 class="close-title">Choose a direction.<br /><em>Make the story move.</em></h1><p class="close-deck">A template is only the beginning. The next page should make the next decision easier to see.</p><div class="close-meta"><span>One point of view</span><span>Evidence nearby</span><span>Next move visible</span></div></div>${foot("45", "Closing frame")}`,
+      "close-scene",
+    ),
+  ];
+}
+
 function htmlForTemplate(template) {
   const normalizeDisplayText = (value) =>
     value
@@ -1302,7 +1847,8 @@ function htmlForTemplate(template) {
       .replaceAll(String.fromCodePoint(0xe2, 0x20ac, 0x153), "&ldquo;");
   const title = `PresentLab ${normalizeDisplayText(template.label)} template gallery`;
   const profile = createDiversityProfile(template, template.galleryIndex);
-  const common = commonSlides(
+  const archetype = deckArchetype(template);
+  const common = reframedCommonSlides(
     template.name,
     normalizeDisplayText(template.visualLabel ?? template.label),
   );
@@ -1335,10 +1881,12 @@ function htmlForTemplate(template) {
   <meta name="description" content="${escapeHtml(template.description)}" />
   <style>${baseCss}
 ${additionalCss}
+${storyCss}
 ${template.css}
+${storyArchetypeCss(archetype)}
 ${diversityCss(profile)}</style>
 </head>
-<body class="theme-${template.name} family-${template.baseFamily ?? template.family} style-group-${template.styleGroup ?? "core"} composition-${profile.mode.key}" data-pl-profile="${profile.id}" data-pl-diversity-signature="${escapeHtml(profile.signature)}" data-pl-composition="${profile.mode.key}" data-pl-background-id="${profile.background.id}" data-pl-background-mode="${profile.background.mode}" data-pl-background-signature="${escapeHtml(profile.backgroundSignature)}">
+<body class="theme-${template.name} family-${template.baseFamily ?? template.family} style-group-${template.styleGroup ?? "core"} archetype-${archetype} composition-${profile.mode.key}" data-pl-profile="${profile.id}" data-pl-diversity-signature="${escapeHtml(profile.signature)}" data-pl-composition="${profile.mode.key}" data-pl-archetype="${archetype}" data-pl-background-id="${profile.background.id}" data-pl-background-mode="${profile.background.mode}" data-pl-background-signature="${escapeHtml(profile.backgroundSignature)}">
 ${diversifiedSlides}
 </body>
 </html>
@@ -1606,10 +2154,21 @@ for (const template of renderTemplates) {
     await rm(artifactDir, { recursive: true, force: true });
   }
   await mkdir(artifactDir, { recursive: true });
-  await writeFile(htmlPath, formattedHtml, "utf8");
-  await writeFile(
+  await writeTextFile(htmlPath, formattedHtml, "utf8");
+  await writeTextFile(
     join(themesRoot, template.name + ".json"),
-    `${JSON.stringify({ name: template.name, title: template.label, description: template.description, format: "16:9", tokens: template.theme }, null, 2)}\n`,
+    `${JSON.stringify(
+      {
+        name: template.name,
+        title: template.label,
+        description: template.description,
+        archetype: deckArchetype(template),
+        format: "16:9",
+        tokens: template.theme,
+      },
+      null,
+      2,
+    )}\n`,
     "utf8",
   );
 
@@ -1672,9 +2231,13 @@ const renderTemplate = ({ artifactDir, canReuseArtifact, template }) =>
     console.log((canReuseArtifact ? "Reused " : "Built ") + template.name + ": HTML source");
   });
 
-for (let offset = 0; offset < preparedTemplates.length; offset += renderConcurrency) {
-  const batch = preparedTemplates.slice(offset, offset + renderConcurrency);
-  await Promise.all(batch.map(renderTemplate));
+if (sourceOnlyBuild) {
+  console.log("Source-only build: skipped PNG rendering after preparing HTML sources.");
+} else {
+  for (let offset = 0; offset < preparedTemplates.length; offset += renderConcurrency) {
+    const batch = preparedTemplates.slice(offset, offset + renderConcurrency);
+    await Promise.all(batch.map(renderTemplate));
+  }
 }
 
 const templateMetadata = ({
@@ -1693,6 +2256,7 @@ const templateMetadata = ({
   name,
   title: label + " template",
   description,
+  archetype: deckArchetype({ family, baseFamily, modifier, styleGroup }),
   family,
   baseFamily,
   palette,
@@ -1707,17 +2271,17 @@ const repositoryTemplateIndex = templates.map((template) => ({
   ...templateMetadata(template),
   path: repositoryTemplatePath(template),
 }));
-await writeFile(
+await writeTextFile(
   join(templatesRoot, "index.json"),
   `${JSON.stringify(repositoryTemplateIndex, null, 2)}\n`,
   "utf8",
 );
-await writeFile(
+await writeTextFile(
   join(root, "resources", "templates", "index.json"),
   `${JSON.stringify(templateIndex, null, 2)}\n`,
   "utf8",
 );
-await writeFile(
+await writeTextFile(
   join(themesRoot, "index.json"),
   `${JSON.stringify(
     templates.map((template) => ({
@@ -1748,6 +2312,7 @@ const styleCatalog = {
     name: template.name,
     label: template.label,
     description: template.description,
+    archetype: deckArchetype(template),
     styleGroup: template.styleGroup,
     category: template.styleCategory,
     baseFamily: template.baseFamily,
@@ -1756,14 +2321,14 @@ const styleCatalog = {
     path: `${templateCategory(template)}/${templateSourceName(template)}`,
   })),
 };
-await writeFile(
+await writeTextFile(
   join(templatesRoot, "style-catalog.json"),
   `${JSON.stringify(styleCatalog, null, 2)}\n`,
   "utf8",
 );
 const stylesResourceRoot = join(root, "resources", "styles");
 await mkdir(stylesResourceRoot, { recursive: true });
-await writeFile(
+await writeTextFile(
   join(stylesResourceRoot, "index.json"),
   `${JSON.stringify(styleCatalog, null, 2)}\n`,
   "utf8",
@@ -1818,8 +2383,8 @@ const resourcePaletteIndex = {
 };
 for (const palette of repositoryPaletteIndex.palettes) {
   const paletteJson = `${JSON.stringify(palette, null, 2)}\n`;
-  await writeFile(join(paletteRepositoryRoot, `${palette.name}.json`), paletteJson, "utf8");
-  await writeFile(
+  await writeTextFile(join(paletteRepositoryRoot, `${palette.name}.json`), paletteJson, "utf8");
+  await writeTextFile(
     join(paletteResourceRoot, `${palette.name}.json`),
     `${JSON.stringify(
       resourcePaletteIndex.palettes.find((entry) => entry.name === palette.name),
@@ -1829,12 +2394,12 @@ for (const palette of repositoryPaletteIndex.palettes) {
     "utf8",
   );
 }
-await writeFile(
+await writeTextFile(
   join(paletteRepositoryRoot, "index.json"),
   `${JSON.stringify(repositoryPaletteIndex, null, 2)}\n`,
   "utf8",
 );
-await writeFile(
+await writeTextFile(
   join(paletteResourceRoot, "index.json"),
   `${JSON.stringify(resourcePaletteIndex, null, 2)}\n`,
   "utf8",
@@ -1844,7 +2409,7 @@ const formattedPaletteCatalog = await prettier.format(paletteCatalogHtml(), {
   ...prettierOptions,
   filepath: paletteCatalogHtmlPath,
 });
-await writeFile(paletteCatalogHtmlPath, formattedPaletteCatalog, "utf8");
-await writeFile(join(paletteResourceRoot, "catalog.html"), formattedPaletteCatalog, "utf8");
+await writeTextFile(paletteCatalogHtmlPath, formattedPaletteCatalog, "utf8");
+await writeTextFile(join(paletteResourceRoot, "catalog.html"), formattedPaletteCatalog, "utf8");
 
 console.log("Built " + renderTemplates.length + " template sources under " + templatesRoot + ".");

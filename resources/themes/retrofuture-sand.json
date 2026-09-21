@@ -2,6 +2,7 @@
   "name": "retrofuture-sand",
   "title": "Retro Future / Sand / Frame",
   "description": "Natural terracotta palette for consulting, hospitality, and considered brand stories. Neon retro-future system with synthwave gradients, luminous grids, and energetic pacing. A strong outer frame that gives every page a distinct poster boundary.",
+  "archetype": "keynote",
   "format": "16:9",
   "tokens": {
     "paper": "#f7f0e5",

@@ -2,6 +2,7 @@
   "name": "brutalist-sand",
   "title": "Brutalist / Sand / Signal",
   "description": "Natural terracotta palette for consulting, hospitality, and considered brand stories. Neo-brutalist system with yellow canvas, ink borders, offset shadows, and playful emphasis. Larger type and stronger labels for high-attention executive moments.",
+  "archetype": "manifesto",
   "format": "16:9",
   "tokens": {
     "paper": "#f7f0e5",

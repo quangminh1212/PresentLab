@@ -2,6 +2,7 @@
   "name": "destijl-primary",
   "title": "De Stijl / Destijl Primary",
   "description": "Orthogonal planes, primary blocks, and compositional balance. Swiss-inspired grid with hard edges, red signal color, and disciplined information hierarchy.",
+  "archetype": "pitch",
   "format": "16:9",
   "tokens": {
     "paper": "#f4f7ff",

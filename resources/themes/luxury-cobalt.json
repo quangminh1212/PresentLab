@@ -2,6 +2,7 @@
   "name": "luxury-cobalt",
   "title": "Luxury / Cobalt / Mono",
   "description": "Clear blue product palette for confident strategy and technology stories. Quiet luxury system with ivory paper, hairline rules, serif typography, and restrained gold. Monospace-led typography for technical, analytical, and product narratives.",
+  "archetype": "pitch",
   "format": "16:9",
   "tokens": {
     "paper": "#f4f7ff",

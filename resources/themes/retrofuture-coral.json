@@ -2,6 +2,7 @@
   "name": "retrofuture-coral",
   "title": "Retro Future / Coral / Frame",
   "description": "Warm coral palette for human-centered launches, brands, and community narratives. Neon retro-future system with synthwave gradients, luminous grids, and energetic pacing. A strong outer frame that gives every page a distinct poster boundary.",
+  "archetype": "keynote",
   "format": "16:9",
   "tokens": {
     "paper": "#fff7f4",

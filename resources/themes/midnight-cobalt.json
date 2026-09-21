@@ -2,6 +2,7 @@
   "name": "midnight-cobalt",
   "title": "Midnight / Cobalt / Signal",
   "description": "Clear blue product palette for confident strategy and technology stories. Dark cinematic system with luminous cyan highlights, grid structure, and contrast-led storytelling. Larger type and stronger labels for high-attention executive moments.",
+  "archetype": "keynote",
   "format": "16:9",
   "tokens": {
     "paper": "#f4f7ff",

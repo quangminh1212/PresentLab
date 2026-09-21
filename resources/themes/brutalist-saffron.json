@@ -2,6 +2,7 @@
   "name": "brutalist-saffron",
   "title": "Brutalist / Saffron / Glow",
   "description": "Optimistic golden palette for education, change management, and opportunity maps. Neo-brutalist system with yellow canvas, ink borders, offset shadows, and playful emphasis. A luminous accent treatment for launches, demos, and future-facing concepts.",
+  "archetype": "manifesto",
   "format": "16:9",
   "tokens": {
     "paper": "#fff9e8",

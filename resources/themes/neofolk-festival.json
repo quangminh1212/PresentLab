@@ -2,6 +2,7 @@
   "name": "neofolk-festival",
   "title": "Neo-folk / Handcrafted Future / Neofolk Festival",
   "description": "Weave, stitch, clay, print, and local craft references translated into a contemporary system. Warm studio system with earthy colors, serif headlines, and soft organic geometry.",
+  "archetype": "culture",
   "format": "16:9",
   "tokens": {
     "paper": "#fff9e8",

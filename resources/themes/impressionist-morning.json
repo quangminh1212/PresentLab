@@ -2,6 +2,7 @@
   "name": "impressionist-morning",
   "title": "Impressionism / Light Study / Impressionist Morning",
   "description": "Atmospheric light, soft edges, optical color, and a sense of a moment observed in motion. Warm studio system with earthy colors, serif headlines, and soft organic geometry.",
+  "archetype": "culture",
   "format": "16:9",
   "tokens": {
     "paper": "#f2f7f1",

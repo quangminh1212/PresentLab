@@ -2,6 +2,7 @@
   "name": "architectural-facade",
   "title": "Architectural Modernism / Architectural Facade",
   "description": "Plans, sections, concrete grids, and spatial logic translated into slides. Swiss-inspired grid with hard edges, red signal color, and disciplined information hierarchy.",
+  "archetype": "research",
   "format": "16:9",
   "tokens": {
     "paper": "#f1faff",

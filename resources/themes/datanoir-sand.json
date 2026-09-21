@@ -2,6 +2,7 @@
   "name": "datanoir-sand",
   "title": "Data Noir / Sand / Poster",
   "description": "Natural terracotta palette for consulting, hospitality, and considered brand stories. Terminal-inspired dark system for product, engineering, and operational narratives. Poster-like capitalization and borders for campaigns and bold announcements.",
+  "archetype": "research",
   "format": "16:9",
   "tokens": {
     "paper": "#f7f0e5",

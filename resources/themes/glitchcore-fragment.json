@@ -2,6 +2,7 @@
   "name": "glitchcore-fragment",
   "title": "Glitchcore / Signal Error / Glitchcore Fragment",
   "description": "Scanlines, broken registration, system noise, and intentionally unstable digital signals. Terminal-inspired dark system for product, engineering, and operational narratives.",
+  "archetype": "keynote",
   "format": "16:9",
   "tokens": {
     "paper": "#0b1020",

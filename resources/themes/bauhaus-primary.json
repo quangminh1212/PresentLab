@@ -2,6 +2,7 @@
   "name": "bauhaus-primary",
   "title": "Bauhaus / Bauhaus Primary",
   "description": "Geometric forms, functional hierarchy, and primary-color signals. Swiss-inspired grid with hard edges, red signal color, and disciplined information hierarchy.",
+  "archetype": "pitch",
   "format": "16:9",
   "tokens": {
     "paper": "#fff9e8",

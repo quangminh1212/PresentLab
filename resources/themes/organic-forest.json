@@ -2,6 +2,7 @@
   "name": "organic-forest",
   "title": "Organic / Forest / Airy",
   "description": "Grounded green palette for sustainability, operations, and long-term growth stories. Warm studio system with earthy colors, serif headlines, and soft organic geometry. More breathing room and a quieter surface for reflective narratives.",
+  "archetype": "product",
   "format": "16:9",
   "tokens": {
     "paper": "#f2f7f1",

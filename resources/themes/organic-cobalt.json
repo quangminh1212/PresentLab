@@ -2,6 +2,7 @@
   "name": "organic-cobalt",
   "title": "Organic / Cobalt / Soft",
   "description": "Clear blue product palette for confident strategy and technology stories. Warm studio system with earthy colors, serif headlines, and soft organic geometry. Rounded surfaces and translucent panels for friendly collaborative work.",
+  "archetype": "product",
   "format": "16:9",
   "tokens": {
     "paper": "#f4f7ff",

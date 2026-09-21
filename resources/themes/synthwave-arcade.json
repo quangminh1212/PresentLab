@@ -2,6 +2,7 @@
   "name": "synthwave-arcade",
   "title": "Synthwave / Night Drive / Synthwave Arcade",
   "description": "Neon horizons, arcade glow, chrome surfaces, and a nostalgic future imagined at speed. Neon retro-future system with synthwave gradients, luminous grids, and energetic pacing.",
+  "archetype": "keynote",
   "format": "16:9",
   "tokens": {
     "paper": "#f6f4ff",

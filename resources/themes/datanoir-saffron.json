@@ -2,6 +2,7 @@
   "name": "datanoir-saffron",
   "title": "Data Noir / Saffron / Compact",
   "description": "Optimistic golden palette for education, change management, and opportunity maps. Terminal-inspired dark system for product, engineering, and operational narratives. Denser spacing for information-rich reviews where every page must carry more detail.",
+  "archetype": "research",
   "format": "16:9",
   "tokens": {
     "paper": "#fff9e8",

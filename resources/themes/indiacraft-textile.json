@@ -2,6 +2,7 @@
   "name": "indiacraft-textile",
   "title": "Indian Craft / Block Print / Indiacraft Textile",
   "description": "Block-print rhythm, textile color, market warmth, and hand-crafted pattern. Warm studio system with earthy colors, serif headlines, and soft organic geometry.",
+  "archetype": "product",
   "format": "16:9",
   "tokens": {
     "paper": "#fff9e8",

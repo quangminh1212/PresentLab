@@ -2,6 +2,7 @@
   "name": "luxury-violet",
   "title": "Luxury / Violet / Mono",
   "description": "Modern violet palette for AI, innovation, and future-facing product narratives. Quiet luxury system with ivory paper, hairline rules, serif typography, and restrained gold. Monospace-led typography for technical, analytical, and product narratives.",
+  "archetype": "pitch",
   "format": "16:9",
   "tokens": {
     "paper": "#f6f4ff",

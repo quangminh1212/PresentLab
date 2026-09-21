@@ -2,6 +2,7 @@
   "name": "darkacademia-lecture",
   "title": "Dark Academia / Darkacademia Lecture",
   "description": "Library atmosphere, archival paper, ink, scholarship, and quiet drama. Quiet luxury system with ivory paper, hairline rules, serif typography, and restrained gold.",
+  "archetype": "pitch",
   "format": "16:9",
   "tokens": {
     "paper": "#fbf7fc",

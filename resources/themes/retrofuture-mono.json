@@ -2,6 +2,7 @@
   "name": "retrofuture-mono",
   "title": "Retro Future / Mono / Poster",
   "description": "Neutral monochrome palette for legal, finance, and highly focused information design. Neon retro-future system with synthwave gradients, luminous grids, and energetic pacing. Poster-like capitalization and borders for campaigns and bold announcements.",
+  "archetype": "keynote",
   "format": "16:9",
   "tokens": {
     "paper": "#f5f5f3",

@@ -2,6 +2,7 @@
   "name": "midnight-ice",
   "title": "Midnight / Ice / Compact",
   "description": "Cool blue-grey palette for enterprise, governance, and evidence-led decisions. Dark cinematic system with luminous cyan highlights, grid structure, and contrast-led storytelling. Denser spacing for information-rich reviews where every page must carry more detail.",
+  "archetype": "keynote",
   "format": "16:9",
   "tokens": {
     "paper": "#f1faff",

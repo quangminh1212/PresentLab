@@ -2,6 +2,7 @@
   "name": "cubist-plane",
   "title": "Cubism / Faceted Planes / Cubist Plane",
   "description": "Fragmented viewpoints, faceted planes, overlapping geometry, and constructed depth. Swiss-inspired grid with hard edges, red signal color, and disciplined information hierarchy.",
+  "archetype": "culture",
   "format": "16:9",
   "tokens": {
     "paper": "#f4f7ff",

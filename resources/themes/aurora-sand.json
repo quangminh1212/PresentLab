@@ -2,6 +2,7 @@
   "name": "aurora-sand",
   "title": "Aurora / Sand / Editorial",
   "description": "Natural terracotta palette for consulting, hospitality, and considered brand stories. Light editorial system with spacious cards, indigo accents, and calm narrative pacing. Serif-led hierarchy for essays, research, portfolios, and considered proposals.",
+  "archetype": "editorial",
   "format": "16:9",
   "tokens": {
     "paper": "#f7f0e5",

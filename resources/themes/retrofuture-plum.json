@@ -2,6 +2,7 @@
   "name": "retrofuture-plum",
   "title": "Retro Future / Plum / Compact",
   "description": "Expressive plum palette for culture, editorial, and premium creative work. Neon retro-future system with synthwave gradients, luminous grids, and energetic pacing. Denser spacing for information-rich reviews where every page must carry more detail.",
+  "archetype": "keynote",
   "format": "16:9",
   "tokens": {
     "paper": "#fbf7fc",

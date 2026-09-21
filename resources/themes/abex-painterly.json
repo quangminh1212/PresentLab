@@ -2,6 +2,7 @@
   "name": "abex-painterly",
   "title": "Abstract Expressionism / Abex Painterly",
   "description": "Gesture, painterly movement, expressive color fields, and human-scale imperfection. Warm studio system with earthy colors, serif headlines, and soft organic geometry.",
+  "archetype": "culture",
   "format": "16:9",
   "tokens": {
     "paper": "#fbf7fc",

@@ -2,6 +2,7 @@
   "name": "aurora-plum",
   "title": "Aurora / Plum / Grid",
   "description": "Expressive plum palette for culture, editorial, and premium creative work. Light editorial system with spacious cards, indigo accents, and calm narrative pacing. A visible modular grid for systems thinking and operational storytelling.",
+  "archetype": "product",
   "format": "16:9",
   "tokens": {
     "paper": "#fbf7fc",

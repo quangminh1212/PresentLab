@@ -2,6 +2,7 @@
   "name": "artbrut-raw",
   "title": "Art Brut / Naive / Artbrut Raw",
   "description": "Raw marks, direct color, hand-made edges, and outsider-art energy. Warm studio system with earthy colors, serif headlines, and soft organic geometry.",
+  "archetype": "culture",
   "format": "16:9",
   "tokens": {
     "paper": "#fff9e8",

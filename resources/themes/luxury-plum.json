@@ -2,6 +2,7 @@
   "name": "luxury-plum",
   "title": "Luxury / Plum / Editorial",
   "description": "Expressive plum palette for culture, editorial, and premium creative work. Quiet luxury system with ivory paper, hairline rules, serif typography, and restrained gold. Serif-led hierarchy for essays, research, portfolios, and considered proposals.",
+  "archetype": "editorial",
   "format": "16:9",
   "tokens": {
     "paper": "#fbf7fc",

@@ -2,6 +2,7 @@
   "name": "brutalist-ocean",
   "title": "Brutalist / Ocean / Poster",
   "description": "Fresh cyan palette for research, customer insight, and service design narratives. Neo-brutalist system with yellow canvas, ink borders, offset shadows, and playful emphasis. Poster-like capitalization and borders for campaigns and bold announcements.",
+  "archetype": "manifesto",
   "format": "16:9",
   "tokens": {
     "paper": "#eefaff",

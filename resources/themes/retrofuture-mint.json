@@ -2,6 +2,7 @@
   "name": "retrofuture-mint",
   "title": "Retro Future / Mint / Signal",
   "description": "Bright mint palette for product growth, wellness, and collaborative planning. Neon retro-future system with synthwave gradients, luminous grids, and energetic pacing. Larger type and stronger labels for high-attention executive moments.",
+  "archetype": "keynote",
   "format": "16:9",
   "tokens": {
     "paper": "#effcf7",

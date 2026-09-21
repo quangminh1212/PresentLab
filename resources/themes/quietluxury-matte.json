@@ -2,6 +2,7 @@
   "name": "quietluxury-matte",
   "title": "Quiet Luxury / Tailored Editorial / Quietluxury Matte",
   "description": "Tactile restraint, tailored proportions, natural materials, and low-volume confidence. Quiet luxury system with ivory paper, hairline rules, serif typography, and restrained gold.",
+  "archetype": "editorial",
   "format": "16:9",
   "tokens": {
     "paper": "#f7f0e5",

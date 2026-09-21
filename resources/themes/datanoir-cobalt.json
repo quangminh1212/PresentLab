@@ -2,6 +2,7 @@
   "name": "datanoir-cobalt",
   "title": "Data Noir / Cobalt / Frame",
   "description": "Clear blue product palette for confident strategy and technology stories. Terminal-inspired dark system for product, engineering, and operational narratives. A strong outer frame that gives every page a distinct poster boundary.",
+  "archetype": "research",
   "format": "16:9",
   "tokens": {
     "paper": "#f4f7ff",

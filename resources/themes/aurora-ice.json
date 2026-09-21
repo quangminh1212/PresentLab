@@ -2,6 +2,7 @@
   "name": "aurora-ice",
   "title": "Aurora / Ice / Editorial",
   "description": "Cool blue-grey palette for enterprise, governance, and evidence-led decisions. Light editorial system with spacious cards, indigo accents, and calm narrative pacing. Serif-led hierarchy for essays, research, portfolios, and considered proposals.",
+  "archetype": "editorial",
   "format": "16:9",
   "tokens": {
     "paper": "#f1faff",

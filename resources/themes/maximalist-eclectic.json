@@ -2,6 +2,7 @@
   "name": "maximalist-eclectic",
   "title": "Maximalism / Layered Ornament / Maximalist Eclectic",
   "description": "Dense layering, pattern collisions, saturated surfaces, and deliberately abundant visual energy. Neo-brutalist system with yellow canvas, ink borders, offset shadows, and playful emphasis.",
+  "archetype": "manifesto",
   "format": "16:9",
   "tokens": {
     "paper": "#fff9e8",

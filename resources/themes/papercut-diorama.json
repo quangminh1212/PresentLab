@@ -2,6 +2,7 @@
   "name": "papercut-diorama",
   "title": "Paper Cut / Layered Relief / Papercut Diorama",
   "description": "Cut edges, layered relief, shadowed paper planes, and theatrical handmade depth. Warm studio system with earthy colors, serif headlines, and soft organic geometry.",
+  "archetype": "culture",
   "format": "16:9",
   "tokens": {
     "paper": "#fff7f4",

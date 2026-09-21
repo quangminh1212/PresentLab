@@ -2,6 +2,7 @@
   "name": "rococo-shell",
   "title": "Rococo / Playful Ornament / Rococo Shell",
   "description": "Pastel ornament, shell curves, garden motifs, and light decorative rhythm. Warm studio system with earthy colors, serif headlines, and soft organic geometry.",
+  "archetype": "culture",
   "format": "16:9",
   "tokens": {
     "paper": "#fff7f4",

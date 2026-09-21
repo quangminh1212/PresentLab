@@ -2,6 +2,7 @@
   "name": "midnight-mint",
   "title": "Midnight / Mint / Frame",
   "description": "Bright mint palette for product growth, wellness, and collaborative planning. Dark cinematic system with luminous cyan highlights, grid structure, and contrast-led storytelling. A strong outer frame that gives every page a distinct poster boundary.",
+  "archetype": "keynote",
   "format": "16:9",
   "tokens": {
     "paper": "#effcf7",

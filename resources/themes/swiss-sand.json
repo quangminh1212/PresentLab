@@ -2,6 +2,7 @@
   "name": "swiss-sand",
   "title": "Swiss / Sand / Airy",
   "description": "Natural terracotta palette for consulting, hospitality, and considered brand stories. Swiss-inspired grid with hard edges, red signal color, and disciplined information hierarchy. More breathing room and a quieter surface for reflective narratives.",
+  "archetype": "pitch",
   "format": "16:9",
   "tokens": {
     "paper": "#f7f0e5",

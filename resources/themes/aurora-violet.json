@@ -2,6 +2,7 @@
   "name": "aurora-violet",
   "title": "Aurora / Violet / Airy",
   "description": "Modern violet palette for AI, innovation, and future-facing product narratives. Light editorial system with spacious cards, indigo accents, and calm narrative pacing. More breathing room and a quieter surface for reflective narratives.",
+  "archetype": "product",
   "format": "16:9",
   "tokens": {
     "paper": "#f6f4ff",

@@ -2,6 +2,7 @@
   "name": "retrofuture-forest",
   "title": "Retro Future / Forest / Poster",
   "description": "Grounded green palette for sustainability, operations, and long-term growth stories. Neon retro-future system with synthwave gradients, luminous grids, and energetic pacing. Poster-like capitalization and borders for campaigns and bold announcements.",
+  "archetype": "keynote",
   "format": "16:9",
   "tokens": {
     "paper": "#f2f7f1",

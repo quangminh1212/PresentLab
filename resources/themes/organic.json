@@ -2,6 +2,7 @@
   "name": "organic",
   "title": "Organic",
   "description": "Warm studio system with earthy colors, serif headlines, and soft organic geometry.",
+  "archetype": "product",
   "format": "16:9",
   "tokens": {
     "paper": "#f3ecdf",

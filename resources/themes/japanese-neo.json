@@ -2,6 +2,7 @@
   "name": "japanese-neo",
   "title": "Japanese-inspired Minimal / Japanese Neo",
   "description": "Quiet space, paper texture, restrained marks, and deliberate asymmetry. Light editorial system with spacious cards, indigo accents, and calm narrative pacing.",
+  "archetype": "editorial",
   "format": "16:9",
   "tokens": {
     "paper": "#eefaff",

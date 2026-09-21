@@ -2,6 +2,7 @@
   "name": "tropical-rainforest",
   "title": "Tropical Modernism / Tropical Rainforest",
   "description": "Breezeblock rhythm, sun, foliage, open air, and relaxed modern structure. Warm studio system with earthy colors, serif headlines, and soft organic geometry.",
+  "archetype": "product",
   "format": "16:9",
   "tokens": {
     "paper": "#effcf7",

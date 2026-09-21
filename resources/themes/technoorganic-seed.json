@@ -2,6 +2,7 @@
   "name": "technoorganic-seed",
   "title": "Techno-organic / Hybrid Network / Technoorganic Seed",
   "description": "Circuit logic meets roots, cells, sensors, and living networks in a hybrid visual language. Terminal-inspired dark system for product, engineering, and operational narratives.",
+  "archetype": "research",
   "format": "16:9",
   "tokens": {
     "paper": "#effcf7",

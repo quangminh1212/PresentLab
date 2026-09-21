@@ -2,6 +2,7 @@
   "name": "datanoir-plum",
   "title": "Data Noir / Plum / Glow",
   "description": "Expressive plum palette for culture, editorial, and premium creative work. Terminal-inspired dark system for product, engineering, and operational narratives. A luminous accent treatment for launches, demos, and future-facing concepts.",
+  "archetype": "research",
   "format": "16:9",
   "tokens": {
     "paper": "#fbf7fc",

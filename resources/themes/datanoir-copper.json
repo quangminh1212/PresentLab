@@ -2,6 +2,7 @@
   "name": "datanoir-copper",
   "title": "Data Noir / Copper / Glow",
   "description": "Confident copper palette for architecture, craft, and product storytelling. Terminal-inspired dark system for product, engineering, and operational narratives. A luminous accent treatment for launches, demos, and future-facing concepts.",
+  "archetype": "research",
   "format": "16:9",
   "tokens": {
     "paper": "#fff5ed",

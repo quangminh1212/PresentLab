@@ -2,6 +2,7 @@
   "name": "solarpunk-biophilic",
   "title": "Solarpunk / Eco-futurism / Solarpunk Biophilic",
   "description": "Biophilic infrastructure, renewable futures, daylight, and shared commons. Warm studio system with earthy colors, serif headlines, and soft organic geometry.",
+  "archetype": "product",
   "format": "16:9",
   "tokens": {
     "paper": "#effcf7",

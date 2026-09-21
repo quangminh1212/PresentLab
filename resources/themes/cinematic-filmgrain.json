@@ -2,6 +2,7 @@
   "name": "cinematic-filmgrain",
   "title": "Cinematic / Film / Cinematic Filmgrain",
   "description": "Widescreen framing, controlled suspense, grain-like texture, and scene pacing. Dark cinematic system with luminous cyan highlights, grid structure, and contrast-led storytelling.",
+  "archetype": "keynote",
   "format": "16:9",
   "tokens": {
     "paper": "#0b1020",

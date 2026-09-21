@@ -2,6 +2,7 @@
   "name": "classical-stoic",
   "title": "Classical / Neoclassical / Classical Stoic",
   "description": "Measured proportion, civic structure, marble restraint, and academic clarity. Swiss-inspired grid with hard edges, red signal color, and disciplined information hierarchy.",
+  "archetype": "pitch",
   "format": "16:9",
   "tokens": {
     "paper": "#f7f0e5",

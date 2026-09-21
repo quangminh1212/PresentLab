@@ -2,6 +2,7 @@
   "name": "midnight-saffron",
   "title": "Midnight / Saffron / Frame",
   "description": "Optimistic golden palette for education, change management, and opportunity maps. Dark cinematic system with luminous cyan highlights, grid structure, and contrast-led storytelling. A strong outer frame that gives every page a distinct poster boundary.",
+  "archetype": "keynote",
   "format": "16:9",
   "tokens": {
     "paper": "#fff9e8",

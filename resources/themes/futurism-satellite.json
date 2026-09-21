@@ -2,6 +2,7 @@
   "name": "futurism-satellite",
   "title": "Futurism / Machine Age / Futurism Satellite",
   "description": "Speed lines, mechanical rhythm, aerodynamic forms, and machine optimism. Neon retro-future system with synthwave gradients, luminous grids, and energetic pacing.",
+  "archetype": "keynote",
   "format": "16:9",
   "tokens": {
     "paper": "#f4f7ff",

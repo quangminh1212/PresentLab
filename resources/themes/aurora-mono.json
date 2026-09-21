@@ -2,6 +2,7 @@
   "name": "aurora-mono",
   "title": "Aurora / Mono / Mono",
   "description": "Neutral monochrome palette for legal, finance, and highly focused information design. Light editorial system with spacious cards, indigo accents, and calm narrative pacing. Monospace-led typography for technical, analytical, and product narratives.",
+  "archetype": "product",
   "format": "16:9",
   "tokens": {
     "paper": "#f5f5f3",

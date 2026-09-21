@@ -2,6 +2,7 @@
   "name": "datanoir",
   "title": "Data Noir",
   "description": "Terminal-inspired dark system for product, engineering, and operational narratives.",
+  "archetype": "research",
   "format": "16:9",
   "tokens": {
     "paper": "#07100c",

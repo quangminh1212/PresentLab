@@ -2,6 +2,7 @@
   "name": "midnight-plum",
   "title": "Midnight / Plum / Poster",
   "description": "Expressive plum palette for culture, editorial, and premium creative work. Dark cinematic system with luminous cyan highlights, grid structure, and contrast-led storytelling. Poster-like capitalization and borders for campaigns and bold announcements.",
+  "archetype": "keynote",
   "format": "16:9",
   "tokens": {
     "paper": "#fbf7fc",

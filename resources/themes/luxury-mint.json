@@ -2,6 +2,7 @@
   "name": "luxury-mint",
   "title": "Luxury / Mint / Airy",
   "description": "Bright mint palette for product growth, wellness, and collaborative planning. Quiet luxury system with ivory paper, hairline rules, serif typography, and restrained gold. More breathing room and a quieter surface for reflective narratives.",
+  "archetype": "pitch",
   "format": "16:9",
   "tokens": {
     "paper": "#effcf7",

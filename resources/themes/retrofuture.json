@@ -2,6 +2,7 @@
   "name": "retrofuture",
   "title": "Retro Future",
   "description": "Neon retro-future system with synthwave gradients, luminous grids, and energetic pacing.",
+  "archetype": "keynote",
   "format": "16:9",
   "tokens": {
     "paper": "#12072b",

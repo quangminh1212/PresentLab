@@ -2,6 +2,7 @@
   "name": "gothic-blackletter",
   "title": "Gothic / Medieval / Gothic Blackletter",
   "description": "Cathedral verticals, manuscript detail, dark paper, and ceremonial hierarchy. Quiet luxury system with ivory paper, hairline rules, serif typography, and restrained gold.",
+  "archetype": "culture",
   "format": "16:9",
   "tokens": {
     "paper": "#fbf7fc",

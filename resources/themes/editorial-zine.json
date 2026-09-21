@@ -2,6 +2,7 @@
   "name": "editorial-zine",
   "title": "Editorial / Publishing / Editorial Zine",
   "description": "Magazine pacing, reading hierarchy, columns, captions, and long-form clarity. Light editorial system with spacious cards, indigo accents, and calm narrative pacing.",
+  "archetype": "editorial",
   "format": "16:9",
   "tokens": {
     "paper": "#f1faff",

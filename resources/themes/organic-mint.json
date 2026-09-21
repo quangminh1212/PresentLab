@@ -2,6 +2,7 @@
   "name": "organic-mint",
   "title": "Organic / Mint / Editorial",
   "description": "Bright mint palette for product growth, wellness, and collaborative planning. Warm studio system with earthy colors, serif headlines, and soft organic geometry. Serif-led hierarchy for essays, research, portfolios, and considered proposals.",
+  "archetype": "editorial",
   "format": "16:9",
   "tokens": {
     "paper": "#effcf7",

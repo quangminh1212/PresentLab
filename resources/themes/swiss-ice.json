@@ -2,6 +2,7 @@
   "name": "swiss-ice",
   "title": "Swiss / Ice / Airy",
   "description": "Cool blue-grey palette for enterprise, governance, and evidence-led decisions. Swiss-inspired grid with hard edges, red signal color, and disciplined information hierarchy. More breathing room and a quieter surface for reflective narratives.",
+  "archetype": "pitch",
   "format": "16:9",
   "tokens": {
     "paper": "#f1faff",

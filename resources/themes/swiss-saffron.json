@@ -2,6 +2,7 @@
   "name": "swiss-saffron",
   "title": "Swiss / Saffron / Mono",
   "description": "Optimistic golden palette for education, change management, and opportunity maps. Swiss-inspired grid with hard edges, red signal color, and disciplined information hierarchy. Monospace-led typography for technical, analytical, and product narratives.",
+  "archetype": "pitch",
   "format": "16:9",
   "tokens": {
     "paper": "#fff9e8",

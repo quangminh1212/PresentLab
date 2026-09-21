@@ -2,6 +2,7 @@
   "name": "brutalist-ice",
   "title": "Brutalist / Ice / Signal",
   "description": "Cool blue-grey palette for enterprise, governance, and evidence-led decisions. Neo-brutalist system with yellow canvas, ink borders, offset shadows, and playful emphasis. Larger type and stronger labels for high-attention executive moments.",
+  "archetype": "manifesto",
   "format": "16:9",
   "tokens": {
     "paper": "#f1faff",

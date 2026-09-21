@@ -2,6 +2,7 @@
   "name": "scientific-evidence",
   "title": "Scientific / Field Note / Scientific Evidence",
   "description": "Evidence-first annotation, instrument logic, grids, and measured contrast. Terminal-inspired dark system for product, engineering, and operational narratives.",
+  "archetype": "research",
   "format": "16:9",
   "tokens": {
     "paper": "#eefaff",

@@ -2,6 +2,7 @@
   "name": "datanoir-ocean",
   "title": "Data Noir / Ocean / Frame",
   "description": "Fresh cyan palette for research, customer insight, and service design narratives. Terminal-inspired dark system for product, engineering, and operational narratives. A strong outer frame that gives every page a distinct poster boundary.",
+  "archetype": "research",
   "format": "16:9",
   "tokens": {
     "paper": "#eefaff",

@@ -2,6 +2,7 @@
   "name": "organic-ocean",
   "title": "Organic / Ocean / Soft",
   "description": "Fresh cyan palette for research, customer insight, and service design narratives. Warm studio system with earthy colors, serif headlines, and soft organic geometry. Rounded surfaces and translucent panels for friendly collaborative work.",
+  "archetype": "product",
   "format": "16:9",
   "tokens": {
     "paper": "#eefaff",

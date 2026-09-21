@@ -2,6 +2,7 @@
   "name": "organic-sand",
   "title": "Organic / Sand / Grid",
   "description": "Natural terracotta palette for consulting, hospitality, and considered brand stories. Warm studio system with earthy colors, serif headlines, and soft organic geometry. A visible modular grid for systems thinking and operational storytelling.",
+  "archetype": "product",
   "format": "16:9",
   "tokens": {
     "paper": "#f7f0e5",

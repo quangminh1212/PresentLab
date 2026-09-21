@@ -2,6 +2,7 @@
   "name": "brutalist-mint",
   "title": "Brutalist / Mint / Glow",
   "description": "Bright mint palette for product growth, wellness, and collaborative planning. Neo-brutalist system with yellow canvas, ink borders, offset shadows, and playful emphasis. A luminous accent treatment for launches, demos, and future-facing concepts.",
+  "archetype": "manifesto",
   "format": "16:9",
   "tokens": {
     "paper": "#effcf7",

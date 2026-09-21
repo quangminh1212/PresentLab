@@ -2,6 +2,7 @@
   "name": "retrofuture-saffron",
   "title": "Retro Future / Saffron / Signal",
   "description": "Optimistic golden palette for education, change management, and opportunity maps. Neon retro-future system with synthwave gradients, luminous grids, and energetic pacing. Larger type and stronger labels for high-attention executive moments.",
+  "archetype": "keynote",
   "format": "16:9",
   "tokens": {
     "paper": "#fff9e8",

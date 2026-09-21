@@ -2,6 +2,7 @@
   "name": "swiss-quiet",
   "title": "Swiss / International Typographic / Swiss Quiet",
   "description": "Objective typography, mathematical grids, and disciplined negative space. Swiss-inspired grid with hard edges, red signal color, and disciplined information hierarchy.",
+  "archetype": "pitch",
   "format": "16:9",
   "tokens": {
     "paper": "#f5f5f3",

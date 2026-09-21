@@ -2,6 +2,7 @@
   "name": "datanoir-mono",
   "title": "Data Noir / Mono / Signal",
   "description": "Neutral monochrome palette for legal, finance, and highly focused information design. Terminal-inspired dark system for product, engineering, and operational narratives. Larger type and stronger labels for high-attention executive moments.",
+  "archetype": "research",
   "format": "16:9",
   "tokens": {
     "paper": "#f5f5f3",

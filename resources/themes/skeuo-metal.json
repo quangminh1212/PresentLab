@@ -2,6 +2,7 @@
   "name": "skeuo-metal",
   "title": "Skeuomorphic / Object-based / Skeuo Metal",
   "description": "Material surfaces, familiar objects, tactile controls, and layered depth. Light editorial system with spacious cards, indigo accents, and calm narrative pacing.",
+  "archetype": "research",
   "format": "16:9",
   "tokens": {
     "paper": "#fff5ed",

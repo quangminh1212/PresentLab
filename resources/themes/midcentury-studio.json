@@ -2,6 +2,7 @@
   "name": "midcentury-studio",
   "title": "Mid-century Modern / Midcentury Studio",
   "description": "Flat geometry, optimistic color, and playful modernist illustration. Light editorial system with spacious cards, indigo accents, and calm narrative pacing.",
+  "archetype": "product",
   "format": "16:9",
   "tokens": {
     "paper": "#effcf7",

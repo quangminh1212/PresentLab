@@ -463,7 +463,15 @@ function diversifyContent(html, profile) {
       "The layout keeps the main idea visible while the supporting detail stays close enough to scan.",
       profile.copy.thesisLede,
     )
-    .replaceAll("Make the important thing <em>easy to see.</em>", profile.copy.statement);
+    .replaceAll("Make the important thing <em>easy to see.</em>", profile.copy.statement)
+    .replaceAll("Make the next idea <em>impossible to miss.</em>", profile.copy.cover)
+    .replaceAll(
+      "A narrative-first starting point for a deck that earns attention, shows proof, and leaves the next move easy to name.",
+      profile.copy.lede,
+    )
+    .replaceAll("One decisive idea per slide.", profile.copy.thesis)
+    .replaceAll("The rest of the page earns the second glance.", profile.copy.thesisLede)
+    .replaceAll("Make the next move <em>visible.</em>", profile.copy.statement);
 }
 
 export { createDiversityProfile, decorateSlides, diversifyContent, diversityCss };

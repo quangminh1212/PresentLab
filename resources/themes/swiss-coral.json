@@ -2,6 +2,7 @@
   "name": "swiss-coral",
   "title": "Swiss / Coral / Airy",
   "description": "Warm coral palette for human-centered launches, brands, and community narratives. Swiss-inspired grid with hard edges, red signal color, and disciplined information hierarchy. More breathing room and a quieter surface for reflective narratives.",
+  "archetype": "pitch",
   "format": "16:9",
   "tokens": {
     "paper": "#fff7f4",

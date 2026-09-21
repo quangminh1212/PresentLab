@@ -2,6 +2,7 @@
   "name": "corporatememphis-product",
   "title": "Corporate Memphis / Friendly Systems / Corporatememphis Product",
   "description": "Friendly gradients, approachable figures, soft geometry, and service clarity. Light editorial system with spacious cards, indigo accents, and calm narrative pacing.",
+  "archetype": "strategy",
   "format": "16:9",
   "tokens": {
     "paper": "#f4f7ff",
