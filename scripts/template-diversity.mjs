@@ -277,40 +277,40 @@ const compositionModes = [
 
 const copyPacks = [
   {
-    cover: "A distinct visual grammar gives the <em>next idea somewhere to land.</em>",
-    lede: "A reusable system for agents that need a point of view, a readable sequence, and portable handoff artifacts.",
-    thesis: "A page becomes memorable when its visual decision is impossible to miss.",
+    cover: "Give the next idea <em>a clear place to land.</em>",
+    lede: "A reusable system for a clear point of view, a readable sequence, and a portable handoff.",
+    thesis: "A page is memorable when its visual decision is easy to find.",
     thesisLede:
       "Let structure, type, and rhythm establish the reading path before detail competes for attention.",
     statement: "Give the important idea <em>a visible edge.</em>",
   },
   {
-    cover: "Make the visual system carry the <em>weight of the argument.</em>",
-    lede: "A presentation starting point for stories that need a clear stance, a strong sequence, and dependable exports.",
-    thesis: "The strongest page tells the reader how to enter the idea.",
+    cover: "Let the visual system carry the <em>weight of the argument.</em>",
+    lede: "A starting point for stories that need a clear stance, a strong sequence, and dependable exports.",
+    thesis: "The strongest page shows the reader where to enter the idea.",
     thesisLede:
       "Use hierarchy as an invitation: first the subject, then the proof, then the consequence.",
     statement: "Put the essential thing <em>in the first glance.</em>",
   },
   {
-    cover: "A good composition turns a complex thought into a <em>shared starting point.</em>",
-    lede: "An HTML-first deck system for shaping content, testing rhythm, and handing the result to the next person.",
+    cover: "Turn complexity into <em>a shared starting point.</em>",
+    lede: "An HTML-first system for shaping content, testing rhythm, and handing the result to the next person.",
     thesis: "Every visual choice should answer a question about attention.",
     thesisLede:
       "The page earns trust when its focal point, supporting evidence, and next move stay in proportion.",
     statement: "Let the key signal <em>change the shape.</em>",
   },
   {
-    cover: "The right visual rhythm lets the <em>story move without noise.</em>",
-    lede: "A distinct template for turning briefs into inspectable pages, rendered examples, and editable handoffs.",
+    cover: "Give the story <em>room to move.</em>",
+    lede: "A distinct template for turning briefs into inspectable pages, examples, and editable handoffs.",
     thesis: "Clarity is not empty space; it is a deliberate order of signals.",
     thesisLede:
       "Give each layer a job so the audience can move from orientation to evidence without decoding the page.",
     statement: "Make the reading path <em>feel inevitable.</em>",
   },
   {
-    cover: "Design can make the next decision <em>feel closer than the last one.</em>",
-    lede: "A visual system for AI-assisted composition where structure, atmosphere, and export quality remain visible together.",
+    cover: "Bring the next decision <em>closer.</em>",
+    lede: "A visual system for composition where structure, atmosphere, and export quality remain visible together.",
     thesis: "A visual system is useful when it changes what the audience can do next.",
     thesisLede:
       "Treat style as a practical choice about pace, trust, context, and the amount of attention the room can give.",
@@ -318,23 +318,23 @@ const copyPacks = [
   },
   {
     cover: "When the form is specific, the <em>message travels further.</em>",
-    lede: "A composed starting point for stories that need character without sacrificing a reliable source-to-artifact workflow.",
+    lede: "A composed starting point for stories that need character and a reliable source-to-artifact workflow.",
     thesis: "The page should reveal its point before it reveals its machinery.",
     thesisLede:
       "Lead with the signal, keep the context nearby, and let the visual grammar make the sequence legible.",
     statement: "Give the story a <em>recognizable pulse.</em>",
   },
   {
-    cover: "A template is a small stage for a <em>large idea.</em>",
-    lede: "A portable slide system for shaping narrative, evidence, and handoff into one inspectable visual object.",
+    cover: "Give a large idea <em>a small, clear stage.</em>",
+    lede: "A portable system for shaping narrative, evidence, and handoff into one inspectable visual object.",
     thesis: "Composition is the bridge between what is known and what must be decided.",
     thesisLede:
       "Use contrast, spacing, and sequence to help the audience cross that bridge at the right pace.",
     statement: "Give the central idea <em>room to perform.</em>",
   },
   {
-    cover: "The page should feel like a <em>decision already taking shape.</em>",
-    lede: "A deliberately authored deck source for agents, designers, and reviewers who need the visual logic to stay inspectable.",
+    cover: "Let the page feel like <em>a decision taking shape.</em>",
+    lede: "A deliberately authored deck source for designers and reviewers who need the visual logic to stay inspectable.",
     thesis: "A clear hierarchy turns a collection of facts into an experience.",
     thesisLede:
       "Make the first read generous, the second read useful, and the final action easy to name.",
@@ -412,7 +412,7 @@ function diversityCss(profile) {
       --profile-bg-c: color-mix(in srgb, var(--accent-soft) ${Math.min(70, background.contrast)}%, transparent);
       --profile-bg-line: color-mix(in srgb, var(--ink) ${Math.max(5, Math.round(background.opacity * 0.45))}%, transparent);
     }
-    ${scope} .slide { padding: var(--profile-pad); }
+    ${scope} .slide { padding: var(--profile-pad); padding-bottom: calc(var(--profile-pad) + 42px); }
     ${scope} .title { font-size: calc(76px * var(--profile-title-scale)); }
     ${scope} .section-title { font-size: calc(62px * var(--profile-title-scale)); }
     ${scope} .hero-grid, ${scope} .compare { gap: var(--profile-gap); }
@@ -420,7 +420,7 @@ function diversityCss(profile) {
     ${scope} .panel, ${scope} .stat, ${scope} .step { border-radius: var(--profile-radius); }
     ${scope} .composition-mark { position: absolute; right: calc(var(--profile-pad) * .6); top: calc(var(--profile-pad) * .55); width: calc(16px + var(--profile-rule) * 2px); height: calc(16px + var(--profile-rule) * 2px); border: 1px solid var(--accent); border-radius: var(--profile-radius); opacity: .44; pointer-events: none; }
     ${scope} .composition-mark::after { position: absolute; right: calc(var(--profile-rule) * -2px); bottom: calc(var(--profile-rule) * -2px); width: 100%; height: 100%; border: 1px solid var(--accent-soft); content: ""; transform: rotate(var(--profile-angle)); }
-    ${scope} .slide > *:not(.composition-mark):not(.cover-art) { position: relative; z-index: 1; }
+    ${scope} .slide > *:not(.composition-mark):not(.cover-art):not(.footer):not(.story-footer) { position: relative; z-index: 1; }
     ${profile.mode.css(scope)}
     ${scope} .slide::before {
       background: ${backgroundCss(background)};
@@ -429,6 +429,7 @@ function diversityCss(profile) {
       background-repeat: repeat;
       background-size: ${background.scale}px ${background.scale}px;
     }
+    ${scope} .slide:not(.close-scene):not(.closing)::before { opacity: .22; }
   `;
 }
 

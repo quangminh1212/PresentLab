@@ -22,6 +22,32 @@ copy, or proprietary artwork.
   risk, and handoff layouts. Source:
   [Sequoia: Writing a Business Plan](https://sequoiacap.com/article/writing-a-business-plan).
 
+## Current visual audit
+
+The second pass follows a small set of public design references and applies their
+principles without copying their artwork:
+
+- [Canva: Visual hierarchy](https://www.canva.com/learn/visual-hierarchy/) informed
+  focal-point order, scale, contrast, whitespace, and the room-distance squint test.
+- [Canva: Presentation design](https://www.canva.com/learn/presentation-design/2/)
+  and [Pitch: Anatomy of a perfect pitch](https://pitch.com/blog/anatomy-of-a-perfect-pitch)
+  informed the one-core-idea plus one-visual-anchor rule and shorter reading paths.
+- [Pitch: Presentation design tips](https://pitch.com/blog/presentation-design-tips)
+  informed rule-of-three grouping, emphasis, and consistency across a sequence.
+- [Pitch: Designing presentation templates](https://pitch.com/blog/designing-presentation-templates)
+  informed separating narrative structure from reusable visual treatment.
+- [Proof of Talk 2025 on Behance](https://www.behance.net/gallery/254976327/Proof-of-Talk-2025-Visual-Identity-Pitch-Deck-Web)
+  and [QX Corporate Deck Redesign](https://www.behance.net/gallery/250639485/QX-Corporate-Deck-Redesign-%28Before-After%29)
+  informed recurring typography systems, alternating density, and stronger before/after hierarchy.
+- [Awwwards: Hot Right Now](https://assets.awwwards.com/awards/gallery/2023/07/HOT-RIGHT-NOW-BOOK-2023.pdf)
+  informed the editorial/Swiss use of a grid that follows the content instead of decorating every page.
+
+The audit specifically removed accidental footer collisions, reduced repeated card
+walls and dense background patterns, replaced unverified numeric claims with
+neutral placeholders, and gave each attention mode its own opening geometry:
+stage, Swiss grid, editorial spread, research lab, product device, manifesto
+poster, culture collage, or strategy report.
+
 ## Implementation rule
 
 Every generated template keeps the same HTML contract and 45-page sample story,

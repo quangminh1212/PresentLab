@@ -60,7 +60,7 @@ h1, h2, h3, p { margin: 0; }
 .title { max-width: 1120px; font-size: 76px; font-weight: 800; letter-spacing: -.055em; line-height: .98; }
 .title em { color: var(--accent); font-style: normal; }
 .lede { max-width: 820px; margin-top: 24px; color: var(--muted); font-size: 26px; line-height: 1.35; }
-.footer { margin-top: auto; color: var(--muted); font-size: 15px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.footer { position: absolute; right: var(--profile-pad, 88px); bottom: 24px; left: var(--profile-pad, 88px); z-index: 4; margin: 0; padding-top: 10px; border-top: 1px solid color-mix(in srgb, var(--line-strong) 72%, transparent); color: var(--muted); font-size: 15px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
 .meta-line { display: flex; gap: 28px; margin-top: 38px; color: var(--muted); font-size: 15px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
 .cover-art { position: absolute; right: 70px; top: 70px; width: 560px; height: 760px; }
 .orb { position: absolute; border-radius: 50%; }
@@ -123,7 +123,7 @@ h1, h2, h3, p { margin: 0; }
 `;
 
 const additionalCss = `
-.slide > *:not(.cover-art) { position: relative; z-index: 1; }
+.slide > *:not(.cover-art):not(.footer):not(.story-footer) { position: relative; z-index: 1; }
 .layout-statement { justify-content: center; }
 .layout-statement .statement-grid { display: grid; grid-template-columns: 1.35fr .65fr; gap: 54px; align-items: end; margin-top: 36px; }
 .layout-statement .statement { max-width: 980px; font-size: 72px; font-weight: 850; letter-spacing: -.065em; line-height: .98; }
@@ -271,6 +271,53 @@ const additionalCss = `
 .layout-appendix .appendix-no { color: var(--accent); font-size: 25px; font-weight: 900; }
 .layout-appendix .appendix-row h2 { font-size: 20px; letter-spacing: -.03em; }
 .layout-appendix .appendix-row p { margin-top: 4px; color: var(--muted); font-size: 15px; line-height: 1.28; }
+.layout-personas .persona,
+.layout-before-after .state-card,
+.layout-decision .decision-node,
+.layout-quote-wall .mini-quote,
+.layout-horizons .horizon,
+.layout-storyboard .story-frame,
+.layout-signal .signal-side,
+.layout-risk-map .risk-band,
+.layout-equation .equation-card,
+.layout-matrix .matrix-cell { border-radius: 0; box-shadow: none; }
+.layout-personas .persona,
+.layout-before-after .state-card,
+.layout-quote-wall .mini-quote,
+.layout-horizons .horizon,
+.layout-storyboard .story-frame { border: 0; border-top: 4px solid var(--accent); background: transparent; }
+.layout-personas .persona:nth-child(2),
+.layout-storyboard .story-frame:nth-child(even) { transform: translateY(18px); }
+.layout-before-after .state-card.after { border-color: var(--accent); background: transparent; }
+.layout-decision .decision-node { border: 0; border-bottom: 1px solid var(--line-strong); background: transparent; }
+.layout-quote-wall .mini-quote:nth-child(2) { border-color: var(--accent-deep); transform: translateY(18px); }
+.layout-quote-wall .mini-quote:nth-child(3) { border-color: var(--ink); }
+.layout-horizons .horizon:nth-child(2) { border-color: var(--accent-deep); }
+.layout-horizons .horizon:nth-child(3) { border-color: var(--ink); }
+.layout-signal .signal-side { border: 0; border-left: 1px solid var(--line-strong); background: transparent; }
+.layout-risk-map .risk-band { border: 0; border-left: 5px solid var(--accent); background: transparent; }
+.layout-equation .equation-card { border: 0; border-top: 3px solid var(--line-strong); background: transparent; }
+.layout-equation .equation-card.solution { border-color: var(--accent); background: transparent; }
+.layout-equation .equation-card.result { border: 0; border-top: 5px solid var(--accent); }
+.layout-matrix .matrix-cell { border: 0; border-top: 1px solid var(--line-strong); background: transparent; }
+.layout-matrix .matrix-cell:nth-child(2), .layout-matrix .matrix-cell:nth-child(3) { background: color-mix(in srgb, var(--accent-soft) 54%, transparent); }
+.layout-architecture .architecture-layer { border: 0; border-bottom: 1px solid var(--line-strong); background: transparent; }
+.layout-architecture .architecture-layer:nth-child(2), .layout-architecture .architecture-layer:nth-child(4) { background: color-mix(in srgb, var(--accent-soft) 54%, transparent); }
+.layout-swimlane .lane-block { background: transparent; }
+.layout-swimlane .lane-block.strong { background: color-mix(in srgb, var(--accent-soft) 58%, transparent); }
+.layout-agenda .agenda-row { min-height: 68px; }
+.layout-matrix .matrix { min-height: 350px; }
+.layout-matrix .matrix-cell { min-height: 165px; padding: 18px; }
+.layout-table .data-table td { padding-top: 12px; padding-bottom: 12px; }
+.layout-personas .persona { min-height: 300px; }
+.layout-personas .persona:nth-child(2) { transform: translateY(12px); }
+.layout-before-after .state-card { min-height: 300px; padding: 24px; }
+.layout-quote-wall .mini-quote { min-height: 280px; }
+.layout-storyboard .story-frame { min-height: 300px; }
+.problem-statement, .solution-claim, .proof-quote, .research-quote,
+.problem-context, .solution-visual, .feature-visual, .proof-rail, .case-facts,
+.research-aside, .operating-map, .ask-visual { min-height: 360px; }
+.layout-personas .persona-row, .layout-before-after .before-after, .layout-storyboard .storyboard { margin-top: 28px; }
 .family-swiss .layout-matrix .matrix-cell, .family-datanoir .layout-matrix .matrix-cell { border-radius: 0; }
 .family-brutalist .layout-statement .statement-rail, .family-retrofuture .layout-statement .statement-rail { border-left-width: 8px; }
 .family-organic .layout-personas .persona, .family-aurora .layout-personas .persona { border-radius: var(--radius); }
@@ -287,7 +334,7 @@ const storyCss = `
 .story-title em { color: var(--accent); font-style: normal; }
 .story-deck { max-width: 760px; margin-top: 18px; color: var(--muted); font-size: 21px; line-height: 1.4; }
 .story-page { color: var(--accent); font-size: 16px; font-weight: 900; letter-spacing: .14em; }
-.story-footer { margin-top: auto; color: var(--muted); font-size: 13px; font-weight: 900; letter-spacing: .11em; text-transform: uppercase; }
+.story-footer { position: absolute; right: var(--profile-pad, 88px); bottom: 24px; left: var(--profile-pad, 88px); z-index: 4; margin: 0; padding-top: 10px; border-top: 1px solid color-mix(in srgb, var(--line-strong) 72%, transparent); color: var(--muted); font-size: 13px; font-weight: 900; letter-spacing: .11em; text-transform: uppercase; }
 .story-rule { height: 2px; margin-top: 26px; background: var(--accent); }
 .opening-scene { justify-content: center; }
 .opening-layout { display: grid; grid-template-columns: minmax(0, 1.06fr) minmax(440px, .94fr); gap: 66px; align-items: center; min-height: 700px; }
@@ -317,28 +364,31 @@ const storyCss = `
 .problem-scene, .solution-scene, .feature-scene, .proof-scene, .comparison-scene, .case-scene, .research-scene, .operating-scene, .ask-scene { gap: 30px; }
 .problem-layout, .solution-layout, .feature-layout, .proof-layout, .comparison-layout, .case-layout, .research-layout, .operating-layout, .ask-layout { display: grid; grid-template-columns: minmax(0, 1.04fr) minmax(0, .96fr); gap: 34px; align-items: stretch; margin-top: 42px; flex: 1; min-height: 0; }
 .problem-statement, .solution-claim, .proof-quote, .research-quote { display: flex; flex-direction: column; justify-content: center; min-height: 390px; padding: 40px; border-left: 8px solid var(--accent); background: var(--panel); box-shadow: var(--shadow); }
+.problem-statement { border-top: 4px solid var(--accent); border-left: 0; padding-left: 0; background: transparent; box-shadow: none; }
 .problem-statement .label, .solution-claim .label, .proof-quote .label, .research-quote .label { color: var(--accent); font-size: 14px; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; }
 .problem-statement h2, .solution-claim h2, .proof-quote h2 { max-width: 650px; margin-top: 26px; font-size: 52px; font-weight: 850; letter-spacing: -.065em; line-height: .96; }
 .problem-statement p, .solution-claim p { max-width: 590px; margin-top: 22px; color: var(--muted); font-size: 20px; line-height: 1.4; }
 .problem-context, .solution-visual, .feature-visual, .proof-rail, .case-facts, .research-aside, .operating-map, .ask-visual { position: relative; min-height: 390px; overflow: hidden; padding: 32px; border: 1px solid var(--line-strong); background: var(--accent-soft); }
+.problem-context { border: 0; border-left: 1px solid var(--line-strong); background: transparent; }
 .problem-context::before, .solution-visual::before, .feature-visual::before, .ask-visual::before { position: absolute; inset: 0; background: repeating-linear-gradient(135deg, transparent 0 28px, color-mix(in srgb, var(--accent) 22%, transparent) 29px 30px); content: ""; opacity: .42; }
 .problem-context > *, .solution-visual > *, .feature-visual > *, .ask-visual > * { position: relative; z-index: 1; }
 .context-stamp, .visual-stamp { display: inline-flex; align-items: center; padding: 9px 12px; border: 1px solid var(--accent); color: var(--accent-deep); font-size: 12px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
+.scene-frame .visual-stamp { border-color: color-mix(in srgb, var(--quote-ink) 72%, transparent); color: var(--quote-ink); }
 .context-quote { max-width: 450px; margin-top: 58px; font-family: var(--serif); font-size: 44px; font-weight: 700; letter-spacing: -.04em; line-height: 1.03; }
 .context-note { position: absolute; right: 30px; bottom: 26px; max-width: 210px; color: var(--muted); font-size: 14px; line-height: 1.35; }
 .scene-layout { display: grid; grid-template-columns: 1.25fr .75fr; gap: 22px; margin-top: 40px; flex: 1; min-height: 0; }
 .scene-frame { position: relative; min-height: 420px; overflow: hidden; background: linear-gradient(150deg, var(--accent-deep), var(--accent)); color: var(--quote-ink); }
 .scene-frame::before { position: absolute; inset: 0; background: radial-gradient(circle at 72% 30%, rgb(255 255 255 / 40%) 0 3%, transparent 3.5%), radial-gradient(circle at 24% 72%, rgb(255 255 255 / 20%) 0 2%, transparent 2.5%), linear-gradient(115deg, transparent 0 45%, rgb(255 255 255 / 12%) 45% 46%, transparent 46%); content: ""; }
 .scene-frame h2 { position: absolute; left: 32px; bottom: 30px; max-width: 650px; font-size: 48px; letter-spacing: -.06em; line-height: .95; }
-.scene-caption { display: flex; flex-direction: column; justify-content: end; min-height: 420px; padding: 28px; border-top: 4px solid var(--accent); background: var(--panel); }
+.scene-caption { display: flex; flex-direction: column; justify-content: end; min-height: 420px; padding: 28px 0 28px 34px; border-top: 4px solid var(--accent); background: transparent; }
 .scene-caption .big-quote { font-family: var(--serif); font-size: 31px; font-weight: 700; letter-spacing: -.04em; line-height: 1.1; }
 .scene-caption small { margin-top: 24px; color: var(--muted); font-size: 13px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
 .before-after-scene { justify-content: center; }
 .before-after-head { max-width: 920px; }
 .before-after-title { margin-top: 14px; font-size: 64px; font-weight: 900; letter-spacing: -.075em; line-height: .94; }
 .before-after-grid { display: grid; grid-template-columns: 1fr 90px 1fr; gap: 20px; align-items: center; margin-top: 50px; }
-.state-frame { min-height: 285px; padding: 30px; border: 2px solid var(--line-strong); background: var(--panel); }
-.state-frame.after { border-color: var(--accent); background: var(--accent-soft); }
+.state-frame { min-height: 285px; padding: 30px 0; border-top: 3px solid var(--line-strong); background: transparent; }
+.state-frame.after { border-color: var(--accent); background: transparent; }
 .state-frame small { color: var(--accent); font-size: 13px; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; }
 .state-frame h2 { margin-top: 22px; font-size: 36px; letter-spacing: -.05em; }
 .state-frame p { margin-top: 14px; color: var(--muted); font-size: 18px; line-height: 1.38; }
@@ -361,7 +411,7 @@ const storyCss = `
 .triple-head { max-width: 900px; }
 .triple-title { margin-top: 12px; font-size: 68px; font-weight: 900; letter-spacing: -.08em; line-height: .92; }
 .triple-reveal { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 58px; }
-.reveal-item { position: relative; min-height: 260px; padding: 26px; border-top: 10px solid var(--accent); background: var(--panel); }
+.reveal-item { position: relative; min-height: 260px; padding: 26px 0; border-top: 10px solid var(--accent); background: transparent; }
 .reveal-item:nth-child(2) { border-color: var(--accent-deep); transform: translateY(28px); }
 .reveal-item:nth-child(3) { border-color: var(--ink); transform: translateY(56px); }
 .reveal-item .reveal-no { color: var(--accent); font-size: 56px; font-weight: 900; letter-spacing: -.08em; }
@@ -393,7 +443,7 @@ const storyCss = `
 .proof-quote .label { color: var(--accent); }
 .proof-quote h2 { font-family: var(--serif); font-size: 49px; font-weight: 700; }
 .proof-quote cite { margin-top: 28px; color: var(--muted); font-size: 13px; font-style: normal; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
-.proof-rail { display: flex; flex-direction: column; justify-content: space-between; background: var(--panel); }
+.proof-rail { display: flex; flex-direction: column; justify-content: space-between; border: 0; border-left: 1px solid var(--line-strong); background: transparent; }
 .proof-stat { color: var(--accent); font-size: 88px; font-weight: 900; letter-spacing: -.11em; line-height: .8; }
 .proof-rail h2 { max-width: 330px; margin-top: 20px; font-size: 28px; letter-spacing: -.05em; }
 .proof-rail p { max-width: 360px; color: var(--muted); font-size: 17px; line-height: 1.35; }
@@ -418,13 +468,13 @@ const storyCss = `
 .traction-bar { display: flex; flex: 1; flex-direction: column; justify-content: end; gap: 12px; height: 100%; }
 .traction-bar i { display: block; min-height: 20px; background: linear-gradient(180deg, var(--accent), var(--accent-deep)); }
 .traction-bar span { color: var(--muted); font-size: 13px; font-weight: 900; letter-spacing: .08em; text-align: center; text-transform: uppercase; }
-.traction-callout { min-height: 250px; padding: 30px; border: 1px solid var(--line); background: var(--panel); }
+.traction-callout { min-height: 250px; padding: 30px 0 30px 32px; border: 0; border-left: 1px solid var(--line-strong); background: transparent; }
 .traction-callout strong { display: block; color: var(--accent); font-size: 76px; font-weight: 900; letter-spacing: -.1em; line-height: .8; }
 .traction-callout h2 { margin-top: 22px; font-size: 27px; letter-spacing: -.04em; }
 .traction-callout p { margin-top: 12px; color: var(--muted); font-size: 17px; line-height: 1.35; }
 .comparison-layout { grid-template-columns: 1fr 1fr; }
-.comparison-column { min-height: 390px; padding: 28px; border-top: 10px solid var(--line-strong); background: var(--panel); }
-.comparison-column.highlight { border-color: var(--accent); background: var(--accent-soft); }
+.comparison-column { min-height: 390px; padding: 28px 0; border-top: 10px solid var(--line-strong); background: transparent; }
+.comparison-column.highlight { border-color: var(--accent); background: transparent; }
 .comparison-column .label { color: var(--accent); font-size: 14px; font-weight: 900; letter-spacing: .15em; text-transform: uppercase; }
 .comparison-column h2 { margin-top: 20px; font-size: 42px; letter-spacing: -.06em; line-height: .96; }
 .comparison-column ul { display: grid; gap: 13px; margin: 30px 0 0; padding: 0; list-style: none; }
@@ -436,6 +486,8 @@ const storyCss = `
 .moat-copy p { margin-top: 22px; color: var(--muted); font-size: 19px; line-height: 1.4; }
 .moat-rings { position: relative; display: flex; min-height: 460px; align-items: center; justify-content: center; }
 .moat-ring { position: absolute; display: flex; align-items: center; justify-content: center; border: 1px solid var(--accent); border-radius: 50%; color: var(--accent-deep); font-size: 14px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+.moat-ring > span { position: absolute; top: 34px; }
+.moat-ring.inner > span { top: auto; }
 .moat-ring.outer { width: 430px; height: 430px; opacity: .35; }
 .moat-ring.middle { width: 300px; height: 300px; background: color-mix(in srgb, var(--accent-soft) 40%, transparent); }
 .moat-ring.inner { width: 155px; height: 155px; border: 4px solid var(--accent); background: var(--panel); color: var(--accent); }
@@ -530,7 +582,7 @@ body[data-pl-archetype][data-pl-profile] .close-scene::before { background: radi
 .close-title em { color: var(--quote-mark); font-style: normal; }
 .close-deck { max-width: 650px; margin-top: 26px; color: color-mix(in srgb, var(--paper) 76%, transparent); font-size: 24px; line-height: 1.35; }
 .close-meta { display: flex; gap: 28px; margin-top: 54px; color: var(--quote-mark); font-size: 13px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; }
-.close-scene .story-footer { color: var(--quote-mark); }
+.close-scene .story-footer { color: var(--quote-mark); border-color: color-mix(in srgb, var(--quote-mark) 42%, transparent); }
 
 /* The reference decks use different modes of attention, not one universal card grid. */
 body[data-pl-archetype="keynote"] .story-title,
@@ -1276,8 +1328,23 @@ function storyArchetypeCss(archetype) {
       body[data-pl-archetype="keynote"] .opening-scene,
       body[data-pl-archetype="keynote"] .cold-open-scene,
       body[data-pl-archetype="keynote"] .close-scene { background: var(--paper); }
-      body[data-pl-archetype="keynote"] .opening-figure { font-size: 210px; }
+      body[data-pl-archetype="keynote"] .opening-surface { inset: 30px 0 80px 30px; border: 0; background: linear-gradient(135deg, var(--ink) 0 58%, var(--accent) 58%); box-shadow: 22px 22px 0 color-mix(in srgb, var(--accent) 34%, transparent); transform: none; }
+      body[data-pl-archetype="keynote"] .opening-surface::before { inset: 22px; border-color: color-mix(in srgb, var(--paper) 55%, transparent); }
+      body[data-pl-archetype="keynote"] .opening-orbit { left: auto; right: 8px; top: 8px; width: 250px; height: 250px; border-width: 4px; }
+      body[data-pl-archetype="keynote"] .opening-figure { top: 128px; right: 60px; color: var(--paper); font-size: 228px; transform: none; }
+      body[data-pl-archetype="keynote"] .opening-bars { left: 58px; right: 58px; bottom: 112px; gap: 12px; }
+      body[data-pl-archetype="keynote"] .opening-bars i { background: var(--paper); opacity: .8; }
+      body[data-pl-archetype="keynote"] .opening-bars i:nth-child(2n) { background: var(--accent); }
+      body[data-pl-archetype="keynote"] .opening-caption { right: 24px; bottom: 30px; color: var(--paper); transform: none; }
       body[data-pl-archetype="keynote"] .scene-frame { background: linear-gradient(145deg, var(--ink), var(--accent-deep)); }
+      body[data-pl-archetype="keynote"] .problem-statement { border-top: 0; border-left: 8px solid var(--accent); padding-left: 40px; background: color-mix(in srgb, var(--panel) 82%, transparent); box-shadow: var(--shadow); }
+      body[data-pl-archetype="keynote"] .problem-context { border: 0; padding: 44px; background: var(--ink); color: var(--paper); }
+      body[data-pl-archetype="keynote"] .problem-context::before { display: none; }
+      body[data-pl-archetype="keynote"] .problem-context .context-stamp { color: var(--quote-mark); border-color: color-mix(in srgb, var(--quote-mark) 72%, transparent); }
+      body[data-pl-archetype="keynote"] .problem-context .context-note { color: color-mix(in srgb, var(--paper) 70%, transparent); }
+      body[data-pl-archetype="keynote"] .cold-open-scene { background: var(--ink); color: var(--paper); }
+      body[data-pl-archetype="keynote"] .cold-open-note, body[data-pl-archetype="keynote"] .cold-open-foot { color: color-mix(in srgb, var(--paper) 72%, transparent); }
+      body[data-pl-archetype="keynote"] .cold-open-foot { border-color: color-mix(in srgb, var(--paper) 28%, transparent); }
       body[data-pl-archetype="keynote"] .close-scene { background: var(--paper); color: var(--ink); }
       body[data-pl-archetype="keynote"] .close-deck { color: var(--muted); }
       body[data-pl-archetype="keynote"] .close-title em,
@@ -1287,43 +1354,164 @@ function storyArchetypeCss(archetype) {
       body[data-pl-archetype="keynote"] .close-scene::before { opacity: .25; }
     `,
     pitch: `
-      body[data-pl-archetype="pitch"] .opening-surface { transform: rotate(3deg); }
+      body[data-pl-archetype="pitch"] .opening-surface { inset: 26px 0 72px 36px; border: 2px solid var(--ink); border-left: 14px solid var(--accent); background: var(--paper); box-shadow: none; transform: none; }
+      body[data-pl-archetype="pitch"] .opening-surface::before { inset: 32px; border: 0; border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink); }
+      body[data-pl-archetype="pitch"] .opening-orbit { left: -18px; top: 58px; width: 116px; height: 116px; border: 10px solid var(--accent); border-radius: 0; transform: rotate(45deg); }
+      body[data-pl-archetype="pitch"] .opening-figure { top: 92px; right: 56px; color: var(--ink); font-size: 230px; transform: none; }
+      body[data-pl-archetype="pitch"] .opening-bars { left: 68px; right: 54px; bottom: 98px; gap: 0; }
+      body[data-pl-archetype="pitch"] .opening-bars i { background: var(--ink); }
+      body[data-pl-archetype="pitch"] .opening-bars i:nth-child(2n) { background: var(--accent); }
+      body[data-pl-archetype="pitch"] .opening-caption { right: 18px; bottom: 22px; color: var(--ink); transform: none; }
       body[data-pl-archetype="pitch"] .cold-open-number { font-size: 260px; }
       body[data-pl-archetype="pitch"] .story-rule { width: 180px; }
+      body[data-pl-archetype="pitch"] .problem-context::before { display: none; }
+      body[data-pl-archetype="pitch"] .problem-context { border: 2px solid var(--ink); background: var(--accent-soft); }
+      body[data-pl-archetype="pitch"] .problem-statement { border-top-width: 3px; }
+      body[data-pl-archetype="pitch"] .comparison-column.highlight,
+      body[data-pl-archetype="pitch"] .state-frame.after { border-top-width: 6px; }
     `,
     editorial: `
-      body[data-pl-archetype="editorial"] .opening-surface { transform: rotate(-1deg); }
-      body[data-pl-archetype="editorial"] .scene-frame { border-radius: 2px 70px 2px 70px; }
+      body[data-pl-archetype="editorial"] .opening-layout { grid-template-columns: .86fr 1.14fr; gap: 82px; }
+      body[data-pl-archetype="editorial"] .opening-surface { inset: 10px 0 40px 34px; border: 0; border-left: 1px solid var(--ink); background: linear-gradient(90deg, var(--accent-soft), color-mix(in srgb, var(--paper) 78%, transparent)); box-shadow: none; transform: none; }
+      body[data-pl-archetype="editorial"] .opening-surface::before { inset: 28px 30px; border: 1px solid var(--line-strong); border-left: 12px solid var(--accent); }
+      body[data-pl-archetype="editorial"] .opening-orbit { left: 0; top: 22px; width: 190px; height: 190px; border-width: 1px; border-radius: 50% 50% 0 50%; transform: rotate(-24deg); }
+      body[data-pl-archetype="editorial"] .opening-figure { top: 128px; right: 64px; color: var(--accent); font-family: var(--serif); font-size: 210px; font-weight: 600; transform: rotate(-8deg); }
+      body[data-pl-archetype="editorial"] .opening-bars { left: 62px; right: 50px; bottom: 78px; gap: 0; }
+      body[data-pl-archetype="editorial"] .opening-bars i { background: var(--ink); opacity: .72; }
+      body[data-pl-archetype="editorial"] .opening-bars i:nth-child(2n) { background: var(--accent); }
+      body[data-pl-archetype="editorial"] .opening-caption { right: 26px; bottom: 18px; font-family: var(--serif); transform: none; }
+      body[data-pl-archetype="editorial"] .scene-frame { min-height: 420px; border-radius: 2px 70px 2px 70px; }
       body[data-pl-archetype="editorial"] .opening-caption { font-family: var(--serif); }
+      body[data-pl-archetype="editorial"] .story-rule { background: var(--ink); }
+      body[data-pl-archetype="editorial"] .problem-statement { border-top-width: 2px; }
+      body[data-pl-archetype="editorial"] .problem-layout { grid-template-columns: .72fr 1.28fr; gap: 46px; }
+      body[data-pl-archetype="editorial"] .problem-statement { padding-right: 28px; }
+      body[data-pl-archetype="editorial"] .problem-context { background: linear-gradient(115deg, var(--accent-soft), transparent); }
+      body[data-pl-archetype="editorial"] .problem-context::before { display: none; }
+      body[data-pl-archetype="editorial"] .scene-caption { border-top-width: 2px; }
     `,
     strategy: `
+      body[data-pl-archetype="strategy"] .opening-surface { inset: 48px 12px 64px 30px; border: 0; border-top: 8px solid var(--ink); border-bottom: 1px solid var(--line-strong); background: linear-gradient(90deg, color-mix(in srgb, var(--accent-soft) 58%, transparent), transparent 70%); box-shadow: none; transform: none; }
+      body[data-pl-archetype="strategy"] .opening-surface::before { inset: 22px 26px; border: 0; border-left: 1px solid var(--line-strong); border-right: 1px solid var(--line-strong); }
+      body[data-pl-archetype="strategy"] .opening-orbit { left: auto; right: 18px; top: 12px; width: 160px; height: 160px; border: 2px solid var(--accent); border-radius: 0; transform: rotate(45deg); }
+      body[data-pl-archetype="strategy"] .opening-figure { top: 118px; right: 74px; color: var(--ink); font-size: 214px; transform: none; }
+      body[data-pl-archetype="strategy"] .opening-bars { left: 58px; right: 58px; bottom: 96px; gap: 10px; }
+      body[data-pl-archetype="strategy"] .opening-bars i { background: var(--accent); opacity: .7; }
+      body[data-pl-archetype="strategy"] .opening-bars i:nth-child(2n) { background: var(--ink); opacity: .55; }
+      body[data-pl-archetype="strategy"] .opening-caption { right: 22px; bottom: 20px; transform: none; }
       body[data-pl-archetype="strategy"] .opening-surface { transform: rotate(0deg); }
       body[data-pl-archetype="strategy"] .opening-bars { gap: 3px; }
       body[data-pl-archetype="strategy"] .story-title { max-width: 980px; }
+      body[data-pl-archetype="strategy"] .slide { background-image: none; }
+      body[data-pl-archetype="strategy"] .story-head { padding-bottom: 14px; border-bottom: 1px solid var(--line-strong); }
+      body[data-pl-archetype="strategy"] .problem-layout { grid-template-columns: 1fr 1fr; gap: 60px; }
+      body[data-pl-archetype="strategy"] .problem-context::before { display: none; }
+      body[data-pl-archetype="strategy"] .problem-context { background: linear-gradient(135deg, color-mix(in srgb, var(--accent-soft) 58%, transparent), transparent); }
+      body[data-pl-archetype="strategy"] .problem-statement,
+      body[data-pl-archetype="strategy"] .reveal-item,
+      body[data-pl-archetype="strategy"] .comparison-column,
+      body[data-pl-archetype="strategy"] .state-frame { box-shadow: none; }
     `,
     research: `
-      body[data-pl-archetype="research"] .opening-surface { transform: rotate(0deg); background: var(--panel); }
-      body[data-pl-archetype="research"] .opening-orbit { border-style: dashed; }
+      body[data-pl-archetype="research"] .opening-surface { inset: 34px 8px 66px 46px; border: 1px solid var(--accent); background: repeating-linear-gradient(0deg, transparent 0 31px, color-mix(in srgb, var(--accent) 18%, transparent) 32px), repeating-linear-gradient(90deg, transparent 0 31px, color-mix(in srgb, var(--accent) 18%, transparent) 32px), var(--panel); box-shadow: none; transform: none; }
+      body[data-pl-archetype="research"] .opening-surface::before { inset: 22px; border: 1px dashed var(--accent); }
+      body[data-pl-archetype="research"] .opening-orbit { left: 0; top: 18px; width: 180px; height: 180px; border-style: dashed; border-width: 2px; }
+      body[data-pl-archetype="research"] .opening-figure { top: 120px; right: 72px; color: var(--accent); font-family: var(--sans); font-size: 198px; transform: none; }
+      body[data-pl-archetype="research"] .opening-bars { left: 64px; right: 52px; bottom: 92px; gap: 7px; }
+      body[data-pl-archetype="research"] .opening-bars i { background: var(--accent); opacity: .75; }
+      body[data-pl-archetype="research"] .opening-bars i:nth-child(2n) { background: var(--ink); opacity: .55; }
+      body[data-pl-archetype="research"] .opening-caption { right: 22px; bottom: 20px; font-family: var(--sans); transform: none; }
       body[data-pl-archetype="research"] .context-quote { font-family: var(--serif); }
+      body[data-pl-archetype="research"] .slide { background-image: none; }
+      body[data-pl-archetype="research"] .story-deck,
+      body[data-pl-archetype="research"] .problem-statement p,
+      body[data-pl-archetype="research"] .context-note { max-width: 680px; }
+      body[data-pl-archetype="research"] .problem-context::before { background: repeating-linear-gradient(0deg, transparent 0 24px, color-mix(in srgb, var(--accent) 18%, transparent) 25px), repeating-linear-gradient(90deg, transparent 0 24px, color-mix(in srgb, var(--accent) 18%, transparent) 25px); opacity: .48; }
+      body[data-pl-archetype="research"] .problem-statement { border-top: 2px solid var(--ink); }
     `,
     product: `
-      body[data-pl-archetype="product"] .opening-surface { transform: rotate(-8deg); }
-      body[data-pl-archetype="product"] .opening-figure { color: var(--ink); text-shadow: 8px 8px 0 var(--accent); }
+      body[data-pl-archetype="product"] .opening-surface { inset: 16px 42px 46px 76px; border: 14px solid var(--ink); border-radius: 30px; background: linear-gradient(160deg, var(--accent-soft), var(--panel)); box-shadow: 22px 22px 0 color-mix(in srgb, var(--accent) 38%, transparent); transform: rotate(-3deg); }
+      body[data-pl-archetype="product"] .opening-surface::before { inset: 22px; border: 0; border-radius: 16px; background: linear-gradient(160deg, var(--accent), var(--accent-deep)); opacity: .9; }
+      body[data-pl-archetype="product"] .opening-orbit { left: auto; right: 16px; top: 18px; width: 180px; height: 180px; border-width: 3px; }
+      body[data-pl-archetype="product"] .opening-figure { top: 138px; right: 90px; color: var(--paper); font-size: 164px; text-shadow: 7px 7px 0 var(--accent-deep); transform: rotate(-3deg); }
+      body[data-pl-archetype="product"] .opening-bars { left: 94px; right: 82px; bottom: 92px; gap: 8px; }
+      body[data-pl-archetype="product"] .opening-bars i { border-radius: 999px 999px 0 0; background: var(--paper); opacity: .8; }
+      body[data-pl-archetype="product"] .opening-bars i:nth-child(2n) { background: var(--accent-soft); }
+      body[data-pl-archetype="product"] .opening-caption { right: 38px; bottom: 18px; transform: rotate(-3deg); }
       body[data-pl-archetype="product"] .solution-object { transform: translate(-50%, -50%) rotate(4deg); }
+      body[data-pl-archetype="product"] .feature-copy { padding-left: 52px; }
+      body[data-pl-archetype="product"] .problem-context::before { background: radial-gradient(circle at 72% 28%, color-mix(in srgb, var(--accent) 62%, transparent) 0 4%, transparent 4.5%), linear-gradient(145deg, transparent 0 49%, color-mix(in srgb, var(--accent) 24%, transparent) 49% 50%, transparent 50%); }
     `,
     manifesto: `
-      body[data-pl-archetype="manifesto"] .opening-surface { transform: rotate(7deg); }
-      body[data-pl-archetype="manifesto"] .opening-figure { color: var(--accent); }
+      body[data-pl-archetype="manifesto"] .opening-surface { inset: 0 28px 58px 18px; border: 10px solid var(--ink); background: var(--accent); box-shadow: 20px 20px 0 var(--ink); transform: none; }
+      body[data-pl-archetype="manifesto"] .opening-surface::before { inset: 24px; border: 10px solid var(--ink); }
+      body[data-pl-archetype="manifesto"] .opening-orbit { left: -4px; top: 20px; width: 152px; height: 152px; border: 8px solid var(--ink); border-radius: 0; transform: rotate(14deg); }
+      body[data-pl-archetype="manifesto"] .opening-figure { top: 86px; right: 56px; color: var(--ink); font-size: 238px; transform: rotate(-7deg); }
+      body[data-pl-archetype="manifesto"] .opening-bars { left: 54px; right: 48px; bottom: 82px; gap: 10px; }
+      body[data-pl-archetype="manifesto"] .opening-bars i { background: var(--ink); opacity: 1; }
+      body[data-pl-archetype="manifesto"] .opening-bars i:nth-child(2n) { background: var(--paper); }
+      body[data-pl-archetype="manifesto"] .opening-caption { right: 20px; bottom: 16px; color: var(--ink); transform: none; }
       body[data-pl-archetype="manifesto"] .cold-open-number { color: var(--ink); }
+      body[data-pl-archetype="manifesto"] .problem-statement { border-top: 0; border-left: 8px solid var(--ink); padding-left: 32px; }
+      body[data-pl-archetype="manifesto"] .state-frame { border-top-width: 8px; }
+      body[data-pl-archetype="manifesto"] .problem-context::before { display: none; }
+      body[data-pl-archetype="manifesto"] .problem-context { border: 6px solid var(--ink); background: var(--accent); color: var(--ink); box-shadow: 12px 12px 0 var(--ink); }
+      body[data-pl-archetype="manifesto"] .problem-context .context-stamp { color: var(--ink); border-color: var(--ink); }
+      body[data-pl-archetype="manifesto"] .problem-context .context-note { color: color-mix(in srgb, var(--ink) 78%, transparent); }
     `,
     culture: `
-      body[data-pl-archetype="culture"] .opening-surface { transform: rotate(-11deg); }
-      body[data-pl-archetype="culture"] .opening-orbit { transform: rotate(18deg); }
+      body[data-pl-archetype="culture"] .opening-surface { inset: 38px 18px 52px 34px; border: 0; background: linear-gradient(135deg, var(--accent) 0 44%, var(--accent-deep) 44% 68%, var(--ink) 68%); clip-path: polygon(6% 0, 100% 5%, 94% 100%, 0 92%); box-shadow: 18px 18px 0 var(--ink); transform: rotate(-5deg); }
+      body[data-pl-archetype="culture"] .opening-surface::before { inset: 24px; border: 8px solid var(--paper); opacity: .8; }
+      body[data-pl-archetype="culture"] .opening-orbit { left: -10px; top: 24px; width: 160px; height: 160px; border: 12px solid var(--accent); transform: rotate(18deg); }
+      body[data-pl-archetype="culture"] .opening-figure { top: 106px; right: 66px; color: var(--paper); font-size: 228px; transform: rotate(6deg); }
+      body[data-pl-archetype="culture"] .opening-bars { left: 58px; right: 48px; bottom: 88px; gap: 12px; transform: rotate(-5deg); }
+      body[data-pl-archetype="culture"] .opening-bars i { background: var(--paper); opacity: .92; }
+      body[data-pl-archetype="culture"] .opening-bars i:nth-child(2n) { background: var(--accent-soft); }
+      body[data-pl-archetype="culture"] .opening-caption { right: 22px; bottom: 18px; color: var(--paper); transform: rotate(-5deg); }
       body[data-pl-archetype="culture"] .scene-frame { transform: rotate(-1deg); }
+      body[data-pl-archetype="culture"] .problem-statement { border-top: 0; border-left: 8px solid var(--accent); padding-left: 40px; background: var(--panel); box-shadow: var(--shadow); }
+      body[data-pl-archetype="culture"] .problem-context { border: 1px solid var(--line-strong); background: var(--accent-soft); }
+      body[data-pl-archetype="culture"] .problem-context::before { background: radial-gradient(circle, var(--accent) 0 5%, transparent 5.5%); background-size: 26px 26px; opacity: .32; }
     `,
   };
   return common[archetype] ?? common.strategy;
 }
+
+const layoutFitCss = `
+/* Keep dense reference layouts inside the 16:9 canvas at every profile scale. */
+.slide[data-template-layout] .section-title { font-size: clamp(48px, calc(54px * var(--profile-title-scale)), 66px); line-height: .96; }
+.slide[data-template-layout] .section-lede { max-width: 700px; font-size: 18px; }
+.layout-agenda .agenda-list { margin-top: 24px; }
+.layout-agenda .agenda-row { min-height: 68px; }
+.layout-matrix .matrix-wrap { margin-top: 20px; }
+.layout-matrix .matrix { min-height: 290px; }
+.layout-matrix .matrix-cell { min-height: 135px; padding: 14px; }
+.layout-matrix .matrix-cell h2 { font-size: 22px; }
+.layout-matrix .matrix-cell p { font-size: 14px; line-height: 1.25; }
+.layout-table .data-table { margin-top: 24px; }
+.layout-table .data-table th { padding-top: 10px; padding-bottom: 10px; }
+.layout-table .data-table td { padding-top: 10px; padding-bottom: 10px; }
+.layout-personas .persona-row { margin-top: 28px; }
+.layout-personas .persona { min-height: 250px; padding: 22px; }
+.layout-personas .persona:nth-child(2) { transform: translateY(10px); }
+.layout-personas .persona h2 { margin-top: 18px; }
+.layout-personas .persona .persona-need { margin-top: 18px; }
+.layout-before-after .before-after { margin-top: 30px; }
+.layout-before-after .state-card { min-height: 245px; padding: 20px; }
+.layout-quote-wall .quote-wall { margin-top: 28px; }
+.layout-quote-wall .mini-quote { min-height: 250px; padding: 22px; }
+.layout-storyboard .storyboard { margin-top: 28px; }
+.layout-storyboard .story-frame { min-height: 250px; padding: 16px; }
+.layout-storyboard .story-frame:nth-child(even) { transform: translateY(10px); }
+.layout-storyboard .story-frame .frame-mark { height: 120px; font-size: 48px; }
+.layout-storyboard .story-frame h2 { margin-top: 14px; font-size: 20px; }
+.layout-storyboard .story-frame p { font-size: 14px; }
+.problem-statement, .solution-claim, .proof-quote, .research-quote,
+.problem-context, .solution-visual, .feature-visual, .proof-rail, .case-facts,
+.research-aside, .operating-map, .ask-visual { min-height: 360px; }
+.proof-quote { padding: 32px; }
+.proof-quote h2 { font-size: 44px; }
+`;
 
 function paletteCss(tokens) {
   return `
@@ -1539,7 +1727,7 @@ function additionalSlides(label) {
     layoutSlide(
       "scorecard",
       "layout-scorecard",
-      `${head("34 / Quality signal", "A scorecard keeps review criteria visible while the work is still changeable.", "Use one row per criterion and reserve status labels for decisions that need attention.", "35")}<div class="scorecard"><div class="score-row"><strong>Clarity</strong><span class="score-value">92</span><span class="score-status">Ready</span><span class="score-note">The title names the subject and the decision.</span></div><div class="score-row"><strong>Contrast</strong><span class="score-value">84</span><span class="score-status">Review</span><span class="score-note">The signal is visible, but the muted text needs checking.</span></div><div class="score-row"><strong>Rhythm</strong><span class="score-value">88</span><span class="score-status">Stable</span><span class="score-note">The sequence changes density without losing the rail.</span></div><div class="score-row"><strong>Handoff</strong><span class="score-value">96</span><span class="score-status">Ready</span><span class="score-note">Source and rendered outputs remain together.</span></div></div>${foot("35", "Scorecard layout")}`,
+      `${head("34 / Quality signal", "Keep review criteria visible.", "Use one row per criterion and reserve status labels for decisions that need attention.", "35")}<div class="scorecard"><div class="score-row"><strong>Clarity</strong><span class="score-value">—</span><span class="score-status">Ready</span><span class="score-note">The title names the subject and the decision.</span></div><div class="score-row"><strong>Contrast</strong><span class="score-value">—</span><span class="score-status">Review</span><span class="score-note">The signal is visible, but the muted text needs checking.</span></div><div class="score-row"><strong>Rhythm</strong><span class="score-value">—</span><span class="score-status">Stable</span><span class="score-note">The sequence changes density without losing the rail.</span></div><div class="score-row"><strong>Handoff</strong><span class="score-value">—</span><span class="score-status">Ready</span><span class="score-note">Source and rendered outputs remain together.</span></div></div>${foot("35", "Scorecard layout")}`,
     ),
     layoutSlide(
       "quote-wall",
@@ -1579,7 +1767,7 @@ function additionalSlides(label) {
     layoutSlide(
       "case-study",
       "layout-case-study",
-      `${head("42 / Case study", "A concrete example gives the system something to prove.", "Use a case-study frame to connect the abstract rule to a specific change, result, or lesson.", "43")}<div class="case-study"><aside class="case-facts"><strong>3×</strong><h2>More useful choices</h2><p>One family, three distinct jobs: orientation, evidence, and action.</p></aside><div class="case-story"><article class="case-step"><span class="step-no">01 / Before</span><h2>Too many options</h2><p>Every page asked the reader to decide how to read it.</p></article><article class="case-step"><span class="step-no">02 / Change</span><h2>Name the layout</h2><p>Each pattern received a clear purpose and a stable visual cue.</p></article><article class="case-step"><span class="step-no">03 / After</span><h2>Faster selection</h2><p>The next author could choose a starting point without guessing.</p></article></div></div>${foot("43", "Case study layout")}`,
+      `${head("42 / Case study", "Make the example concrete.", "Use a case-study frame to connect the abstract rule to a specific change, result, or lesson.", "43")}<div class="case-study"><aside class="case-facts"><strong>03</strong><h2>Illustrative steps</h2><p>One family, three distinct jobs: orientation, evidence, and action.</p></aside><div class="case-story"><article class="case-step"><span class="step-no">01 / Before</span><h2>Too many options</h2><p>Every page asked the reader to decide how to read it.</p></article><article class="case-step"><span class="step-no">02 / Change</span><h2>Name the layout</h2><p>Each pattern received a clear purpose and a stable visual cue.</p></article><article class="case-step"><span class="step-no">03 / After</span><h2>Faster selection</h2><p>The next author could choose a starting point without guessing.</p></article></div></div>${foot("43", "Case study layout")}`,
     ),
     layoutSlide(
       "appendix",
@@ -1719,117 +1907,117 @@ function reframedCommonSlides(name, label) {
     ),
     slide(
       "cold-open",
-      `<div class="cold-open-wrap"><p class="story-eyebrow">01 / The point</p><div class="cold-open-number">1</div><h1 class="cold-open-title">One decisive idea per slide.</h1><p class="cold-open-note">The strongest decks make the first glance do useful work. The rest of the page earns the second glance.</p><div class="cold-open-foot"><span>Signal before detail</span><span>02</span></div></div>`,
+      `<div class="cold-open-wrap"><p class="story-eyebrow">01 / The point</p><div class="cold-open-number">1</div><h1 class="cold-open-title">One clear claim per slide.</h1><p class="cold-open-note">Put the subject, consequence, or decision in the first glance. Let the detail follow.</p><div class="cold-open-foot"><span>Signal before detail</span><span>02</span></div></div>`,
       "cold-open-scene",
     ),
     slide(
       "problem",
-      `${head("02 / Problem", "The audience should not have to build the hierarchy alone.", "A page becomes tiring when every element competes for the first glance and the claim arrives after the explanation.", "03")}<div class="problem-layout"><article class="problem-statement"><span class="label">The friction</span><h2>Too many equal-weight elements turn a simple point into a scavenger hunt.</h2><p>Start with the tension the deck needs to resolve, then give the audience one clear place to look.</p></article><aside class="problem-context"><span class="context-stamp">Observed pattern</span><p class="context-quote">“Where should I look first?”</p><p class="context-note">A useful template answers this question through spacing, scale, and sequence.</p></aside></div>${foot("03", "Problem frame")}`,
+      `${head("02 / Problem", "Attention is split across too many signals.", "When every element competes for the first glance, the audience has to organize the page before it can consider the point.", "03")}<div class="problem-layout"><article class="problem-statement"><span class="label">The friction</span><h2>Equal-weight elements turn a simple point into a scavenger hunt.</h2><p>Use one visible starting point, then place the support close enough to scan.</p></article><aside class="problem-context"><span class="context-stamp">Observed pattern</span><p class="context-quote">“Where should I look first?”</p><p class="context-note">Spacing, scale, and sequence should answer the question before the copy does.</p></aside></div>${foot("03", "Problem frame")}`,
       "problem-scene",
     ),
     slide(
       "scene",
-      `${head("03 / Context", "Show the moment before you explain the system.", "A scene gives the audience a human entry point and keeps the abstract claim connected to a recognizable situation.", "04")}<div class="scene-layout"><div class="scene-frame"><span class="visual-stamp">The room / before</span><h2>A decision is waiting, but the story has no focal point.</h2></div><aside class="scene-caption"><p class="big-quote">The page should feel like a door, not a filing cabinet.</p><small>Opening scene / narrative context</small></aside></div>${foot("04", "Context scene")}`,
+      `${head("03 / Context", "Start with the moment that needs a decision.", "A scene gives the audience a human entry point before the system, data, or recommendation arrives.", "04")}<div class="scene-layout"><div class="scene-frame"><span class="visual-stamp">The room / before</span><h2>A decision is waiting, but the story has no focal point.</h2></div><aside class="scene-caption"><p class="big-quote">Begin with the situation, then earn the explanation.</p><small>Opening scene / narrative context</small></aside></div>${foot("04", "Context scene")}`,
       "scene-scene",
     ),
     slide(
       "contrast",
-      `<div class="before-after-head"><p class="story-eyebrow">04 / Contrast</p><h1 class="before-after-title">The visual system earns its place when the reading path gets shorter.</h1><p class="story-deck">Use contrast to make the change tangible before the audience gets lost in implementation detail.</p></div><div class="before-after-grid"><article class="state-frame"><small>Before</small><h2>Fragmented story</h2><p>The reader has to decide what matters, what supports it, and where the conclusion lives.</p></article><div class="state-divider">+</div><article class="state-frame after"><small>After</small><h2>One visible thread</h2><p>The title states the point, the proof sits nearby, and the next action has a clear place.</p></article></div>${foot("05", "Before and after")}`,
+      `<div class="before-after-head"><p class="story-eyebrow">04 / Contrast</p><h1 class="before-after-title">A shorter reading path makes the change visible.</h1><p class="story-deck">Show the difference in structure before explaining the implementation.</p></div><div class="before-after-grid"><article class="state-frame"><small>Before</small><h2>Fragmented story</h2><p>The reader must decide what matters and where the conclusion lives.</p></article><div class="state-divider">→</div><article class="state-frame after"><small>After</small><h2>One visible thread</h2><p>The title states the point, the proof sits nearby, and the next action has a clear place.</p></article></div>${foot("05", "Before and after")}`,
       "before-after-scene",
     ),
     slide(
       "why-now",
-      `<div class="why-now-layout"><div><p class="story-eyebrow">05 / Timing</p><h1 class="why-now-statement">The right idea needs <em>the right moment.</em></h1><p class="story-deck">A persuasive sequence explains why this problem matters now, not only why it exists.</p></div><div class="why-now-rail"><div class="why-now-row"><strong>Then</strong><p>The old way was familiar, but it made the important signal hard to see.</p></div><div class="why-now-row"><strong>Now</strong><p>Attention is shorter and the decision needs a more direct visual path.</p></div><div class="why-now-row"><strong>Next</strong><p>A reusable grammar can make the next conversation easier to enter.</p></div></div></div>${foot("06", "Why now")}`,
+      `<div class="why-now-layout"><div><p class="story-eyebrow">05 / Timing</p><h1 class="why-now-statement">Why this matters <em>now.</em></h1><p class="story-deck">Make the timing legible: what changed, what is true today, and what follows.</p></div><div class="why-now-rail"><div class="why-now-row"><strong>Then</strong><p>The familiar path left the important signal hard to see.</p></div><div class="why-now-row"><strong>Now</strong><p>The decision needs a shorter, more direct visual path.</p></div><div class="why-now-row"><strong>Next</strong><p>A reusable grammar makes the next conversation easier to enter.</p></div></div></div>${foot("06", "Why now")}`,
       "why-now-scene",
     ),
     slide(
       "solution",
-      `${head("06 / Solution", "Make the claim visible before the machinery arrives.", "The system is useful when it turns a complicated brief into a sequence the room can follow without decoding.", "07")}<div class="solution-layout"><article class="solution-claim"><span class="label">The answer</span><h2>Give every page one job, one focal point, and one next question.</h2><p>The template becomes a stage for the idea instead of another object the audience must learn.</p></article><div class="solution-visual" aria-hidden="true"><div class="solution-object"></div><span class="visual-stamp">Reusable / inspectable / ready</span></div></div>${foot("07", "Solution reveal")}`,
+      `${head("06 / Solution", "Give the claim a visible place.", "A useful system turns a complicated brief into a sequence the room can follow without decoding.", "07")}<div class="solution-layout"><article class="solution-claim"><span class="label">The answer</span><h2>One job. One focal point. One next question.</h2><p>The template becomes a stage for the idea instead of another object the audience must learn.</p></article><div class="solution-visual" aria-hidden="true"><div class="solution-object"></div><span class="visual-stamp">Reusable / inspectable / ready</span></div></div>${foot("07", "Solution reveal")}`,
       "solution-scene",
     ),
     slide(
       "three-reveal",
-      `<div class="triple-head"><p class="story-eyebrow">07 / Reveal</p><h1 class="triple-title">Three moves make the story easier to carry.</h1><p class="story-deck">Use a small set of memorable beats instead of a wall of instructions.</p></div><div class="triple-reveal"><article class="reveal-item"><span class="reveal-no">01</span><h2>Frame the question</h2><p>Name the subject and the decision before evidence enters.</p></article><article class="reveal-item"><span class="reveal-no">02</span><h2>Show the proof</h2><p>Put the number, quote, or example close enough to matter.</p></article><article class="reveal-item"><span class="reveal-no">03</span><h2>Open the next move</h2><p>Leave the audience with a consequence they can discuss.</p></article></div>${foot("08", "Three-part reveal")}`,
+      `<div class="triple-head"><p class="story-eyebrow">07 / Reveal</p><h1 class="triple-title">Three decisions shape the story.</h1><p class="story-deck">Use a small set of memorable beats instead of a wall of instructions.</p></div><div class="triple-reveal"><article class="reveal-item"><span class="reveal-no">01</span><h2>Frame the question</h2><p>Name the subject and the decision before evidence enters.</p></article><article class="reveal-item"><span class="reveal-no">02</span><h2>Place the proof</h2><p>Put the number, quote, or example close enough to matter.</p></article><article class="reveal-item"><span class="reveal-no">03</span><h2>Name the move</h2><p>Leave the audience with a consequence they can discuss.</p></article></div>${foot("08", "Three-part reveal")}`,
       "triple-scene",
     ),
     slide(
       "feature",
-      `${head("08 / Feature", "One feature deserves a stage of its own.", "Keynote decks create anticipation by removing everything that does not help the room notice the reveal.", "09")}<div class="feature-layout"><div class="feature-visual"><div class="device-frame"><div class="device-screen"><strong>01</strong><span>Focus the signal</span></div></div></div><div class="feature-copy"><span class="feature-index">Feature / focal object</span><h2>Let the visual carry the sentence.</h2><p>When the object is the argument, surround it with enough quiet space for the audience to recognize the change.</p></div></div>${foot("09", "Feature stage")}`,
+      `${head("08 / Feature", "Put the focal feature on stage.", "Remove everything that does not help the room notice the reveal.", "09")}<div class="feature-layout"><div class="feature-visual"><div class="device-frame"><div class="device-screen"><strong>01</strong><span>Focus the signal</span></div></div></div><div class="feature-copy"><span class="feature-index">Feature / focal object</span><h2>Let the visual carry the sentence.</h2><p>Surround the object with enough quiet space for the audience to recognize the change.</p></div></div>${foot("09", "Feature stage")}`,
       "feature-scene",
     ),
     slide(
       "journey",
-      `<div class="journey-head"><p class="story-eyebrow">09 / Experience</p><h1 class="journey-title">The audience should know where the story is going.</h1><p class="story-deck">A journey layout gives each turn a job and makes the movement visible without resorting to navigation chrome.</p></div><div class="journey-line"><article class="journey-step"><strong>01 / Enter</strong><h2>Context</h2><p>Give the room a reason to care.</p></article><article class="journey-step"><strong>02 / Notice</strong><h2>Signal</h2><p>Make the change visible.</p></article><article class="journey-step"><strong>03 / Believe</strong><h2>Proof</h2><p>Earn trust with evidence.</p></article><article class="journey-step"><strong>04 / Weigh</strong><h2>Trade-off</h2><p>Keep the hard part honest.</p></article><article class="journey-step"><strong>05 / Move</strong><h2>Action</h2><p>Name what happens next.</p></article></div>${foot("10", "Audience journey")}`,
+      `<div class="journey-head"><p class="story-eyebrow">09 / Experience</p><h1 class="journey-title">Make the next step obvious.</h1><p class="story-deck">A journey layout gives each turn a job and makes the movement visible without resorting to navigation chrome.</p></div><div class="journey-line"><article class="journey-step"><strong>01 / Enter</strong><h2>Context</h2><p>Give the room a reason to care.</p></article><article class="journey-step"><strong>02 / Notice</strong><h2>Signal</h2><p>Make the change visible.</p></article><article class="journey-step"><strong>03 / Believe</strong><h2>Proof</h2><p>Earn trust with evidence.</p></article><article class="journey-step"><strong>04 / Weigh</strong><h2>Trade-off</h2><p>Keep the hard part honest.</p></article><article class="journey-step"><strong>05 / Move</strong><h2>Action</h2><p>Name what happens next.</p></article></div>${foot("10", "Audience journey")}`,
       "journey-scene",
     ),
     slide(
       "proof",
-      `${head("10 / Proof", "A believable story lets the evidence speak in its own register.", "Quotes, numbers, and examples work best when the layout gives them enough room to feel specific.", "11")}<div class="proof-layout"><blockquote class="proof-quote"><span class="label">Reader signal</span><h2>“I knew what mattered before I knew how the system worked.”</h2><cite>Review note / representative quote</cite></blockquote><aside class="proof-rail"><div><strong class="proof-stat">01</strong><h2>Clear focal point</h2></div><p>One visible anchor reduces the amount of interpretation the audience has to do before the conversation can begin.</p></aside></div>${foot("11", "Proof moment")}`,
+      `${head("10 / Proof", "Put the evidence beside the claim.", "Quotes, numbers, and examples work best when the layout gives them enough room to feel specific.", "11")}<div class="proof-layout"><blockquote class="proof-quote"><span class="label">Reader signal</span><h2>“I knew what mattered before I knew how the system worked.”</h2><cite>Review note / representative quote</cite></blockquote><aside class="proof-rail"><div><strong class="proof-stat">01</strong><h2>Clear focal point</h2></div><p>One visible anchor reduces the amount of interpretation the audience has to do before the conversation can begin.</p></aside></div>${foot("11", "Proof moment")}`,
       "proof-scene",
     ),
     slide(
       "market",
-      `<div class="funnel-head"><p class="story-eyebrow">11 / Scale</p><h1 class="funnel-title">Start broad, then show where the real opportunity lives.</h1><p class="story-deck">A market slide earns trust when the narrowing logic is visible and each layer has a clear definition.</p></div><div class="funnel-stage"><div class="market-funnel"><div class="funnel-band"><strong>Everyone with the problem</strong><span>Context</span></div><div class="funnel-band"><strong>People actively looking</strong><span>Need</span></div><div class="funnel-band"><strong>Reachable audience</strong><span>Focus</span></div><div class="funnel-band"><strong>First wedge</strong><span>Entry</span></div><div class="funnel-band"><strong>Beachhead</strong><span>Now</span></div></div><p class="funnel-note">The point is not the shape alone. The point is to show why this audience, this moment, and this first move belong together.</p></div>${foot("12", "Opportunity funnel")}`,
+      `<div class="funnel-head"><p class="story-eyebrow">11 / Scale</p><h1 class="funnel-title">Show where the opportunity narrows.</h1><p class="story-deck">Make the narrowing logic visible and give every layer a clear definition.</p></div><div class="funnel-stage"><div class="market-funnel"><div class="funnel-band"><strong>Everyone with the problem</strong><span>Context</span></div><div class="funnel-band"><strong>People actively looking</strong><span>Need</span></div><div class="funnel-band"><strong>Reachable audience</strong><span>Focus</span></div><div class="funnel-band"><strong>First wedge</strong><span>Entry</span></div><div class="funnel-band"><strong>Beachhead</strong><span>Now</span></div></div><p class="funnel-note">The shape is only useful when it explains why this audience, this moment, and this first move belong together.</p></div>${foot("12", "Opportunity funnel")}`,
       "funnel-scene",
     ),
     slide(
       "traction",
-      `<div><p class="story-eyebrow">12 / Evidence</p><h1 class="traction-title">A trend is useful when its meaning is visible beside it.</h1><p class="story-deck">Keep the chart simple enough to read in a room, then use the callout to state the implication plainly.</p></div><div class="traction-stage"><div class="traction-chart"><div class="traction-bar"><i style="height:28%"></i><span>Q1</span></div><div class="traction-bar"><i style="height:46%"></i><span>Q2</span></div><div class="traction-bar"><i style="height:61%"></i><span>Q3</span></div><div class="traction-bar"><i style="height:77%"></i><span>Q4</span></div><div class="traction-bar"><i style="height:96%"></i><span>Q5</span></div></div><aside class="traction-callout"><strong>+64%</strong><h2>More signal, less decoding</h2><p>The chart gives the direction; the sentence gives the reason the audience should care.</p></aside></div>${foot("13", "Traction chart")}`,
+      `<div><p class="story-eyebrow">12 / Evidence</p><h1 class="traction-title">Make the direction easy to read.</h1><p class="story-deck">Keep the chart simple enough to read in a room, then use the callout to state the implication plainly.</p></div><div class="traction-stage"><div class="traction-chart"><div class="traction-bar"><i style="height:28%"></i><span>Q1</span></div><div class="traction-bar"><i style="height:46%"></i><span>Q2</span></div><div class="traction-bar"><i style="height:61%"></i><span>Q3</span></div><div class="traction-bar"><i style="height:77%"></i><span>Q4</span></div><div class="traction-bar"><i style="height:96%"></i><span>Q5</span></div></div><aside class="traction-callout"><strong>Q5</strong><h2>Latest period</h2><p>Replace this placeholder with a verified metric and a plain-language implication.</p></aside></div>${foot("13", "Traction chart")}`,
       "traction-scene",
     ),
     slide(
       "comparison-story",
-      `${head("13 / Alternatives", "A comparison should clarify the choice, not decorate the debate.", "Use the same measure on both sides so the audience can see where the meaningful difference actually sits.", "14")}<div class="comparison-layout"><article class="comparison-column"><span class="label">Familiar path</span><h2>More surface, more explanation.</h2><ul><li>Easy to recognize</li><li>Harder to scan under pressure</li><li>Requires the audience to assemble the hierarchy</li></ul></article><article class="comparison-column highlight"><span class="label">Focused path</span><h2>Less surface, more signal.</h2><ul><li>One focal point per page</li><li>Evidence sits beside the claim</li><li>Next move remains visible</li></ul></article></div>${foot("14", "Comparison")}`,
+      `${head("13 / Alternatives", "Make the choice legible.", "Use the same measure on both sides so the meaningful difference has one place to land.", "14")}<div class="comparison-layout"><article class="comparison-column"><span class="label">Familiar path</span><h2>More surface, more explanation.</h2><ul><li>Easy to recognize</li><li>Harder to scan under pressure</li><li>Requires the audience to assemble the hierarchy</li></ul></article><article class="comparison-column highlight"><span class="label">Focused path</span><h2>Less surface, more signal.</h2><ul><li>One focal point per page</li><li>Evidence sits beside the claim</li><li>Next move remains visible</li></ul></article></div>${foot("14", "Comparison")}`,
       "comparison-scene",
     ),
     slide(
       "moat",
-      `<div class="moat-layout"><div class="moat-copy"><p class="story-eyebrow">14 / Advantage</p><h1 class="moat-title">The strongest advantage compounds around the user.</h1><p>A system becomes hard to replace when the experience, the proof, and the learning loop reinforce one another.</p></div><div class="moat-rings" aria-label="Three concentric advantage layers"><span class="moat-ring outer">Context</span><span class="moat-ring middle">Experience</span><span class="moat-ring inner">Trust</span></div></div>${foot("15", "Compounding advantage")}`,
+      `<div class="moat-layout"><div class="moat-copy"><p class="story-eyebrow">14 / Advantage</p><h1 class="moat-title">Show what compounds.</h1><p>Experience, proof, and learning reinforce one another when the system is hard to replace.</p></div><div class="moat-rings" aria-label="Three concentric advantage layers"><span class="moat-ring outer"><span>Context</span></span><span class="moat-ring middle"><span>Experience</span></span><span class="moat-ring inner"><span>Trust</span></span></div></div>${foot("15", "Compounding advantage")}`,
       "moat-scene",
     ),
     slide(
       "model",
-      `<div><p class="story-eyebrow">15 / Model</p><h1 class="bridge-title">The result depends on how the parts reinforce each other.</h1><p class="story-deck">A bridge layout is useful when the argument is relational: changing one part changes the value of the next.</p></div><div class="bridge-layout"><article class="bridge-step"><strong>Input</strong><h2>Signal</h2><p>Start from a real question.</p></article><article class="bridge-step"><strong>Translate</strong><h2>Frame</h2><p>Give the question a shape.</p></article><article class="bridge-step"><strong>Prove</strong><h2>Evidence</h2><p>Make belief possible.</p></article><article class="bridge-step"><strong>Choose</strong><h2>Decision</h2><p>Keep the trade-off visible.</p></article><article class="bridge-step"><strong>Repeat</strong><h2>Learning</h2><p>Use the next cycle to improve.</p></article></div>${foot("16", "Operating model")}`,
+      `<div><p class="story-eyebrow">15 / Model</p><h1 class="bridge-title">Show how the parts reinforce one another.</h1><p class="story-deck">Use a bridge layout when changing one part changes the value of the next.</p></div><div class="bridge-layout"><article class="bridge-step"><strong>Input</strong><h2>Signal</h2><p>Start from a real question.</p></article><article class="bridge-step"><strong>Translate</strong><h2>Frame</h2><p>Give the question a shape.</p></article><article class="bridge-step"><strong>Prove</strong><h2>Evidence</h2><p>Make belief possible.</p></article><article class="bridge-step"><strong>Choose</strong><h2>Decision</h2><p>Keep the trade-off visible.</p></article><article class="bridge-step"><strong>Repeat</strong><h2>Learning</h2><p>Use the next cycle to improve.</p></article></div>${foot("16", "Operating model")}`,
       "bridge-scene",
     ),
     slide(
       "pricing",
-      `<div class="pricing-head"><p class="story-eyebrow">16 / Offer</p><h1 class="pricing-title">Make the value ladder visible.</h1><p class="story-deck">A good pricing slide shows the progression in responsibility, not only the number attached to each tier.</p></div><div class="price-ladder"><article class="price-tier"><small>Start</small><h2>Essential</h2><strong>01</strong><p>For the first useful outcome.</p></article><article class="price-tier"><small>Grow</small><h2>Expanded</h2><strong>02</strong><p>For a team that needs repeatability.</p></article><article class="price-tier"><small>Scale</small><h2>System</h2><strong>03</strong><p>For an organization building the capability.</p></article></div>${foot("17", "Offer ladder")}`,
+      `<div class="pricing-head"><p class="story-eyebrow">16 / Offer</p><h1 class="pricing-title">Show the value ladder.</h1><p class="story-deck">Make the progression in responsibility visible before adding commercial detail.</p></div><div class="price-ladder"><article class="price-tier"><small>Start</small><h2>Essential</h2><strong>01</strong><p>For the first useful outcome.</p></article><article class="price-tier"><small>Grow</small><h2>Expanded</h2><strong>02</strong><p>For a team that needs repeatability.</p></article><article class="price-tier"><small>Scale</small><h2>System</h2><strong>03</strong><p>For an organization building the capability.</p></article></div>${foot("17", "Offer ladder")}`,
       "pricing-scene",
     ),
     slide(
       "go-to-market",
-      `<div><p class="story-eyebrow">17 / Reach</p><h1 class="story-title">A strong route to market has a first conversation in it.</h1><p class="story-deck">Separate the channel from the reason someone trusts the message enough to take the next step.</p></div><div class="gtm-layout"><article class="gtm-channel"><strong>01</strong><h2>Earn attention</h2><p>Lead with the problem people already feel.</p></article><article class="gtm-channel"><strong>02</strong><h2>Prove the shift</h2><p>Show the smallest credible outcome.</p></article><article class="gtm-channel"><strong>03</strong><h2>Invite a trial</h2><p>Make the first action concrete and low-friction.</p></article><article class="gtm-channel"><strong>04</strong><h2>Expand the trust</h2><p>Use the first win to open the next use case.</p></article></div>${foot("18", "Route to market")}`,
+      `<div><p class="story-eyebrow">17 / Reach</p><h1 class="story-title">Build the first conversation.</h1><p class="story-deck">Separate the channel from the reason someone trusts the message enough to take the next step.</p></div><div class="gtm-layout"><article class="gtm-channel"><strong>01</strong><h2>Earn attention</h2><p>Lead with the problem people already feel.</p></article><article class="gtm-channel"><strong>02</strong><h2>Prove the shift</h2><p>Show the smallest credible outcome.</p></article><article class="gtm-channel"><strong>03</strong><h2>Invite a trial</h2><p>Make the first action concrete and low-friction.</p></article><article class="gtm-channel"><strong>04</strong><h2>Expand the trust</h2><p>Use the first win to open the next use case.</p></article></div>${foot("18", "Route to market")}`,
       "gtm-scene",
     ),
     slide(
       "case",
-      `${head("18 / Case", "A concrete example gives the system something to prove.", "Keep the story close to the change: what was difficult, what shifted, and what the audience can repeat.", "19")}<div class="case-layout"><aside class="case-facts"><strong>3×</strong><h2>More useful choices</h2><p>One family, three distinct jobs: orientation, evidence, and action.</p></aside><div class="case-story"><article class="case-step"><small>01 / Before</small><h2>Too many options</h2><p>Every page asked the reader to decide how to read it.</p></article><article class="case-step"><small>02 / Change</small><h2>Name the layout</h2><p>Each pattern received a clear purpose and a stable visual cue.</p></article><article class="case-step"><small>03 / After</small><h2>Faster selection</h2><p>The next author could choose a starting point without guessing.</p></article></div></div>${foot("19", "Case study")}`,
+      `${head("18 / Case", "Make the change concrete.", "Keep the story close to what was difficult, what shifted, and what the audience can repeat.", "19")}<div class="case-layout"><aside class="case-facts"><strong>03</strong><h2>Illustrative steps</h2><p>One family, three distinct jobs: orientation, evidence, and action.</p></aside><div class="case-story"><article class="case-step"><small>01 / Before</small><h2>Too many options</h2><p>Every page asked the reader to decide how to read it.</p></article><article class="case-step"><small>02 / Change</small><h2>Name the layout</h2><p>Each pattern received a clear purpose and a stable visual cue.</p></article><article class="case-step"><small>03 / After</small><h2>Faster selection</h2><p>The next author could choose a starting point without guessing.</p></article></div></div>${foot("19", "Case study")}`,
       "case-scene",
     ),
     slide(
       "customer",
-      `<div><p class="story-eyebrow">19 / Adoption</p><h1 class="customer-title">The customer journey is a sequence of confidence.</h1><p class="story-deck">Map the moments where the audience moves from recognition to action, and show what the system must make easier at each step.</p></div><div class="customer-journey"><article class="customer-step"><span>01</span><h2>Recognize</h2><p>I can name the problem.</p></article><article class="customer-step"><span>02</span><h2>Believe</h2><p>I can see why this works.</p></article><article class="customer-step"><span>03</span><h2>Try</h2><p>I know the first step.</p></article><article class="customer-step"><span>04</span><h2>Return</h2><p>I have a reason to continue.</p></article></div>${foot("20", "Customer journey")}`,
+      `<div><p class="story-eyebrow">19 / Adoption</p><h1 class="customer-title">Map the path to confidence.</h1><p class="story-deck">Show the moments where the audience moves from recognition to action and what must become easier at each step.</p></div><div class="customer-journey"><article class="customer-step"><span>01</span><h2>Recognize</h2><p>I can name the problem.</p></article><article class="customer-step"><span>02</span><h2>Believe</h2><p>I can see why this works.</p></article><article class="customer-step"><span>03</span><h2>Try</h2><p>I know the first step.</p></article><article class="customer-step"><span>04</span><h2>Return</h2><p>I have a reason to continue.</p></article></div>${foot("20", "Customer journey")}`,
       "customer-scene",
     ),
     slide(
       "research",
-      `${head("20 / Research", "A useful insight changes the shape of the page.", "Use a pull quote for the finding that deserves memory, then keep the method close enough to protect trust.", "21")}<div class="research-layout"><blockquote class="research-quote"><span class="label">Finding</span><h2>“The audience did not need more information. It needed a clearer order.”</h2><cite>Representative research note</cite></blockquote><aside class="research-aside"><strong>04</strong><h2>Signals behind the finding</h2><p>Repeated questions, delayed decisions, and crowded first glances all pointed to the same design problem.</p></aside></div>${foot("21", "Research finding")}`,
+      `${head("20 / Research", "Make the finding memorable.", "Use a pull quote for the insight that deserves memory, then keep the method close enough to protect trust.", "21")}<div class="research-layout"><blockquote class="research-quote"><span class="label">Finding</span><h2>“The audience did not need more information. It needed a clearer order.”</h2><cite>Representative research note</cite></blockquote><aside class="research-aside"><strong>04</strong><h2>Signals behind the finding</h2><p>Repeated questions, delayed decisions, and crowded first glances all pointed to the same design problem.</p></aside></div>${foot("21", "Research finding")}`,
       "research-scene",
     ),
     slide(
       "choice",
-      `<div><p class="story-eyebrow">21 / Decision</p><h1 class="choice-title">Put the hard choice where the audience can see it.</h1><p class="story-deck">A two-by-two works when the axes describe a real trade-off and the highlighted point has a reason to be there.</p></div><div class="choice-map"><span class="choice-axis-y">Impact</span><div class="choice-axis-x"><span>Lower effort</span><span>Higher effort</span></div><div></div><div class="choice-grid-plot"><article class="choice-cell"><strong>Maintain</strong><p>Useful when stability carries the value.</p></article><article class="choice-cell"><strong>Invest</strong><p>Useful when the upside earns the work.</p></article><article class="choice-cell"><strong>Watch</strong><p>Visible, but not yet worth the cost.</p></article><article class="choice-cell"><strong>Decide</strong><p>Requires an owner and a next move.</p></article><span class="choice-dot"></span></div></div>${foot("22", "Decision map")}`,
+      `<div><p class="story-eyebrow">21 / Decision</p><h1 class="choice-title">Put the decision on the map.</h1><p class="story-deck">A two-by-two works when the axes describe a real trade-off and the highlighted point has a reason to be there.</p></div><div class="choice-map"><span class="choice-axis-y">Impact</span><div class="choice-axis-x"><span>Lower effort</span><span>Higher effort</span></div><div></div><div class="choice-grid-plot"><article class="choice-cell"><strong>Maintain</strong><p>Useful when stability carries the value.</p></article><article class="choice-cell"><strong>Invest</strong><p>Useful when the upside earns the work.</p></article><article class="choice-cell"><strong>Watch</strong><p>Visible, but not yet worth the cost.</p></article><article class="choice-cell"><strong>Decide</strong><p>Requires an owner and a next move.</p></article><span class="choice-dot"></span></div></div>${foot("22", "Decision map")}`,
       "choice-scene",
     ),
     slide(
       "operating",
-      `${head("22 / Operations", "A system is real when ownership remains visible.", "Use a simple map to connect the work, the person who holds it, and the evidence that tells the team it is moving.", "23")}<div class="operating-layout"><div class="operating-map"><article class="operating-cell"><strong>Frame</strong><p>Owner: lead / Evidence: clear question</p></article><article class="operating-cell"><strong>Compose</strong><p>Owner: maker / Evidence: coherent page</p></article><article class="operating-cell"><strong>Review</strong><p>Owner: reviewer / Evidence: visible proof</p></article><article class="operating-cell"><strong>Release</strong><p>Owner: team / Evidence: usable handoff</p></article></div><div class="operating-copy"><p class="story-eyebrow">The operating idea</p><h2>Keep the work legible while it is still changeable.</h2><p class="story-deck">A polished output matters, but a dependable process makes the next output easier.</p></div></div>${foot("23", "Operating map")}`,
+      `${head("22 / Operations", "Keep ownership visible.", "Connect the work, the person who holds it, and the evidence that tells the team it is moving.", "23")}<div class="operating-layout"><div class="operating-map"><article class="operating-cell"><strong>Frame</strong><p>Owner: lead / Evidence: clear question</p></article><article class="operating-cell"><strong>Compose</strong><p>Owner: maker / Evidence: coherent page</p></article><article class="operating-cell"><strong>Review</strong><p>Owner: reviewer / Evidence: visible proof</p></article><article class="operating-cell"><strong>Release</strong><p>Owner: team / Evidence: usable handoff</p></article></div><div class="operating-copy"><p class="story-eyebrow">The operating idea</p><h2>Keep the work legible while it is still changeable.</h2><p class="story-deck">A polished output matters, but a dependable process makes the next output easier.</p></div></div>${foot("23", "Operating map")}`,
       "operating-scene",
     ),
     slide(
       "ask",
-      `<div class="ask-layout"><div><p class="story-eyebrow">23 / Ask</p><h1 class="story-title">The next move should fit on one page.</h1><p class="story-deck">Close the argument by naming what the audience should decide, who carries it, and what evidence comes next.</p><ul class="ask-list"><li><span>01</span><div><strong>Choose the direction</strong><p>Pick the visual grammar that matches the room.</p></div></li><li><span>02</span><div><strong>Protect the focal point</strong><p>Keep the key claim larger than its support.</p></div></li><li><span>03</span><div><strong>Review the real artifact</strong><p>Render the page before it becomes a dependency.</p></div></li></ul></div><aside class="ask-visual"><strong>01</strong><h2>One owner. One next question.</h2><p>A clear close makes the story useful after the meeting ends.</p></aside></div>${foot("24", "Decision ask")}`,
+      `<div class="ask-layout"><div><p class="story-eyebrow">23 / Ask</p><h1 class="story-title">Name the decision.</h1><p class="story-deck">Close the argument with the choice, owner, and evidence that come next.</p><ul class="ask-list"><li><span>01</span><div><strong>Choose the direction</strong><p>Pick the visual grammar that matches the room.</p></div></li><li><span>02</span><div><strong>Protect the focal point</strong><p>Keep the key claim larger than its support.</p></div></li><li><span>03</span><div><strong>Review the real artifact</strong><p>Render the page before it becomes a dependency.</p></div></li></ul></div><aside class="ask-visual"><strong>01</strong><h2>One owner. One next question.</h2><p>A clear close makes the story useful after the meeting ends.</p></aside></div>${foot("24", "Decision ask")}`,
       "ask-scene",
     ),
     slide(
@@ -1884,6 +2072,7 @@ ${additionalCss}
 ${storyCss}
 ${template.css}
 ${storyArchetypeCss(archetype)}
+${layoutFitCss}
 ${diversityCss(profile)}</style>
 </head>
 <body class="theme-${template.name} family-${template.baseFamily ?? template.family} style-group-${template.styleGroup ?? "core"} archetype-${archetype} composition-${profile.mode.key}" data-pl-profile="${profile.id}" data-pl-diversity-signature="${escapeHtml(profile.signature)}" data-pl-composition="${profile.mode.key}" data-pl-archetype="${archetype}" data-pl-background-id="${profile.background.id}" data-pl-background-mode="${profile.background.mode}" data-pl-background-signature="${escapeHtml(profile.backgroundSignature)}">
