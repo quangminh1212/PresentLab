@@ -8,9 +8,13 @@ surface reads as a calmer lake rather than open ocean. A fogged distant
 shoreline, sky reflection, and lower-intensity sun complete the lake horizon.
 
 Pointer movement steers the Three.js camera over the water and changes the
-distortion strength. Clicking the stage adds a temporary impact state while
-the official water animation continues. A local muted WebM capture remains a
-fallback only for browsers that cannot create the WebGL scene.
+distortion strength. Clicking the stage raycasts onto the Water plane and
+starts a real radial ripple in the material, plus a short transparent ring
+overlay that makes the contact point legible. Four shader slots allow rapid
+clicks to overlap before they decay; the `data-world-ripple-*` state exposes
+the mapped hit, active slot, count, and expanding radius for browser checks.
+A local muted WebM capture remains a fallback only for browsers that cannot
+create the WebGL scene.
 
 ## Vendored Three.js source
 

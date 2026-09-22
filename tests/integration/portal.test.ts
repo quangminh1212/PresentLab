@@ -78,7 +78,16 @@ describe("client request portal browser flow", () => {
     const browser = await chromium.launch({ headless: true });
     const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
     const pageErrors: string[] = [];
+    const webglErrors: string[] = [];
     page.on("pageerror", (error) => pageErrors.push(error.message));
+    page.on("console", (message) => {
+      if (
+        message.type() === "error" &&
+        /(THREE\.WebGLProgram|Shader Error|MirrorShader|WebGL)/i.test(message.text())
+      ) {
+        webglErrors.push(message.text());
+      }
+    });
 
     try {
       await page.goto(`${portalServer.baseUrl}/web/portal/`, {
@@ -146,6 +155,7 @@ describe("client request portal browser flow", () => {
       expect(captured?.body).toContain('"presentlab-client-request-portal"');
       expect(captured?.body).toContain('"slideCount":137');
       expect(pageErrors).toEqual([]);
+      expect(webglErrors).toEqual([]);
     } finally {
       await browser.close();
       portalServer.server.closeAllConnections();
@@ -198,7 +208,16 @@ describe("client request portal browser flow", () => {
     const browser = await chromium.launch({ headless: true });
     const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
     const pageErrors: string[] = [];
+    const webglErrors: string[] = [];
     page.on("pageerror", (error) => pageErrors.push(error.message));
+    page.on("console", (message) => {
+      if (
+        message.type() === "error" &&
+        /(THREE\.WebGLProgram|Shader Error|MirrorShader|WebGL)/i.test(message.text())
+      ) {
+        webglErrors.push(message.text());
+      }
+    });
 
     try {
       await page.goto(`${portalServer.baseUrl}/web/portal/`, { waitUntil: "domcontentloaded" });
@@ -243,6 +262,25 @@ describe("client request portal browser flow", () => {
         undefined,
         { timeout: 10_000 },
       );
+      await page.waitForFunction(
+        () => {
+          const [calls, triangles] = (
+            document.querySelector(".world-stage")?.dataset.worldGpuRender ?? "0|0"
+          )
+            .split("|")
+            .map(Number);
+          return calls > 0 && triangles > 0;
+        },
+        undefined,
+        { timeout: 3_000 },
+      );
+      const gpuRenderState = (
+        await page.locator(".world-stage").getAttribute("data-world-gpu-render")
+      )
+        ?.split("|")
+        .map(Number);
+      expect(gpuRenderState?.[0]).toBeGreaterThan(0);
+      expect(gpuRenderState?.[1]).toBeGreaterThan(0);
       expect(await page.locator(".world-stage").getAttribute("data-world-render-mode")).toBe(
         "webgl-water-3d",
       );
@@ -258,6 +296,15 @@ describe("client request portal browser flow", () => {
       expect(await page.locator(".world-stage").getAttribute("data-world-water-provider")).toBe(
         "threejs-official-water",
       );
+      expect(await page.locator(".world-stage").getAttribute("data-world-ripple-provider")).toBe(
+        "threejs-water-shader",
+      );
+      expect(await page.locator(".world-stage").getAttribute("data-world-ripple-mode")).toBe(
+        "four-slot-radial-rings",
+      );
+      expect(
+        Number(await page.locator(".world-stage").getAttribute("data-world-ripple-count")),
+      ).toBe(0);
       expect(await page.locator(".world-stage").getAttribute("data-world-video-state")).toBe(
         "standby",
       );
@@ -386,17 +433,58 @@ describe("client request portal browser flow", () => {
         /^\d+\.\d+$/,
       );
 
+      const initialRippleCount = Number(
+        await page.locator(".world-stage").getAttribute("data-world-ripple-count"),
+      );
       await page.locator(".world-stage").dispatchEvent("pointerdown", {
         clientX: worldBounds.x + worldBounds.width * 0.62,
         clientY: worldBounds.y + worldBounds.height * 0.62,
         bubbles: true,
       });
-      await page.waitForTimeout(40);
+      await page.waitForFunction(
+        (count) => Number(document.querySelector(".world-stage")?.dataset.worldRippleCount) > count,
+        initialRippleCount,
+        { timeout: 3_000 },
+      );
+      const rippleState = await page.locator(".world-stage").evaluate((element) => ({
+        state: element.dataset.worldRippleState,
+        radius: Number(element.dataset.worldRippleRadius),
+      }));
+      expect(rippleState.state).toMatch(/^\d+\|\d+\|-?\d+\.\d+\|-?\d+\.\d+,-?\d+\.\d+$/);
+      expect(rippleState.radius).toBeGreaterThanOrEqual(0);
+      const reducedRippleMotion = await page.evaluate(
+        () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+      );
+      if (!reducedRippleMotion) {
+        await page.waitForFunction(
+          (initialRadius) =>
+            Number(document.querySelector(".world-stage")?.dataset.worldRippleRadius) >
+            initialRadius + 0.1,
+          rippleState.radius,
+          { timeout: 3_000 },
+        );
+      }
       expect(
         await page
           .locator(".world-stage")
           .evaluate((element) => element.classList.contains("is-world-pulsing")),
       ).toBe(true);
+      const firstRippleCount = Number(
+        await page.locator(".world-stage").getAttribute("data-world-ripple-count"),
+      );
+      await page.locator(".world-stage").dispatchEvent("pointerdown", {
+        clientX: worldBounds.x + worldBounds.width * 0.76,
+        clientY: worldBounds.y + worldBounds.height * 0.68,
+        bubbles: true,
+      });
+      await page.waitForFunction(
+        (count) => Number(document.querySelector(".world-stage")?.dataset.worldRippleCount) > count,
+        firstRippleCount,
+        { timeout: 3_000 },
+      );
+      expect(
+        Number(await page.locator(".world-stage").getAttribute("data-world-ripple-count")),
+      ).toBe(firstRippleCount + 1);
 
       const initialTheme = (await page.locator("html").getAttribute("data-theme")) || "dark";
       const toggledTheme = initialTheme === "dark" ? "light" : "dark";
@@ -550,6 +638,7 @@ describe("client request portal browser flow", () => {
         document.querySelector("[data-toast].is-visible")?.textContent?.includes("too-large.txt"),
       );
       expect(pageErrors).toEqual([]);
+      expect(webglErrors).toEqual([]);
     } finally {
       await browser.close();
       portalServer.server.closeAllConnections();

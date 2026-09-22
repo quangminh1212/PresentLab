@@ -5,6 +5,10 @@ import { Water } from "../vendor/three/addons/objects/Water.js";
 const MAX_PIXEL_RATIO = 2;
 const WORLD_RENDER_SCALE = 0.82;
 const WATER_NORMALS_URL = "/web/vendor/three/textures/waternormals.jpg";
+const RIPPLE_SLOT_COUNT = 4;
+const RIPPLE_SPEED = 5.5;
+const RIPPLE_VISUAL_LIFE = 1.8;
+const RIPPLE_VISUAL_DELAY = 0.14;
 
 /*
  * The surface is the official Three.js Water addon, vendored under web/vendor
@@ -54,6 +58,19 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     active: false,
     impact: 0,
   };
+  const rippleState = {
+    centers: Array.from({ length: RIPPLE_SLOT_COUNT }, () => new THREE.Vector2(0, -1000)),
+    starts: Array.from({ length: RIPPLE_SLOT_COUNT }, () => -1000),
+    strengths: Array.from({ length: RIPPLE_SLOT_COUNT }, () => 0),
+    nextSlot: 0,
+    lastSlot: -1,
+    lastStart: -1000,
+    count: 0,
+    pending: null,
+    ndc: new THREE.Vector2(),
+    uniforms: null,
+    visuals: [],
+  };
   const waterVideoElement = stage.querySelector("[data-world-water-video]");
   const imageElement = stage.querySelector(".world-space-image");
   const statusElement = stage.querySelector("[data-world-status]");
@@ -77,11 +94,14 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
   let renderer;
   let scene;
   let camera;
+  let raycaster;
   let sky;
   let water;
   let cameraTarget;
   let desiredCameraPosition;
   let desiredCameraTarget;
+  let rippleOverlay;
+  let rippleGeometry;
 
   const setFallbackState = () => {
     if (videoWaterReady) return;
@@ -89,6 +109,7 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     stage.dataset.worldShading = "water-css-fallback";
     stage.dataset.worldSurface = "css-water-fallback";
     stage.dataset.worldInteraction = "pointer-parallax-overlay";
+    stage.dataset.worldRippleProvider = "css-fallback";
     stage.classList.add("world-fallback", "world-ready");
   };
 
@@ -102,6 +123,12 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     stage.dataset.worldSurface = "official-water-module";
     stage.dataset.worldInteraction = "pointer-camera-ripple";
     stage.dataset.worldWaterProvider = "threejs-official-water";
+    stage.dataset.worldRippleProvider = "threejs-water-shader";
+    stage.dataset.worldRippleMode = "four-slot-radial-rings";
+    stage.dataset.worldRippleCount = String(rippleState.count);
+    stage.dataset.worldRippleRadius ||= "0.000";
+    stage.dataset.worldRippleState ||= "idle";
+    stage.dataset.worldRippleQueued ||= "false";
   };
 
   const setVideoWaterState = (ready) => {
@@ -202,6 +229,13 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
       "--world-click-y",
       clamp(((event.clientY - bounds.top) / bounds.height) * 100, 0, 100).toFixed(2) + "%",
     );
+    const localX = clamp((event.clientX - bounds.left) / bounds.width, 0, 1);
+    const localY = clamp((event.clientY - bounds.top) / bounds.height, 0, 1);
+    rippleState.pending = {
+      x: localX * 2 - 1,
+      y: 1 - localY * 2,
+    };
+    stage.dataset.worldRippleQueued = "true";
     stage.classList.remove("is-world-pulsing");
     void stage.offsetWidth;
     stage.classList.add("is-world-pulsing");
@@ -222,6 +256,7 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     scene = new THREE.Scene();
     scene.fog = new THREE.Fog(0x789b99, 34, 178);
     camera = new THREE.PerspectiveCamera(47, 1, 0.1, 320);
+    raycaster = new THREE.Raycaster();
     camera.position.set(0, 7.8, 15);
     cameraTarget = new THREE.Vector3(0, -0.2, -46);
     desiredCameraPosition = new THREE.Vector3();
@@ -300,9 +335,40 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
       fog: true,
     });
     water.material.onBeforeCompile = (shader) => {
+      shader.uniforms.rippleCenters = { value: rippleState.centers.slice() };
+      shader.uniforms.rippleStarts = { value: rippleState.starts.slice() };
+      shader.uniforms.rippleStrengths = { value: rippleState.strengths.slice() };
+      rippleState.uniforms = shader.uniforms;
+      shader.fragmentShader = shader.fragmentShader.replace(
+        "uniform vec3 waterColor;",
+        `uniform vec3 waterColor;
+uniform vec2 rippleCenters[ ${RIPPLE_SLOT_COUNT} ];
+uniform float rippleStarts[ ${RIPPLE_SLOT_COUNT} ];
+uniform float rippleStrengths[ ${RIPPLE_SLOT_COUNT} ];`,
+      );
       shader.fragmentShader = shader.fragmentShader.replace(
         "vec3 surfaceNormal = normalize( noise.xzy * vec3( 1.5, 1.0, 1.5 ) );",
-        "vec3 surfaceNormal = normalize( mix( vec3( 0.0, 1.0, 0.0 ), noise.xzy * vec3( 1.5, 1.0, 1.5 ), 0.3 ) );",
+        `vec3 surfaceNormal = normalize( mix( vec3( 0.0, 1.0, 0.0 ), noise.xzy * vec3( 1.5, 1.0, 1.5 ), 0.3 ) );
+float rippleHighlight = 0.0;
+vec3 rippleNormal = vec3( 0.0 );
+for ( int i = 0; i < ${RIPPLE_SLOT_COUNT}; i ++ ) {
+  float age = time - rippleStarts[ i ];
+  float ringLife = step( 0.0, age ) * exp( -age * 0.72 );
+  float radius = age * ${RIPPLE_SPEED.toFixed(1)};
+  vec2 rippleOffset = worldPosition.xz - rippleCenters[ i ];
+  float distanceToRipple = length( rippleOffset );
+  vec2 rippleDirection = vec2( 0.0 );
+  if ( distanceToRipple > 0.001 ) rippleDirection = rippleOffset / distanceToRipple;
+  float band = exp( -pow( ( distanceToRipple - radius ) / 0.48, 2.0 ) ) * ringLife * rippleStrengths[ i ];
+  float wave = sin( ( distanceToRipple - radius ) * 12.0 ) * band;
+  rippleNormal += vec3( rippleDirection.x, 0.0, rippleDirection.y ) * wave * 0.95;
+  rippleHighlight += band;
+}
+surfaceNormal = normalize( surfaceNormal + rippleNormal );`,
+      );
+      shader.fragmentShader = shader.fragmentShader.replace(
+        "vec3 outgoingLight = albedo;",
+        "albedo += vec3( 0.18, 0.42, 0.38 ) * clamp( rippleHighlight * 0.78, 0.0, 0.82 );\n\t\t\t\t\tvec3 outgoingLight = albedo;",
       );
     };
     stage.dataset.worldSurfaceProfile = "calm-lake";
@@ -310,6 +376,11 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     water.position.set(0, -0.42, -46);
     water.renderOrder = 2;
     scene.add(water);
+    rippleOverlay = new THREE.Group();
+    rippleOverlay.name = "click-ripple-overlay";
+    rippleOverlay.renderOrder = 3;
+    scene.add(rippleOverlay);
+    rippleGeometry = new THREE.RingGeometry(0.92, 1, 96);
   } catch {
     renderer?.dispose();
     setFallbackState();
@@ -330,6 +401,94 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     canvas.style.height = height + "px";
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
+  }
+
+  function spawnRippleVisual(point, seconds) {
+    const group = new THREE.Group();
+    group.position.set(point.x, water.position.y + 0.045, point.z);
+    group.rotation.x = -Math.PI / 2;
+    for (let index = 0; index < 3; index += 1) {
+      const ring = new THREE.Mesh(
+        rippleGeometry,
+        new THREE.MeshBasicMaterial({
+          blending: THREE.AdditiveBlending,
+          color: 0xb6f7e8,
+          depthTest: false,
+          depthWrite: false,
+          fog: true,
+          opacity: 0,
+          side: THREE.DoubleSide,
+          toneMapped: false,
+          transparent: true,
+        }),
+      );
+      ring.renderOrder = 3;
+      group.add(ring);
+    }
+    rippleOverlay.add(group);
+    rippleState.visuals.push({
+      group,
+      started: reducedMotion ? seconds - 0.24 : seconds,
+    });
+  }
+
+  function updateRippleVisuals(seconds) {
+    for (let index = rippleState.visuals.length - 1; index >= 0; index -= 1) {
+      const visual = rippleState.visuals[index];
+      const age = seconds - visual.started;
+      if (!reducedMotion && age > RIPPLE_VISUAL_LIFE) {
+        rippleOverlay.remove(visual.group);
+        visual.group.traverse((object) => object.material?.dispose());
+        rippleState.visuals.splice(index, 1);
+        continue;
+      }
+      visual.group.children.forEach((ring, ringIndex) => {
+        const phase = (age - ringIndex * RIPPLE_VISUAL_DELAY) / RIPPLE_VISUAL_LIFE;
+        if (phase <= 0 || phase >= 1) {
+          ring.visible = false;
+          return;
+        }
+        const fade = Math.min(1, phase * 10, (1 - phase) * 2.4);
+        ring.visible = true;
+        ring.scale.setScalar(0.7 + phase * 8.8);
+        ring.material.opacity = 0.72 * fade;
+      });
+    }
+  }
+
+  function commitPendingRipple(seconds) {
+    if (!rippleState.pending || !raycaster || !camera || !water || !rippleState.uniforms) return;
+
+    const pending = rippleState.pending;
+    rippleState.pending = null;
+    rippleState.ndc.set(pending.x, pending.y);
+    camera.updateMatrixWorld();
+    water.updateMatrixWorld();
+    raycaster.setFromCamera(rippleState.ndc, camera);
+    const hit = raycaster.intersectObject(water, false)[0];
+    if (!hit) {
+      stage.dataset.worldRippleQueued = "false";
+      stage.dataset.worldRippleState = "unmapped";
+      return;
+    }
+
+    const slot = rippleState.nextSlot;
+    const start = reducedMotion ? -0.35 : seconds;
+    rippleState.centers[slot].set(hit.point.x, hit.point.z);
+    rippleState.starts[slot] = start;
+    rippleState.strengths[slot] = 1;
+    rippleState.nextSlot = (slot + 1) % RIPPLE_SLOT_COUNT;
+    rippleState.lastSlot = slot;
+    rippleState.lastStart = start;
+    rippleState.count += 1;
+    rippleState.uniforms.rippleCenters.value = rippleState.centers.slice();
+    rippleState.uniforms.rippleStarts.value = rippleState.starts.slice();
+    rippleState.uniforms.rippleStrengths.value = rippleState.strengths.slice();
+    spawnRippleVisual(hit.point, seconds);
+    stage.dataset.worldRippleCount = String(rippleState.count);
+    stage.dataset.worldRippleLastSlot = String(slot);
+    stage.dataset.worldRippleState = `${rippleState.count}|${slot}|${start.toFixed(3)}|${hit.point.x.toFixed(2)},${hit.point.z.toFixed(2)}`;
+    stage.dataset.worldRippleQueued = "false";
   }
 
   function draw(time) {
@@ -375,6 +534,9 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     camera.position.lerp(desiredCameraPosition, reducedMotion ? 1 : 0.11);
     cameraTarget.lerp(desiredCameraTarget, reducedMotion ? 1 : 0.11);
     camera.lookAt(cameraTarget);
+    camera.updateMatrixWorld();
+    commitPendingRipple(seconds);
+    updateRippleVisuals(seconds);
 
     const uniforms = water.material.uniforms;
     uniforms.time.value = reducedMotion ? 0 : seconds;
@@ -382,6 +544,8 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     uniforms.size.value = 3.6;
     if (sky) sky.material.uniforms.time.value = reducedMotion ? 0 : seconds;
     renderer.render(scene, camera);
+    stage.dataset.worldGpuRender =
+      renderer.info.render.calls + "|" + renderer.info.render.triangles;
 
     stage.dataset.worldAnimationTime = Math.round(time) + "";
     stage.dataset.worldWaterState =
@@ -394,6 +558,11 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
       pointerStrength.toFixed(3);
     stage.dataset.worldWaterPhase = (seconds * 0.45).toFixed(3);
     stage.dataset.worldPointerRipple = pointerStrength.toFixed(3);
+    stage.dataset.worldRippleRadius = reducedMotion
+      ? (RIPPLE_SPEED * 0.35).toFixed(3)
+      : rippleState.lastSlot < 0
+        ? "0.000"
+        : (Math.max(0, seconds - rippleState.lastStart) * RIPPLE_SPEED).toFixed(3);
     if (waterVideoElement) {
       stage.dataset.worldVideoTime = waterVideoElement.currentTime.toFixed(3);
     }
