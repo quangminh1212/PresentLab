@@ -225,10 +225,16 @@ describe("client request portal browser flow", () => {
       expect(
         await page
           .locator(".world-space-image")
-          .evaluate((element) =>
-            getComputedStyle(element).backgroundImage.includes("space-cosmos.png"),
+          .evaluate(
+            (element) => !getComputedStyle(element).backgroundImage.includes("space-cosmos.png"),
           ),
       ).toBe(true);
+      expect(await page.locator(".world-stage").getAttribute("data-world-render-mode")).toBe(
+        "webgl-3d",
+      );
+      expect(await page.locator(".world-stage").getAttribute("data-world-shading")).toBe(
+        "lit-sphere",
+      );
       expect(await page.locator(".world-controls, [data-world-command]").count()).toBe(0);
       const worldCanvasSize = await page.locator(".world-canvas").evaluate((canvas) => ({
         width: canvas.width,

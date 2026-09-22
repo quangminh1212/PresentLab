@@ -34,7 +34,19 @@
   z-index: 0;
   overflow: hidden;
   pointer-events: none;
-  background: #02040d url("/web/portal/space-cosmos.png") 58% 50% / 125% 125% no-repeat;
+  background:
+    radial-gradient(circle at 68% 24%, rgb(91 94 255 / 29%), transparent 20%),
+    radial-gradient(ellipse at 54% 57%, rgb(0 187 203 / 25%), transparent 41%),
+    radial-gradient(ellipse at 80% 86%, rgb(235 77 171 / 19%), transparent 34%),
+    radial-gradient(circle at 18% 22%, rgb(110 71 214 / 18%), transparent 24%),
+    linear-gradient(145deg, #01030a 0%, #050819 50%, #10071e 100%);
+  background-blend-mode: screen, screen, screen, screen, normal;
+  background-size:
+    150% 150%,
+    145% 145%,
+    130% 130%,
+    170% 170%,
+    100% 100%;
   filter: saturate(1.12) contrast(1.08) brightness(0.72);
   opacity: 0.96;
   transform: translate3d(
@@ -1228,17 +1240,32 @@ html[data-theme="light"] .world-location small {
 
 @keyframes world-image-drift {
   0% {
-    background-position: 45% 43%;
+    background-position:
+      42% 40%,
+      54% 47%,
+      58% 54%,
+      38% 52%,
+      center;
     filter: saturate(1.04) contrast(1.05) brightness(0.66);
   }
 
   50% {
-    background-position: 58% 50%;
+    background-position:
+      58% 50%,
+      48% 55%,
+      70% 47%,
+      54% 44%,
+      center;
     filter: saturate(1.18) contrast(1.1) brightness(0.74);
   }
 
   100% {
-    background-position: 68% 58%;
+    background-position:
+      72% 62%,
+      62% 46%,
+      48% 63%,
+      66% 58%,
+      center;
     filter: saturate(1.26) contrast(1.12) brightness(0.7);
   }
 }

@@ -7,20 +7,28 @@ const vertexShaderSource = `
   uniform float u_point_size;
   varying float v_point_mode;
   varying float v_shade;
+  varying vec3 v_local_position;
+  varying vec3 v_normal;
 
   void main() {
     gl_Position = u_matrix * vec4(a_position, 1.0);
     gl_PointSize = u_point_size;
     v_point_mode = u_point_size > 1.0 ? 1.0 : 0.0;
     v_shade = clamp(1.0 + a_position.y * 0.05 + a_position.z * 0.015, 0.82, 1.16);
+    v_local_position = a_position;
+    v_normal = normalize(a_position);
   }
 `;
 
 const fragmentShaderSource = `
   precision mediump float;
   uniform vec4 u_color;
+  uniform vec3 u_light_direction;
+  uniform float u_solid;
   varying float v_point_mode;
   varying float v_shade;
+  varying vec3 v_local_position;
+  varying vec3 v_normal;
 
   void main() {
     float alpha = u_color.a;
@@ -30,7 +38,29 @@ const fragmentShaderSource = `
       if (softness <= 0.01) discard;
       alpha *= softness;
     }
-    gl_FragColor = vec4(u_color.rgb * v_shade, alpha);
+    float shade = v_shade;
+    vec3 surfaceColor = u_color.rgb;
+    if (u_solid > 0.5) {
+      vec3 normal = normalize(v_normal);
+      vec3 lightDirection = normalize(u_light_direction);
+      float diffuse = max(dot(normal, lightDirection), 0.0);
+      float rim = pow(1.0 - max(dot(normal, vec3(0.0, 0.0, 1.0)), 0.0), 2.1);
+      float terminator = smoothstep(0.0, 0.72, diffuse);
+      float specular = pow(
+        max(dot(reflect(-lightDirection, normal), vec3(0.0, 0.0, 1.0)), 0.0),
+        18.0
+      );
+      float materialVariation = 0.95 +
+        0.05 * sin(v_local_position.x * 11.0 + v_local_position.z * 7.0 + v_local_position.y * 4.0);
+      vec3 nightSide = u_color.rgb * 0.12;
+      vec3 daySide = u_color.rgb * (0.42 + diffuse * 0.98);
+      shade = clamp(mix(0.12, 1.28, terminator) * materialVariation, 0.08, 1.35);
+      surfaceColor = mix(nightSide, daySide, terminator);
+      surfaceColor += u_color.rgb * rim * 0.2 + vec3(1.0) * specular * 0.28;
+    } else {
+      surfaceColor *= shade;
+    }
+    gl_FragColor = vec4(surfaceColor, alpha);
   }
 `;
 
@@ -38,8 +68,8 @@ const landmarks = [
   {
     id: "archive",
     label: "SLIDE LIBRARY",
-    x: -8.5,
-    y: 3.5,
+    x: -1.2,
+    y: 1.9,
     z: -22,
     radius: 3.4,
     color: [0.18, 0.98, 0.78, 0.5],
@@ -60,8 +90,8 @@ const landmarks = [
   {
     id: "process",
     label: "DECK REVIEW",
-    x: -7,
-    y: 5.4,
+    x: 3.5,
+    y: 5.8,
     z: -59,
     radius: 2.8,
     color: [0.58, 0.62, 1, 0.48],
@@ -215,32 +245,6 @@ function makeSphere(segments = 26, rings = 16) {
       const c = point(bottom, right);
       const d = point(top, right);
       vertices.push(...a, ...b, ...c, ...a, ...c, ...d);
-    }
-  }
-  return new Float32Array(vertices);
-}
-
-function makeSphereLines(segments = 26, rings = 10) {
-  const vertices = [];
-  const point = (latitude, longitude) => {
-    const y = Math.cos(latitude);
-    const radius = Math.sin(latitude);
-    return [radius * Math.cos(longitude), y, radius * Math.sin(longitude)];
-  };
-  for (let ring = 1; ring < rings; ring += 1) {
-    const latitude = (ring / rings) * Math.PI;
-    for (let segment = 0; segment < segments; segment += 1) {
-      const left = (segment / segments) * Math.PI * 2;
-      const right = ((segment + 1) / segments) * Math.PI * 2;
-      vertices.push(...point(latitude, left), ...point(latitude, right));
-    }
-  }
-  for (let segment = 0; segment < segments; segment += 1) {
-    const longitude = (segment / segments) * Math.PI * 2;
-    for (let ring = 0; ring < rings; ring += 1) {
-      const top = (ring / rings) * Math.PI;
-      const bottom = ((ring + 1) / rings) * Math.PI;
-      vertices.push(...point(top, longitude), ...point(bottom, longitude));
     }
   }
   return new Float32Array(vertices);
@@ -433,12 +437,14 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     powerPreference: "high-performance",
   });
   if (!gl) {
+    stage.dataset.worldRenderMode = "css-fallback";
     stage.classList.add("world-fallback", "world-ready");
     return;
   }
 
   const program = createProgram(gl);
   if (!program) {
+    stage.dataset.worldRenderMode = "css-fallback";
     stage.classList.add("world-fallback", "world-ready");
     return;
   }
@@ -448,13 +454,17 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
   const matrixLocation = gl.getUniformLocation(program, "u_matrix");
   const colorLocation = gl.getUniformLocation(program, "u_color");
   const pointSizeLocation = gl.getUniformLocation(program, "u_point_size");
+  const lightDirectionLocation = gl.getUniformLocation(program, "u_light_direction");
+  const solidLocation = gl.getUniformLocation(program, "u_solid");
+  gl.uniform3f(lightDirectionLocation, 0.36, 0.72, 0.58);
+  stage.dataset.worldRenderMode = "webgl-3d";
+  stage.dataset.worldShading = "lit-sphere";
   const buffers = new Map();
   const geometrySource = {
     stars: makeStarfield(460, 13),
     warmStars: makeStarfield(120, 947),
     dust: makeDustField(210, 311),
     sphere: makeSphere(),
-    sphereLines: makeSphereLines(),
     ring: makeRing(1, 0, 88),
     verticalRing: makeVerticalRing(1, 88),
     skyRing: makeRing(18, 0, 96),
@@ -476,7 +486,7 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     Object.entries(geometrySource).map(([key, vertices]) => [key, getBuffer(key, vertices)]),
   );
 
-  function drawMesh(item, mode, matrix, color, pointSize = 1) {
+  function drawMesh(item, mode, matrix, color, pointSize = 1, solid = false) {
     if (!item) return;
     gl.bindBuffer(gl.ARRAY_BUFFER, item.buffer);
     gl.enableVertexAttribArray(positionLocation);
@@ -484,6 +494,7 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     gl.uniformMatrix4fv(matrixLocation, false, matrix);
     gl.uniform4fv(colorLocation, color);
     gl.uniform1f(pointSizeLocation, pointSize);
+    gl.uniform1f(solidLocation, solid ? 1 : 0);
     gl.drawArrays(mode, 0, item.count);
   }
 
@@ -511,10 +522,11 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
       ),
     );
     const selected = landmark.id === selectedTarget;
-    const bodyColor = [...landmark.color.slice(0, 3), selected ? 0.66 : 0.42];
-    const edgeColor = [...landmark.secondary.slice(0, 3), selected ? 0.84 : 0.56];
-    drawMesh(geometry.sphere, gl.TRIANGLES, matrix, bodyColor);
-    drawMesh(geometry.sphereLines, gl.LINES, matrix, edgeColor);
+    const bodyColor = [...landmark.color.slice(0, 3), selected ? 1 : 0.96];
+    gl.enable(gl.CULL_FACE);
+    gl.cullFace(gl.BACK);
+    drawMesh(geometry.sphere, gl.TRIANGLES, matrix, bodyColor, 1, true);
+    gl.disable(gl.CULL_FACE);
     drawRing(
       geometry.ring,
       pose.x,
@@ -608,21 +620,24 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     );
     const projection = perspectiveMatrix(Math.PI / 3.05, width / height, 0.1, 180);
     currentViewProjection = multiplyMatrices(projection, lookAtMatrix(camera.eye, camera.target));
+    const fieldRotation = reducedMotion ? 0 : time * 0.000012;
+    const starMatrix = multiplyMatrices(
+      currentViewProjection,
+      modelMatrix(0, 0, 0, 1, 1, 1, fieldRotation),
+    );
+    const dustMatrix = multiplyMatrices(
+      currentViewProjection,
+      modelMatrix(0, 0, 0, 1, 1, 1, -fieldRotation * 1.6),
+    );
 
     gl.enable(gl.BLEND);
     gl.disable(gl.DEPTH_TEST);
     gl.depthMask(false);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
-    drawMesh(geometry.stars, gl.POINTS, currentViewProjection, colors.starGlow, 4.4 * pixelRatio);
-    drawMesh(geometry.stars, gl.POINTS, currentViewProjection, colors.star, 1.25 * pixelRatio);
-    drawMesh(
-      geometry.warmStars,
-      gl.POINTS,
-      currentViewProjection,
-      [1, 0.48, 0.82, 0.48],
-      1.5 * pixelRatio,
-    );
-    drawMesh(geometry.dust, gl.POINTS, currentViewProjection, colors.dust, 2.1 * pixelRatio);
+    drawMesh(geometry.stars, gl.POINTS, starMatrix, colors.starGlow, 4.4 * pixelRatio);
+    drawMesh(geometry.stars, gl.POINTS, starMatrix, colors.star, 1.25 * pixelRatio);
+    drawMesh(geometry.warmStars, gl.POINTS, starMatrix, [1, 0.48, 0.82, 0.48], 1.5 * pixelRatio);
+    drawMesh(geometry.dust, gl.POINTS, dustMatrix, colors.dust, 2.1 * pixelRatio);
     drawRing(geometry.skyRing, 0, 6.4, -44, 1.22, 0.78, time * 0.00006, colors.orbit);
     drawRing(geometry.skyRingWide, -4, 10.6, -76, 1.35, 0.64, -time * 0.00004, colors.orbitWarm);
 
