@@ -6,7 +6,7 @@ const MAX_PIXEL_RATIO = 2;
 const WORLD_RENDER_SCALE = 0.82;
 const WATER_NORMALS_URL = "/web/vendor/three/textures/waternormals.jpg";
 const RIPPLE_SLOT_COUNT = 4;
-const RIPPLE_SPEED = 0.4;
+const RIPPLE_SPEED = 0.18;
 const RIPPLE_GRID_SIZE = 256;
 const RIPPLE_SURFACE_SEGMENTS = 180;
 const RIPPLE_WORLD_MIN = new THREE.Vector2(-90, -166);
@@ -14,6 +14,17 @@ const RIPPLE_WORLD_SIZE = new THREE.Vector2(180, 240);
 const RIPPLE_HEIGHT_RANGE = 0.36;
 const RIPPLE_TIME_STEP = 1 / 60;
 const RIPPLE_DAMPING = 0.012;
+const RIPPLE_PENDING_LIMIT = 12;
+const RIPPLE_HOVER_MIN_INTERVAL = 0.075;
+const RIPPLE_HOVER_MIN_NDC_DISTANCE = 0.012;
+const RIPPLE_HOVER_MIN_WORLD_DISTANCE = 1.35;
+const RIPPLE_HOVER_STRENGTH = 0.17;
+const RIPPLE_HOVER_MAX_STRENGTH = 0.25;
+const RIPPLE_HOVER_RADIUS = 1.6;
+const RIPPLE_HOVER_MAX_RADIUS = 2.2;
+const RIPPLE_HOVER_LIFETIME = 0.22;
+const RIPPLE_CLICK_STRENGTH = 0.24;
+const RIPPLE_CLICK_RADIUS = 2.2;
 
 const AMBIENT_WAVE_GLSL = `
 float sampleAmbientWaveHeight( vec2 position ) {
@@ -99,6 +110,8 @@ function createRippleField(renderer) {
       rippleImpacts: {
         value: Array.from({ length: RIPPLE_SLOT_COUNT }, () => new THREE.Vector4()),
       },
+      rippleHover: { value: new THREE.Vector4() },
+      rippleHoverDirection: { value: new THREE.Vector2() },
     },
     vertexShader: `
       varying vec2 rippleUv;
@@ -115,6 +128,8 @@ function createRippleField(renderer) {
       uniform float rippleSpeed;
       uniform float rippleDamping;
       uniform vec4 rippleImpacts[${RIPPLE_SLOT_COUNT}];
+      uniform vec4 rippleHover;
+      uniform vec2 rippleHoverDirection;
       varying vec2 rippleUv;
 
       void main() {
@@ -125,7 +140,10 @@ function createRippleField(renderer) {
         float back = texture2D(rippleHeightMap, rippleUv - vec2(0.0, rippleTexel.y)).r;
         float front = texture2D(rippleHeightMap, rippleUv + vec2(0.0, rippleTexel.y)).r;
         float frameScale = clamp(rippleTimeStep * 60.0, 0.25, 1.2);
-        float laplacian = left + right + back + front - 4.0 * center;
+        vec2 worldStep = rippleWorldSize * rippleTexel;
+        float laplacian =
+          ( left + right - 2.0 * center ) / ( worldStep.x * worldStep.x ) +
+          ( back + front - 2.0 * center ) / ( worldStep.y * worldStep.y );
         velocity += laplacian * rippleSpeed * frameScale;
         velocity *= exp(-rippleDamping * frameScale);
         float nextHeight = center + velocity * frameScale;
@@ -147,6 +165,20 @@ function createRippleField(renderer) {
           );
           nextHeight -= impact.z * contact * 0.07;
           velocity -= impact.z * contact * 0.36;
+        }
+
+        if (rippleHover.z > 0.0 && rippleHover.w > 0.0) {
+          vec2 hoverDelta = (rippleUv - rippleHover.xy) * rippleWorldSize;
+          float hoverDistance = length(hoverDelta);
+          float hoverContact = clamp(1.0 - hoverDistance / rippleHover.w, 0.0, 1.0);
+          hoverContact = 0.5 - 0.5 * cos(hoverContact * 3.14159265);
+          float directionLength = length(rippleHoverDirection);
+          float directionalBias = directionLength > 0.001
+            ? dot(hoverDelta / max(hoverDistance, 0.001), rippleHoverDirection / directionLength)
+            : 0.0;
+          hoverContact *= clamp(1.0 + directionalBias * 0.18, 0.82, 1.18);
+          nextHeight -= rippleHover.z * hoverContact * 0.016;
+          velocity -= rippleHover.z * hoverContact * 0.09;
         }
 
         float edgeDistance = min(
@@ -191,6 +223,7 @@ function createRippleField(renderer) {
     active: false,
     quietFrames: 0,
     pendingImpacts: [],
+    hoverImpact: null,
   };
 }
 
@@ -215,6 +248,9 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     targetY: 0,
     active: false,
     impact: 0,
+    lastHoverNdcX: null,
+    lastHoverNdcY: null,
+    lastHoverTime: -Infinity,
   };
   const rippleState = {
     centers: Array.from({ length: RIPPLE_SLOT_COUNT }, () => new THREE.Vector2(0, -1000)),
@@ -224,8 +260,12 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     lastSlot: -1,
     lastStart: -1000,
     count: 0,
+    clickCount: 0,
+    hoverCount: 0,
     pending: [],
     ndc: new THREE.Vector2(),
+    hoverPoint: new THREE.Vector2(),
+    hasHoverPoint: false,
     uniforms: null,
   };
   let rippleField;
@@ -288,6 +328,10 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     stage.dataset.worldRippleRadius ||= "0.000";
     stage.dataset.worldRippleState ||= "idle";
     stage.dataset.worldRippleQueued ||= "false";
+    stage.dataset.worldRippleClickCount ||= "0";
+    stage.dataset.worldRippleHoverCount ||= "0";
+    stage.dataset.worldRippleLastType ||= "idle";
+    stage.dataset.worldRippleInput ||= "gpu-raycast";
   };
 
   const setVideoWaterState = (ready) => {
@@ -359,35 +403,107 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
   stage.classList.remove("is-focused");
   if (statusElement) statusElement.textContent = "OPEN WATER";
 
+  const isWorldControl = (event) =>
+    event.target && typeof event.target.closest === "function" && event.target.closest("button, a");
+
+  const queuePointerRipple = (event, type, strength, radius) => {
+    const bounds = stage.getBoundingClientRect();
+    if (!bounds.width || !bounds.height) return false;
+    const localX = clamp((event.clientX - bounds.left) / bounds.width, 0, 1);
+    const localY = clamp((event.clientY - bounds.top) / bounds.height, 0, 1);
+    const pointerRipple = {
+      x: localX * 2 - 1,
+      y: 1 - localY * 2,
+      type,
+      strength,
+      radius,
+    };
+    if (rippleState.pending.length >= RIPPLE_PENDING_LIMIT) {
+      const hoverIndex = rippleState.pending.findIndex((item) => item.type === "hover");
+      if (type === "click" && hoverIndex >= 0) {
+        rippleState.pending.splice(hoverIndex, 1);
+      } else if (type === "hover") {
+        if (hoverIndex < 0) return false;
+        rippleState.pending.splice(hoverIndex, 1);
+      } else {
+        rippleState.pending.shift();
+      }
+    }
+    rippleState.pending.push(pointerRipple);
+    stage.dataset.worldRippleQueued = "true";
+    return true;
+  };
+
   stage.addEventListener("pointermove", (event) => {
     const bounds = stage.getBoundingClientRect();
     pointer.active = true;
     pointer.targetX = clamp((event.clientX - bounds.left) / bounds.width - 0.5, -0.5, 0.5);
     pointer.targetY = clamp((event.clientY - bounds.top) / bounds.height - 0.5, -0.5, 0.5);
+
+    if (
+      reducedMotion ||
+      !webglWaterAvailable ||
+      event.pointerType === "touch" ||
+      isWorldControl(event)
+    ) {
+      return;
+    }
+
+    const localX = clamp((event.clientX - bounds.left) / bounds.width, 0, 1);
+    const localY = clamp((event.clientY - bounds.top) / bounds.height, 0, 1);
+    const ndcX = localX * 2 - 1;
+    const ndcY = 1 - localY * 2;
+    const now = window.performance.now() * 0.001;
+    if (pointer.lastHoverNdcX === null || pointer.lastHoverNdcY === null) {
+      pointer.lastHoverNdcX = ndcX;
+      pointer.lastHoverNdcY = ndcY;
+      pointer.lastHoverTime = now;
+      return;
+    }
+
+    const ndcDistance = Math.hypot(ndcX - pointer.lastHoverNdcX, ndcY - pointer.lastHoverNdcY);
+    const elapsed = now - pointer.lastHoverTime;
+    if (elapsed < RIPPLE_HOVER_MIN_INTERVAL || ndcDistance < RIPPLE_HOVER_MIN_NDC_DISTANCE) {
+      return;
+    }
+
+    const pointerSpeed = ndcDistance / Math.max(elapsed, 1 / 120);
+    const strength = clamp(
+      RIPPLE_HOVER_STRENGTH + pointerSpeed * 0.018,
+      RIPPLE_HOVER_STRENGTH,
+      RIPPLE_HOVER_MAX_STRENGTH,
+    );
+    const radius = clamp(
+      RIPPLE_HOVER_RADIUS + pointerSpeed * 0.08,
+      RIPPLE_HOVER_RADIUS,
+      RIPPLE_HOVER_MAX_RADIUS,
+    );
+    if (queuePointerRipple(event, "hover", strength, radius)) {
+      pointer.lastHoverNdcX = ndcX;
+      pointer.lastHoverNdcY = ndcY;
+      pointer.lastHoverTime = now;
+    }
   });
   stage.addEventListener("pointerleave", () => {
     pointer.active = false;
     pointer.targetX = 0;
     pointer.targetY = 0;
+    pointer.lastHoverNdcX = null;
+    pointer.lastHoverNdcY = null;
+    pointer.lastHoverTime = -Infinity;
+    rippleState.hasHoverPoint = false;
   });
   stage.addEventListener("pointerdown", (event) => {
-    if (
-      event.target &&
-      typeof event.target.closest === "function" &&
-      event.target.closest("button, a")
-    ) {
-      return;
-    }
+    if (isWorldControl(event)) return;
     pointer.impact = 1;
     const bounds = stage.getBoundingClientRect();
     const localX = clamp((event.clientX - bounds.left) / bounds.width, 0, 1);
     const localY = clamp((event.clientY - bounds.top) / bounds.height, 0, 1);
-    rippleState.pending.push({
-      x: localX * 2 - 1,
-      y: 1 - localY * 2,
-    });
-    if (rippleState.pending.length > RIPPLE_SLOT_COUNT) rippleState.pending.shift();
-    stage.dataset.worldRippleQueued = "true";
+    pointer.lastHoverNdcX = localX * 2 - 1;
+    pointer.lastHoverNdcY = 1 - localY * 2;
+    pointer.lastHoverTime = window.performance.now() * 0.001;
+    rippleState.hasHoverPoint = false;
+    queuePointerRipple(event, "click", RIPPLE_CLICK_STRENGTH, RIPPLE_CLICK_RADIUS);
     stage.classList.remove("is-world-pulsing");
     void stage.offsetWidth;
     stage.classList.add("is-world-pulsing");
@@ -599,6 +715,9 @@ float sampleRippleHeight( vec2 position ) {
   float rippleCrest =
     smoothstep( 0.00005, 0.0015, abs( rippleCurvature ) ) *
     smoothstep( 0.0004, 0.009, rippleSlope ) * rippleTextureBreakup;
+  float rippleVelocityCrest = smoothstep( 0.008, 0.04, rippleVelocity ) *
+    ( 0.22 + rippleEnergy * 0.2 );
+  rippleCrest = clamp( rippleCrest + rippleVelocityCrest, 0.0, 1.0 );
   float rippleSheen =
     pow( max( dot( eyeDirection, normalize( reflect( -sunDirection, surfaceNormal ) ) ), 0.0 ), 42.0 ) *
     rippleCrest *
@@ -680,8 +799,28 @@ float sampleRippleHeight( vec2 position ) {
     }
   }
 
+  function updateRippleHoverUniform(seconds) {
+    const hover = rippleField.hoverImpact;
+    const hoverUniform = rippleField.simulationMaterial.uniforms.rippleHover.value;
+    const directionUniform = rippleField.simulationMaterial.uniforms.rippleHoverDirection.value;
+    if (!hover || seconds >= hover.until) {
+      rippleField.hoverImpact = null;
+      hoverUniform.set(0, 0, 0, 0);
+      directionUniform.set(0, 0);
+      return;
+    }
+    const fade = clamp((hover.until - seconds) / RIPPLE_HOVER_LIFETIME, 0, 1);
+    hoverUniform.set(hover.x, hover.y, hover.strength * fade, hover.radius);
+    directionUniform.set(hover.directionX, hover.directionY);
+  }
+
   function advanceRippleField(deltaSeconds) {
-    if (reducedMotion || deltaSeconds <= 0 || rippleState.count === 0 || !rippleField.active)
+    if (
+      reducedMotion ||
+      deltaSeconds <= 0 ||
+      rippleState.count === 0 ||
+      (!rippleField.active && rippleField.pendingImpacts.length === 0)
+    )
       return;
 
     const stepSeconds = clamp(deltaSeconds, RIPPLE_TIME_STEP * 0.25, 0.05);
@@ -735,6 +874,28 @@ float sampleRippleHeight( vec2 position ) {
       const hit = raycaster.intersectObject(water, false)[0];
       if (!hit) continue;
 
+      const isHoverRipple = pointerHit.type === "hover";
+      if (
+        isHoverRipple &&
+        rippleState.hasHoverPoint &&
+        Math.hypot(hit.point.x - rippleState.hoverPoint.x, hit.point.z - rippleState.hoverPoint.y) <
+          RIPPLE_HOVER_MIN_WORLD_DISTANCE
+      ) {
+        continue;
+      }
+
+      const impactStrength = pointerHit.strength ?? RIPPLE_CLICK_STRENGTH;
+      const impactRadius = pointerHit.radius ?? RIPPLE_CLICK_RADIUS;
+      const hoverDirection = new THREE.Vector2();
+      if (isHoverRipple && rippleState.hasHoverPoint) {
+        const directionX = hit.point.x - rippleState.hoverPoint.x;
+        const directionY = hit.point.z - rippleState.hoverPoint.y;
+        const directionLength = Math.hypot(directionX, directionY);
+        if (directionLength > 0.001) {
+          hoverDirection.set(directionX / directionLength, directionY / directionLength);
+        }
+      }
+
       const slot = rippleState.nextSlot;
       const start = reducedMotion ? -0.35 : seconds;
       const rippleUv = new THREE.Vector2(
@@ -743,26 +904,49 @@ float sampleRippleHeight( vec2 position ) {
       );
       rippleState.centers[slot].set(hit.point.x, hit.point.z);
       rippleState.starts[slot] = start;
-      rippleState.strengths[slot] = 1;
+      rippleState.strengths[slot] = pointerHit.strength ?? RIPPLE_CLICK_STRENGTH;
       rippleState.nextSlot = (slot + 1) % RIPPLE_SLOT_COUNT;
       rippleState.lastSlot = slot;
       rippleState.lastStart = start;
       rippleState.count += 1;
-      rippleField.pendingImpacts.push({
-        x: rippleUv.x,
-        y: rippleUv.y,
-        strength: 0.2,
-        radius: 2.2,
-      });
-      rippleField.pendingImpacts.splice(
-        0,
-        Math.max(0, rippleField.pendingImpacts.length - RIPPLE_SLOT_COUNT),
-      );
+      if (isHoverRipple) {
+        rippleState.hoverPoint.set(hit.point.x, hit.point.z);
+        rippleState.hasHoverPoint = true;
+        rippleState.hoverCount += 1;
+      } else {
+        rippleState.clickCount += 1;
+      }
+      if (isHoverRipple) {
+        rippleField.hoverImpact = {
+          x: rippleUv.x,
+          y: rippleUv.y,
+          strength: impactStrength,
+          radius: impactRadius,
+          until: seconds + RIPPLE_HOVER_LIFETIME,
+          directionX: hoverDirection.x,
+          directionY: hoverDirection.y,
+        };
+      } else {
+        rippleField.pendingImpacts.push({
+          x: rippleUv.x,
+          y: rippleUv.y,
+          strength: impactStrength,
+          radius: impactRadius,
+        });
+        rippleField.pendingImpacts.splice(
+          0,
+          Math.max(0, rippleField.pendingImpacts.length - RIPPLE_SLOT_COUNT),
+        );
+      }
       rippleField.active = true;
       rippleField.warmupSteps = Math.max(rippleField.warmupSteps, 2);
       rippleField.quietFrames = 0;
-      rippleField.peak = Math.max(rippleField.peak, 0.18);
+      rippleField.peak = Math.max(rippleField.peak, impactStrength * 0.9);
       stage.dataset.worldRippleCount = String(rippleState.count);
+      stage.dataset.worldRippleClickCount = String(rippleState.clickCount);
+      stage.dataset.worldRippleHoverCount = String(rippleState.hoverCount);
+      stage.dataset.worldRippleLastType = isHoverRipple ? "hover" : "click";
+      stage.dataset.worldRippleInput = isHoverRipple ? "gpu-raycast-hover" : "gpu-raycast-click";
       stage.dataset.worldRippleLastSlot = String(slot);
       stage.dataset.worldRippleState = `${rippleState.count}|${slot}|${start.toFixed(3)}|${hit.point.x.toFixed(2)},${hit.point.z.toFixed(2)}`;
       stage.dataset.worldRipplePeak = rippleField.peak.toFixed(4);
@@ -825,6 +1009,7 @@ float sampleRippleHeight( vec2 position ) {
       rippleField.lastTime === null ? 0 : clamp(seconds - rippleField.lastTime, 0, 0.05);
     rippleField.lastTime = seconds;
     commitPendingRipple(seconds);
+    updateRippleHoverUniform(seconds);
     advanceRippleField(deltaSeconds);
 
     const uniforms = water.material.uniforms;
