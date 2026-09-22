@@ -35,7 +35,24 @@
   background: #02040d url("/web/portal/space-cosmos.png") 58% center / cover no-repeat;
   filter: saturate(1.12) contrast(1.08) brightness(0.72);
   opacity: 0.96;
-  transform: scale(1.035);
+  transform: translate3d(
+      calc(var(--parallax-x, 0px) * -3.2 + var(--cosmic-shift-x, 0px)),
+      calc(var(--parallax-y, 0px) * -3.2 + var(--cosmic-shift-y, 0px)),
+      0
+    )
+    scale(1.12);
+  transform-origin: center;
+  will-change: transform;
+}
+
+.world-atmosphere {
+  transform: translate3d(
+      calc(var(--parallax-x, 0px) * -0.9 + var(--cosmic-shift-x, 0px) * -0.34),
+      calc(var(--parallax-y, 0px) * -0.9 + var(--cosmic-shift-y, 0px) * -0.34),
+      0
+    )
+    scale(1.03);
+  will-change: transform;
 }
 
 .world-canvas {
@@ -1242,7 +1259,8 @@ html[data-theme="light"] .world-location small {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .world-space-image {
+  .world-space-image,
+  .world-atmosphere {
     transform: none;
   }
 }

@@ -379,7 +379,8 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     pointer.targetX = clamp((event.clientX - bounds.left) / bounds.width - 0.5, -0.5, 0.5);
     pointer.targetY = clamp((event.clientY - bounds.top) / bounds.height - 0.5, -0.5, 0.5);
   });
-  stage.addEventListener("pointerleave", () => {
+  stage.addEventListener("pointerleave", (event) => {
+    if (event.target !== stage) return;
     pointer.targetX = 0;
     pointer.targetY = 0;
   });
@@ -527,9 +528,13 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
 
     pointer.x += (pointer.targetX - pointer.x) * (reducedMotion ? 1 : 0.055);
     pointer.y += (pointer.targetY - pointer.y) * (reducedMotion ? 1 : 0.055);
-    const desiredEye = [pointer.x * 2.6, 5.8 - pointer.y * 1.25, 12 + pointer.y * 1.6];
-    const desiredTarget = [pointer.x * 1.5, 2.2 - pointer.y * 0.35, -34];
-    const cameraBlend = reducedMotion ? 1 : 0.08;
+    const cosmicShiftX = reducedMotion ? 0 : -pointer.x * 54;
+    const cosmicShiftY = reducedMotion ? 0 : -pointer.y * 34;
+    stage.style.setProperty("--cosmic-shift-x", `${cosmicShiftX.toFixed(2)}px`);
+    stage.style.setProperty("--cosmic-shift-y", `${cosmicShiftY.toFixed(2)}px`);
+    const desiredEye = [pointer.x * 5.4, 5.8 - pointer.y * 2.2, 12 + pointer.y * 3.2];
+    const desiredTarget = [pointer.x * 3.2, 2.2 - pointer.y * 0.65, -34];
+    const cameraBlend = reducedMotion ? 1 : 0.11;
     camera.eye = camera.eye.map(
       (value, index) => value + (desiredEye[index] - value) * cameraBlend,
     );

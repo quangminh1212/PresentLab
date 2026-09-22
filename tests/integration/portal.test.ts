@@ -221,6 +221,15 @@ describe("client request portal browser flow", () => {
       expect(await page.locator(".world-location").count()).toBe(3);
       expect(await page.locator(".world-location strong").count()).toBe(3);
       expect(await page.locator("[data-world-start]").count()).toBe(1);
+      expect(await page.locator(".world-space-image").count()).toBe(1);
+      expect(
+        await page
+          .locator(".world-space-image")
+          .evaluate((element) =>
+            getComputedStyle(element).backgroundImage.includes("space-cosmos.png"),
+          ),
+      ).toBe(true);
+      expect(await page.locator(".world-controls, [data-world-command]").count()).toBe(0);
       const worldCanvasSize = await page.locator(".world-canvas").evaluate((canvas) => ({
         width: canvas.width,
         height: canvas.height,
@@ -232,6 +241,25 @@ describe("client request portal browser flow", () => {
           .locator(".world-stage")
           .evaluate((element) => getComputedStyle(element).borderRadius),
       ).toBe("0px");
+      const worldBounds = await page.locator(".world-stage").boundingBox();
+      if (!worldBounds) throw new Error("World stage did not expose a bounding box.");
+      await page.mouse.move(
+        worldBounds.x + worldBounds.width * 0.12,
+        worldBounds.y + worldBounds.height * 0.5,
+      );
+      await page.waitForTimeout(120);
+      const leftCosmicTransform = await page
+        .locator(".world-space-image")
+        .evaluate((element) => getComputedStyle(element).transform);
+      await page.mouse.move(
+        worldBounds.x + worldBounds.width * 0.88,
+        worldBounds.y + worldBounds.height * 0.5,
+      );
+      await page.waitForTimeout(120);
+      const rightCosmicTransform = await page
+        .locator(".world-space-image")
+        .evaluate((element) => getComputedStyle(element).transform);
+      expect(leftCosmicTransform).not.toBe(rightCosmicTransform);
 
       const initialTheme = (await page.locator("html").getAttribute("data-theme")) || "dark";
       const toggledTheme = initialTheme === "dark" ? "light" : "dark";
