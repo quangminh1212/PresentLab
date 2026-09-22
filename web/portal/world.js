@@ -6,14 +6,38 @@ const MAX_PIXEL_RATIO = 2;
 const WORLD_RENDER_SCALE = 0.82;
 const WATER_NORMALS_URL = "/web/vendor/three/textures/waternormals.jpg";
 const RIPPLE_SLOT_COUNT = 4;
-const RIPPLE_SPEED = 7.2;
+const RIPPLE_SPEED = 0.4;
 const RIPPLE_GRID_SIZE = 256;
-const RIPPLE_SURFACE_SEGMENTS = 160;
+const RIPPLE_SURFACE_SEGMENTS = 180;
 const RIPPLE_WORLD_MIN = new THREE.Vector2(-90, -166);
 const RIPPLE_WORLD_SIZE = new THREE.Vector2(180, 240);
 const RIPPLE_HEIGHT_RANGE = 0.36;
 const RIPPLE_TIME_STEP = 1 / 60;
-const RIPPLE_DAMPING = 0.34;
+const RIPPLE_DAMPING = 0.012;
+
+const AMBIENT_WAVE_GLSL = `
+float sampleAmbientWaveHeight( vec2 position ) {
+  float height = 0.0;
+  height += 0.105 * sin( dot( position, normalize( vec2( 0.82, 0.18 ) ) ) * 0.22 + rippleWaveTime * 0.46 );
+  height += 0.050 * sin( dot( position, normalize( vec2( -0.28, 0.96 ) ) ) * 0.39 + rippleWaveTime * 0.68 + 1.7 );
+  height += 0.022 * sin( dot( position, normalize( vec2( 0.62, -0.78 ) ) ) * 0.78 + rippleWaveTime * 1.02 + 3.1 );
+  return height;
+}
+
+vec2 sampleAmbientWaveSlope( vec2 position ) {
+  vec2 slope = vec2( 0.0 );
+  vec2 direction = normalize( vec2( 0.82, 0.18 ) );
+  float frequency = 0.22;
+  slope += direction * ( 0.105 * frequency ) * cos( dot( position, direction ) * frequency + rippleWaveTime * 0.46 );
+  direction = normalize( vec2( -0.28, 0.96 ) );
+  frequency = 0.39;
+  slope += direction * ( 0.050 * frequency ) * cos( dot( position, direction ) * frequency + rippleWaveTime * 0.68 + 1.7 );
+  direction = normalize( vec2( 0.62, -0.78 ) );
+  frequency = 0.78;
+  slope += direction * ( 0.022 * frequency ) * cos( dot( position, direction ) * frequency + rippleWaveTime * 1.02 + 3.1 );
+  return slope;
+}
+`;
 
 /*
  * The surface is the official Three.js Water addon, vendored under web/vendor
@@ -95,19 +119,16 @@ function createRippleField(renderer) {
 
       void main() {
         float center = texture2D(rippleHeightMap, rippleUv).r;
-        float previous = texture2D(rippleHeightMap, rippleUv).g;
+        float velocity = texture2D(rippleHeightMap, rippleUv).g;
         float left = texture2D(rippleHeightMap, rippleUv - vec2(rippleTexel.x, 0.0)).r;
         float right = texture2D(rippleHeightMap, rippleUv + vec2(rippleTexel.x, 0.0)).r;
         float back = texture2D(rippleHeightMap, rippleUv - vec2(0.0, rippleTexel.y)).r;
         float front = texture2D(rippleHeightMap, rippleUv + vec2(0.0, rippleTexel.y)).r;
-        vec2 cellSize = rippleWorldSize * rippleTexel;
-        float laplacian =
-          (left + right - 2.0 * center) / (cellSize.x * cellSize.x) +
-          (back + front - 2.0 * center) / (cellSize.y * cellSize.y);
-        float waveStep = rippleSpeed * rippleTimeStep;
-        float nextHeight =
-          2.0 * center - previous + laplacian * waveStep * waveStep;
-        nextHeight = center + (nextHeight - center) * exp(-rippleDamping * rippleTimeStep);
+        float frameScale = clamp(rippleTimeStep * 60.0, 0.25, 1.2);
+        float laplacian = left + right + back + front - 4.0 * center;
+        velocity += laplacian * rippleSpeed * frameScale;
+        velocity *= exp(-rippleDamping * frameScale);
+        float nextHeight = center + velocity * frameScale;
 
         for (int index = 0; index < ${RIPPLE_SLOT_COUNT}; index += 1) {
           vec4 impact = rippleImpacts[index];
@@ -115,23 +136,32 @@ function createRippleField(renderer) {
           vec2 worldDelta = (rippleUv - impact.xy) * rippleWorldSize;
           float distanceToImpact = length(worldDelta);
           float radius = max(impact.w, 0.001);
-          float contact = exp(-pow(distanceToImpact / radius, 2.0) * 2.0);
-          float windPhase = dot(worldDelta, normalize(vec2(0.28, -0.96))) * 0.12;
-          float windBreakup = 1.0 + 0.08 * dot(normalize(worldDelta + vec2(0.0001)), vec2(0.28, -0.96));
-          float capillary =
-            sin(distanceToImpact * 7.0 + 0.35 + windPhase) *
-            exp(-pow(distanceToImpact / (radius * 4.5), 2.0) * 1.25);
-          nextHeight -= impact.z * contact;
-          nextHeight += impact.z * capillary * 0.22 * windBreakup;
+          float contact = clamp(1.0 - distanceToImpact / radius, 0.0, 1.0);
+          contact = 0.5 - 0.5 * cos(contact * 3.14159265);
+          contact *= clamp(
+            1.0 +
+              0.045 * sin(worldDelta.x * 0.52 + worldDelta.y * 0.31) +
+              0.03 * sin(worldDelta.x * 0.21 - worldDelta.y * 0.39),
+            0.9,
+            1.1
+          );
+          nextHeight -= impact.z * contact * 0.07;
+          velocity -= impact.z * contact * 0.36;
         }
 
-        if (center != center || previous != previous) {
+        float edgeDistance = min(
+          min(rippleUv.x, 1.0 - rippleUv.x),
+          min(rippleUv.y, 1.0 - rippleUv.y)
+        );
+        velocity *= mix(0.78, 1.0, smoothstep(0.0, 0.1, edgeDistance));
+
+        if (center != center || velocity != velocity) {
           center = 0.0;
-          previous = 0.0;
+          velocity = 0.0;
         }
         nextHeight = clamp(nextHeight, -0.5, 0.5);
         if (nextHeight != nextHeight) nextHeight = 0.0;
-        gl_FragColor = vec4(nextHeight, center, 0.0, 1.0);
+        gl_FragColor = vec4(nextHeight, velocity, 0.0, 1.0);
       }
     `,
   });
@@ -377,7 +407,7 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     rippleField = createRippleField(renderer);
 
     scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(0x789b99, 34, 178);
+    scene.fog = new THREE.Fog(0x6c8f94, 38, 188);
     camera = new THREE.PerspectiveCamera(47, 1, 0.1, 320);
     raycaster = new THREE.Raycaster();
     camera.position.set(0, 7.8, 15);
@@ -391,12 +421,12 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     sky.renderOrder = -2;
     scene.add(sky);
     const skyUniforms = sky.material.uniforms;
-    skyUniforms.turbidity.value = 2.4;
-    skyUniforms.rayleigh.value = 1.8;
-    skyUniforms.mieCoefficient.value = 0.0018;
-    skyUniforms.mieDirectionalG.value = 0.74;
-    skyUniforms.cloudCoverage.value = 0.34;
-    skyUniforms.cloudDensity.value = 0.32;
+    skyUniforms.turbidity.value = 1.7;
+    skyUniforms.rayleigh.value = 1.45;
+    skyUniforms.mieCoefficient.value = 0.0011;
+    skyUniforms.mieDirectionalG.value = 0.7;
+    skyUniforms.cloudCoverage.value = 0.28;
+    skyUniforms.cloudDensity.value = 0.26;
     skyUniforms.cloudElevation.value = 0.58;
     skyUniforms.cloudSpeed.value = 0.000012;
     skyUniforms.showSunDisc.value = 0;
@@ -405,7 +435,7 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     stage.dataset.worldSkyProfile = "hazy-lake-daylight";
 
     const shorelineShape = new THREE.Shape();
-    shorelineShape.moveTo(-112, -14);
+    shorelineShape.moveTo(-112, -4.2);
     for (let index = 0; index <= 22; index += 1) {
       const x = -112 + index * 10;
       const y =
@@ -415,14 +445,14 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
         Math.sin(index * 0.19) * 0.3;
       shorelineShape.lineTo(x, y);
     }
-    shorelineShape.lineTo(112, -14);
+    shorelineShape.lineTo(112, -4.2);
     shorelineShape.closePath();
     const shoreline = new THREE.Mesh(
       new THREE.ShapeGeometry(shorelineShape),
       new THREE.MeshBasicMaterial({
         color: 0x315e57,
         fog: true,
-        opacity: 0.48,
+        opacity: 0.24,
         transparent: true,
         depthWrite: false,
       }),
@@ -453,13 +483,14 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
         textureHeight: 512,
         waterNormals,
         sunDirection,
-        sunColor: 0xcaa77f,
-        waterColor: 0x14514f,
-        distortionScale: 0.44,
+        sunColor: 0xfff2d3,
+        waterColor: 0x0c414c,
+        distortionScale: 3.6,
         alpha: 0.98,
         fog: true,
       },
     );
+    water.material.uniforms.rippleWaveTime = { value: 0 };
     water.material.uniforms.rippleHeightMap = { value: rippleField.texture };
     water.material.uniforms.rippleHeightBounds = {
       value: new THREE.Vector4(
@@ -479,6 +510,8 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
         `uniform mat4 textureMatrix;
 uniform sampler2D rippleHeightMap;
 uniform vec4 rippleHeightBounds;
+uniform float rippleWaveTime;
+${AMBIENT_WAVE_GLSL}
 
 float sampleRippleVertexHeight( vec2 position ) {
   vec2 uv = clamp(
@@ -486,7 +519,7 @@ float sampleRippleVertexHeight( vec2 position ) {
     0.0,
     1.0
   );
-  return texture2D( rippleHeightMap, uv ).r * ${RIPPLE_HEIGHT_RANGE.toFixed(2)};
+  return texture2D( rippleHeightMap, uv ).r * ${RIPPLE_HEIGHT_RANGE.toFixed(2)} + sampleAmbientWaveHeight( position );
 }`,
       );
       shader.vertexShader = shader.vertexShader.replace(
@@ -507,6 +540,8 @@ float sampleRippleVertexHeight( vec2 position ) {
 uniform sampler2D rippleHeightMap;
 uniform vec4 rippleHeightBounds;
 uniform vec2 rippleHeightTexel;
+uniform float rippleWaveTime;
+${AMBIENT_WAVE_GLSL}
 
 float sampleRippleHeight( vec2 position ) {
   vec2 uv = clamp(
@@ -530,14 +565,26 @@ float sampleRippleHeight( vec2 position ) {
     ( rippleRight - rippleLeft ) / ( 2.0 * rippleStep.x ),
     ( rippleFront - rippleBack ) / ( 2.0 * rippleStep.y )
   );
+  vec2 ambientSlope = sampleAmbientWaveSlope( worldPosition.xz );
+  vec4 microNoiseSample =
+    texture2D( normalSampler, worldPosition.xz * 0.082 + vec2( rippleWaveTime * 0.008, -rippleWaveTime * 0.011 ) ) +
+    texture2D( normalSampler, worldPosition.xz * 0.137 - vec2( rippleWaveTime * 0.006, rippleWaveTime * 0.009 ) );
+  vec3 microNormal = normalize( ( microNoiseSample.xzy - 1.0 ) * vec3( 1.15, 0.42, 1.15 ) );
   float rippleCurvature =
     ( rippleLeft + rippleRight + rippleBack + rippleFront - rippleCenter * 4.0 ) /
     ( rippleStep.x * rippleStep.y );
+  float rippleVelocity = abs( texture2D( rippleHeightMap, clamp(
+    ( worldPosition.xz - rippleHeightBounds.xy ) / rippleHeightBounds.zw,
+    0.0,
+    1.0
+  ) ).g );
+  float rippleEnergy = clamp( rippleVelocity * 8.0 + abs( rippleCurvature ) * 0.028, 0.0, 1.0 );
   float rippleTextureBreakup = clamp( 0.82 + noise.x * 0.22 + noise.w * 0.12, 0.58, 1.08 );
   vec3 rippleNormal = vec3( -rippleGradient.x, 0.0, -rippleGradient.y ) *
-    ( 6.0 + noise.x * 1.2 ) * rippleTextureBreakup;
-  vec2 rippleDistortion = -rippleGradient * ( 5.6 + noise.z * 0.75 ) * rippleTextureBreakup;
-  surfaceNormal = normalize( surfaceNormal + rippleNormal );`,
+    ( 4.2 + noise.x * 0.75 ) * rippleTextureBreakup;
+  vec3 ambientNormal = vec3( -ambientSlope.x, 0.0, -ambientSlope.y ) * 0.72;
+  vec2 rippleDistortion = -rippleGradient * ( 3.2 + noise.z * 0.5 ) * rippleTextureBreakup;
+  surfaceNormal = normalize( surfaceNormal + ambientNormal + rippleNormal + microNormal * 0.16 );`,
       );
       shader.fragmentShader = shader.fragmentShader.replace(
         "vec2 distortion = surfaceNormal.xz * ( 0.001 + 1.0 / distance ) * distortionScale;",
@@ -546,15 +593,21 @@ float sampleRippleHeight( vec2 position ) {
       shader.fragmentShader = shader.fragmentShader.replace(
         "sunLight( surfaceNormal, eyeDirection, 100.0, 2.0, 0.5, diffuseLight, specularLight );",
         `sunLight( surfaceNormal, eyeDirection, 100.0, 2.0, 0.5, diffuseLight, specularLight );
+  float microGlint = pow( max( dot( eyeDirection, normalize( reflect( -sunDirection, surfaceNormal ) ) ), 0.0 ), 180.0 );
+  specularLight += sunColor * microGlint * ( 0.38 + noise.x * 0.16 );
   float rippleSlope = length( rippleGradient );
   float rippleCrest =
-    smoothstep( 0.002, 0.035, abs( rippleCurvature ) ) *
-    smoothstep( 0.008, 0.065, rippleSlope );
+    smoothstep( 0.00005, 0.0015, abs( rippleCurvature ) ) *
+    smoothstep( 0.0004, 0.009, rippleSlope ) * rippleTextureBreakup;
   float rippleSheen =
-    pow( max( dot( eyeDirection, normalize( reflect( -sunDirection, surfaceNormal ) ) ), 0.0 ), 58.0 ) *
+    pow( max( dot( eyeDirection, normalize( reflect( -sunDirection, surfaceNormal ) ) ), 0.0 ), 42.0 ) *
     rippleCrest *
-    clamp( 0.65 + noise.x * 0.3, 0.35, 1.0 );
-  specularLight += sunColor * rippleSheen * 0.46;`,
+    clamp( 0.65 + noise.x * 0.3, 0.35, 1.0 ) *
+    ( 0.72 + rippleEnergy * 1.35 );
+  float rippleCaustic = smoothstep( 0.00006, 0.0016, abs( rippleCurvature ) ) *
+    ( 0.35 + rippleEnergy * 0.65 );
+  diffuseLight += sunColor * rippleCrest * 0.8;
+  specularLight += sunColor * ( rippleSheen * 1.65 + rippleCaustic * 0.42 );`,
       );
       stage.dataset.worldRippleShader =
         shader.vertexShader.includes("sampleRippleVertexHeight") &&
@@ -632,13 +685,16 @@ float sampleRippleHeight( vec2 position ) {
       return;
 
     const stepSeconds = clamp(deltaSeconds, RIPPLE_TIME_STEP * 0.25, 0.05);
-    const passes = rippleField.warmupSteps > 0 ? 3 : 1;
+    const passes = Math.min(
+      4,
+      Math.max(1, rippleField.warmupSteps > 0 ? 3 : Math.round(stepSeconds / RIPPLE_TIME_STEP)),
+    );
     for (let pass = 0; pass < passes; pass += 1) {
       const currentTarget = rippleField.targets[rippleField.currentIndex];
       const nextIndex = 1 - rippleField.currentIndex;
       const nextTarget = rippleField.targets[nextIndex];
       updateRippleImpactUniforms(pass === 0 ? rippleField.pendingImpacts : []);
-      rippleField.simulationMaterial.uniforms.rippleTimeStep.value = stepSeconds;
+      rippleField.simulationMaterial.uniforms.rippleTimeStep.value = RIPPLE_TIME_STEP;
       rippleField.simulationMaterial.uniforms.rippleHeightMap.value = currentTarget.texture;
       renderer.setRenderTarget(nextTarget);
       renderer.render(rippleField.simulationScene, rippleField.simulationCamera);
@@ -695,8 +751,8 @@ float sampleRippleHeight( vec2 position ) {
       rippleField.pendingImpacts.push({
         x: rippleUv.x,
         y: rippleUv.y,
-        strength: 0.09,
-        radius: 2.5,
+        strength: 0.2,
+        radius: 2.2,
       });
       rippleField.pendingImpacts.splice(
         0,
@@ -705,7 +761,7 @@ float sampleRippleHeight( vec2 position ) {
       rippleField.active = true;
       rippleField.warmupSteps = Math.max(rippleField.warmupSteps, 2);
       rippleField.quietFrames = 0;
-      rippleField.peak = Math.max(rippleField.peak, 0.09);
+      rippleField.peak = Math.max(rippleField.peak, 0.18);
       stage.dataset.worldRippleCount = String(rippleState.count);
       stage.dataset.worldRippleLastSlot = String(slot);
       stage.dataset.worldRippleState = `${rippleState.count}|${slot}|${start.toFixed(3)}|${hit.point.x.toFixed(2)},${hit.point.z.toFixed(2)}`;
@@ -773,8 +829,9 @@ float sampleRippleHeight( vec2 position ) {
 
     const uniforms = water.material.uniforms;
     uniforms.time.value = reducedMotion ? 0 : seconds;
-    uniforms.distortionScale.value = 0.44 + pointerStrength * 0.12;
-    uniforms.size.value = 3.6;
+    uniforms.rippleWaveTime.value = reducedMotion ? 0 : seconds;
+    uniforms.distortionScale.value = 3.4 + pointerStrength * 0.8;
+    uniforms.size.value = 3.8;
     if (sky) sky.material.uniforms.time.value = reducedMotion ? 0 : seconds;
     renderer.render(scene, camera);
     stage.dataset.worldGpuRender =

@@ -10,13 +10,18 @@ shoreline, sky reflection, and lower-intensity sun complete the lake horizon.
 Pointer movement steers the Three.js camera over the water and changes the
 distortion strength. Clicking the stage raycasts onto the Water plane and
 injects a localized impulse into a 256x256 GPU height field. Two render
-targets ping-pong through a damped, world-space finite-difference wave equation;
-the first step adds a restrained capillary train instead of a hard UI ring.
-The live field is sampled both for vertex displacement and for the local
-surface gradient that bends the reflection. Four bookkeeping slots allow rapid
-clicks to overlap before they decay; the `data-world-ripple-*` state exposes
-the mapped hit, active slot, count, peak height, and expanding radius for
-browser checks.
+targets ping-pong a height/velocity state through a damped finite-difference
+wave equation, following the heightfield approach used by the open-source
+[Evan Wallace WebGL Water demo](https://github.com/jeantimex/threejs-water).
+The render loop catches up with bounded fixed 1/60 simulation substeps so the
+wave speed stays stable when the reflective water pass briefly costs more
+than one frame.
+The live field is sampled for vertex displacement, gradient normals, reflection
+distortion, and restrained crest/caustic highlights. A separate three-band
+Gerstner swell plus moving micro-normal detail keeps the lake from reading as a
+single synthetic ring pattern. Four bookkeeping slots allow rapid clicks to
+overlap before they decay; the `data-world-ripple-*` state exposes the mapped
+hit, active slot, count, peak height, and expanding radius for browser checks.
 A local muted WebM capture remains a fallback only for browsers that cannot
 create the WebGL scene.
 
@@ -29,6 +34,7 @@ create the WebGL scene.
 - Normal map: `web/vendor/three/textures/waternormals.jpg`.
 - License copy: `web/vendor/three/LICENSE`.
 - Source: [Three.js Water.js](https://github.com/mrdoob/three.js/blob/r186/examples/jsm/objects/Water.js), [Three.js Sky.js](https://github.com/mrdoob/three.js/blob/r186/examples/jsm/objects/Sky.js), [the official ocean/sky example](https://github.com/mrdoob/three.js/blob/r186/examples/webgl_shaders_ocean.html), [Three.js r186 license](https://github.com/mrdoob/three.js/blob/r186/LICENSE), and [the official water normal map](https://github.com/mrdoob/three.js/blob/r186/examples/textures/waternormals.jpg).
+- Research references: [jeantimex/threejs-water](https://github.com/jeantimex/threejs-water) for GPU height/velocity simulation, Fresnel optics, caustics, and interaction; [brucira/water-ripple-effect](https://github.com/brucira/water-ripple-effect) for WebGL2 ping-pong ripple interaction; and [DCtheTall/webgl-ripple](https://github.com/DCtheTall/webgl-ripple) for the finite-difference ripple formulation.
 
 The vendored addons have mechanical import-path adjustments so the static
 portal can load them without a CDN. The Water implementation remains the

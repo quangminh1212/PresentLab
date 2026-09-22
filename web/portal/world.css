@@ -1351,6 +1351,20 @@ html[data-theme="light"] .world-location small {
   }
 }
 
+/* Let the real WebGL surface carry the scene instead of the HUD reticle or
+   scanline treatment reading as a synthetic ripple. */
+.world-stage[data-world-render-mode="webgl-water-3d"] .world-reticle {
+  display: none;
+}
+
+.world-stage[data-world-render-mode="webgl-water-3d"] .world-scanlines {
+  opacity: 0.06;
+}
+
+.world-stage[data-world-render-mode="webgl-water-3d"] .world-atmosphere {
+  opacity: 0.28;
+}
+
 /* Natural lake pass: keep the interaction, remove the synthetic neon-water treatment. */
 .world-stage {
   border-color: rgb(224 244 235 / 36%);
