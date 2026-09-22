@@ -12,6 +12,7 @@ const contentTypes: Record<string, string> = {
   ".js": "text/javascript; charset=utf-8",
   ".json": "application/json; charset=utf-8",
   ".png": "image/png",
+  ".webm": "video/webm",
 };
 
 async function startPortalServer() {
@@ -45,11 +46,12 @@ async function startPortalServer() {
         return;
       }
       const body = await readFile(filePath);
-      response
-        .writeHead(200, {
-          "Content-Type": contentTypes[extname(filePath)] ?? "application/octet-stream",
-        })
-        .end(body);
+      const headers: Record<string, string> = {
+        "Content-Type": contentTypes[extname(filePath)] ?? "application/octet-stream",
+        "Content-Length": body.byteLength.toString(),
+      };
+      if (extname(filePath) === ".webm") headers.Connection = "close";
+      response.writeHead(200, headers).end(body);
     } catch {
       response.writeHead(404).end();
     }
@@ -79,7 +81,7 @@ describe("client request portal browser flow", () => {
 
     try {
       await page.goto(`${portalServer.baseUrl}/web/portal/`, {
-        waitUntil: "networkidle",
+        waitUntil: "domcontentloaded",
       });
       await page.locator("[data-results-count]").waitFor();
       expect(await page.locator("[data-results-count]").innerText()).toBe("770 mẫu");
@@ -145,6 +147,7 @@ describe("client request portal browser flow", () => {
       expect(pageErrors).toEqual([]);
     } finally {
       await browser.close();
+      portalServer.server.closeAllConnections();
       await new Promise<void>((resolveServer, rejectServer) =>
         portalServer.server.close((error) => (error ? rejectServer(error) : resolveServer())),
       );
@@ -158,7 +161,7 @@ describe("client request portal browser flow", () => {
 
     try {
       await page.goto(`${portalServer.baseUrl}/web/portal/`, {
-        waitUntil: "networkidle",
+        waitUntil: "domcontentloaded",
       });
       await page.locator("[data-menu-toggle]").click();
       expect(await page.locator(".topnav.is-open").count()).toBe(1);
@@ -182,6 +185,7 @@ describe("client request portal browser flow", () => {
       );
     } finally {
       await browser.close();
+      portalServer.server.closeAllConnections();
       await new Promise<void>((resolveServer, rejectServer) =>
         portalServer.server.close((error) => (error ? rejectServer(error) : resolveServer())),
       );
@@ -196,7 +200,7 @@ describe("client request portal browser flow", () => {
     page.on("pageerror", (error) => pageErrors.push(error.message));
 
     try {
-      await page.goto(`${portalServer.baseUrl}/web/portal/`, { waitUntil: "networkidle" });
+      await page.goto(`${portalServer.baseUrl}/web/portal/`, { waitUntil: "domcontentloaded" });
       await page.locator("[data-results-count]").waitFor();
       expect(await page.locator(".brand-logo").first().getAttribute("src")).toBe(
         "/web/portal/xlab-logo.png",
@@ -222,6 +226,25 @@ describe("client request portal browser flow", () => {
       expect(await page.locator(".world-location strong").count()).toBe(3);
       expect(await page.locator("[data-world-start]").count()).toBe(1);
       expect(await page.locator(".world-space-image").count()).toBe(1);
+      expect(await page.locator("[data-world-water-video]").count()).toBe(1);
+      expect(await page.locator("[data-world-water-video] source").getAttribute("src")).toBe(
+        "/web/portal/water-surface.webm",
+      );
+      await page.waitForFunction(
+        () =>
+          (document.querySelector("[data-world-water-video]") as HTMLVideoElement)?.readyState >= 2,
+        undefined,
+        { timeout: 10_000 },
+      );
+      expect(await page.locator(".world-stage").getAttribute("data-world-render-mode")).toBe(
+        "video-water-3d",
+      );
+      expect(await page.locator(".world-stage").getAttribute("data-world-shading")).toBe(
+        "real-water-video",
+      );
+      expect(await page.locator(".world-stage").getAttribute("data-world-surface")).toBe(
+        "licensed-video-loop",
+      );
       expect(
         await page
           .locator(".world-space-image")
@@ -229,15 +252,6 @@ describe("client request portal browser flow", () => {
             (element) => !getComputedStyle(element).backgroundImage.includes("space-cosmos.png"),
           ),
       ).toBe(true);
-      expect(await page.locator(".world-stage").getAttribute("data-world-render-mode")).toBe(
-        "webgl-water-3d",
-      );
-      expect(await page.locator(".world-stage").getAttribute("data-world-shading")).toBe(
-        "fresnel-water",
-      );
-      expect(await page.locator(".world-stage").getAttribute("data-world-surface")).toBe(
-        "procedural-wave-grid",
-      );
       expect(await page.locator(".world-controls, [data-world-command]").count()).toBe(0);
       const worldCanvasSize = await page.locator(".world-canvas").evaluate((canvas) => ({
         width: canvas.width,
@@ -269,6 +283,18 @@ describe("client request portal browser flow", () => {
         .locator(".world-space-image")
         .evaluate((element) => getComputedStyle(element).transform);
       expect(leftCosmicTransform).not.toBe(rightCosmicTransform);
+      const leftVideoTransform = await page
+        .locator("[data-world-water-video]")
+        .evaluate((element) => getComputedStyle(element).transform);
+      await page.mouse.move(
+        worldBounds.x + worldBounds.width * 0.16,
+        worldBounds.y + worldBounds.height * 0.5,
+      );
+      await page.waitForTimeout(120);
+      const rightVideoTransform = await page
+        .locator("[data-world-water-video]")
+        .evaluate((element) => getComputedStyle(element).transform);
+      expect(leftVideoTransform).not.toBe(rightVideoTransform);
       const imageMotion = await page.locator(".world-space-image").evaluate((element) => {
         const styles = getComputedStyle(element);
         return {
@@ -288,6 +314,9 @@ describe("client request portal browser flow", () => {
       const firstWaterState = await page
         .locator(".world-stage")
         .getAttribute("data-world-water-state");
+      const firstVideoTime = await page
+        .locator("[data-world-water-video]")
+        .evaluate((element) => (element as HTMLVideoElement).currentTime);
       const firstImageShift = await page
         .locator(".world-stage")
         .evaluate((element) => element.style.getPropertyValue("--world-image-shift-x"));
@@ -315,6 +344,9 @@ describe("client request portal browser flow", () => {
       const nextWaterState = await page
         .locator(".world-stage")
         .getAttribute("data-world-water-state");
+      const nextVideoTime = await page
+        .locator("[data-world-water-video]")
+        .evaluate((element) => (element as HTMLVideoElement).currentTime);
       const nextImageMotion = await page.locator(".world-space-image").evaluate((element) => ({
         backgroundPosition: getComputedStyle(element).backgroundPosition,
         transform: getComputedStyle(element).transform,
@@ -323,6 +355,7 @@ describe("client request portal browser flow", () => {
         expect(nextWaterState).not.toBe(firstWaterState);
         expect(nextImageMotion.backgroundPosition).not.toBe(firstImageMotion.backgroundPosition);
         expect(nextImageMotion.transform).not.toBe(firstImageMotion.transform);
+        expect(nextVideoTime).not.toBe(firstVideoTime);
       }
       expect(await page.locator(".world-stage").getAttribute("data-world-water-phase")).toMatch(
         /^\d+\.\d+$/,
@@ -494,6 +527,7 @@ describe("client request portal browser flow", () => {
       expect(pageErrors).toEqual([]);
     } finally {
       await browser.close();
+      portalServer.server.closeAllConnections();
       await new Promise<void>((resolveServer, rejectServer) =>
         portalServer.server.close((error) => (error ? rejectServer(error) : resolveServer())),
       );

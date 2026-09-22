@@ -316,6 +316,7 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     active: false,
     impact: 0,
   };
+  const waterVideoElement = stage.querySelector("[data-world-water-video]");
   const imageElement = stage.querySelector(".world-space-image");
   const statusElement = stage.querySelector("[data-world-status]");
   const coordinatesElement = stage.querySelector("[data-world-coordinates]");
@@ -334,7 +335,64 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
   let height = 1;
   let currentViewProjection = identityMatrix();
   let pointerStrength = 0;
+  let videoWaterReady = false;
+  let webglWaterAvailable = false;
   const camera = { eye: [0, 7.2, 14], target: [0, 0.2, -42] };
+
+  const setFallbackState = () => {
+    if (videoWaterReady) return;
+    stage.dataset.worldRenderMode = "css-fallback";
+    stage.dataset.worldShading = "water-css-fallback";
+    stage.dataset.worldSurface = "css-water-fallback";
+    stage.classList.add("world-fallback", "world-ready");
+  };
+
+  const setWebglWaterState = () => {
+    if (videoWaterReady) return;
+    stage.classList.remove("is-video-water", "world-fallback");
+    stage.dataset.worldRenderMode = "webgl-water-3d";
+    stage.dataset.worldShading = "fresnel-water";
+    stage.dataset.worldSurface = "procedural-wave-grid";
+  };
+
+  const setVideoWaterState = (ready) => {
+    videoWaterReady = ready;
+    stage.classList.toggle("is-video-water", ready);
+    stage.dataset.worldVideoState = ready ? "playing" : "fallback";
+    if (ready) {
+      stage.classList.add("world-ready");
+      stage.classList.remove("world-fallback");
+      stage.dataset.worldRenderMode = "video-water-3d";
+      stage.dataset.worldShading = "real-water-video";
+      stage.dataset.worldSurface = "licensed-video-loop";
+    } else if (webglWaterAvailable) {
+      setWebglWaterState();
+    } else {
+      setFallbackState();
+    }
+  };
+
+  const activateVideoWater = () => {
+    if (!waterVideoElement) return;
+    waterVideoElement.muted = true;
+    setVideoWaterState(true);
+    if (reducedMotion) {
+      waterVideoElement.pause();
+      return;
+    }
+    const playback = waterVideoElement.play();
+    playback?.catch(() => setVideoWaterState(false));
+  };
+
+  if (waterVideoElement) {
+    stage.dataset.worldVideoState = "loading";
+    waterVideoElement.addEventListener("canplay", activateVideoWater, { once: true });
+    waterVideoElement.addEventListener("error", () => setVideoWaterState(false));
+    waterVideoElement.addEventListener("timeupdate", () => {
+      stage.dataset.worldVideoTime = waterVideoElement.currentTime.toFixed(3);
+    });
+    if (waterVideoElement.readyState >= 3) activateVideoWater();
+  }
 
   const setSelectedTarget = (target) => {
     const landmark = landmarks.find((item) => item.id === target);
@@ -398,17 +456,13 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     powerPreference: "high-performance",
   });
   if (!gl) {
-    stage.dataset.worldRenderMode = "css-fallback";
-    stage.dataset.worldShading = "water-css-fallback";
-    stage.classList.add("world-fallback", "world-ready");
+    setFallbackState();
     return;
   }
 
   const program = createProgram(gl);
   if (!program) {
-    stage.dataset.worldRenderMode = "css-fallback";
-    stage.dataset.worldShading = "water-css-fallback";
-    stage.classList.add("world-fallback", "world-ready");
+    setFallbackState();
     return;
   }
 
@@ -439,9 +493,7 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     !waterBuffer
   ) {
     gl.deleteProgram(program);
-    stage.dataset.worldRenderMode = "css-fallback";
-    stage.dataset.worldShading = "water-css-fallback";
-    stage.classList.add("world-fallback", "world-ready");
+    setFallbackState();
     return;
   }
 
@@ -449,9 +501,8 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
   const waterVertices = makeWaterGrid();
   gl.bufferData(gl.ARRAY_BUFFER, waterVertices, gl.STATIC_DRAW);
   const waterVertexCount = waterVertices.length / 3;
-  stage.dataset.worldRenderMode = "webgl-water-3d";
-  stage.dataset.worldShading = "fresnel-water";
-  stage.dataset.worldSurface = "procedural-wave-grid";
+  webglWaterAvailable = true;
+  setWebglWaterState();
 
   function resize() {
     const bounds = stage.getBoundingClientRect();
@@ -500,12 +551,12 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     stage.style.setProperty("--world-pointer-y", (pointer.y + 0.5) * 100 + "%");
     stage.style.setProperty("--world-pointer-intensity", pointerIntensity.toFixed(3));
     stage.style.setProperty("--water-ripple-strength", pointerStrength.toFixed(3));
-    if (imageElement) {
-      imageElement.style.setProperty(
+    [imageElement, waterVideoElement].forEach((element) => {
+      element?.style.setProperty(
         "--world-image-scale",
         pointer.active || pointer.impact > 0.03 ? "1.12" : "1.08",
       );
-    }
+    });
 
     const desiredEye = [pointer.x * 4.8, 7.2 - pointer.y * 1.8, 14 + pointer.y * 2.8];
     const desiredTarget = [pointer.x * 2.8, 0.2 - pointer.y * 0.4, -42 + pointer.y * 7];
@@ -519,22 +570,24 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     const projection = perspectiveMatrix(Math.PI / 3.1, width / height, 0.1, 190);
     currentViewProjection = multiplyMatrices(projection, lookAtMatrix(camera.eye, camera.target));
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, waterBuffer);
-    gl.enableVertexAttribArray(positionLocation);
-    gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 0, 0);
-    gl.uniformMatrix4fv(matrixLocation, false, currentViewProjection);
-    gl.uniform1f(timeLocation, reducedMotion ? 0 : seconds);
-    gl.uniform2f(pointerLocation, pointer.x, pointer.y);
-    gl.uniform1f(pointerStrengthLocation, pointerStrength);
-    gl.uniform3fv(deepColorLocation, colors.deep);
-    gl.uniform3fv(shallowColorLocation, colors.shallow);
-    gl.uniform3fv(sunColorLocation, colors.sun);
-    gl.uniform3fv(foamColorLocation, colors.foam);
-    gl.uniform3f(lightDirectionLocation, -0.42, 0.86, 0.38);
-    gl.disable(gl.BLEND);
-    gl.enable(gl.DEPTH_TEST);
-    gl.depthMask(true);
-    gl.drawArrays(gl.TRIANGLES, 0, waterVertexCount);
+    if (!videoWaterReady) {
+      gl.bindBuffer(gl.ARRAY_BUFFER, waterBuffer);
+      gl.enableVertexAttribArray(positionLocation);
+      gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 0, 0);
+      gl.uniformMatrix4fv(matrixLocation, false, currentViewProjection);
+      gl.uniform1f(timeLocation, reducedMotion ? 0 : seconds);
+      gl.uniform2f(pointerLocation, pointer.x, pointer.y);
+      gl.uniform1f(pointerStrengthLocation, pointerStrength);
+      gl.uniform3fv(deepColorLocation, colors.deep);
+      gl.uniform3fv(shallowColorLocation, colors.shallow);
+      gl.uniform3fv(sunColorLocation, colors.sun);
+      gl.uniform3fv(foamColorLocation, colors.foam);
+      gl.uniform3f(lightDirectionLocation, -0.42, 0.86, 0.38);
+      gl.disable(gl.BLEND);
+      gl.enable(gl.DEPTH_TEST);
+      gl.depthMask(true);
+      gl.drawArrays(gl.TRIANGLES, 0, waterVertexCount);
+    }
 
     stage.dataset.worldAnimationTime = Math.round(time) + "";
     stage.dataset.worldWaterState =
@@ -547,6 +600,9 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
       pointerStrength.toFixed(3);
     stage.dataset.worldWaterPhase = (seconds * 0.45).toFixed(3);
     stage.dataset.worldPointerRipple = pointerStrength.toFixed(3);
+    if (waterVideoElement) {
+      stage.dataset.worldVideoTime = waterVideoElement.currentTime.toFixed(3);
+    }
   }
 
   function loop(time) {

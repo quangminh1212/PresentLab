@@ -107,6 +107,18 @@
           data-motion-scene="library"
         >
           <div class="world-stage" data-xlab-world data-parallax-stage tabindex="0">
+            <video
+              class="world-water-video"
+              data-world-water-video
+              autoplay
+              muted
+              loop
+              playsinline
+              preload="auto"
+              aria-hidden="true"
+            >
+              <source src="/web/portal/water-surface.webm" type="video/webm" />
+            </video>
             <div class="world-space-image" aria-hidden="true"></div>
             <canvas
               class="world-canvas"
@@ -198,6 +210,15 @@
             >
               <span><i></i><i></i><i></i></span
               ><small data-i18n="scrollCue">CUỘN ĐỂ XEM SLIDE</small>
+            </a>
+            <a
+              class="world-media-credit"
+              href="https://creativecommons.org/licenses/by/3.0/"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Water footage by Alexander Grebenkov, Creative Commons Attribution 3.0"
+            >
+              WATER / ALEXANDER GREBENKOV / CC BY 3.0
             </a>
           </div>
         </section>
