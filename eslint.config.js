@@ -3,7 +3,14 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   {
-    ignores: ["dist/**", "public/**", "node_modules/**", ".artifacts/**", "coverage/**"],
+    ignores: [
+      "dist/**",
+      "public/**",
+      "node_modules/**",
+      ".artifacts/**",
+      "coverage/**",
+      "web/vendor/three/**",
+    ],
   },
   eslint.configs.recommended,
   tseslint.configs.recommended,

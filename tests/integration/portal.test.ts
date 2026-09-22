@@ -11,6 +11,7 @@ const contentTypes: Record<string, string> = {
   ".html": "text/html; charset=utf-8",
   ".js": "text/javascript; charset=utf-8",
   ".json": "application/json; charset=utf-8",
+  ".jpg": "image/jpeg",
   ".png": "image/png",
   ".webm": "video/webm",
 };
@@ -235,7 +236,8 @@ describe("client request portal browser flow", () => {
           const stage = document.querySelector(".world-stage");
           return (
             stage?.dataset.worldRenderMode === "webgl-water-3d" &&
-            stage.dataset.worldShading === "fresnel-water"
+            stage.dataset.worldShading === "threejs-water-addon" &&
+            stage.dataset.worldWaterTexture === "ready"
           );
         },
         undefined,
@@ -245,13 +247,16 @@ describe("client request portal browser flow", () => {
         "webgl-water-3d",
       );
       expect(await page.locator(".world-stage").getAttribute("data-world-shading")).toBe(
-        "fresnel-water",
+        "threejs-water-addon",
       );
       expect(await page.locator(".world-stage").getAttribute("data-world-surface")).toBe(
-        "procedural-wave-grid",
+        "official-water-module",
       );
       expect(await page.locator(".world-stage").getAttribute("data-world-interaction")).toBe(
-        "pointer-ripple-camera",
+        "pointer-camera-ripple",
+      );
+      expect(await page.locator(".world-stage").getAttribute("data-world-water-provider")).toBe(
+        "threejs-official-water",
       );
       expect(await page.locator(".world-stage").getAttribute("data-world-video-state")).toBe(
         "standby",

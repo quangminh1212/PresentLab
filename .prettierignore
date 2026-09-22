@@ -1,5 +1,8 @@
 .template-gallery-build-lock/
 .env.example
+node_modules/
+public/
 templates/
 *.pdf
 *.pptx
+web/vendor/three/

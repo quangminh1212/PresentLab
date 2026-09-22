@@ -1441,7 +1441,7 @@ html[data-theme="light"] .world-location small {
   }
 }
 
-/* Water studio pass: the native WebGL surface owns the interaction; media is fallback only. */
+/* Water studio pass: the vendored Three.js Water surface owns the interaction. */
 .world-stage {
   border-color: rgb(112 246 224 / 38%);
   background:
@@ -1454,7 +1454,7 @@ html[data-theme="light"] .world-location small {
     inset 0 0 110px rgb(47 245 216 / 11%);
 }
 
-/* WebGL is the primary surface; the local capture appears only when WebGL is unavailable. */
+/* Three.js Water is the primary surface; the local capture appears only as fallback. */
 .world-water-video {
   opacity: 0;
 }
