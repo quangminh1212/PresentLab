@@ -300,7 +300,7 @@ describe("client request portal browser flow", () => {
         "threejs-water-shader",
       );
       expect(await page.locator(".world-stage").getAttribute("data-world-ripple-mode")).toBe(
-        "four-slot-shader-waves",
+        "four-slot-heightfield",
       );
       expect(
         Number(await page.locator(".world-stage").getAttribute("data-world-ripple-count")),
@@ -449,6 +449,7 @@ describe("client request portal browser flow", () => {
       const rippleState = await page.locator(".world-stage").evaluate((element) => ({
         state: element.dataset.worldRippleState,
         radius: Number(element.dataset.worldRippleRadius),
+        peak: Number(element.dataset.worldRipplePeak),
       }));
       expect(rippleState.state).toMatch(/^\d+\|\d+\|-?\d+\.\d+\|-?\d+\.\d+,-?\d+\.\d+$/);
       expect(rippleState.radius).toBeGreaterThanOrEqual(0);
@@ -456,6 +457,7 @@ describe("client request portal browser flow", () => {
         () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
       );
       if (!reducedRippleMotion) {
+        expect(rippleState.peak).toBeGreaterThan(0);
         await page.waitForFunction(
           (initialRadius) =>
             Number(document.querySelector(".world-stage")?.dataset.worldRippleRadius) >

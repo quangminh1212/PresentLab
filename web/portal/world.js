@@ -6,7 +6,13 @@ const MAX_PIXEL_RATIO = 2;
 const WORLD_RENDER_SCALE = 0.82;
 const WATER_NORMALS_URL = "/web/vendor/three/textures/waternormals.jpg";
 const RIPPLE_SLOT_COUNT = 4;
-const RIPPLE_SPEED = 5.5;
+const RIPPLE_SPEED = 7.2;
+const RIPPLE_GRID_SIZE = 128;
+const RIPPLE_WORLD_MIN = new THREE.Vector2(-90, -166);
+const RIPPLE_WORLD_SIZE = new THREE.Vector2(180, 240);
+const RIPPLE_HEIGHT_RANGE = 0.24;
+const RIPPLE_TIME_STEP = 1 / 60;
+const RIPPLE_DAMPING = 1.42;
 
 /*
  * The surface is the official Three.js Water addon, vendored under web/vendor
@@ -32,6 +38,53 @@ const landmarks = [
 
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
+}
+
+function createRippleField() {
+  const pixelCount = RIPPLE_GRID_SIZE * RIPPLE_GRID_SIZE;
+  const pixels = new Uint8Array(pixelCount * 4);
+  for (let index = 0; index < pixelCount; index += 1) {
+    const pixel = index * 4;
+    pixels[pixel] = 128;
+    pixels[pixel + 1] = 128;
+    pixels[pixel + 2] = 128;
+    pixels[pixel + 3] = 255;
+  }
+
+  const textureCanvas = document.createElement("canvas");
+  textureCanvas.width = RIPPLE_GRID_SIZE;
+  textureCanvas.height = RIPPLE_GRID_SIZE;
+  const textureContext = textureCanvas.getContext("2d");
+  if (!textureContext) throw new Error("Ripple texture canvas is unavailable.");
+  const textureImage = textureContext.createImageData(RIPPLE_GRID_SIZE, RIPPLE_GRID_SIZE);
+  textureImage.data.set(pixels);
+  textureContext.putImageData(textureImage, 0, 0);
+  const texture = new THREE.CanvasTexture(textureCanvas);
+  texture.colorSpace = THREE.NoColorSpace;
+  texture.magFilter = THREE.LinearFilter;
+  texture.minFilter = THREE.LinearFilter;
+  texture.wrapS = THREE.ClampToEdgeWrapping;
+  texture.wrapT = THREE.ClampToEdgeWrapping;
+  texture.flipY = false;
+  texture.generateMipmaps = false;
+  texture.needsUpdate = true;
+
+  return {
+    size: RIPPLE_GRID_SIZE,
+    texture,
+    textureContext,
+    textureImage,
+    pixels,
+    heights: new Float32Array(pixelCount),
+    velocities: new Float32Array(pixelCount),
+    nextHeights: new Float32Array(pixelCount),
+    nextVelocities: new Float32Array(pixelCount),
+    accumulator: 0,
+    lastTime: null,
+    peak: 0,
+    active: false,
+    quietFrames: 0,
+  };
 }
 
 function setupDomControls(stage, onTarget, focusField) {
@@ -68,6 +121,7 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     ndc: new THREE.Vector2(),
     uniforms: null,
   };
+  let rippleField;
   const waterVideoElement = stage.querySelector("[data-world-water-video]");
   const imageElement = stage.querySelector(".world-space-image");
   const statusElement = stage.querySelector("[data-world-status]");
@@ -119,8 +173,10 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     stage.dataset.worldInteraction = "pointer-camera-ripple";
     stage.dataset.worldWaterProvider = "threejs-official-water";
     stage.dataset.worldRippleProvider = "threejs-water-shader";
-    stage.dataset.worldRippleMode = "four-slot-shader-waves";
+    stage.dataset.worldRippleMode = "four-slot-heightfield";
+    stage.dataset.worldRippleField = `${RIPPLE_GRID_SIZE}x${RIPPLE_GRID_SIZE}`;
     stage.dataset.worldRippleCount = String(rippleState.count);
+    stage.dataset.worldRipplePeak ||= "0.0000";
     stage.dataset.worldRippleRadius ||= "0.000";
     stage.dataset.worldRippleState ||= "idle";
     stage.dataset.worldRippleQueued ||= "false";
@@ -229,6 +285,7 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
   });
 
   try {
+    rippleField = createRippleField();
     renderer = new THREE.WebGLRenderer({
       canvas,
       alpha: true,
@@ -310,92 +367,114 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     );
     stage.dataset.worldWaterTexture = "loading";
 
-    water = new Water(new THREE.PlaneGeometry(180, 240), {
-      textureWidth: 512,
-      textureHeight: 512,
-      waterNormals,
-      sunDirection,
-      sunColor: 0xcaa77f,
-      waterColor: 0x14514f,
-      distortionScale: 0.44,
-      alpha: 0.98,
-      fog: true,
-    });
+    water = new Water(
+      new THREE.PlaneGeometry(180, 240, RIPPLE_GRID_SIZE - 1, RIPPLE_GRID_SIZE - 1),
+      {
+        textureWidth: 768,
+        textureHeight: 768,
+        waterNormals,
+        sunDirection,
+        sunColor: 0xcaa77f,
+        waterColor: 0x14514f,
+        distortionScale: 0.44,
+        alpha: 0.98,
+        fog: true,
+      },
+    );
+    water.material.uniforms.rippleHeightMap = { value: rippleField.texture };
+    water.material.uniforms.rippleHeightBounds = {
+      value: new THREE.Vector4(
+        RIPPLE_WORLD_MIN.x,
+        RIPPLE_WORLD_MIN.y,
+        RIPPLE_WORLD_SIZE.x,
+        RIPPLE_WORLD_SIZE.y,
+      ),
+    };
+    water.material.uniforms.rippleHeightTexel = {
+      value: new THREE.Vector2(1 / (RIPPLE_GRID_SIZE - 1), 1 / (RIPPLE_GRID_SIZE - 1)),
+    };
     water.material.onBeforeCompile = (shader) => {
-      shader.uniforms.rippleCenters = { value: rippleState.centers.slice() };
-      shader.uniforms.rippleStarts = { value: rippleState.starts.slice() };
-      shader.uniforms.rippleStrengths = { value: rippleState.strengths.slice() };
       rippleState.uniforms = shader.uniforms;
+      shader.vertexShader = shader.vertexShader.replace(
+        "uniform mat4 textureMatrix;",
+        `uniform mat4 textureMatrix;
+uniform sampler2D rippleHeightMap;
+uniform vec4 rippleHeightBounds;
+
+float sampleRippleVertexHeight( vec2 position ) {
+  vec2 uv = clamp(
+    ( position - rippleHeightBounds.xy ) / rippleHeightBounds.zw,
+    0.0,
+    1.0
+  );
+  return ( texture2D( rippleHeightMap, uv ).r - 0.5 ) * ${RIPPLE_HEIGHT_RANGE.toFixed(2)};
+}`,
+      );
+      shader.vertexShader = shader.vertexShader.replace(
+        "mirrorCoord = modelMatrix * vec4( position, 1.0 );\n\t\t\t\t\tworldPosition = mirrorCoord.xyzw;",
+        `vec3 ripplePosition = position;
+  vec3 rippleWorldPosition = ( modelMatrix * vec4( position, 1.0 ) ).xyz;
+  ripplePosition.z += sampleRippleVertexHeight( rippleWorldPosition.xz );
+  mirrorCoord = modelMatrix * vec4( ripplePosition, 1.0 );
+  worldPosition = mirrorCoord.xyzw;`,
+      );
+      shader.vertexShader = shader.vertexShader.replace(
+        "vec4 mvPosition =  modelViewMatrix * vec4( position, 1.0 );",
+        "vec4 mvPosition =  modelViewMatrix * vec4( ripplePosition, 1.0 );",
+      );
       shader.fragmentShader = shader.fragmentShader.replace(
         "uniform vec3 waterColor;",
         `uniform vec3 waterColor;
-uniform vec2 rippleCenters[ ${RIPPLE_SLOT_COUNT} ];
-uniform float rippleStarts[ ${RIPPLE_SLOT_COUNT} ];
-uniform float rippleStrengths[ ${RIPPLE_SLOT_COUNT} ];`,
+uniform sampler2D rippleHeightMap;
+uniform vec4 rippleHeightBounds;
+uniform vec2 rippleHeightTexel;
+
+float sampleRippleHeight( vec2 position ) {
+  vec2 uv = clamp(
+    ( position - rippleHeightBounds.xy ) / rippleHeightBounds.zw,
+    0.0,
+    1.0
+  );
+  return ( texture2D( rippleHeightMap, uv ).r - 0.5 ) * ${RIPPLE_HEIGHT_RANGE.toFixed(2)};
+}`,
       );
       shader.fragmentShader = shader.fragmentShader.replace(
         "vec3 surfaceNormal = normalize( noise.xzy * vec3( 1.5, 1.0, 1.5 ) );",
         `vec3 surfaceNormal = normalize( mix( vec3( 0.0, 1.0, 0.0 ), noise.xzy * vec3( 1.5, 1.0, 1.5 ), 0.3 ) );
-vec3 rippleNormal = vec3( 0.0 );
-for ( int i = 0; i < ${RIPPLE_SLOT_COUNT}; i ++ ) {
-  float age = time - rippleStarts[ i ];
-  float ringLife = step( 0.0, age ) * exp( -age * 0.78 );
-  float radius = age * ${RIPPLE_SPEED.toFixed(1)};
-  vec2 rippleOffset = worldPosition.xz - rippleCenters[ i ];
-  float distanceToRipple = length( rippleOffset );
-  vec2 rippleDirection = vec2( 0.0 );
-  if ( distanceToRipple > 0.001 ) rippleDirection = rippleOffset / distanceToRipple;
-  vec2 rippleTangent = vec2( -rippleDirection.y, rippleDirection.x );
-  float azimuth = atan( rippleOffset.y, rippleOffset.x );
-  float angularBreakup =
-    sin( azimuth * 3.0 + noise.y * 2.0 ) * 0.34 +
-    cos( azimuth * 5.0 - noise.z * 3.0 ) * 0.16;
-  float windBreakup =
-    noise.x * 0.3 +
-    noise.z * 0.22 +
-    angularBreakup * 0.78 +
-    sin( rippleOffset.x * 0.38 + rippleOffset.y * 0.21 ) * 0.17 +
-    cos( rippleOffset.x * 0.12 - rippleOffset.y * 0.34 ) * 0.11;
-  float waveFront = distanceToRipple - radius + windBreakup;
-  float radialAttenuation = inversesqrt( 1.0 + radius * 0.65 );
-  float surfaceBreakup = clamp(
-    0.8 +
-    noise.x * 0.16 +
-    noise.w * 0.12 +
-    sin( rippleOffset.x * 0.74 + rippleOffset.y * 0.31 + time * 0.08 ) * 0.1,
-    0.46,
-    1.05
+  vec2 rippleStep = rippleHeightTexel * rippleHeightBounds.zw;
+  float rippleCenter = sampleRippleHeight( worldPosition.xz );
+  float rippleLeft = sampleRippleHeight( worldPosition.xz - vec2( rippleStep.x, 0.0 ) );
+  float rippleRight = sampleRippleHeight( worldPosition.xz + vec2( rippleStep.x, 0.0 ) );
+  float rippleBack = sampleRippleHeight( worldPosition.xz - vec2( 0.0, rippleStep.y ) );
+  float rippleFront = sampleRippleHeight( worldPosition.xz + vec2( 0.0, rippleStep.y ) );
+  vec2 rippleGradient = vec2(
+    ( rippleRight - rippleLeft ) / ( 2.0 * rippleStep.x ),
+    ( rippleFront - rippleBack ) / ( 2.0 * rippleStep.y )
   );
-  float waveEnvelope =
-    exp( -abs( waveFront ) * 0.76 ) *
-    ringLife *
-    radialAttenuation *
-    surfaceBreakup *
-    rippleStrengths[ i ];
-  float wavePhase = waveFront * 5.8 + noise.y * 1.6 + angularBreakup * 1.4;
-  float capillaryWave =
-    sin( wavePhase ) * 0.7 +
-    sin( waveFront * 8.9 - noise.x * 2.4 + angularBreakup ) * 0.2 +
-    sin( waveFront * 2.8 + noise.z * 1.7 ) * 0.1;
-  float waveSlope = capillaryWave * waveEnvelope;
-  rippleNormal += vec3( rippleDirection.x, 0.0, rippleDirection.y ) * waveSlope * 0.34;
-  float impactLife = step( 0.0, age ) * exp( -age * 4.4 );
-  float impactEnvelope =
-    exp( -distanceToRipple * distanceToRipple * 3.8 ) * impactLife * rippleStrengths[ i ];
-  float impactSlope = impactEnvelope * distanceToRipple * 7.6;
-  rippleNormal += vec3( rippleDirection.x, 0.0, rippleDirection.y ) * impactSlope * 0.12;
-  float angularSlope =
-    cos( azimuth * 3.0 + noise.y * 2.0 ) * 3.0 * 0.34 -
-    sin( azimuth * 5.0 - noise.z * 3.0 ) * 5.0 * 0.16;
-  rippleNormal +=
-    vec3( rippleTangent.x, 0.0, rippleTangent.y ) *
-    cos( wavePhase ) *
-    waveEnvelope *
-    angularSlope *
-    0.09 /
-    max( distanceToRipple, 1.0 );
-}
-surfaceNormal = normalize( surfaceNormal + rippleNormal );`,
+  float rippleCurvature =
+    ( rippleLeft + rippleRight + rippleBack + rippleFront - rippleCenter * 4.0 ) /
+    ( rippleStep.x * rippleStep.y );
+  float rippleTextureBreakup = clamp( 0.82 + noise.x * 0.22 + noise.w * 0.12, 0.58, 1.08 );
+  vec3 rippleNormal = vec3( -rippleGradient.x, 0.0, -rippleGradient.y ) * 23.0 * rippleTextureBreakup;
+  vec2 rippleDistortion = -rippleGradient * ( 2.8 + noise.z * 0.45 );
+  surfaceNormal = normalize( surfaceNormal + rippleNormal );`,
+      );
+      shader.fragmentShader = shader.fragmentShader.replace(
+        "vec2 distortion = surfaceNormal.xz * ( 0.001 + 1.0 / distance ) * distortionScale;",
+        "vec2 distortion = surfaceNormal.xz * ( 0.001 + 1.0 / distance ) * distortionScale + rippleDistortion;",
+      );
+      shader.fragmentShader = shader.fragmentShader.replace(
+        "sunLight( surfaceNormal, eyeDirection, 100.0, 2.0, 0.5, diffuseLight, specularLight );",
+        `sunLight( surfaceNormal, eyeDirection, 100.0, 2.0, 0.5, diffuseLight, specularLight );
+  float rippleSlope = length( rippleGradient );
+  float rippleCrest =
+    smoothstep( 0.005, 0.055, abs( rippleCurvature ) ) *
+    smoothstep( 0.01, 0.08, rippleSlope );
+  float rippleSheen =
+    pow( max( dot( eyeDirection, normalize( reflect( -sunDirection, surfaceNormal ) ) ), 0.0 ), 48.0 ) *
+    rippleCrest *
+    clamp( 0.65 + noise.x * 0.3, 0.35, 1.0 );
+  specularLight += sunColor * rippleSheen * 0.78;`,
       );
     };
     stage.dataset.worldSurfaceProfile = "calm-lake";
@@ -405,6 +484,7 @@ surfaceNormal = normalize( surfaceNormal + rippleNormal );`,
     scene.add(water);
   } catch {
     renderer?.dispose();
+    rippleField?.texture.dispose();
     setFallbackState();
     return;
   }
@@ -423,6 +503,121 @@ surfaceNormal = normalize( surfaceNormal + rippleNormal );`,
     canvas.style.height = height + "px";
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
+  }
+
+  function writeRippleTexture() {
+    const { heights, pixels } = rippleField;
+    let peak = 0;
+    for (let index = 0; index < heights.length; index += 1) {
+      peak = Math.max(peak, Math.abs(heights[index]));
+      const encodedHeight = clamp(0.5 + (heights[index] / RIPPLE_HEIGHT_RANGE) * 0.5, 0, 1);
+      const pixel = index * 4;
+      pixels[pixel] = Math.round(encodedHeight * 255);
+    }
+    rippleField.peak = peak;
+    rippleField.textureImage.data.set(pixels);
+    rippleField.textureContext.putImageData(rippleField.textureImage, 0, 0);
+    rippleField.texture.needsUpdate = true;
+    stage.dataset.worldRipplePeak = peak.toFixed(4);
+  }
+
+  function injectRipple(worldX, worldZ) {
+    const { size, heights, velocities } = rippleField;
+    rippleField.active = true;
+    rippleField.quietFrames = 0;
+    const cellSizeX = RIPPLE_WORLD_SIZE.x / (size - 1);
+    const cellSizeZ = RIPPLE_WORLD_SIZE.y / (size - 1);
+    const gridX = ((worldX - RIPPLE_WORLD_MIN.x) / RIPPLE_WORLD_SIZE.x) * (size - 1);
+    const gridZ = ((worldZ - RIPPLE_WORLD_MIN.y) / RIPPLE_WORLD_SIZE.y) * (size - 1);
+    const impactRadius = 1.8;
+    const supportRadius = impactRadius * 2.35;
+    const minX = Math.max(1, Math.floor(gridX - supportRadius / cellSizeX));
+    const maxX = Math.min(size - 2, Math.ceil(gridX + supportRadius / cellSizeX));
+    const minZ = Math.max(1, Math.floor(gridZ - supportRadius / cellSizeZ));
+    const maxZ = Math.min(size - 2, Math.ceil(gridZ + supportRadius / cellSizeZ));
+
+    for (let z = minZ; z <= maxZ; z += 1) {
+      const positionZ = RIPPLE_WORLD_MIN.y + (z / (size - 1)) * RIPPLE_WORLD_SIZE.y;
+      for (let x = minX; x <= maxX; x += 1) {
+        const positionX = RIPPLE_WORLD_MIN.x + (x / (size - 1)) * RIPPLE_WORLD_SIZE.x;
+        const distance = Math.hypot(positionX - worldX, positionZ - worldZ);
+        const falloff = Math.exp(-((distance / impactRadius) ** 2) * 2.2);
+        if (falloff < 0.002) continue;
+        const index = z * size + x;
+        const angularBreakup =
+          Math.sin(positionX * 0.21 + positionZ * 0.13) * 0.24 +
+          Math.cos(positionX * 0.11 - positionZ * 0.19) * 0.16;
+        const capillaryEnvelope = Math.exp(-((distance / 4.6) ** 2) * 1.1);
+        const capillaryKick = Math.sin(distance * 2.65 + angularBreakup) * capillaryEnvelope * 0.2;
+        heights[index] -= 0.028 * falloff;
+        velocities[index] -= 1.35 * falloff;
+        velocities[index] += capillaryKick;
+      }
+    }
+  }
+
+  function advanceRippleField(deltaSeconds) {
+    if (reducedMotion || deltaSeconds <= 0 || rippleState.count === 0 || !rippleField.active)
+      return;
+
+    rippleField.accumulator = Math.min(rippleField.accumulator + deltaSeconds, 0.12);
+    const { size } = rippleField;
+    let currentHeights = rippleField.heights;
+    let currentVelocities = rippleField.velocities;
+    let nextHeights = rippleField.nextHeights;
+    let nextVelocities = rippleField.nextVelocities;
+    let advanced = false;
+    const cellSizeX = RIPPLE_WORLD_SIZE.x / (size - 1);
+    const cellSizeZ = RIPPLE_WORLD_SIZE.y / (size - 1);
+    const inverseCellSizeXSquared = 1 / (cellSizeX * cellSizeX);
+    const inverseCellSizeZSquared = 1 / (cellSizeZ * cellSizeZ);
+    const damping = Math.exp(-RIPPLE_DAMPING * RIPPLE_TIME_STEP);
+    const waveSpeedSquared = RIPPLE_SPEED * RIPPLE_SPEED;
+
+    while (rippleField.accumulator >= RIPPLE_TIME_STEP) {
+      advanced = true;
+      nextHeights.fill(0);
+      nextVelocities.fill(0);
+      for (let z = 1; z < size - 1; z += 1) {
+        for (let x = 1; x < size - 1; x += 1) {
+          const index = z * size + x;
+          const center = currentHeights[index];
+          const laplacian =
+            (currentHeights[index - 1] + currentHeights[index + 1] - center * 2) *
+              inverseCellSizeXSquared +
+            (currentHeights[index - size] + currentHeights[index + size] - center * 2) *
+              inverseCellSizeZSquared;
+          const nextVelocity =
+            (currentVelocities[index] + laplacian * waveSpeedSquared * RIPPLE_TIME_STEP) * damping;
+          nextVelocities[index] = nextVelocity;
+          nextHeights[index] = center + nextVelocity * RIPPLE_TIME_STEP;
+        }
+      }
+      [currentHeights, nextHeights] = [nextHeights, currentHeights];
+      [currentVelocities, nextVelocities] = [nextVelocities, currentVelocities];
+      rippleField.accumulator -= RIPPLE_TIME_STEP;
+    }
+
+    rippleField.heights = currentHeights;
+    rippleField.velocities = currentVelocities;
+    rippleField.nextHeights = nextHeights;
+    rippleField.nextVelocities = nextVelocities;
+    if (!advanced) return;
+    writeRippleTexture();
+    if (rippleField.peak < 0.0005) {
+      rippleField.quietFrames += 1;
+      if (rippleField.quietFrames > 18) {
+        rippleField.heights.fill(0);
+        rippleField.velocities.fill(0);
+        rippleField.nextHeights.fill(0);
+        rippleField.nextVelocities.fill(0);
+        rippleField.active = false;
+        rippleField.quietFrames = 0;
+        writeRippleTexture();
+      }
+    } else {
+      rippleField.quietFrames = 0;
+    }
   }
 
   function commitPendingRipple(seconds) {
@@ -450,9 +645,7 @@ surfaceNormal = normalize( surfaceNormal + rippleNormal );`,
     rippleState.lastSlot = slot;
     rippleState.lastStart = start;
     rippleState.count += 1;
-    rippleState.uniforms.rippleCenters.value = rippleState.centers.slice();
-    rippleState.uniforms.rippleStarts.value = rippleState.starts.slice();
-    rippleState.uniforms.rippleStrengths.value = rippleState.strengths.slice();
+    injectRipple(hit.point.x, hit.point.z);
     stage.dataset.worldRippleCount = String(rippleState.count);
     stage.dataset.worldRippleLastSlot = String(slot);
     stage.dataset.worldRippleState = `${rippleState.count}|${slot}|${start.toFixed(3)}|${hit.point.x.toFixed(2)},${hit.point.z.toFixed(2)}`;
@@ -503,7 +696,11 @@ surfaceNormal = normalize( surfaceNormal + rippleNormal );`,
     cameraTarget.lerp(desiredCameraTarget, reducedMotion ? 1 : 0.11);
     camera.lookAt(cameraTarget);
     camera.updateMatrixWorld();
+    const deltaSeconds =
+      rippleField.lastTime === null ? 0 : clamp(seconds - rippleField.lastTime, 0, 0.05);
+    rippleField.lastTime = seconds;
     commitPendingRipple(seconds);
+    advanceRippleField(deltaSeconds);
 
     const uniforms = water.material.uniforms;
     uniforms.time.value = reducedMotion ? 0 : seconds;
