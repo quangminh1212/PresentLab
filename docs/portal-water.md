@@ -9,10 +9,12 @@ shoreline, sky reflection, and lower-intensity sun complete the lake horizon.
 
 Pointer movement steers the Three.js camera over the water and changes the
 distortion strength. Clicking the stage raycasts onto the Water plane and
-starts a real radial ripple in the material, plus a short transparent ring
-overlay that makes the contact point legible. Four shader slots allow rapid
-clicks to overlap before they decay; the `data-world-ripple-*` state exposes
-the mapped hit, active slot, count, and expanding radius for browser checks.
+starts a local impact and capillary wave packet in the Water material. The
+packet perturbs the reflection normal, briefly dents the contact point, and
+uses wind- and texture-driven breakup so it blends into the existing normal-map
+flow instead of drawing a bright UI ring. Four shader slots allow rapid clicks
+to overlap before they decay; the `data-world-ripple-*` state exposes the
+mapped hit, active slot, count, and expanding radius for browser checks.
 A local muted WebM capture remains a fallback only for browsers that cannot
 create the WebGL scene.
 

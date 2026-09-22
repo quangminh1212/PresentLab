@@ -300,7 +300,7 @@ describe("client request portal browser flow", () => {
         "threejs-water-shader",
       );
       expect(await page.locator(".world-stage").getAttribute("data-world-ripple-mode")).toBe(
-        "four-slot-radial-rings",
+        "four-slot-shader-waves",
       );
       expect(
         Number(await page.locator(".world-stage").getAttribute("data-world-ripple-count")),
