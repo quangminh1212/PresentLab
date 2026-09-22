@@ -276,6 +276,46 @@ describe("client request portal browser flow", () => {
       expect(imageMotion.imageShiftX).toMatch(/px$/);
       expect(Number.parseFloat(imageMotion.pointerIntensity || "0")).toBeGreaterThan(0);
 
+      const firstPlanetPositions = await page
+        .locator(".world-stage")
+        .getAttribute("data-world-planet-positions");
+      const firstImageShift = await page
+        .locator(".world-stage")
+        .evaluate((element) => element.style.getPropertyValue("--world-image-shift-x"));
+      const firstImageMotion = await page.locator(".world-space-image").evaluate((element) => ({
+        backgroundPosition: getComputedStyle(element).backgroundPosition,
+        transform: getComputedStyle(element).transform,
+      }));
+      const reducedMotion = await page.evaluate(
+        () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+      );
+      if (!reducedMotion) {
+        await page.waitForFunction(
+          ({ initialPlanetPositions, initialImageShift }) => {
+            const stage = document.querySelector(".world-stage");
+            const imageShift = stage?.style.getPropertyValue("--world-image-shift-x");
+            return (
+              stage?.dataset.worldPlanetPositions !== initialPlanetPositions ||
+              imageShift !== initialImageShift
+            );
+          },
+          { initialPlanetPositions: firstPlanetPositions, initialImageShift: firstImageShift },
+          { timeout: 3_000 },
+        );
+      }
+      const nextPlanetPositions = await page
+        .locator(".world-stage")
+        .getAttribute("data-world-planet-positions");
+      const nextImageMotion = await page.locator(".world-space-image").evaluate((element) => ({
+        backgroundPosition: getComputedStyle(element).backgroundPosition,
+        transform: getComputedStyle(element).transform,
+      }));
+      if (!reducedMotion) {
+        expect(nextPlanetPositions).not.toBe(firstPlanetPositions);
+        expect(nextImageMotion.backgroundPosition).not.toBe(firstImageMotion.backgroundPosition);
+        expect(nextImageMotion.transform).not.toBe(firstImageMotion.transform);
+      }
+
       await page.locator(".world-stage").dispatchEvent("pointerdown", {
         clientX: worldBounds.x + worldBounds.width * 0.62,
         clientY: worldBounds.y + worldBounds.height * 0.62,

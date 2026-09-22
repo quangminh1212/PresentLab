@@ -631,6 +631,10 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     gl.depthMask(true);
     const planetPoses = landmarks.map((landmark) => getLandmarkPose(landmark, time, reducedMotion));
     landmarks.forEach((landmark, index) => drawPlanet(landmark, time, colors, planetPoses[index]));
+    stage.dataset.worldAnimationTime = `${Math.round(time)}`;
+    stage.dataset.worldPlanetPositions = planetPoses
+      .map(({ x, y, z }) => `${x.toFixed(3)},${y.toFixed(3)},${z.toFixed(3)}`)
+      .join("|");
   }
 
   function loop(time) {
