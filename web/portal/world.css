@@ -1379,6 +1379,120 @@ html[data-theme="light"] .world-location small {
   }
 }
 
+/* Natural lake pass: keep the interaction, remove the synthetic neon-water treatment. */
+.world-stage {
+  border-color: rgb(224 244 235 / 36%);
+  background: linear-gradient(180deg, #a9d1d0 0%, #d5dfd1 39%, #5d9c99 48%, #1b555d 100%);
+  box-shadow:
+    0 48px 120px rgb(13 42 45 / 34%),
+    inset 0 1px 0 rgb(255 255 255 / 22%),
+    inset 0 -90px 120px rgb(4 42 47 / 18%);
+}
+
+.world-space-image {
+  background:
+    radial-gradient(ellipse at 75% 12%, rgb(255 227 174 / 34%), transparent 18%),
+    radial-gradient(ellipse at 31% 30%, rgb(255 255 255 / 10%), transparent 27%),
+    linear-gradient(180deg, #a7d1d1 0%, #d9e1d2 38%, #6ea8a0 48%, #235e64 100%),
+    linear-gradient(180deg, #a7d1d1 0%, #1d5860 100%);
+  background-blend-mode: screen, screen, normal, normal;
+  background-size:
+    175% 170%,
+    145% 145%,
+    180% 180%,
+    100% 100%;
+  filter: saturate(0.92) contrast(1.03) brightness(0.96);
+  opacity: 0.98;
+}
+
+.world-space-image::after {
+  background:
+    linear-gradient(180deg, rgb(255 245 215 / 10%), transparent 30%),
+    radial-gradient(ellipse at 54% 41%, transparent 28%, rgb(5 39 43 / 25%) 100%);
+  mix-blend-mode: soft-light;
+  opacity: 0.38;
+  animation: world-lake-haze 18s ease-in-out infinite alternate;
+}
+
+.world-stage::before {
+  background:
+    radial-gradient(ellipse at 76% 17%, rgb(255 220 167 / 18%), transparent 24%),
+    linear-gradient(180deg, rgb(255 255 255 / 6%), transparent 36%, rgb(11 63 68 / 12%) 100%);
+  filter: blur(24px);
+  mix-blend-mode: screen;
+  opacity: 0.56;
+  transform: scale(1.04);
+  animation: world-lake-haze 20s ease-in-out infinite alternate;
+}
+
+.world-atmosphere {
+  background:
+    radial-gradient(ellipse at 74% 18%, rgb(255 224 177 / 12%), transparent 19%),
+    linear-gradient(180deg, rgb(245 255 242 / 8%), transparent 37%, rgb(3 46 52 / 15%) 100%);
+  mix-blend-mode: screen;
+  opacity: 0.6;
+}
+
+.world-atmosphere::before {
+  background: radial-gradient(ellipse at 60% 38%, rgb(255 244 211 / 8%), transparent 35%);
+  filter: blur(30px);
+  opacity: 0.7;
+  transform: scale(1.06);
+  animation: world-lake-haze 24s ease-in-out infinite alternate-reverse;
+}
+
+.world-atmosphere::after {
+  background: linear-gradient(180deg, transparent 20%, rgb(2 31 36 / 18%) 100%);
+  mix-blend-mode: multiply;
+  opacity: 0.62;
+  animation: none;
+}
+
+.world-stage::after {
+  background:
+    radial-gradient(
+      ellipse at 56% 43%,
+      transparent 28%,
+      rgb(4 35 40 / 8%) 70%,
+      rgb(2 22 29 / 32%) 100%
+    ),
+    linear-gradient(180deg, transparent 48%, rgb(1 27 34 / 14%) 100%);
+}
+
+.world-scanlines {
+  opacity: 0;
+}
+
+html[data-theme="light"] .world-stage {
+  border-color: rgb(226 244 236 / 38%);
+  background: linear-gradient(180deg, #a9d1d0 0%, #d5dfd1 39%, #5d9c99 48%, #1b555d 100%);
+  box-shadow:
+    0 48px 120px rgb(13 42 45 / 26%),
+    inset 0 1px 0 rgb(255 255 255 / 26%),
+    inset 0 -90px 120px rgb(4 42 47 / 16%);
+}
+
+@keyframes world-lake-haze {
+  0% {
+    opacity: 0.3;
+    transform: translate3d(-1%, -0.5%, 0) scale(1.03);
+  }
+
+  100% {
+    opacity: 0.68;
+    transform: translate3d(1.5%, 1%, 0) scale(1.08);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-stage::before,
+  .world-atmosphere::before,
+  .world-space-image,
+  .world-space-image::after {
+    animation: none;
+  }
+}
+
 /* Full-bleed cosmic scene: the world owns the viewport below the compact header. */
 .app-shell:has(.hero-world) {
   overflow-x: visible;

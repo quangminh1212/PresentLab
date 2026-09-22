@@ -1,4 +1,5 @@
 import * as THREE from "../vendor/three/three.module.js";
+import { Sky } from "../vendor/three/addons/objects/Sky.js";
 import { Water } from "../vendor/three/addons/objects/Water.js";
 
 const MAX_PIXEL_RATIO = 2;
@@ -8,8 +9,9 @@ const WATER_NORMALS_URL = "/web/vendor/three/textures/waternormals.jpg";
 /*
  * The surface is the official Three.js Water addon, vendored under web/vendor
  * with its MIT license. This file only connects that existing scene to the
- * portal camera, pointer state, and lifecycle; it does not define a water
- * shader or a replacement water renderer.
+ * portal camera, pointer state, and lifecycle. A small compile-time normal
+ * blend is applied to the addon material so its open-ocean defaults read as a
+ * calmer lake surface at this camera distance.
  */
 const landmarks = [
   {
@@ -75,6 +77,7 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
   let renderer;
   let scene;
   let camera;
+  let sky;
   let water;
   let cameraTarget;
   let desiredCameraPosition;
@@ -214,14 +217,61 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     renderer.setClearColor(0x000000, 0);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 0.86;
+    renderer.toneMappingExposure = 0.1;
 
     scene = new THREE.Scene();
+    scene.fog = new THREE.Fog(0x789b99, 34, 178);
     camera = new THREE.PerspectiveCamera(47, 1, 0.1, 320);
     camera.position.set(0, 7.8, 15);
     cameraTarget = new THREE.Vector3(0, -0.2, -46);
     desiredCameraPosition = new THREE.Vector3();
     desiredCameraTarget = new THREE.Vector3();
+
+    const sunDirection = new THREE.Vector3(0.34, 0.4, -0.85).normalize();
+    sky = new Sky();
+    sky.scale.setScalar(10000);
+    sky.renderOrder = -2;
+    scene.add(sky);
+    const skyUniforms = sky.material.uniforms;
+    skyUniforms.turbidity.value = 2.4;
+    skyUniforms.rayleigh.value = 1.8;
+    skyUniforms.mieCoefficient.value = 0.0018;
+    skyUniforms.mieDirectionalG.value = 0.74;
+    skyUniforms.cloudCoverage.value = 0.34;
+    skyUniforms.cloudDensity.value = 0.32;
+    skyUniforms.cloudElevation.value = 0.58;
+    skyUniforms.cloudSpeed.value = 0.000012;
+    skyUniforms.showSunDisc.value = 0;
+    skyUniforms.sunPosition.value.copy(sunDirection).multiplyScalar(450);
+    stage.dataset.worldSkyProvider = "threejs-official-sky";
+    stage.dataset.worldSkyProfile = "hazy-lake-daylight";
+
+    const shorelineShape = new THREE.Shape();
+    shorelineShape.moveTo(-112, -14);
+    for (let index = 0; index <= 22; index += 1) {
+      const x = -112 + index * 10;
+      const y =
+        0.24 +
+        Math.sin(index * 0.67) * 0.28 +
+        Math.sin(index * 1.71) * 0.14 +
+        Math.sin(index * 0.19) * 0.3;
+      shorelineShape.lineTo(x, y);
+    }
+    shorelineShape.lineTo(112, -14);
+    shorelineShape.closePath();
+    const shoreline = new THREE.Mesh(
+      new THREE.ShapeGeometry(shorelineShape),
+      new THREE.MeshBasicMaterial({
+        color: 0x315e57,
+        fog: true,
+        opacity: 0.48,
+        transparent: true,
+        depthWrite: false,
+      }),
+    );
+    shoreline.position.z = -128;
+    shoreline.renderOrder = -1;
+    scene.add(shoreline);
 
     const waterNormals = new THREE.TextureLoader().load(
       WATER_NORMALS_URL,
@@ -242,15 +292,23 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
       textureWidth: 512,
       textureHeight: 512,
       waterNormals,
-      sunDirection: new THREE.Vector3(-0.42, 0.86, 0.38).normalize(),
-      sunColor: 0x98fff0,
-      waterColor: 0x063e49,
-      distortionScale: 3.7,
-      alpha: 0.96,
-      fog: false,
+      sunDirection,
+      sunColor: 0xcaa77f,
+      waterColor: 0x14514f,
+      distortionScale: 0.44,
+      alpha: 0.98,
+      fog: true,
     });
+    water.material.onBeforeCompile = (shader) => {
+      shader.fragmentShader = shader.fragmentShader.replace(
+        "vec3 surfaceNormal = normalize( noise.xzy * vec3( 1.5, 1.0, 1.5 ) );",
+        "vec3 surfaceNormal = normalize( mix( vec3( 0.0, 1.0, 0.0 ), noise.xzy * vec3( 1.5, 1.0, 1.5 ), 0.3 ) );",
+      );
+    };
+    stage.dataset.worldSurfaceProfile = "calm-lake";
     water.rotation.x = -Math.PI / 2;
     water.position.set(0, -0.42, -46);
+    water.renderOrder = 2;
     scene.add(water);
   } catch {
     renderer?.dispose();
@@ -320,7 +378,9 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
 
     const uniforms = water.material.uniforms;
     uniforms.time.value = reducedMotion ? 0 : seconds;
-    uniforms.distortionScale.value = 3.7 + pointerStrength * 4.2;
+    uniforms.distortionScale.value = 0.44 + pointerStrength * 0.42;
+    uniforms.size.value = 3.6;
+    if (sky) sky.material.uniforms.time.value = reducedMotion ? 0 : seconds;
     renderer.render(scene, camera);
 
     stage.dataset.worldAnimationTime = Math.round(time) + "";

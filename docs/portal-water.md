@@ -1,10 +1,11 @@
 # Portal water background
 
-The portal now uses the existing official Three.js `Water` addon as its
-primary 3D background. The addon supplies the reflective/distorted water
-material and animated normal-map flow; `web/portal/world.js` only connects the
-scene, camera movement, resize lifecycle, and pointer interaction. No
-project-owned water shader is maintained.
+The portal now uses the official Three.js `Water` addon together with the
+official analytic `Sky` addon as its primary 3D background. The water keeps the
+upstream reflective/distorted material and animated normal-map flow, while
+`web/portal/world.js` adds a small runtime normal-strength adjustment so the
+surface reads as a calmer lake rather than open ocean. A fogged distant
+shoreline, sky reflection, and lower-intensity sun complete the lake horizon.
 
 Pointer movement steers the Three.js camera over the water and changes the
 distortion strength. Clicking the stage adds a temporary impact state while
@@ -16,14 +17,16 @@ fallback only for browsers that cannot create the WebGL scene.
 - Package: `three` `0.186.0`, MIT licensed.
 - Core: `web/vendor/three/three.module.js` and `web/vendor/three/three.core.js`.
 - Water addon: `web/vendor/three/addons/objects/Water.js`.
+- Sky addon: `web/vendor/three/addons/objects/Sky.js`.
 - Normal map: `web/vendor/three/textures/waternormals.jpg`.
 - License copy: `web/vendor/three/LICENSE`.
-- Source: [Three.js Water.js](https://github.com/mrdoob/three.js/blob/r186/examples/jsm/objects/Water.js), [Three.js r186 license](https://github.com/mrdoob/three.js/blob/r186/LICENSE), and [the official water normal map](https://github.com/mrdoob/three.js/blob/r186/examples/textures/waternormals.jpg).
+- Source: [Three.js Water.js](https://github.com/mrdoob/three.js/blob/r186/examples/jsm/objects/Water.js), [Three.js Sky.js](https://github.com/mrdoob/three.js/blob/r186/examples/jsm/objects/Sky.js), [the official ocean/sky example](https://github.com/mrdoob/three.js/blob/r186/examples/webgl_shaders_ocean.html), [Three.js r186 license](https://github.com/mrdoob/three.js/blob/r186/LICENSE), and [the official water normal map](https://github.com/mrdoob/three.js/blob/r186/examples/textures/waternormals.jpg).
 
-The vendored addon has one mechanical import-path adjustment so the static
-portal can load it without a CDN. Its water implementation and shader remain
-the upstream Three.js source. The runtime stays within the portal's
-`script-src 'self'` / `connect-src 'self'` policy.
+The vendored addons have mechanical import-path adjustments so the static
+portal can load them without a CDN. The Water implementation remains the
+upstream Three.js source; the lake profile is a runtime material override, not
+a replacement renderer. The runtime stays within the portal's `script-src
+'self'` / `connect-src 'self'` policy.
 
 ## Video fallback provenance
 
