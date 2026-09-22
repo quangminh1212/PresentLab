@@ -231,20 +231,47 @@ describe("client request portal browser flow", () => {
         "/web/portal/water-surface.webm",
       );
       await page.waitForFunction(
-        () =>
-          (document.querySelector("[data-world-water-video]") as HTMLVideoElement)?.readyState >= 2,
+        () => {
+          const stage = document.querySelector(".world-stage");
+          return (
+            stage?.dataset.worldRenderMode === "webgl-water-3d" &&
+            stage.dataset.worldShading === "fresnel-water"
+          );
+        },
         undefined,
         { timeout: 10_000 },
       );
       expect(await page.locator(".world-stage").getAttribute("data-world-render-mode")).toBe(
-        "video-water-3d",
+        "webgl-water-3d",
       );
       expect(await page.locator(".world-stage").getAttribute("data-world-shading")).toBe(
-        "real-water-video",
+        "fresnel-water",
       );
       expect(await page.locator(".world-stage").getAttribute("data-world-surface")).toBe(
-        "licensed-video-loop",
+        "procedural-wave-grid",
       );
+      expect(await page.locator(".world-stage").getAttribute("data-world-interaction")).toBe(
+        "pointer-ripple-camera",
+      );
+      expect(await page.locator(".world-stage").getAttribute("data-world-video-state")).toBe(
+        "standby",
+      );
+      expect(
+        await page.locator(".world-canvas").evaluate((canvas) => ({
+          opacity: getComputedStyle(canvas).opacity,
+          zIndex: getComputedStyle(canvas).zIndex,
+        })),
+      ).toEqual({ opacity: "1", zIndex: "2" });
+      expect(
+        await page
+          .locator("[data-world-water-video]")
+          .evaluate((video) => getComputedStyle(video).opacity),
+      ).toBe("0");
+      expect(
+        await page
+          .locator(".world-stage")
+          .evaluate((element) => element.classList.contains("is-video-water")),
+      ).toBe(false);
       expect(
         await page
           .locator(".world-space-image")
@@ -314,9 +341,6 @@ describe("client request portal browser flow", () => {
       const firstWaterState = await page
         .locator(".world-stage")
         .getAttribute("data-world-water-state");
-      const firstVideoTime = await page
-        .locator("[data-world-water-video]")
-        .evaluate((element) => (element as HTMLVideoElement).currentTime);
       const firstImageShift = await page
         .locator(".world-stage")
         .evaluate((element) => element.style.getPropertyValue("--world-image-shift-x"));
@@ -344,9 +368,6 @@ describe("client request portal browser flow", () => {
       const nextWaterState = await page
         .locator(".world-stage")
         .getAttribute("data-world-water-state");
-      const nextVideoTime = await page
-        .locator("[data-world-water-video]")
-        .evaluate((element) => (element as HTMLVideoElement).currentTime);
       const nextImageMotion = await page.locator(".world-space-image").evaluate((element) => ({
         backgroundPosition: getComputedStyle(element).backgroundPosition,
         transform: getComputedStyle(element).transform,
@@ -355,7 +376,6 @@ describe("client request portal browser flow", () => {
         expect(nextWaterState).not.toBe(firstWaterState);
         expect(nextImageMotion.backgroundPosition).not.toBe(firstImageMotion.backgroundPosition);
         expect(nextImageMotion.transform).not.toBe(firstImageMotion.transform);
-        expect(nextVideoTime).not.toBe(firstVideoTime);
       }
       expect(await page.locator(".world-stage").getAttribute("data-world-water-phase")).toMatch(
         /^\d+\.\d+$/,

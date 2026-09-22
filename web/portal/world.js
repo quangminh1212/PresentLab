@@ -1,7 +1,7 @@
 const MAX_PIXEL_RATIO = 2;
 const WORLD_RENDER_SCALE = 0.82;
-const WATER_COLUMNS = 72;
-const WATER_ROWS = 58;
+const WATER_COLUMNS = 104;
+const WATER_ROWS = 76;
 const WATER_WIDTH = 88;
 const WATER_DEPTH = 124;
 
@@ -38,6 +38,8 @@ const waterVertexShaderSource = `
     broadWaves += sin(dot(position, vec2(-0.27, 0.08)) - u_time * 0.35 + 1.5) * 0.17;
     broadWaves += sin(dot(position, vec2(0.07, -0.34)) + u_time * 0.68 + 2.0) * 0.09;
     broadWaves += sin(length(position * vec2(0.11, 0.045)) - u_time * 0.26) * 0.11;
+    broadWaves += sin(position.x * 0.72 + position.y * 0.38 + u_time * 0.92) * 0.035;
+    broadWaves += cos(position.x * -0.48 + position.y * 0.66 - u_time * 0.77) * 0.025;
     return broadWaves + pointerWave(position);
   }
 
@@ -69,6 +71,7 @@ const waterFragmentShaderSource = `
   uniform vec3 u_sun_color;
   uniform vec3 u_foam_color;
   uniform vec3 u_light_direction;
+  uniform vec3 u_camera_position;
   varying vec3 v_world_position;
   varying vec3 v_normal;
   varying float v_ripple;
@@ -77,9 +80,9 @@ const waterFragmentShaderSource = `
   void main() {
     vec3 normal = normalize(v_normal);
     vec3 lightDirection = normalize(u_light_direction);
-    vec3 viewDirection = normalize(vec3(0.0, 0.42, 0.91));
+    vec3 viewDirection = normalize(u_camera_position - v_world_position);
     float diffuse = max(dot(normal, lightDirection), 0.0);
-    float fresnel = pow(1.0 - max(dot(normal, viewDirection), 0.0), 3.2);
+    float fresnel = pow(1.0 - max(dot(normal, viewDirection), 0.0), 3.0);
     float specular = pow(
       max(dot(reflect(-lightDirection, normal), viewDirection), 0.0),
       44.0
@@ -91,16 +94,30 @@ const waterFragmentShaderSource = `
       v_world_position.x * -0.22 + v_world_position.z * 0.11 - u_time * 0.25 + 1.7
     );
     float shimmer = smoothstep(0.62, 0.96, flowA * 0.64 + flowB * 0.36);
-    float pointerRing = smoothstep(0.12, 0.45, abs(v_ripple));
+    float microA = 0.5 + 0.5 * sin(
+      v_world_position.x * 1.46 + v_world_position.z * 0.23 + u_time * 0.88
+    );
+    float microB = 0.5 + 0.5 * sin(
+      v_world_position.x * -1.96 + v_world_position.z * 0.41 - u_time * 0.72 + 1.7
+    );
+    float glint = smoothstep(0.72, 0.98, microA * 0.58 + microB * 0.42);
+    float caustic = smoothstep(
+      0.78,
+      0.99,
+      0.5 + 0.5 * sin(v_world_position.x * 0.52 - v_world_position.z * 0.18 + u_time * 0.32)
+    );
+    float pointerRing = smoothstep(0.06, 0.34, abs(v_ripple));
     vec3 baseColor = mix(u_shallow_color, u_deep_color, v_depth * 0.94);
-    vec3 color = baseColor * (0.54 + diffuse * 0.62);
+    vec3 horizonColor = mix(u_shallow_color, u_sun_color, 0.24 + fresnel * 0.3);
+    vec3 color = baseColor * (0.46 + diffuse * 0.72);
 
-    color += u_shallow_color * (flowA * 0.08 + flowB * 0.06);
-    color += u_sun_color * (fresnel * 0.13 + specular * 0.86);
-    color += u_foam_color * (shimmer * (0.04 + fresnel * 0.12));
-    color += u_foam_color * pointerRing * 0.24;
+    color += u_shallow_color * (flowA * 0.1 + flowB * 0.08);
+    color += horizonColor * (fresnel * 0.2 + glint * 0.08);
+    color += u_sun_color * (specular * 1.08 + glint * 0.14 + caustic * 0.07);
+    color += u_foam_color * (shimmer * (0.06 + fresnel * 0.16));
+    color += u_foam_color * pointerRing * 0.3;
 
-    float alpha = clamp(0.84 + fresnel * 0.13 + shimmer * 0.04, 0.0, 1.0);
+    float alpha = clamp(0.86 + fresnel * 0.12 + glint * 0.04, 0.0, 1.0);
     gl_FragColor = vec4(color, alpha);
   }
 `;
@@ -348,23 +365,31 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
   };
 
   const setWebglWaterState = () => {
-    if (videoWaterReady) return;
+    videoWaterReady = false;
+    waterVideoElement?.pause();
     stage.classList.remove("is-video-water", "world-fallback");
+    stage.dataset.worldVideoState = waterVideoElement ? "standby" : "unavailable";
     stage.dataset.worldRenderMode = "webgl-water-3d";
     stage.dataset.worldShading = "fresnel-water";
     stage.dataset.worldSurface = "procedural-wave-grid";
+    stage.dataset.worldInteraction = "pointer-ripple-camera";
   };
 
   const setVideoWaterState = (ready) => {
+    if (ready && webglWaterAvailable) {
+      setWebglWaterState();
+      return;
+    }
     videoWaterReady = ready;
     stage.classList.toggle("is-video-water", ready);
     stage.dataset.worldVideoState = ready ? "playing" : "fallback";
     if (ready) {
       stage.classList.add("world-ready");
       stage.classList.remove("world-fallback");
-      stage.dataset.worldRenderMode = "video-water-3d";
-      stage.dataset.worldShading = "real-water-video";
+      stage.dataset.worldRenderMode = "video-water-fallback";
+      stage.dataset.worldShading = "captured-water-loop";
       stage.dataset.worldSurface = "licensed-video-loop";
+      stage.dataset.worldInteraction = "pointer-parallax-overlay";
     } else if (webglWaterAvailable) {
       setWebglWaterState();
     } else {
@@ -374,6 +399,10 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
 
   const activateVideoWater = () => {
     if (!waterVideoElement) return;
+    if (webglWaterAvailable) {
+      setWebglWaterState();
+      return;
+    }
     waterVideoElement.muted = true;
     setVideoWaterState(true);
     if (reducedMotion) {
@@ -477,6 +506,7 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
   const sunColorLocation = gl.getUniformLocation(program, "u_sun_color");
   const foamColorLocation = gl.getUniformLocation(program, "u_foam_color");
   const lightDirectionLocation = gl.getUniformLocation(program, "u_light_direction");
+  const cameraPositionLocation = gl.getUniformLocation(program, "u_camera_position");
   const waterBuffer = gl.createBuffer();
 
   if (
@@ -490,6 +520,7 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     !sunColorLocation ||
     !foamColorLocation ||
     !lightDirectionLocation ||
+    !cameraPositionLocation ||
     !waterBuffer
   ) {
     gl.deleteProgram(program);
@@ -583,6 +614,7 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
       gl.uniform3fv(sunColorLocation, colors.sun);
       gl.uniform3fv(foamColorLocation, colors.foam);
       gl.uniform3f(lightDirectionLocation, -0.42, 0.86, 0.38);
+      gl.uniform3fv(cameraPositionLocation, camera.eye);
       gl.disable(gl.BLEND);
       gl.enable(gl.DEPTH_TEST);
       gl.depthMask(true);

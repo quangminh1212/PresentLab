@@ -1,17 +1,18 @@
 # Portal water background
 
-The portal uses a local, muted WebM loop as the primary water surface. The
-video is a real ocean-wave capture, so the background keeps natural highlights,
-foam, and motion instead of relying on a stylized procedural texture. Pointer
-movement still applies a small 3D parallax shift and click ripple overlay.
+The portal uses a native WebGL 1 water surface as its primary background. The
+surface is a real 3D wave grid animated in the vertex and fragment shaders:
+pointer movement steers the camera and changes the ripple field, clicks add a
+temporary impact wave, and Fresnel reflection, specular glints, caustics, and
+multi-scale flow keep the water moving continuously.
 
-The page falls back to the dependency-free WebGL Fresnel water pass in
-`web/portal/world.js` when the video cannot play. Both paths remain local and
-work with the portal's `script-src 'self'` / `connect-src 'self'` policy.
+The local WebM capture is only a fallback for browsers that cannot create the
+WebGL pass. Both paths remain local and work with the portal's
+`script-src 'self'` / `connect-src 'self'` policy.
 
 ## Asset provenance
 
-- File: `web/portal/water-surface.webm`
+- File: `web/portal/water-surface.webm` (fallback only)
 - Source: [Ocean waves at Lækjavik beach, Iceland](https://commons.wikimedia.org/wiki/File:Ocean_waves_at_L%C3%A6kjavik_beach%2C_Iceland.webm)
 - Author: Alexander Grebenkov
 - License: [Creative Commons Attribution 3.0 Unported](https://creativecommons.org/licenses/by/3.0/)
@@ -24,9 +25,9 @@ The source page records the original file, author, dimensions, duration, and
 license. The downloaded binary is checked into the portal so production does
 not depend on a third-party hotlink.
 
-## Fallback references
+## WebGL references
 
-The fallback WebGL pass was informed by these open-source references:
+The native pass was informed by these open-source references:
 
 - [Nugget8/Three.js-Ocean-Scene](https://github.com/Nugget8/Three.js-Ocean-Scene) — MIT-licensed procedural ocean approach.
 - [martinRenou/threejs-water](https://github.com/martinRenou/threejs-water) — BSD-3-Clause implementation of Evan Wallace's interactive WebGL water demo.

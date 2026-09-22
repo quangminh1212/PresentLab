@@ -1441,7 +1441,7 @@ html[data-theme="light"] .world-location small {
   }
 }
 
-/* Water studio pass: the captured loop owns the surface; WebGL remains the local fallback. */
+/* Water studio pass: the native WebGL surface owns the interaction; media is fallback only. */
 .world-stage {
   border-color: rgb(112 246 224 / 38%);
   background:
@@ -1454,7 +1454,7 @@ html[data-theme="light"] .world-location small {
     inset 0 0 110px rgb(47 245 216 / 11%);
 }
 
-/* A real water loop is the primary surface; the procedural pass remains a local fallback. */
+/* WebGL is the primary surface; the local capture appears only when WebGL is unavailable. */
 .world-water-video {
   opacity: 0;
 }
