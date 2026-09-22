@@ -297,10 +297,13 @@ describe("client request portal browser flow", () => {
         "threejs-official-water",
       );
       expect(await page.locator(".world-stage").getAttribute("data-world-ripple-provider")).toBe(
-        "threejs-water-shader",
+        "threejs-gpu-heightfield",
+      );
+      expect(await page.locator(".world-stage").getAttribute("data-world-ripple-shader")).toBe(
+        "gpu-heightfield-gradient",
       );
       expect(await page.locator(".world-stage").getAttribute("data-world-ripple-mode")).toBe(
-        "four-slot-heightfield",
+        "gpu-heightfield-pingpong",
       );
       expect(
         Number(await page.locator(".world-stage").getAttribute("data-world-ripple-count")),
@@ -313,7 +316,7 @@ describe("client request portal browser flow", () => {
           opacity: getComputedStyle(canvas).opacity,
           zIndex: getComputedStyle(canvas).zIndex,
         })),
-      ).toEqual({ opacity: "1", zIndex: "2" });
+      ).toEqual({ opacity: "1", zIndex: "3" });
       expect(
         await page
           .locator("[data-world-water-video]")
@@ -453,6 +456,9 @@ describe("client request portal browser flow", () => {
       }));
       expect(rippleState.state).toMatch(/^\d+\|\d+\|-?\d+\.\d+\|-?\d+\.\d+,-?\d+\.\d+$/);
       expect(rippleState.radius).toBeGreaterThanOrEqual(0);
+      expect(
+        Number(await page.locator(".world-stage").getAttribute("data-world-ripple-steps")),
+      ).toBeGreaterThan(0);
       const reducedRippleMotion = await page.evaluate(
         () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
       );

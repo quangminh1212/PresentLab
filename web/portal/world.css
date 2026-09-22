@@ -1550,7 +1550,7 @@ html[data-theme="light"] .world-stage {
 }
 
 .world-canvas {
-  z-index: 2;
+  z-index: 3;
 }
 
 .world-stage.is-video-water .world-water-video {
@@ -1653,7 +1653,7 @@ html[data-theme="light"] .world-stage {
     radial-gradient(ellipse at 17% 78%, rgb(0 172 205 / 14%), transparent 28%),
     linear-gradient(180deg, rgb(169 255 235 / 7%), transparent 38%, rgb(0 9 19 / 22%));
   mix-blend-mode: screen;
-  opacity: 0.86;
+  opacity: 0.46;
 }
 
 .world-atmosphere::before {

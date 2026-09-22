@@ -9,14 +9,14 @@ shoreline, sky reflection, and lower-intensity sun complete the lake horizon.
 
 Pointer movement steers the Three.js camera over the water and changes the
 distortion strength. Clicking the stage raycasts onto the Water plane and
-injects a localized impulse into a 128x128 finite-difference height field. The
-field advances with a damped wave equation, is uploaded as a linear texture,
-and is sampled both for vertex displacement and for the local surface gradient
-that bends the reflection. The impulse includes a small capillary component,
-so the wavefront loses perfect symmetry as it travels instead of becoming a
-clean UI ring. Four bookkeeping slots allow rapid clicks to overlap before
-they decay; the `data-world-ripple-*` state exposes the mapped hit, active
-slot, count, peak height, and expanding radius for browser checks.
+injects a localized impulse into a 256x256 GPU height field. Two render
+targets ping-pong through a damped, world-space finite-difference wave equation;
+the first step adds a restrained capillary train instead of a hard UI ring.
+The live field is sampled both for vertex displacement and for the local
+surface gradient that bends the reflection. Four bookkeeping slots allow rapid
+clicks to overlap before they decay; the `data-world-ripple-*` state exposes
+the mapped hit, active slot, count, peak height, and expanding radius for
+browser checks.
 A local muted WebM capture remains a fallback only for browsers that cannot
 create the WebGL scene.
 
