@@ -1,66 +1,107 @@
 const MAX_PIXEL_RATIO = 2;
 const WORLD_RENDER_SCALE = 0.82;
+const WATER_COLUMNS = 72;
+const WATER_ROWS = 58;
+const WATER_WIDTH = 88;
+const WATER_DEPTH = 124;
 
-const vertexShaderSource = `
+/*
+ * The water pass is a small native WebGL implementation inspired by the
+ * low-cost procedural ocean approach in Nugget8/Three.js-Ocean-Scene (MIT)
+ * and the interactive ripple work in Evan Wallace's webgl-water family.
+ * No third-party runtime asset or remote texture is required by the portal.
+ */
+const waterVertexShaderSource = `
+  precision mediump float;
   attribute vec3 a_position;
   uniform mat4 u_matrix;
-  uniform float u_point_size;
-  varying float v_point_mode;
-  varying float v_shade;
-  varying vec3 v_local_position;
+  uniform float u_time;
+  uniform vec2 u_pointer;
+  uniform float u_pointer_strength;
+  varying vec3 v_world_position;
   varying vec3 v_normal;
+  varying float v_ripple;
+  varying float v_depth;
+
+  vec2 pointerPosition() {
+    return vec2(u_pointer.x * 32.0, -42.0 + u_pointer.y * 58.0);
+  }
+
+  float pointerWave(vec2 position) {
+    float distanceToPointer = distance(position, pointerPosition());
+    float wavefront = sin(distanceToPointer * 1.65 - u_time * 4.0);
+    return wavefront * exp(-distanceToPointer * 0.085) * u_pointer_strength * 0.46;
+  }
+
+  float surfaceHeight(vec2 position) {
+    float broadWaves = sin(dot(position, vec2(0.16, 0.10)) + u_time * 0.45) * 0.28;
+    broadWaves += sin(dot(position, vec2(-0.27, 0.08)) - u_time * 0.35 + 1.5) * 0.17;
+    broadWaves += sin(dot(position, vec2(0.07, -0.34)) + u_time * 0.68 + 2.0) * 0.09;
+    broadWaves += sin(length(position * vec2(0.11, 0.045)) - u_time * 0.26) * 0.11;
+    return broadWaves + pointerWave(position);
+  }
 
   void main() {
-    gl_Position = u_matrix * vec4(a_position, 1.0);
-    gl_PointSize = u_point_size;
-    v_point_mode = u_point_size > 1.0 ? 1.0 : 0.0;
-    v_shade = clamp(1.0 + a_position.y * 0.05 + a_position.z * 0.015, 0.82, 1.16);
-    v_local_position = a_position;
-    v_normal = normalize(a_position);
+    vec2 position = a_position.xz;
+    float height = surfaceHeight(position);
+    float delta = 0.12;
+    float slopeX = (surfaceHeight(position + vec2(delta, 0.0)) -
+      surfaceHeight(position - vec2(delta, 0.0))) / (delta * 2.0);
+    float slopeZ = (surfaceHeight(position + vec2(0.0, delta)) -
+      surfaceHeight(position - vec2(0.0, delta))) / (delta * 2.0);
+    vec3 normal = normalize(vec3(-slopeX, 1.0, -slopeZ));
+    float distanceToPointer = distance(position, pointerPosition());
+
+    v_world_position = vec3(position.x, height, position.y);
+    v_normal = normal;
+    v_ripple = sin(distanceToPointer * 1.65 - u_time * 4.0) *
+      exp(-distanceToPointer * 0.085) * u_pointer_strength;
+    v_depth = clamp((-position.y - 4.0) / 124.0, 0.0, 1.0);
+    gl_Position = u_matrix * vec4(position.x, height, position.y, 1.0);
   }
 `;
 
-const fragmentShaderSource = `
+const waterFragmentShaderSource = `
   precision mediump float;
-  uniform vec4 u_color;
+  uniform float u_time;
+  uniform vec3 u_deep_color;
+  uniform vec3 u_shallow_color;
+  uniform vec3 u_sun_color;
+  uniform vec3 u_foam_color;
   uniform vec3 u_light_direction;
-  uniform float u_solid;
-  varying float v_point_mode;
-  varying float v_shade;
-  varying vec3 v_local_position;
+  varying vec3 v_world_position;
   varying vec3 v_normal;
+  varying float v_ripple;
+  varying float v_depth;
 
   void main() {
-    float alpha = u_color.a;
-    if (v_point_mode > 0.5) {
-      float distanceFromCenter = distance(gl_PointCoord, vec2(0.5));
-      float softness = smoothstep(0.52, 0.06, distanceFromCenter);
-      if (softness <= 0.01) discard;
-      alpha *= softness;
-    }
-    float shade = v_shade;
-    vec3 surfaceColor = u_color.rgb;
-    if (u_solid > 0.5) {
-      vec3 normal = normalize(v_normal);
-      vec3 lightDirection = normalize(u_light_direction);
-      float diffuse = max(dot(normal, lightDirection), 0.0);
-      float rim = pow(1.0 - max(dot(normal, vec3(0.0, 0.0, 1.0)), 0.0), 2.1);
-      float terminator = smoothstep(0.0, 0.72, diffuse);
-      float specular = pow(
-        max(dot(reflect(-lightDirection, normal), vec3(0.0, 0.0, 1.0)), 0.0),
-        18.0
-      );
-      float materialVariation = 0.95 +
-        0.05 * sin(v_local_position.x * 11.0 + v_local_position.z * 7.0 + v_local_position.y * 4.0);
-      vec3 nightSide = u_color.rgb * 0.12;
-      vec3 daySide = u_color.rgb * (0.42 + diffuse * 0.98);
-      shade = clamp(mix(0.12, 1.28, terminator) * materialVariation, 0.08, 1.35);
-      surfaceColor = mix(nightSide, daySide, terminator);
-      surfaceColor += u_color.rgb * rim * 0.2 + vec3(1.0) * specular * 0.28;
-    } else {
-      surfaceColor *= shade;
-    }
-    gl_FragColor = vec4(surfaceColor, alpha);
+    vec3 normal = normalize(v_normal);
+    vec3 lightDirection = normalize(u_light_direction);
+    vec3 viewDirection = normalize(vec3(0.0, 0.42, 0.91));
+    float diffuse = max(dot(normal, lightDirection), 0.0);
+    float fresnel = pow(1.0 - max(dot(normal, viewDirection), 0.0), 3.2);
+    float specular = pow(
+      max(dot(reflect(-lightDirection, normal), viewDirection), 0.0),
+      44.0
+    );
+    float flowA = 0.5 + 0.5 * sin(
+      v_world_position.x * 0.34 - v_world_position.z * 0.052 + u_time * 0.33
+    );
+    float flowB = 0.5 + 0.5 * sin(
+      v_world_position.x * -0.22 + v_world_position.z * 0.11 - u_time * 0.25 + 1.7
+    );
+    float shimmer = smoothstep(0.62, 0.96, flowA * 0.64 + flowB * 0.36);
+    float pointerRing = smoothstep(0.12, 0.45, abs(v_ripple));
+    vec3 baseColor = mix(u_shallow_color, u_deep_color, v_depth * 0.94);
+    vec3 color = baseColor * (0.54 + diffuse * 0.62);
+
+    color += u_shallow_color * (flowA * 0.08 + flowB * 0.06);
+    color += u_sun_color * (fresnel * 0.13 + specular * 0.86);
+    color += u_foam_color * (shimmer * (0.04 + fresnel * 0.12));
+    color += u_foam_color * pointerRing * 0.24;
+
+    float alpha = clamp(0.84 + fresnel * 0.13 + shimmer * 0.04, 0.0, 1.0);
+    gl_FragColor = vec4(color, alpha);
   }
 `;
 
@@ -68,35 +109,20 @@ const landmarks = [
   {
     id: "archive",
     label: "SLIDE LIBRARY",
-    x: -1.2,
-    y: 1.9,
-    z: -22,
-    radius: 3.4,
-    color: [0.18, 0.98, 0.78, 0.5],
-    secondary: [0.2, 0.7, 1, 0.72],
-    orbit: { radiusX: 1.5, radiusY: 0.42, radiusZ: 1.65, speed: 0.00022, phase: 0.4 },
+    x: -14,
+    z: -24,
   },
   {
     id: "brief",
     label: "STORY BRIEF",
-    x: 8.5,
-    y: 2.4,
-    z: -39,
-    radius: 4.1,
-    color: [1, 0.45, 0.27, 0.5],
-    secondary: [1, 0.76, 0.38, 0.72],
-    orbit: { radiusX: 1.85, radiusY: 0.58, radiusZ: 2.35, speed: 0.00017, phase: 2.1 },
+    x: 12,
+    z: -51,
   },
   {
     id: "process",
     label: "DECK REVIEW",
-    x: 3.5,
-    y: 5.8,
-    z: -59,
-    radius: 2.8,
-    color: [0.58, 0.62, 1, 0.48],
-    secondary: [0.3, 0.92, 1, 0.72],
-    orbit: { radiusX: 1.25, radiusY: 0.5, radiusZ: 2.8, speed: 0.00013, phase: 4.7 },
+    x: -5,
+    z: -82,
   },
 ];
 
@@ -186,92 +212,37 @@ function lookAtMatrix(eye, target) {
   ]);
 }
 
-function modelMatrix(x, y, z, scaleX, scaleY, scaleZ, rotation = 0) {
-  const cosine = Math.cos(rotation);
-  const sine = Math.sin(rotation);
-  return new Float32Array([
-    cosine * scaleX,
-    0,
-    -sine * scaleX,
-    0,
-    0,
-    scaleY,
-    0,
-    0,
-    sine * scaleZ,
-    0,
-    cosine * scaleZ,
-    0,
-    x,
-    y,
-    z,
-    1,
-  ]);
-}
-
-function makeRing(radius, y = 0, segments = 72) {
+function makeWaterGrid(columns = WATER_COLUMNS, rows = WATER_ROWS) {
   const vertices = [];
-  for (let index = 0; index <= segments; index += 1) {
-    const angle = (index / segments) * Math.PI * 2;
-    vertices.push(Math.cos(angle) * radius, y, Math.sin(angle) * radius);
-  }
-  return new Float32Array(vertices);
-}
-
-function makeVerticalRing(radius, segments = 72) {
-  const vertices = [];
-  for (let index = 0; index <= segments; index += 1) {
-    const angle = (index / segments) * Math.PI * 2;
-    vertices.push(Math.cos(angle) * radius, Math.sin(angle) * radius, 0);
-  }
-  return new Float32Array(vertices);
-}
-
-function makeSphere(segments = 26, rings = 16) {
-  const vertices = [];
-  const point = (latitude, longitude) => {
-    const y = Math.cos(latitude);
-    const radius = Math.sin(latitude);
-    return [radius * Math.cos(longitude), y, radius * Math.sin(longitude)];
-  };
-  for (let ring = 0; ring < rings; ring += 1) {
-    const top = (ring / rings) * Math.PI;
-    const bottom = ((ring + 1) / rings) * Math.PI;
-    for (let segment = 0; segment < segments; segment += 1) {
-      const left = (segment / segments) * Math.PI * 2;
-      const right = ((segment + 1) / segments) * Math.PI * 2;
-      const a = point(top, left);
-      const b = point(bottom, left);
-      const c = point(bottom, right);
-      const d = point(top, right);
-      vertices.push(...a, ...b, ...c, ...a, ...c, ...d);
+  const xStep = WATER_WIDTH / (columns - 1);
+  const zStep = WATER_DEPTH / (rows - 1);
+  for (let row = 0; row < rows - 1; row += 1) {
+    const nearZ = 10 - row * zStep;
+    const farZ = nearZ - zStep;
+    for (let column = 0; column < columns - 1; column += 1) {
+      const leftX = -WATER_WIDTH / 2 + column * xStep;
+      const rightX = leftX + xStep;
+      vertices.push(
+        leftX,
+        0,
+        nearZ,
+        rightX,
+        0,
+        nearZ,
+        rightX,
+        0,
+        farZ,
+        leftX,
+        0,
+        nearZ,
+        rightX,
+        0,
+        farZ,
+        leftX,
+        0,
+        farZ,
+      );
     }
-  }
-  return new Float32Array(vertices);
-}
-
-function makeStarfield(count = 420, seedOffset = 0) {
-  const vertices = [];
-  for (let index = 0; index < count; index += 1) {
-    const seed = (index + seedOffset) * 17.237 + 4.91;
-    const random = (value) => value - Math.floor(value);
-    const x = random(Math.sin(seed) * 43758.5453) * 78 - 39;
-    const y = -2 + random(Math.sin(seed * 1.7) * 24634.6345) * 28;
-    const z = -8 - random(Math.sin(seed * 2.3) * 12457.821) * 112;
-    vertices.push(x, y, z);
-  }
-  return new Float32Array(vertices);
-}
-
-function makeDustField(count = 180, seedOffset = 0) {
-  const vertices = [];
-  for (let index = 0; index < count; index += 1) {
-    const seed = (index + seedOffset) * 9.713 + 2.2;
-    const random = (value) => value - Math.floor(value);
-    const x = random(Math.sin(seed) * 52431.3) * 54 - 27;
-    const y = random(Math.sin(seed * 1.4) * 13822.4) * 20 - 1;
-    const z = -10 - random(Math.sin(seed * 2.1) * 33819.7) * 108;
-    vertices.push(x, y, z);
   }
   return new Float32Array(vertices);
 }
@@ -289,8 +260,8 @@ function createShader(gl, type, source) {
 }
 
 function createProgram(gl) {
-  const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
-  const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+  const vertexShader = createShader(gl, gl.VERTEX_SHADER, waterVertexShaderSource);
+  const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, waterFragmentShaderSource);
   if (!vertexShader || !fragmentShader) return null;
   const program = gl.createProgram();
   if (!program) return null;
@@ -310,36 +281,17 @@ function getColors() {
   const light = document.documentElement.dataset.theme === "light";
   return light
     ? {
-        starGlow: [0.26, 0.76, 1, 0.14],
-        star: [0.72, 0.92, 1, 0.82],
-        dust: [0.3, 0.98, 0.9, 0.2],
-        orbit: [0.23, 0.92, 0.85, 0.3],
-        orbitWarm: [1, 0.44, 0.64, 0.22],
-        white: [0.83, 1, 0.97, 0.75],
+        deep: [0.006, 0.1, 0.16],
+        shallow: [0.03, 0.4, 0.4],
+        sun: [0.46, 1, 0.86],
+        foam: [0.76, 1, 0.95],
       }
     : {
-        starGlow: [0.18, 0.52, 1, 0.18],
-        star: [0.58, 0.83, 1, 0.78],
-        dust: [0.17, 0.88, 0.84, 0.22],
-        orbit: [0.15, 0.96, 0.84, 0.38],
-        orbitWarm: [0.92, 0.34, 0.78, 0.26],
-        white: [0.76, 0.96, 0.94, 0.72],
+        deep: [0.002, 0.028, 0.075],
+        shallow: [0.01, 0.25, 0.3],
+        sun: [0.28, 1, 0.86],
+        foam: [0.58, 1, 0.94],
       };
-}
-
-function getLandmarkPose(landmark, time, reducedMotion) {
-  const orbit = landmark.orbit;
-  if (!orbit || reducedMotion) {
-    return { x: landmark.x, y: landmark.y, z: landmark.z };
-  }
-
-  const angle = time * orbit.speed + orbit.phase;
-  const bobAngle = time * orbit.speed * 0.73 + orbit.phase * 1.8;
-  return {
-    x: landmark.x + Math.cos(angle) * orbit.radiusX,
-    y: landmark.y + Math.sin(bobAngle) * orbit.radiusY,
-    z: landmark.z + Math.sin(angle) * orbit.radiusZ,
-  };
 }
 
 function setupDomControls(stage, onTarget, focusField) {
@@ -356,7 +308,14 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
   if (!canvas || !stage) return;
 
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const pointer = { x: 0, y: 0, targetX: 0, targetY: 0, active: false };
+  const pointer = {
+    x: 0,
+    y: 0,
+    targetX: 0,
+    targetY: 0,
+    active: false,
+    impact: 0,
+  };
   const imageElement = stage.querySelector(".world-space-image");
   const statusElement = stage.querySelector("[data-world-status]");
   const coordinatesElement = stage.querySelector("[data-world-coordinates]");
@@ -374,14 +333,15 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
   let width = 1;
   let height = 1;
   let currentViewProjection = identityMatrix();
-  const camera = { eye: [0, 5.8, 12], target: [0, 2.2, -34] };
+  let pointerStrength = 0;
+  const camera = { eye: [0, 7.2, 14], target: [0, 0.2, -42] };
 
   const setSelectedTarget = (target) => {
     const landmark = landmarks.find((item) => item.id === target);
     if (!landmark) return;
     selectedTarget = target;
     stage.classList.add("is-focused");
-    if (statusElement) statusElement.textContent = "NODE LOCK";
+    if (statusElement) statusElement.textContent = "WATER NODE LOCK";
     if (targetLabelElement) targetLabelElement.textContent = landmark.label;
     locationButtons.forEach((button, id) => button.classList.toggle("is-active", id === target));
     onTarget(target);
@@ -389,13 +349,13 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
 
   const focusField = () => {
     stage.classList.add("is-focused");
-    if (statusElement) statusElement.textContent = "FIELD FOCUS";
+    if (statusElement) statusElement.textContent = "TIDE FIELD FOCUS";
     stage.focus({ preventScroll: true });
   };
 
   setupDomControls(stage, setSelectedTarget, focusField);
   stage.classList.remove("is-focused");
-  if (statusElement) statusElement.textContent = "DEEP SPACE";
+  if (statusElement) statusElement.textContent = "OPEN WATER";
 
   stage.addEventListener("pointermove", (event) => {
     const bounds = stage.getBoundingClientRect();
@@ -416,14 +376,15 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     ) {
       return;
     }
+    pointer.impact = 1;
     const bounds = stage.getBoundingClientRect();
     stage.style.setProperty(
       "--world-click-x",
-      `${clamp(((event.clientX - bounds.left) / bounds.width) * 100, 0, 100).toFixed(2)}%`,
+      clamp(((event.clientX - bounds.left) / bounds.width) * 100, 0, 100).toFixed(2) + "%",
     );
     stage.style.setProperty(
       "--world-click-y",
-      `${clamp(((event.clientY - bounds.top) / bounds.height) * 100, 0, 100).toFixed(2)}%`,
+      clamp(((event.clientY - bounds.top) / bounds.height) * 100, 0, 100).toFixed(2) + "%",
     );
     stage.classList.remove("is-world-pulsing");
     void stage.offsetWidth;
@@ -432,12 +393,13 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
 
   const gl = canvas.getContext("webgl", {
     alpha: true,
-    antialias: false,
+    antialias: true,
     premultipliedAlpha: false,
     powerPreference: "high-performance",
   });
   if (!gl) {
     stage.dataset.worldRenderMode = "css-fallback";
+    stage.dataset.worldShading = "water-css-fallback";
     stage.classList.add("world-fallback", "world-ready");
     return;
   }
@@ -445,6 +407,7 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
   const program = createProgram(gl);
   if (!program) {
     stage.dataset.worldRenderMode = "css-fallback";
+    stage.dataset.worldShading = "water-css-fallback";
     stage.classList.add("world-fallback", "world-ready");
     return;
   }
@@ -452,114 +415,43 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
   gl.useProgram(program);
   const positionLocation = gl.getAttribLocation(program, "a_position");
   const matrixLocation = gl.getUniformLocation(program, "u_matrix");
-  const colorLocation = gl.getUniformLocation(program, "u_color");
-  const pointSizeLocation = gl.getUniformLocation(program, "u_point_size");
+  const timeLocation = gl.getUniformLocation(program, "u_time");
+  const pointerLocation = gl.getUniformLocation(program, "u_pointer");
+  const pointerStrengthLocation = gl.getUniformLocation(program, "u_pointer_strength");
+  const deepColorLocation = gl.getUniformLocation(program, "u_deep_color");
+  const shallowColorLocation = gl.getUniformLocation(program, "u_shallow_color");
+  const sunColorLocation = gl.getUniformLocation(program, "u_sun_color");
+  const foamColorLocation = gl.getUniformLocation(program, "u_foam_color");
   const lightDirectionLocation = gl.getUniformLocation(program, "u_light_direction");
-  const solidLocation = gl.getUniformLocation(program, "u_solid");
-  gl.uniform3f(lightDirectionLocation, 0.36, 0.72, 0.58);
-  stage.dataset.worldRenderMode = "webgl-3d";
-  stage.dataset.worldShading = "lit-sphere";
-  const buffers = new Map();
-  const geometrySource = {
-    stars: makeStarfield(460, 13),
-    warmStars: makeStarfield(120, 947),
-    dust: makeDustField(210, 311),
-    sphere: makeSphere(),
-    ring: makeRing(1, 0, 88),
-    verticalRing: makeVerticalRing(1, 88),
-    skyRing: makeRing(18, 0, 96),
-    skyRingWide: makeRing(28, 0, 112),
-  };
+  const waterBuffer = gl.createBuffer();
 
-  function getBuffer(key, vertices) {
-    if (buffers.has(key)) return buffers.get(key);
-    const buffer = gl.createBuffer();
-    if (!buffer) return null;
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-    const item = { buffer, count: vertices.length / 3 };
-    buffers.set(key, item);
-    return item;
+  if (
+    positionLocation < 0 ||
+    !matrixLocation ||
+    !timeLocation ||
+    !pointerLocation ||
+    !pointerStrengthLocation ||
+    !deepColorLocation ||
+    !shallowColorLocation ||
+    !sunColorLocation ||
+    !foamColorLocation ||
+    !lightDirectionLocation ||
+    !waterBuffer
+  ) {
+    gl.deleteProgram(program);
+    stage.dataset.worldRenderMode = "css-fallback";
+    stage.dataset.worldShading = "water-css-fallback";
+    stage.classList.add("world-fallback", "world-ready");
+    return;
   }
 
-  const geometry = Object.fromEntries(
-    Object.entries(geometrySource).map(([key, vertices]) => [key, getBuffer(key, vertices)]),
-  );
-
-  function drawMesh(item, mode, matrix, color, pointSize = 1, solid = false) {
-    if (!item) return;
-    gl.bindBuffer(gl.ARRAY_BUFFER, item.buffer);
-    gl.enableVertexAttribArray(positionLocation);
-    gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 0, 0);
-    gl.uniformMatrix4fv(matrixLocation, false, matrix);
-    gl.uniform4fv(colorLocation, color);
-    gl.uniform1f(pointSizeLocation, pointSize);
-    gl.uniform1f(solidLocation, solid ? 1 : 0);
-    gl.drawArrays(mode, 0, item.count);
-  }
-
-  function drawRing(item, x, y, z, scaleX, scaleY, rotation, color) {
-    const matrix = multiplyMatrices(
-      currentViewProjection,
-      modelMatrix(x, y, z, scaleX, scaleY, scaleX, rotation),
-    );
-    drawMesh(item, gl.LINE_STRIP, matrix, color);
-  }
-
-  function drawPlanet(landmark, time, colors, pose) {
-    const rotation = landmark.x * 0.12 + (reducedMotion ? 0 : time * 0.00008);
-    const pulse = reducedMotion ? 1 : 1 + Math.sin(time * 0.001 + landmark.x) * 0.012;
-    const matrix = multiplyMatrices(
-      currentViewProjection,
-      modelMatrix(
-        pose.x,
-        pose.y,
-        pose.z,
-        landmark.radius * pulse,
-        landmark.radius * pulse,
-        landmark.radius * pulse,
-        rotation,
-      ),
-    );
-    const selected = landmark.id === selectedTarget;
-    const bodyColor = [...landmark.color.slice(0, 3), selected ? 1 : 0.96];
-    gl.enable(gl.CULL_FACE);
-    gl.cullFace(gl.BACK);
-    drawMesh(geometry.sphere, gl.TRIANGLES, matrix, bodyColor, 1, true);
-    gl.disable(gl.CULL_FACE);
-    drawRing(
-      geometry.ring,
-      pose.x,
-      pose.y,
-      pose.z,
-      landmark.radius * 1.54,
-      landmark.radius * 0.42,
-      rotation * 0.38,
-      [...landmark.secondary.slice(0, 3), selected ? 0.58 : 0.3],
-    );
-    drawRing(
-      geometry.verticalRing,
-      pose.x,
-      pose.y,
-      pose.z,
-      landmark.radius * 1.18,
-      landmark.radius * 0.86,
-      rotation * -0.7,
-      [...landmark.color.slice(0, 3), selected ? 0.36 : 0.18],
-    );
-    if (selected) {
-      drawRing(
-        geometry.ring,
-        pose.x,
-        pose.y,
-        pose.z,
-        landmark.radius * 1.95,
-        landmark.radius * 0.55,
-        -rotation,
-        [...colors.white.slice(0, 3), 0.25],
-      );
-    }
-  }
+  gl.bindBuffer(gl.ARRAY_BUFFER, waterBuffer);
+  const waterVertices = makeWaterGrid();
+  gl.bufferData(gl.ARRAY_BUFFER, waterVertices, gl.STATIC_DRAW);
+  const waterVertexCount = waterVertices.length / 3;
+  stage.dataset.worldRenderMode = "webgl-water-3d";
+  stage.dataset.worldShading = "fresnel-water";
+  stage.dataset.worldSurface = "procedural-wave-grid";
 
   function resize() {
     const bounds = stage.getBoundingClientRect();
@@ -568,49 +460,55 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     const pixelRatio = Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO) * WORLD_RENDER_SCALE;
     canvas.width = Math.floor(width * pixelRatio);
     canvas.height = Math.floor(height * pixelRatio);
-    canvas.style.width = `${width}px`;
-    canvas.style.height = `${height}px`;
+    canvas.style.width = width + "px";
+    canvas.style.height = height + "px";
   }
 
   function draw(time) {
     const colors = getColors();
-    const pixelRatio = Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO) * WORLD_RENDER_SCALE;
+    const seconds = time * 0.001;
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     pointer.x += (pointer.targetX - pointer.x) * (reducedMotion ? 1 : 0.055);
     pointer.y += (pointer.targetY - pointer.y) * (reducedMotion ? 1 : 0.055);
-    const cosmicShiftX = reducedMotion ? 0 : -pointer.x * 54;
-    const cosmicShiftY = reducedMotion ? 0 : -pointer.y * 34;
-    const imageDriftX = reducedMotion
+    if (!reducedMotion) pointer.impact *= 0.94;
+    const pointerDistance = Math.hypot(pointer.x, pointer.y);
+    pointerStrength = reducedMotion
       ? 0
-      : Math.sin(time * 0.00011) * 18 + Math.cos(time * 0.000047) * 9;
-    const imageDriftY = reducedMotion
+      : clamp((pointer.active ? 0.2 + pointerDistance * 1.25 : 0) + pointer.impact, 0, 1);
+    const waterShiftX = reducedMotion
       ? 0
-      : Math.cos(time * 0.000085) * 13 + Math.sin(time * 0.000037) * 7;
-    const pointerIntensity = pointer.active
-      ? clamp(0.26 + Math.hypot(pointer.x, pointer.y) * 1.15, 0, 1)
-      : 0;
-    stage.style.setProperty("--cosmic-shift-x", `${cosmicShiftX.toFixed(2)}px`);
-    stage.style.setProperty("--cosmic-shift-y", `${cosmicShiftY.toFixed(2)}px`);
-    stage.style.setProperty(
-      "--world-image-shift-x",
-      `${(imageDriftX - pointer.x * 44).toFixed(2)}px`,
-    );
-    stage.style.setProperty(
-      "--world-image-shift-y",
-      `${(imageDriftY - pointer.y * 30).toFixed(2)}px`,
-    );
-    stage.style.setProperty("--world-image-tilt-x", `${(-pointer.x * 2.8).toFixed(2)}deg`);
-    stage.style.setProperty("--world-image-tilt-y", `${(pointer.y * 2.2).toFixed(2)}deg`);
-    stage.style.setProperty("--world-pointer-x", `${((pointer.x + 0.5) * 100).toFixed(2)}%`);
-    stage.style.setProperty("--world-pointer-y", `${((pointer.y + 0.5) * 100).toFixed(2)}%`);
+      : Math.sin(time * 0.0001) * 15 + Math.cos(time * 0.000043) * 8;
+    const waterShiftY = reducedMotion
+      ? 0
+      : Math.cos(time * 0.000082) * 10 + Math.sin(time * 0.000039) * 6;
+    const pointerIntensity = clamp(pointerStrength * 0.95, 0, 1);
+    const waterTiltX = -pointer.x * 2.35;
+    const waterTiltY = pointer.y * 1.75;
+
+    stage.style.setProperty("--cosmic-shift-x", -pointer.x * 32 + "px");
+    stage.style.setProperty("--cosmic-shift-y", -pointer.y * 22 + "px");
+    stage.style.setProperty("--water-shift-x", waterShiftX - pointer.x * 35 + "px");
+    stage.style.setProperty("--water-shift-y", waterShiftY - pointer.y * 24 + "px");
+    stage.style.setProperty("--world-image-shift-x", waterShiftX - pointer.x * 35 + "px");
+    stage.style.setProperty("--world-image-shift-y", waterShiftY - pointer.y * 24 + "px");
+    stage.style.setProperty("--world-image-tilt-x", waterTiltX + "deg");
+    stage.style.setProperty("--world-image-tilt-y", waterTiltY + "deg");
+    stage.style.setProperty("--world-pointer-x", (pointer.x + 0.5) * 100 + "%");
+    stage.style.setProperty("--world-pointer-y", (pointer.y + 0.5) * 100 + "%");
     stage.style.setProperty("--world-pointer-intensity", pointerIntensity.toFixed(3));
-    if (imageElement)
-      imageElement.style.setProperty("--world-image-scale", pointer.active ? "1.145" : "1.12");
-    const desiredEye = [pointer.x * 5.4, 5.8 - pointer.y * 2.2, 12 + pointer.y * 3.2];
-    const desiredTarget = [pointer.x * 3.2, 2.2 - pointer.y * 0.65, -34];
+    stage.style.setProperty("--water-ripple-strength", pointerStrength.toFixed(3));
+    if (imageElement) {
+      imageElement.style.setProperty(
+        "--world-image-scale",
+        pointer.active || pointer.impact > 0.03 ? "1.12" : "1.08",
+      );
+    }
+
+    const desiredEye = [pointer.x * 4.8, 7.2 - pointer.y * 1.8, 14 + pointer.y * 2.8];
+    const desiredTarget = [pointer.x * 2.8, 0.2 - pointer.y * 0.4, -42 + pointer.y * 7];
     const cameraBlend = reducedMotion ? 1 : 0.11;
     camera.eye = camera.eye.map(
       (value, index) => value + (desiredEye[index] - value) * cameraBlend,
@@ -618,38 +516,37 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     camera.target = camera.target.map(
       (value, index) => value + (desiredTarget[index] - value) * cameraBlend,
     );
-    const projection = perspectiveMatrix(Math.PI / 3.05, width / height, 0.1, 180);
+    const projection = perspectiveMatrix(Math.PI / 3.1, width / height, 0.1, 190);
     currentViewProjection = multiplyMatrices(projection, lookAtMatrix(camera.eye, camera.target));
-    const fieldRotation = reducedMotion ? 0 : time * 0.000012;
-    const starMatrix = multiplyMatrices(
-      currentViewProjection,
-      modelMatrix(0, 0, 0, 1, 1, 1, fieldRotation),
-    );
-    const dustMatrix = multiplyMatrices(
-      currentViewProjection,
-      modelMatrix(0, 0, 0, 1, 1, 1, -fieldRotation * 1.6),
-    );
 
-    gl.enable(gl.BLEND);
-    gl.disable(gl.DEPTH_TEST);
-    gl.depthMask(false);
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
-    drawMesh(geometry.stars, gl.POINTS, starMatrix, colors.starGlow, 4.4 * pixelRatio);
-    drawMesh(geometry.stars, gl.POINTS, starMatrix, colors.star, 1.25 * pixelRatio);
-    drawMesh(geometry.warmStars, gl.POINTS, starMatrix, [1, 0.48, 0.82, 0.48], 1.5 * pixelRatio);
-    drawMesh(geometry.dust, gl.POINTS, dustMatrix, colors.dust, 2.1 * pixelRatio);
-    drawRing(geometry.skyRing, 0, 6.4, -44, 1.22, 0.78, time * 0.00006, colors.orbit);
-    drawRing(geometry.skyRingWide, -4, 10.6, -76, 1.35, 0.64, -time * 0.00004, colors.orbitWarm);
-
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.bindBuffer(gl.ARRAY_BUFFER, waterBuffer);
+    gl.enableVertexAttribArray(positionLocation);
+    gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 0, 0);
+    gl.uniformMatrix4fv(matrixLocation, false, currentViewProjection);
+    gl.uniform1f(timeLocation, reducedMotion ? 0 : seconds);
+    gl.uniform2f(pointerLocation, pointer.x, pointer.y);
+    gl.uniform1f(pointerStrengthLocation, pointerStrength);
+    gl.uniform3fv(deepColorLocation, colors.deep);
+    gl.uniform3fv(shallowColorLocation, colors.shallow);
+    gl.uniform3fv(sunColorLocation, colors.sun);
+    gl.uniform3fv(foamColorLocation, colors.foam);
+    gl.uniform3f(lightDirectionLocation, -0.42, 0.86, 0.38);
+    gl.disable(gl.BLEND);
     gl.enable(gl.DEPTH_TEST);
     gl.depthMask(true);
-    const planetPoses = landmarks.map((landmark) => getLandmarkPose(landmark, time, reducedMotion));
-    landmarks.forEach((landmark, index) => drawPlanet(landmark, time, colors, planetPoses[index]));
-    stage.dataset.worldAnimationTime = `${Math.round(time)}`;
-    stage.dataset.worldPlanetPositions = planetPoses
-      .map(({ x, y, z }) => `${x.toFixed(3)},${y.toFixed(3)},${z.toFixed(3)}`)
-      .join("|");
+    gl.drawArrays(gl.TRIANGLES, 0, waterVertexCount);
+
+    stage.dataset.worldAnimationTime = Math.round(time) + "";
+    stage.dataset.worldWaterState =
+      Math.round(time) +
+      "|" +
+      pointer.x.toFixed(3) +
+      "," +
+      pointer.y.toFixed(3) +
+      "|" +
+      pointerStrength.toFixed(3);
+    stage.dataset.worldWaterPhase = (seconds * 0.45).toFixed(3);
+    stage.dataset.worldPointerRipple = pointerStrength.toFixed(3);
   }
 
   function loop(time) {
@@ -668,8 +565,8 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     if (!animationFrame) animationFrame = window.requestAnimationFrame(loop);
   }
 
-  if (coordinatesElement) coordinatesElement.textContent = "ORBIT 03 / 770";
-  if (speedElement) speedElement.textContent = "03";
+  if (coordinatesElement) coordinatesElement.textContent = "TIDE 03 / 770";
+  if (speedElement) speedElement.textContent = "WAVE";
   if (targetLabelElement) targetLabelElement.textContent = landmarks[0].label;
   locationButtons.forEach((button, id) =>
     button.classList.toggle("is-active", id === selectedTarget),

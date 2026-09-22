@@ -230,10 +230,13 @@ describe("client request portal browser flow", () => {
           ),
       ).toBe(true);
       expect(await page.locator(".world-stage").getAttribute("data-world-render-mode")).toBe(
-        "webgl-3d",
+        "webgl-water-3d",
       );
       expect(await page.locator(".world-stage").getAttribute("data-world-shading")).toBe(
-        "lit-sphere",
+        "fresnel-water",
+      );
+      expect(await page.locator(".world-stage").getAttribute("data-world-surface")).toBe(
+        "procedural-wave-grid",
       );
       expect(await page.locator(".world-controls, [data-world-command]").count()).toBe(0);
       const worldCanvasSize = await page.locator(".world-canvas").evaluate((canvas) => ({
@@ -277,14 +280,14 @@ describe("client request portal browser flow", () => {
           ),
         };
       });
-      expect(imageMotion.animationName).toContain("world-image-drift");
+      expect(imageMotion.animationName).toContain("world-water-drift");
       expect(imageMotion.backgroundSize).not.toBe("cover");
       expect(imageMotion.imageShiftX).toMatch(/px$/);
       expect(Number.parseFloat(imageMotion.pointerIntensity || "0")).toBeGreaterThan(0);
 
-      const firstPlanetPositions = await page
+      const firstWaterState = await page
         .locator(".world-stage")
-        .getAttribute("data-world-planet-positions");
+        .getAttribute("data-world-water-state");
       const firstImageShift = await page
         .locator(".world-stage")
         .evaluate((element) => element.style.getPropertyValue("--world-image-shift-x"));
@@ -297,30 +300,33 @@ describe("client request portal browser flow", () => {
       );
       if (!reducedMotion) {
         await page.waitForFunction(
-          ({ initialPlanetPositions, initialImageShift }) => {
+          ({ initialWaterState, initialImageShift }) => {
             const stage = document.querySelector(".world-stage");
             const imageShift = stage?.style.getPropertyValue("--world-image-shift-x");
             return (
-              stage?.dataset.worldPlanetPositions !== initialPlanetPositions ||
+              stage?.dataset.worldWaterState !== initialWaterState ||
               imageShift !== initialImageShift
             );
           },
-          { initialPlanetPositions: firstPlanetPositions, initialImageShift: firstImageShift },
+          { initialWaterState: firstWaterState, initialImageShift: firstImageShift },
           { timeout: 3_000 },
         );
       }
-      const nextPlanetPositions = await page
+      const nextWaterState = await page
         .locator(".world-stage")
-        .getAttribute("data-world-planet-positions");
+        .getAttribute("data-world-water-state");
       const nextImageMotion = await page.locator(".world-space-image").evaluate((element) => ({
         backgroundPosition: getComputedStyle(element).backgroundPosition,
         transform: getComputedStyle(element).transform,
       }));
       if (!reducedMotion) {
-        expect(nextPlanetPositions).not.toBe(firstPlanetPositions);
+        expect(nextWaterState).not.toBe(firstWaterState);
         expect(nextImageMotion.backgroundPosition).not.toBe(firstImageMotion.backgroundPosition);
         expect(nextImageMotion.transform).not.toBe(firstImageMotion.transform);
       }
+      expect(await page.locator(".world-stage").getAttribute("data-world-water-phase")).toMatch(
+        /^\d+\.\d+$/,
+      );
 
       await page.locator(".world-stage").dispatchEvent("pointerdown", {
         clientX: worldBounds.x + worldBounds.width * 0.62,

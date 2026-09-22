@@ -1390,3 +1390,284 @@ html[data-theme="light"] .world-location small {
     transform: none;
   }
 }
+
+/* Water studio pass: the canvas owns the 3D wave surface; CSS supplies the horizon and haze. */
+.world-stage {
+  border-color: rgb(112 246 224 / 38%);
+  background:
+    radial-gradient(ellipse at 70% 9%, rgb(154 255 236 / 17%), transparent 22%),
+    radial-gradient(ellipse at 18% 84%, rgb(0 167 191 / 20%), transparent 35%),
+    linear-gradient(158deg, #010912 0%, #031b28 48%, #062e38 100%);
+  box-shadow:
+    0 48px 120px rgb(0 0 0 / 48%),
+    inset 0 1px 0 rgb(229 255 247 / 12%),
+    inset 0 0 110px rgb(47 245 216 / 11%);
+}
+
+.world-space-image {
+  background:
+    radial-gradient(ellipse at 68% 9%, rgb(203 255 239 / 28%), transparent 14%),
+    radial-gradient(ellipse at 36% 42%, rgb(0 199 211 / 16%), transparent 34%),
+    repeating-linear-gradient(
+      164deg,
+      transparent 0 21px,
+      rgb(89 244 220 / 7%) 22px,
+      transparent 24px 45px
+    ),
+    linear-gradient(180deg, #020912 0%, #062b38 54%, #03141f 100%);
+  background-blend-mode: screen, screen, screen, normal;
+  background-size:
+    175% 170%,
+    145% 145%,
+    180% 180%,
+    100% 100%;
+  filter: saturate(1.18) contrast(1.08) brightness(0.82);
+  opacity: 0.96;
+  transform: translate3d(
+      calc(
+        var(--parallax-x, 0px) * -2.4 + var(--water-shift-x, 0px) + var(--world-image-shift-x, 0px)
+      ),
+      calc(
+        var(--parallax-y, 0px) * -2.4 + var(--water-shift-y, 0px) + var(--world-image-shift-y, 0px)
+      ),
+      0
+    )
+    rotateX(var(--world-image-tilt-y, 0deg)) rotateY(var(--world-image-tilt-x, 0deg))
+    scale(var(--world-image-scale, 1.08));
+  animation: world-water-drift 22s ease-in-out infinite alternate;
+}
+
+.world-space-image::before {
+  background:
+    radial-gradient(
+      circle at var(--world-pointer-x, 50%) var(--world-pointer-y, 50%),
+      rgb(202 255 242 / 26%) 0,
+      rgb(84 245 223 / 12%) 7%,
+      transparent 26%
+    ),
+    repeating-radial-gradient(
+      circle at var(--world-pointer-x, 50%) var(--world-pointer-y, 50%),
+      transparent 0 20px,
+      rgb(112 255 231 / 9%) 21px 22px,
+      transparent 23px 43px
+    ),
+    radial-gradient(
+      circle at var(--world-click-x, 50%) var(--world-click-y, 50%),
+      rgb(255 255 255 / 42%) 0,
+      rgb(109 247 225 / 12%) 8%,
+      transparent 25%
+    );
+  mix-blend-mode: screen;
+  opacity: var(--world-pointer-intensity, 0);
+  transform: scale(1.04);
+}
+
+.world-space-image::after {
+  background:
+    repeating-linear-gradient(
+      172deg,
+      transparent 0 37px,
+      rgb(193 255 239 / 12%) 38px,
+      transparent 41px 76px
+    ),
+    linear-gradient(120deg, transparent 15%, rgb(125 255 238 / 13%) 47%, transparent 72%),
+    radial-gradient(ellipse at 52% 42%, transparent 30%, rgb(0 0 0 / 34%) 100%);
+  mix-blend-mode: screen;
+  opacity: 0.26;
+  animation: world-water-glint 12s ease-in-out infinite alternate;
+}
+
+.world-stage.is-world-pulsing .world-space-image::before {
+  animation: world-water-ripple 920ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.world-stage::before {
+  background:
+    radial-gradient(ellipse at 38% 58%, rgb(17 219 208 / 18%) 0%, transparent 34%),
+    radial-gradient(ellipse at 76% 20%, rgb(145 255 231 / 12%) 0%, transparent 24%),
+    repeating-linear-gradient(
+      161deg,
+      transparent 0 34px,
+      rgb(104 247 222 / 6%) 35px 37px,
+      transparent 38px 78px
+    );
+  filter: blur(30px) saturate(125%);
+  mix-blend-mode: screen;
+  opacity: 0.68;
+  transform: rotate(-5deg) scale(1.08);
+  animation: world-water-caustics 24s ease-in-out infinite alternate;
+}
+
+.world-atmosphere {
+  background:
+    radial-gradient(ellipse at 66% 12%, rgb(211 255 242 / 15%), transparent 19%),
+    radial-gradient(ellipse at 17% 78%, rgb(0 172 205 / 14%), transparent 28%),
+    linear-gradient(180deg, rgb(169 255 235 / 7%), transparent 38%, rgb(0 9 19 / 22%));
+  mix-blend-mode: screen;
+  opacity: 0.86;
+}
+
+.world-atmosphere::before {
+  background:
+    repeating-linear-gradient(
+      164deg,
+      transparent 0 26px,
+      rgb(137 255 232 / 8%) 28px 30px,
+      transparent 32px 66px
+    ),
+    radial-gradient(ellipse at 58% 40%, rgb(32 223 210 / 16%) 0%, transparent 34%);
+  filter: blur(26px) saturate(130%);
+  opacity: 0.72;
+  transform: rotate(-6deg) scale(1.1);
+  animation: world-water-caustics 20s ease-in-out infinite alternate-reverse;
+}
+
+.world-atmosphere::after {
+  background:
+    radial-gradient(
+      ellipse at 58% 45%,
+      transparent 12%,
+      rgb(121 246 225 / 10%) 44%,
+      transparent 72%
+    ),
+    linear-gradient(180deg, transparent 20%, rgb(0 5 14 / 32%) 100%);
+  mix-blend-mode: screen;
+  opacity: 0.82;
+  animation: world-water-glint 17s ease-in-out infinite alternate;
+}
+
+.world-stage::after {
+  background:
+    radial-gradient(
+      ellipse at 54% 42%,
+      transparent 24%,
+      rgb(0 7 15 / 10%) 64%,
+      rgb(0 2 8 / 46%) 100%
+    ),
+    linear-gradient(180deg, transparent 47%, rgb(0 5 12 / 25%) 100%);
+}
+
+.world-scanlines {
+  opacity: 0.1;
+}
+
+html[data-theme="light"] .world-stage {
+  border-color: rgb(0 170 159 / 31%);
+  background:
+    radial-gradient(ellipse at 70% 9%, rgb(175 255 238 / 28%), transparent 22%),
+    radial-gradient(ellipse at 18% 84%, rgb(0 167 191 / 18%), transparent 35%),
+    linear-gradient(158deg, #06212b 0%, #0c5360 48%, #082b39 100%);
+  box-shadow:
+    0 48px 120px rgb(16 73 80 / 22%),
+    inset 0 1px 0 rgb(255 255 255 / 32%),
+    inset 0 0 110px rgb(47 245 216 / 15%);
+}
+
+html[data-theme="light"] .world-atmosphere {
+  background:
+    radial-gradient(ellipse at 66% 12%, rgb(211 255 242 / 22%), transparent 19%),
+    radial-gradient(ellipse at 17% 78%, rgb(0 172 205 / 16%), transparent 28%),
+    linear-gradient(180deg, rgb(169 255 235 / 10%), transparent 38%, rgb(0 25 36 / 24%));
+}
+
+html[data-theme="light"] .world-atmosphere::before {
+  background:
+    repeating-linear-gradient(
+      164deg,
+      transparent 0 26px,
+      rgb(137 255 232 / 11%) 28px 30px,
+      transparent 32px 66px
+    ),
+    radial-gradient(ellipse at 58% 40%, rgb(32 223 210 / 19%) 0%, transparent 34%);
+}
+
+html[data-theme="light"] .world-atmosphere::after,
+html[data-theme="light"] .world-stage::after {
+  background:
+    radial-gradient(
+      ellipse at 58% 45%,
+      transparent 12%,
+      rgb(121 246 225 / 12%) 44%,
+      transparent 72%
+    ),
+    linear-gradient(180deg, transparent 20%, rgb(0 30 39 / 22%) 100%);
+}
+
+@keyframes world-water-drift {
+  0% {
+    background-position:
+      56% 12%,
+      40% 46%,
+      38% 48%,
+      center;
+    filter: saturate(1.08) contrast(1.04) brightness(0.76);
+  }
+
+  50% {
+    background-position:
+      69% 16%,
+      52% 42%,
+      55% 52%,
+      center;
+    filter: saturate(1.18) contrast(1.08) brightness(0.86);
+  }
+
+  100% {
+    background-position:
+      78% 8%,
+      62% 56%,
+      70% 44%,
+      center;
+    filter: saturate(1.24) contrast(1.1) brightness(0.8);
+  }
+}
+
+@keyframes world-water-glint {
+  0% {
+    opacity: 0.16;
+    transform: translate3d(-2%, -1%, 0) scale(1.02);
+  }
+
+  100% {
+    opacity: 0.42;
+    transform: translate3d(3%, 2%, 0) scale(1.08);
+  }
+}
+
+@keyframes world-water-caustics {
+  0% {
+    transform: rotate(-6deg) translate3d(-2%, -1%, 0) scale(1.08);
+  }
+
+  100% {
+    transform: rotate(-1deg) translate3d(3%, 2%, 0) scale(1.16);
+  }
+}
+
+@keyframes world-water-ripple {
+  0% {
+    opacity: var(--world-pointer-intensity, 0);
+    transform: scale(0.9);
+  }
+
+  36% {
+    opacity: 0.86;
+    transform: scale(1.04);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-stage::before,
+  .world-atmosphere::before,
+  .world-atmosphere::after,
+  .world-space-image,
+  .world-space-image::after,
+  .world-stage.is-world-pulsing .world-space-image::before {
+    animation: none;
+  }
+}
