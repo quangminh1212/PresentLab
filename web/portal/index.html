@@ -107,11 +107,12 @@
           data-motion-scene="library"
         >
           <div class="world-stage" data-xlab-world data-parallax-stage tabindex="0">
+            <div class="world-space-image" aria-hidden="true"></div>
             <canvas
               class="world-canvas"
               data-xlab-world-canvas
               role="img"
-              aria-label="Chuyến bay 3D XLab có thể điều khiển bằng bàn phím, chuột hoặc các nút điều hướng"
+              aria-label="XLab 3D cosmic scene with stars, nebulae, and planets"
             ></canvas>
             <div class="world-atmosphere" aria-hidden="true"></div>
             <div class="world-scanlines" aria-hidden="true"></div>
@@ -155,19 +156,19 @@
 
             <div class="world-hud" aria-hidden="true">
               <div class="world-hud-top">
-                <span><i></i> SLIDE ROUTE / 01</span>
-                <span>DECK BUILD 0.7.70</span>
-                <span data-world-status>FLIGHT MODE</span>
+                <span><i></i> DEEP SPACE / 01</span>
+                <span>COSMIC FIELD / 03</span>
+                <span data-world-status>DEEP SPACE</span>
               </div>
               <div class="world-coordinates">
-                <span>COORD <b data-world-coordinates>00.00 / 04.00</b></span>
-                <span>VELOCITY <b data-world-speed>00</b> AU/S</span>
+                <span>ORBIT <b data-world-coordinates>03 / 770</b></span>
+                <span>NODES <b data-world-speed>03</b> ACTIVE</span>
               </div>
               <div class="world-reticle"><i></i><b></b><em></em></div>
               <div class="world-target-readout">
-                <small>NEAREST SLIDE</small>
+                <small>NEAREST PLANET</small>
                 <strong data-world-target-label>NO SIGNAL</strong>
-                <span><i></i> SELECT A DECK NODE</span>
+                <span><i></i> SELECT A COSMIC NODE</span>
               </div>
             </div>
 
@@ -188,18 +189,6 @@
                 <b>↗</b>
               </button>
             </nav>
-
-            <div class="world-controls" aria-label="Điều khiển chuyến bay 3D">
-              <div class="world-control-copy">
-                <span>FLY THE ROUTE</span><small>WASD / ARROWS</small>
-              </div>
-              <div class="world-dpad">
-                <button type="button" aria-label="Tiến" data-world-command="forward">↑</button>
-                <button type="button" aria-label="Rẽ trái" data-world-command="left">←</button>
-                <button type="button" aria-label="Lùi" data-world-command="back">↓</button>
-                <button type="button" aria-label="Rẽ phải" data-world-command="right">→</button>
-              </div>
-            </div>
 
             <a
               class="world-scroll-cue"
