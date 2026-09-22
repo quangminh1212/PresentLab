@@ -1310,3 +1310,39 @@ html[data-theme="light"] .world-location small {
     animation: none;
   }
 }
+
+/* Full-bleed flight deck: the world owns the viewport below the compact header. */
+.app-shell:has(.hero-world) {
+  overflow-x: visible;
+}
+
+.hero.hero-world {
+  width: 100vw;
+  min-height: max(640px, calc(100svh - 86px));
+  margin-inline: calc(50% - 50vw);
+  padding: 0;
+}
+
+.hero.hero-world .world-stage {
+  width: 100%;
+  height: max(640px, calc(100svh - 86px));
+  min-height: max(640px, calc(100svh - 86px));
+  border-right: 0;
+  border-left: 0;
+  border-radius: 0;
+  box-shadow:
+    0 36px 90px rgb(0 0 0 / 42%),
+    inset 0 1px 0 rgb(255 255 255 / 11%),
+    inset 0 0 110px rgb(67 236 222 / 9%);
+}
+
+@media (max-width: 760px) {
+  .hero.hero-world {
+    min-height: max(660px, calc(100svh - 76px));
+  }
+
+  .hero.hero-world .world-stage {
+    height: max(660px, calc(100svh - 76px));
+    min-height: max(660px, calc(100svh - 76px));
+  }
+}

@@ -48,6 +48,19 @@ const cubeLines = new Float32Array([
   -1, 1, -1, 1, 1, 1, -1, 1, 1, 1, -1, 1, -1, -1, 1, 1,
 ]);
 
+const spacecraftHull = new Float32Array([
+  0, 0.24, -1.9, -0.94, 0.16, 0.9, 0.94, 0.16, 0.9, 0, 0.24, -1.9, 0.94, 0.16, 0.9, 0.58, -0.24,
+  0.9, 0, 0.24, -1.9, 0.58, -0.24, 0.9, -0.58, -0.24, 0.9, 0, 0.24, -1.9, -0.58, -0.24, 0.9, -0.94,
+  0.16, 0.9, -0.94, 0.16, 0.9, -0.58, -0.24, 0.9, 0.58, -0.24, 0.9, -0.94, 0.16, 0.9, 0.58, -0.24,
+  0.9, 0.94, 0.16, 0.9,
+]);
+
+const spacecraftHullLines = new Float32Array([
+  0, 0.24, -1.9, -0.94, 0.16, 0.9, 0, 0.24, -1.9, 0.94, 0.16, 0.9, 0, 0.24, -1.9, 0.58, -0.24, 0.9,
+  0, 0.24, -1.9, -0.58, -0.24, 0.9, -0.94, 0.16, 0.9, 0.94, 0.16, 0.9, 0.94, 0.16, 0.9, 0.58, -0.24,
+  0.9, 0.58, -0.24, 0.9, -0.58, -0.24, 0.9, -0.58, -0.24, 0.9, -0.94, 0.16, 0.9,
+]);
+
 const landmarks = [
   {
     id: "archive",
@@ -241,6 +254,20 @@ function makeStarfield(count = 360, seedOffset = 0) {
   return new Float32Array(vertices);
 }
 
+function makeFlightStreaks(count = 86, seedOffset = 0) {
+  const vertices = [];
+  for (let index = 0; index < count; index += 1) {
+    const seed = (index + seedOffset) * 31.117 + 8.23;
+    const random = (value) => value - Math.floor(value);
+    const x = random(Math.sin(seed) * 48271.1) * 72 - 36;
+    const y = 1.6 + random(Math.sin(seed * 1.41) * 19403.3) * 18;
+    const z = -8 - random(Math.sin(seed * 2.17) * 23119.7) * 116;
+    const length = 1.2 + random(Math.sin(seed * 3.2) * 10843.7) * 7.5;
+    vertices.push(x, y, z, x, y, z + length);
+  }
+  return new Float32Array(vertices);
+}
+
 function createShader(gl, type, source) {
   const shader = gl.createShader(type);
   if (!shader) return null;
@@ -281,8 +308,11 @@ function getColors() {
         starGlow: [0.2, 0.38, 0.96, 0.12],
         star: [0.67, 0.82, 1, 0.78],
         starWarm: [1, 0.49, 0.28, 0.62],
-        vehicle: [0.02, 0.12, 0.17, 1],
-        vehicleEdge: [0.13, 0.98, 0.78, 0.96],
+        spacecraft: [0.02, 0.12, 0.17, 1],
+        spacecraftEdge: [0.13, 0.98, 0.78, 0.96],
+        engine: [0.08, 0.7, 1, 0.72],
+        engineHot: [1, 0.31, 0.16, 0.7],
+        cockpit: [0.18, 0.48, 0.72, 0.96],
         white: [0.75, 0.95, 0.94, 0.75],
       }
     : {
@@ -292,8 +322,11 @@ function getColors() {
         starGlow: [0.2, 0.38, 0.96, 0.12],
         star: [0.67, 0.82, 1, 0.78],
         starWarm: [1, 0.49, 0.28, 0.62],
-        vehicle: [0.02, 0.12, 0.17, 1],
-        vehicleEdge: [0.13, 0.98, 0.78, 0.96],
+        spacecraft: [0.02, 0.12, 0.17, 1],
+        spacecraftEdge: [0.13, 0.98, 0.78, 0.96],
+        engine: [0.08, 0.7, 1, 0.72],
+        engineHot: [1, 0.31, 0.16, 0.7],
+        cockpit: [0.18, 0.48, 0.72, 0.96],
         white: [0.75, 0.95, 0.94, 0.75],
       };
 }
@@ -314,19 +347,21 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
   if (!canvas || !stage) return;
 
   const input = { forward: false, back: false, left: false, right: false };
-  const vehicle = {
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const spacecraft = {
     x: 1.8,
     z: 5,
-    speed: 0,
+    speed: reducedMotion ? 0 : 1.45,
     heading: 0,
     targetX: null,
     targetZ: null,
+    cruiseSpeed: reducedMotion ? 0 : 1.45,
   };
   const pointer = { x: 0, y: 0, targetX: 0, targetY: 0 };
   const particles = makeParticles();
   const stars = makeStarfield(440, 13);
   const warmStars = makeStarfield(112, 947);
-  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const flightStreaks = makeFlightStreaks(92, 311);
   const statusElement = stage.querySelector("[data-world-status]");
   const coordinatesElement = stage.querySelector("[data-world-coordinates]");
   const speedElement = stage.querySelector("[data-world-speed]");
@@ -346,7 +381,8 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
 
   const activateDrive = () => {
     stage.classList.add("is-driving");
-    if (statusElement) statusElement.textContent = "DRIVE MODE";
+    spacecraft.cruiseSpeed = 6.2;
+    if (statusElement) statusElement.textContent = "BURN MODE";
     stage.focus({ preventScroll: true });
   };
 
@@ -413,9 +449,9 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     (target) => {
       const landmark = landmarks.find((item) => item.id === target);
       if (landmark) {
-        vehicle.targetX = landmark.x;
-        vehicle.targetZ = landmark.z + 7;
-        vehicle.speed = 0;
+        spacecraft.targetX = landmark.x;
+        spacecraft.targetZ = landmark.z + 7;
+        spacecraft.speed = 0;
         stage.classList.add("is-driving");
         if (statusElement) statusElement.textContent = "SIGNAL LOCK";
       }
@@ -438,16 +474,19 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
   function updateHud() {
     const nearest = landmarks.reduce(
       (closest, landmark) => {
-        const distance = Math.hypot(vehicle.x - landmark.x, vehicle.z - landmark.z);
+        const distance = Math.hypot(spacecraft.x - landmark.x, spacecraft.z - landmark.z);
         return distance < closest.distance ? { landmark, distance } : closest;
       },
       { landmark: null, distance: Number.POSITIVE_INFINITY },
     );
     if (coordinatesElement) {
-      coordinatesElement.textContent = `${vehicle.x.toFixed(2).padStart(6, "0")} / ${Math.abs(vehicle.z).toFixed(2).padStart(6, "0")}`;
+      coordinatesElement.textContent = `${spacecraft.x.toFixed(2).padStart(6, "0")} / ${Math.abs(spacecraft.z).toFixed(2).padStart(6, "0")}`;
     }
     if (speedElement)
-      speedElement.textContent = String(Math.round(Math.abs(vehicle.speed) * 8)).padStart(2, "0");
+      speedElement.textContent = String(Math.round(Math.abs(spacecraft.speed) * 8)).padStart(
+        2,
+        "0",
+      );
     if (targetLabelElement)
       targetLabelElement.textContent = nearest.distance < 15 ? nearest.landmark.label : "NO SIGNAL";
     locationButtons.forEach((button, id) =>
@@ -455,31 +494,37 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     );
   }
 
-  function updateVehicle(delta) {
-    if (vehicle.targetX !== null && vehicle.targetZ !== null) {
+  function updateSpacecraft(delta) {
+    if (spacecraft.targetX !== null && spacecraft.targetZ !== null) {
       const jumpBlend = 1 - Math.exp(-delta * 4.2);
-      vehicle.x += (vehicle.targetX - vehicle.x) * jumpBlend;
-      vehicle.z += (vehicle.targetZ - vehicle.z) * jumpBlend;
-      vehicle.heading *= 1 - jumpBlend;
-      if (Math.hypot(vehicle.targetX - vehicle.x, vehicle.targetZ - vehicle.z) < 0.04) {
-        vehicle.x = vehicle.targetX;
-        vehicle.z = vehicle.targetZ;
-        vehicle.targetX = null;
-        vehicle.targetZ = null;
+      spacecraft.x += (spacecraft.targetX - spacecraft.x) * jumpBlend;
+      spacecraft.z += (spacecraft.targetZ - spacecraft.z) * jumpBlend;
+      spacecraft.heading *= 1 - jumpBlend;
+      if (Math.hypot(spacecraft.targetX - spacecraft.x, spacecraft.targetZ - spacecraft.z) < 0.04) {
+        spacecraft.x = spacecraft.targetX;
+        spacecraft.z = spacecraft.targetZ;
+        spacecraft.targetX = null;
+        spacecraft.targetZ = null;
       }
       return;
     }
-    const targetSpeed = input.forward ? 9 : input.back ? -4.5 : 0;
+    const targetSpeed = reducedMotion
+      ? 0
+      : input.forward
+        ? 10
+        : input.back
+          ? -4.5
+          : spacecraft.cruiseSpeed;
     const speedBlend = 1 - Math.exp(-delta * 5.5);
-    vehicle.speed += (targetSpeed - vehicle.speed) * speedBlend;
-    vehicle.speed = clamp(vehicle.speed, -5, 10);
+    spacecraft.speed += (targetSpeed - spacecraft.speed) * speedBlend;
+    spacecraft.speed = clamp(spacecraft.speed, -5, 12);
     const steering = (input.left ? -1 : 0) + (input.right ? 1 : 0);
-    vehicle.heading += steering * delta * (1.05 + Math.abs(vehicle.speed) * 0.08);
-    vehicle.x += Math.sin(vehicle.heading) * vehicle.speed * delta;
-    vehicle.z -= Math.cos(vehicle.heading) * vehicle.speed * delta;
-    vehicle.x = clamp(vehicle.x, -22, 22);
-    if (vehicle.z < -WORLD_LIMIT) vehicle.z = 12;
-    if (vehicle.z > 18) vehicle.z = -WORLD_LIMIT + 6;
+    spacecraft.heading += steering * delta * (1.05 + Math.abs(spacecraft.speed) * 0.08);
+    spacecraft.x += Math.sin(spacecraft.heading) * spacecraft.speed * delta;
+    spacecraft.z -= Math.cos(spacecraft.heading) * spacecraft.speed * delta;
+    spacecraft.x = clamp(spacecraft.x, -22, 22);
+    if (spacecraft.z < -WORLD_LIMIT) spacecraft.z = 12;
+    if (spacecraft.z > 18) spacecraft.z = -WORLD_LIMIT + 6;
   }
 
   const gl = canvas.getContext("webgl", {
@@ -507,7 +552,7 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
   const buffers = new Map();
   const grid = makeGroundGrid();
   const groundRing = makeRing(6, 0.05);
-  const vehicleRing = makeRing(2.7, 0.08);
+  const spacecraftRing = makeRing(2.7, 0.08);
   const verticalRing = makeVerticalRing(2.8);
   const skyRing = makeRing(18, 0, 72);
   const skyRingWide = makeRing(28, 0, 96);
@@ -527,11 +572,14 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
   const geometry = {
     cube: getBuffer("cube", cubeTriangles),
     cubeLines: getBuffer("cube-lines", cubeLines),
+    spacecraftHull: getBuffer("spacecraft-hull", spacecraftHull),
+    spacecraftHullLines: getBuffer("spacecraft-hull-lines", spacecraftHullLines),
     grid: getBuffer("grid", grid),
     stars: getBuffer("stars", stars),
     warmStars: getBuffer("warm-stars", warmStars),
+    flightStreaks: getBuffer("flight-streaks", flightStreaks),
     groundRing: getBuffer("ground-ring", groundRing),
-    vehicleRing: getBuffer("vehicle-ring", vehicleRing),
+    spacecraftRing: getBuffer("spacecraft-ring", spacecraftRing),
     verticalRing: getBuffer("vertical-ring", verticalRing),
     skyRing: getBuffer("sky-ring", skyRing),
     skyRingWide: getBuffer("sky-ring-wide", skyRingWide),
@@ -655,83 +703,85 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     ]);
   }
 
-  function drawVehicle(time, colors) {
-    const bodyColor = colors.vehicle;
-    const edgeColor = colors.vehicleEdge;
-    const bounce = Math.sin(time * 0.006) * 0.035;
+  function spacecraftPoint(localX, localZ) {
+    const sideX = Math.cos(spacecraft.heading);
+    const sideZ = -Math.sin(spacecraft.heading);
+    const forwardX = Math.sin(spacecraft.heading);
+    const forwardZ = -Math.cos(spacecraft.heading);
+    return [
+      spacecraft.x + sideX * localX + forwardX * localZ,
+      spacecraft.z + sideZ * localX + forwardZ * localZ,
+    ];
+  }
+
+  function drawSpacecraftCube(localX, y, localZ, scaleX, scaleY, scaleZ, color, edgeColor) {
+    const [x, z] = spacecraftPoint(localX, localZ);
+    drawCube(x, y, z, scaleX, scaleY, scaleZ, spacecraft.heading, color, edgeColor);
+  }
+
+  function drawSpacecraft(time, colors) {
+    const bodyColor = colors.spacecraft;
+    const edgeColor = colors.spacecraftEdge;
+    const hover = reducedMotion
+      ? 0
+      : Math.sin(time * 0.0028) * 0.07 + Math.sin(time * 0.006) * 0.024;
+    const deckHeight = 1.18 + hover;
+    const flamePulse = reducedMotion ? 0.3 : (Math.sin(time * 0.014) + 1) * 0.16;
+    const flameLength = clamp(0.25 + Math.abs(spacecraft.speed) * 0.055 + flamePulse, 0.25, 1.1);
+
     drawRing(
-      geometry.vehicleRing,
-      vehicle.x,
+      geometry.spacecraftRing,
+      spacecraft.x,
       0.14,
-      vehicle.z,
+      spacecraft.z,
       1 + Math.sin(time * 0.004) * 0.04,
-      vehicle.heading,
-      [edgeColor[0], edgeColor[1], edgeColor[2], 0.72],
+      spacecraft.heading,
+      [edgeColor[0], edgeColor[1], edgeColor[2], 0.68],
     );
-    drawCube(
-      vehicle.x,
-      1.04 + bounce,
-      vehicle.z - Math.cos(vehicle.heading) * 0.12,
-      0.94,
-      0.035,
-      1.18,
-      vehicle.heading,
-      [edgeColor[0], edgeColor[1], edgeColor[2], 0.8],
+
+    const hullMatrix = multiplyMatrices(
+      currentViewProjection,
+      modelMatrix(spacecraft.x, deckHeight, spacecraft.z, 1, 1, 1, spacecraft.heading),
     );
-    drawCube(
-      vehicle.x,
-      0.64 + bounce,
-      vehicle.z,
-      1.28,
-      0.35,
-      2.05,
-      vehicle.heading,
-      bodyColor,
+    drawMesh(geometry.spacecraftHull, gl.TRIANGLES, hullMatrix, bodyColor);
+    drawMesh(geometry.spacecraftHullLines, gl.LINES, hullMatrix, edgeColor);
+
+    drawSpacecraftCube(-0.82, deckHeight - 0.03, 0.38, 0.72, 0.045, 0.58, bodyColor, edgeColor);
+    drawSpacecraftCube(0.82, deckHeight - 0.03, 0.38, 0.72, 0.045, 0.58, bodyColor, edgeColor);
+    drawSpacecraftCube(0, deckHeight + 0.28, -0.45, 0.32, 0.13, 0.5, colors.cockpit, edgeColor);
+    drawSpacecraftCube(
+      0,
+      deckHeight + 0.39,
+      -0.92,
+      0.16,
+      0.045,
+      0.22,
+      [0.5, 0.92, 1, 0.9],
       edgeColor,
     );
-    drawCube(
-      vehicle.x,
-      1.19 + bounce,
-      vehicle.z + Math.cos(vehicle.heading) * 0.18,
-      0.84,
-      0.46,
-      0.9,
-      vehicle.heading,
-      [0.03, 0.24, 0.28, 0.96],
-      [0.7, 1, 0.93, 0.92],
-    );
-    drawCube(
-      vehicle.x,
-      0.43,
-      vehicle.z - Math.cos(vehicle.heading) * 1.58,
-      1.08,
-      0.09,
-      0.24,
-      vehicle.heading,
-      [edgeColor[0], edgeColor[1], edgeColor[2], 0.9],
-    );
-    const wheelOffsetX = Math.cos(vehicle.heading) * 0.92;
-    const wheelOffsetZ = Math.sin(vehicle.heading) * 0.92;
-    drawCube(
-      vehicle.x - wheelOffsetX,
-      0.31,
-      vehicle.z - wheelOffsetZ,
-      0.19,
-      0.27,
-      0.44,
-      vehicle.heading,
-      [0.01, 0.025, 0.04, 1],
-    );
-    drawCube(
-      vehicle.x + wheelOffsetX,
-      0.31,
-      vehicle.z + wheelOffsetZ,
-      0.19,
-      0.27,
-      0.44,
-      vehicle.heading,
-      [0.01, 0.025, 0.04, 1],
-    );
+    drawSpacecraftCube(0, deckHeight + 0.3, 0.62, 0.06, 0.28, 0.34, edgeColor);
+
+    [-0.42, 0, 0.42].forEach((localX, index) => {
+      drawSpacecraftCube(
+        localX,
+        deckHeight - 0.02,
+        1.04,
+        0.13,
+        0.12,
+        0.13,
+        colors.engineHot,
+        edgeColor,
+      );
+      drawSpacecraftCube(
+        localX,
+        deckHeight - 0.02,
+        1.08 + flameLength * 0.55,
+        index === 1 ? 0.1 : 0.08,
+        index === 1 ? 0.09 : 0.07,
+        flameLength * 0.55,
+        colors.engine,
+      );
+    });
   }
 
   let currentViewProjection = identityMatrix();
@@ -748,14 +798,18 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
 
     pointer.x += (pointer.targetX - pointer.x) * (reducedMotion ? 1 : 0.06);
     pointer.y += (pointer.targetY - pointer.y) * (reducedMotion ? 1 : 0.06);
-    const forward = [Math.sin(vehicle.heading), 0, -Math.cos(vehicle.heading)];
+    const forward = [Math.sin(spacecraft.heading), 0, -Math.cos(spacecraft.heading)];
     const behind = [-forward[0], 0, -forward[2]];
     const desiredEye = [
-      vehicle.x + behind[0] * 9.3 + pointer.x * 2.1,
+      spacecraft.x + behind[0] * 9.3 + pointer.x * 2.1,
       6 + pointer.y * 1.3,
-      vehicle.z + behind[2] * 9.3 + pointer.y * 1.5,
+      spacecraft.z + behind[2] * 9.3 + pointer.y * 1.5,
     ];
-    const desiredTarget = [vehicle.x + forward[0] * 13 - 2.4, 1.2, vehicle.z + forward[2] * 13];
+    const desiredTarget = [
+      spacecraft.x + forward[0] * 13 - 2.4,
+      1.2,
+      spacecraft.z + forward[2] * 13,
+    ];
     const cameraBlend = reducedMotion ? 1 : 1 - Math.exp(-Math.max(frameDelta, 0.016) * 5);
     camera.eye = camera.eye.map(
       (value, index) => value + (desiredEye[index] - value) * cameraBlend,
@@ -780,6 +834,12 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
       colors.starWarm,
       1.55 * pixelRatio,
     );
+    drawMesh(geometry.flightStreaks, gl.LINES, currentViewProjection, [
+      0.3,
+      0.78,
+      1,
+      clamp(0.06 + Math.abs(spacecraft.speed) * 0.012, 0.06, 0.24),
+    ]);
     drawRing(geometry.skyRing, 1.5, 6.3, -42, 1.25, time * 0.00008, [0.18, 0.62, 0.96, 0.2]);
     drawRing(geometry.skyRingWide, -4, 10.5, -78, 1.4, -time * 0.000055, [0.65, 0.32, 1, 0.14]);
     drawRing(geometry.skyPortal, 8, 6.2, -58, 3.7, time * 0.00011, [0.08, 0.92, 0.84, 0.16]);
@@ -789,7 +849,7 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     drawMesh(geometry.grid, gl.LINES, currentViewProjection, colors.grid);
     drawRing(geometry.groundRing, 0, 0.05, -1, 6, time * 0.00012, colors.gridBright);
     landmarks.forEach((landmark) => drawLandmark(landmark, time, colors));
-    drawVehicle(time, colors);
+    drawSpacecraft(time, colors);
 
     const particleVertices = [];
     particles.forEach((particle) => {
@@ -822,7 +882,7 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     const delta = lastTime ? Math.min(0.05, (time - lastTime) / 1000) : 0;
     lastTime = time;
     frameDelta = delta;
-    updateVehicle(delta);
+    updateSpacecraft(delta);
     updateHud();
     draw(time);
     if (!reducedMotion) animationFrame = window.requestAnimationFrame(loop);
