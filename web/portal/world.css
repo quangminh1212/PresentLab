@@ -1337,6 +1337,10 @@ html[data-theme="light"] .world-location small {
 }
 
 @media (max-width: 760px) {
+  .app-shell:has(.hero-world) {
+    overflow-x: clip;
+  }
+
   .hero.hero-world {
     min-height: max(660px, calc(100svh - 76px));
   }

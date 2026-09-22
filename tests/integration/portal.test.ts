@@ -217,26 +217,21 @@ describe("client request portal browser flow", () => {
           })),
       ).toEqual({ borderWidth: "0px", boxShadow: "none" });
       expect(await page.locator(".topnav [data-open-request]").count()).toBe(0);
-      expect(await page.locator(".hero-board-data-row").count()).toBe(3);
-      expect(await page.locator(".hero-board-data-chart i").count()).toBe(7);
-      expect(await page.locator(".hero-command-card").count()).toBe(1);
-      expect(await page.locator(".hero-route span").count()).toBe(3);
-      expect(await page.locator(".hero-field-particle").count()).toBe(4);
+      expect(await page.locator(".world-stage.world-ready").count()).toBe(1);
+      expect(await page.locator(".world-location").count()).toBe(3);
+      expect(await page.locator(".world-location strong").count()).toBe(3);
+      expect(await page.locator("[data-world-start]").count()).toBe(1);
+      const worldCanvasSize = await page.locator(".world-canvas").evaluate((canvas) => ({
+        width: canvas.width,
+        height: canvas.height,
+      }));
+      expect(worldCanvasSize.width).toBeGreaterThan(0);
+      expect(worldCanvasSize.height).toBeGreaterThan(0);
       expect(
         await page
-          .locator(".hero-board")
-          .evaluate((element) => getComputedStyle(element).animationName),
-      ).toContain("board-hover");
-      expect(
-        await page
-          .locator(".hero-board-scan")
-          .evaluate((element) => getComputedStyle(element).animationName),
-      ).toContain("board-scan");
-      expect(
-        await page
-          .locator(".hero-command-card")
-          .evaluate((element) => getComputedStyle(element).animationName),
-      ).toContain("command-float");
+          .locator(".world-stage")
+          .evaluate((element) => getComputedStyle(element).borderRadius),
+      ).toBe("0px");
 
       const initialTheme = (await page.locator("html").getAttribute("data-theme")) || "dark";
       const toggledTheme = initialTheme === "dark" ? "light" : "dark";
