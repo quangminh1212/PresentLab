@@ -260,6 +260,33 @@ describe("client request portal browser flow", () => {
         .locator(".world-space-image")
         .evaluate((element) => getComputedStyle(element).transform);
       expect(leftCosmicTransform).not.toBe(rightCosmicTransform);
+      const imageMotion = await page.locator(".world-space-image").evaluate((element) => {
+        const styles = getComputedStyle(element);
+        return {
+          animationName: styles.animationName,
+          backgroundSize: styles.backgroundSize,
+          imageShiftX: element.parentElement?.style.getPropertyValue("--world-image-shift-x"),
+          pointerIntensity: element.parentElement?.style.getPropertyValue(
+            "--world-pointer-intensity",
+          ),
+        };
+      });
+      expect(imageMotion.animationName).toContain("world-image-drift");
+      expect(imageMotion.backgroundSize).not.toBe("cover");
+      expect(imageMotion.imageShiftX).toMatch(/px$/);
+      expect(Number.parseFloat(imageMotion.pointerIntensity || "0")).toBeGreaterThan(0);
+
+      await page.locator(".world-stage").dispatchEvent("pointerdown", {
+        clientX: worldBounds.x + worldBounds.width * 0.62,
+        clientY: worldBounds.y + worldBounds.height * 0.62,
+        bubbles: true,
+      });
+      await page.waitForTimeout(40);
+      expect(
+        await page
+          .locator(".world-stage")
+          .evaluate((element) => element.classList.contains("is-world-pulsing")),
+      ).toBe(true);
 
       const initialTheme = (await page.locator("html").getAttribute("data-theme")) || "dark";
       const toggledTheme = initialTheme === "dark" ? "light" : "dark";

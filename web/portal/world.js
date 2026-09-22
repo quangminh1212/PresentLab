@@ -44,6 +44,7 @@ const landmarks = [
     radius: 3.4,
     color: [0.18, 0.98, 0.78, 0.5],
     secondary: [0.2, 0.7, 1, 0.72],
+    orbit: { radiusX: 1.5, radiusY: 0.42, radiusZ: 1.65, speed: 0.00022, phase: 0.4 },
   },
   {
     id: "brief",
@@ -54,6 +55,7 @@ const landmarks = [
     radius: 4.1,
     color: [1, 0.45, 0.27, 0.5],
     secondary: [1, 0.76, 0.38, 0.72],
+    orbit: { radiusX: 1.85, radiusY: 0.58, radiusZ: 2.35, speed: 0.00017, phase: 2.1 },
   },
   {
     id: "process",
@@ -64,6 +66,7 @@ const landmarks = [
     radius: 2.8,
     color: [0.58, 0.62, 1, 0.48],
     secondary: [0.3, 0.92, 1, 0.72],
+    orbit: { radiusX: 1.25, radiusY: 0.5, radiusZ: 2.8, speed: 0.00013, phase: 4.7 },
   },
 ];
 
@@ -320,6 +323,21 @@ function getColors() {
       };
 }
 
+function getLandmarkPose(landmark, time, reducedMotion) {
+  const orbit = landmark.orbit;
+  if (!orbit || reducedMotion) {
+    return { x: landmark.x, y: landmark.y, z: landmark.z };
+  }
+
+  const angle = time * orbit.speed + orbit.phase;
+  const bobAngle = time * orbit.speed * 0.73 + orbit.phase * 1.8;
+  return {
+    x: landmark.x + Math.cos(angle) * orbit.radiusX,
+    y: landmark.y + Math.sin(bobAngle) * orbit.radiusY,
+    z: landmark.z + Math.sin(angle) * orbit.radiusZ,
+  };
+}
+
 function setupDomControls(stage, onTarget, focusField) {
   stage.querySelector("[data-world-start]")?.addEventListener("click", focusField);
   stage.querySelectorAll("[data-world-target]").forEach((button) => {
@@ -334,7 +352,8 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
   if (!canvas || !stage) return;
 
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const pointer = { x: 0, y: 0, targetX: 0, targetY: 0 };
+  const pointer = { x: 0, y: 0, targetX: 0, targetY: 0, active: false };
+  const imageElement = stage.querySelector(".world-space-image");
   const statusElement = stage.querySelector("[data-world-status]");
   const coordinatesElement = stage.querySelector("[data-world-coordinates]");
   const speedElement = stage.querySelector("[data-world-speed]");
@@ -376,13 +395,35 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
 
   stage.addEventListener("pointermove", (event) => {
     const bounds = stage.getBoundingClientRect();
+    pointer.active = true;
     pointer.targetX = clamp((event.clientX - bounds.left) / bounds.width - 0.5, -0.5, 0.5);
     pointer.targetY = clamp((event.clientY - bounds.top) / bounds.height - 0.5, -0.5, 0.5);
   });
-  stage.addEventListener("pointerleave", (event) => {
-    if (event.target !== stage) return;
+  stage.addEventListener("pointerleave", () => {
+    pointer.active = false;
     pointer.targetX = 0;
     pointer.targetY = 0;
+  });
+  stage.addEventListener("pointerdown", (event) => {
+    if (
+      event.target &&
+      typeof event.target.closest === "function" &&
+      event.target.closest("button, a")
+    ) {
+      return;
+    }
+    const bounds = stage.getBoundingClientRect();
+    stage.style.setProperty(
+      "--world-click-x",
+      `${clamp(((event.clientX - bounds.left) / bounds.width) * 100, 0, 100).toFixed(2)}%`,
+    );
+    stage.style.setProperty(
+      "--world-click-y",
+      `${clamp(((event.clientY - bounds.top) / bounds.height) * 100, 0, 100).toFixed(2)}%`,
+    );
+    stage.classList.remove("is-world-pulsing");
+    void stage.offsetWidth;
+    stage.classList.add("is-world-pulsing");
   });
 
   const gl = canvas.getContext("webgl", {
@@ -454,15 +495,15 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     drawMesh(item, gl.LINE_STRIP, matrix, color);
   }
 
-  function drawPlanet(landmark, time, colors) {
+  function drawPlanet(landmark, time, colors, pose) {
     const rotation = landmark.x * 0.12 + (reducedMotion ? 0 : time * 0.00008);
     const pulse = reducedMotion ? 1 : 1 + Math.sin(time * 0.001 + landmark.x) * 0.012;
     const matrix = multiplyMatrices(
       currentViewProjection,
       modelMatrix(
-        landmark.x,
-        landmark.y,
-        landmark.z,
+        pose.x,
+        pose.y,
+        pose.z,
         landmark.radius * pulse,
         landmark.radius * pulse,
         landmark.radius * pulse,
@@ -476,9 +517,9 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     drawMesh(geometry.sphereLines, gl.LINES, matrix, edgeColor);
     drawRing(
       geometry.ring,
-      landmark.x,
-      landmark.y,
-      landmark.z,
+      pose.x,
+      pose.y,
+      pose.z,
       landmark.radius * 1.54,
       landmark.radius * 0.42,
       rotation * 0.38,
@@ -486,9 +527,9 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     );
     drawRing(
       geometry.verticalRing,
-      landmark.x,
-      landmark.y,
-      landmark.z,
+      pose.x,
+      pose.y,
+      pose.z,
       landmark.radius * 1.18,
       landmark.radius * 0.86,
       rotation * -0.7,
@@ -497,9 +538,9 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     if (selected) {
       drawRing(
         geometry.ring,
-        landmark.x,
-        landmark.y,
-        landmark.z,
+        pose.x,
+        pose.y,
+        pose.z,
         landmark.radius * 1.95,
         landmark.radius * 0.55,
         -rotation,
@@ -530,8 +571,32 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     pointer.y += (pointer.targetY - pointer.y) * (reducedMotion ? 1 : 0.055);
     const cosmicShiftX = reducedMotion ? 0 : -pointer.x * 54;
     const cosmicShiftY = reducedMotion ? 0 : -pointer.y * 34;
+    const imageDriftX = reducedMotion
+      ? 0
+      : Math.sin(time * 0.00011) * 18 + Math.cos(time * 0.000047) * 9;
+    const imageDriftY = reducedMotion
+      ? 0
+      : Math.cos(time * 0.000085) * 13 + Math.sin(time * 0.000037) * 7;
+    const pointerIntensity = pointer.active
+      ? clamp(0.26 + Math.hypot(pointer.x, pointer.y) * 1.15, 0, 1)
+      : 0;
     stage.style.setProperty("--cosmic-shift-x", `${cosmicShiftX.toFixed(2)}px`);
     stage.style.setProperty("--cosmic-shift-y", `${cosmicShiftY.toFixed(2)}px`);
+    stage.style.setProperty(
+      "--world-image-shift-x",
+      `${(imageDriftX - pointer.x * 44).toFixed(2)}px`,
+    );
+    stage.style.setProperty(
+      "--world-image-shift-y",
+      `${(imageDriftY - pointer.y * 30).toFixed(2)}px`,
+    );
+    stage.style.setProperty("--world-image-tilt-x", `${(-pointer.x * 2.8).toFixed(2)}deg`);
+    stage.style.setProperty("--world-image-tilt-y", `${(pointer.y * 2.2).toFixed(2)}deg`);
+    stage.style.setProperty("--world-pointer-x", `${((pointer.x + 0.5) * 100).toFixed(2)}%`);
+    stage.style.setProperty("--world-pointer-y", `${((pointer.y + 0.5) * 100).toFixed(2)}%`);
+    stage.style.setProperty("--world-pointer-intensity", pointerIntensity.toFixed(3));
+    if (imageElement)
+      imageElement.style.setProperty("--world-image-scale", pointer.active ? "1.145" : "1.12");
     const desiredEye = [pointer.x * 5.4, 5.8 - pointer.y * 2.2, 12 + pointer.y * 3.2];
     const desiredTarget = [pointer.x * 3.2, 2.2 - pointer.y * 0.65, -34];
     const cameraBlend = reducedMotion ? 1 : 0.11;
@@ -564,7 +629,8 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     gl.enable(gl.DEPTH_TEST);
     gl.depthMask(true);
-    landmarks.forEach((landmark) => drawPlanet(landmark, time, colors));
+    const planetPoses = landmarks.map((landmark) => getLandmarkPose(landmark, time, reducedMotion));
+    landmarks.forEach((landmark, index) => drawPlanet(landmark, time, colors, planetPoses[index]));
   }
 
   function loop(time) {
