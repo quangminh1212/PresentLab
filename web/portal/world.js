@@ -25,9 +25,8 @@ const RIPPLE_HOVER_LIFETIME = 0.18;
 const RIPPLE_CLICK_STRENGTH = 0.24;
 const RIPPLE_CLICK_RADIUS = 2.2;
 
-/* The official Three.js Water addon overlays a reflective, moving surface on
- * the locally licensed Iceland-water clip. Its GPU height field adds ripples
- * where the pointer actually meets the raycast water plane. */
+/* The Three.js Water addon draws a reflective surface over the studio backdrop.
+ * Its GPU height field adds ripples where the pointer meets the water plane. */
 const landmarks = [
   {
     id: "archive",
@@ -320,11 +319,13 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     stage.dataset.worldSurface = videoWaterReady
       ? "threejs-water-normal-map-over-video"
       : "threejs-water-normal-map-over-css-backdrop";
-    stage.dataset.worldWaterTexture = videoWaterReady
-      ? "ready"
-      : videoWaterFailed
-        ? "unavailable"
-        : "loading";
+    stage.dataset.worldWaterTexture = !waterVideoElement
+      ? "not-used"
+      : videoWaterReady
+        ? "ready"
+        : videoWaterFailed
+          ? "unavailable"
+          : "loading";
     stage.dataset.worldInteraction = "raycast-gpu-water-ripple";
     stage.dataset.worldWaterProvider = "threejs-water-addon";
     stage.dataset.worldRippleProvider = "threejs-gpu-heightfield";
@@ -692,9 +693,15 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
         sky.visible = wasVisible;
       }
     };
-    stage.dataset.worldSurfaceProfile = "threejs-water-addon-over-licensed-moving-water";
+    stage.dataset.worldSurfaceProfile = waterVideoElement
+      ? "threejs-water-addon-over-licensed-moving-water"
+      : "threejs-water-addon-over-studio-backdrop";
     stage.dataset.worldWaterNormalMap = waterNormalMapState;
-    stage.dataset.worldWaterTexture = waterVideoElement.readyState >= 2 ? "ready" : "loading";
+    stage.dataset.worldWaterTexture = waterVideoElement
+      ? waterVideoElement.readyState >= 2
+        ? "ready"
+        : "loading"
+      : "not-used";
   } catch {
     renderer?.dispose();
     water?.material?.uniforms?.mirrorSampler?.value?.dispose?.();

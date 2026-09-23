@@ -107,6 +107,12 @@
           data-motion-scene="library"
         >
           <div class="world-stage" data-xlab-world data-parallax-stage tabindex="0">
+            <canvas
+              class="world-canvas"
+              data-xlab-world-canvas
+              role="img"
+              aria-label="XLab reflective water surface with pointer-driven ripples"
+            ></canvas>
             <div class="world-copy">
               <p class="eyebrow">
                 <span class="eyebrow-dot"></span
@@ -146,18 +152,19 @@
 
             <div class="world-hud" aria-hidden="true">
               <div class="world-hud-top">
-                <span><i></i> XLAB / 01</span>
-                <span>STUDIO FIELD / 03</span>
-                <span data-world-status>STUDIO READY</span>
+                <span><i></i> OPEN WATER / 01</span>
+                <span>TIDAL FIELD / 03</span>
+                <span data-world-status>OPEN WATER</span>
               </div>
               <div class="world-coordinates">
-                <span>LIBRARY <b data-world-coordinates>770</b></span>
-                <span>FORMAT <b>16:9</b> LIVE</span>
+                <span>FLOW <b data-world-coordinates>03 / 770</b></span>
+                <span>RIPPLES <b data-world-speed>03</b> LIVE</span>
               </div>
+              <div class="world-reticle"><i></i><b></b><em></em></div>
               <div class="world-target-readout">
-                <small>ACTIVE SECTION</small>
-                <strong data-world-target-label>SLIDE LIBRARY</strong>
-                <span><i></i> CHOOSE A DESTINATION</span>
+                <small>NEAREST TIDE</small>
+                <strong data-world-target-label>NO SIGNAL</strong>
+                <span><i></i> SELECT A WATER NODE</span>
               </div>
             </div>
 
