@@ -1,24 +1,34 @@
-# Portal water surface
+# Portal water background
 
-The hero renders a seamless close-up water surface directly in Three.js. A full-screen
-`ShaderMaterial` combines the local water-normal texture, layered flowing highlights,
-and four short-lived ripple events. Pointer movement and taps feed screen-space ripple
-positions to the fragment shader; no camera horizon, shoreline, or stock footage sits
-behind the surface.
+The portal layers the official vendored Three.js `Water` and `Sky` addons over
+the locally stored `web/portal/water-surface.webm`. The 1920x1080 footage
+preserves real wave shape, foam, reflections, and irregular motion while the
+Three.js normal map supplies continuously moving reflections and surface
+distortion. The CSS crop keeps the view over open water and moves the narrow
+shoreline toward the edge of the frame.
 
-The local normal map adds irregular surface detail while the procedural wave field keeps
-the animation working if the map fails to load. When WebGL is unavailable or its context
-is lost, the hero switches to a CSS water surface with a reduced-motion-aware animation.
-With `prefers-reduced-motion`, Three.js draws one still frame and ignores ripple input.
-The portal does not load external images, fonts, or video.
+Clicks and pointer movement raycast against the Three.js water plane and feed a
+256x256 GPU height field. Two render targets ping-pong height and velocity
+through a damped wave equation with fixed 1/60 simulation steps. The addon
+shader uses the field for local surface displacement and changing normals, so
+the interaction is anchored to the visible water rather than screen pixels.
+The semi-transparent Three.js surface leaves the licensed footage visible
+underneath. If WebGL is unavailable, the clip remains available as a video
+fallback; if the clip cannot load, the portal falls back to its CSS water
+treatment.
 
-## Runtime files
+The portal requests no external media at runtime. The video element remains
+muted, loops locally, and pauses when reduced motion is enabled. Its credit is
+shown in the hero and in the markup. The Three.js files and normal map are
+served from the repository's vendored runtime.
 
-- `web/portal/world.js` creates the shader, schedules visible-page rendering, and handles
-  pointer ripples.
-- `web/portal/world.css` defines the full-screen hero and visual CSS fallback.
-- `web/vendor/three/three.module.js` and `three.core.js` are the pinned local renderer.
-- `web/vendor/three/textures/waternormals.jpg` is the tiled normal map used by the shader.
-- `scripts/build-vercel.mjs` copies only the runtime assets used by the portal.
-- `scripts/verify-portal-assets.mjs` verifies the deployed water runtime and asserts that
-  the retired coastline video is absent.
+## Video provenance
+
+- File: `web/portal/water-surface.webm`
+- Source: [Ocean waves at Lækjavik beach, Iceland](https://commons.wikimedia.org/wiki/File:Ocean_waves_at_L%C3%A6kjavik_beach%2C_Iceland.webm)
+- Author: Alexander Grebenkov
+- License: [Creative Commons Attribution 3.0 Unported](https://creativecommons.org/licenses/by/3.0/)
+- SHA-256: `538FB3999C7426FD32E49AEC4329CF88CD8FB1A36C81484BBC8297BEDCE61E4B`
+
+The source asset is checked into the portal so production does not depend on a
+third-party hotlink.

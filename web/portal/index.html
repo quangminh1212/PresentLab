@@ -29,6 +29,11 @@
         <span data-i18n="sceneTransition">ĐANG CHUYỂN CẢNH</span>
       </div>
     </div>
+    <aside class="scene-rail" data-scene-rail aria-hidden="true">
+      <div class="scene-rail-meta"><span data-scene-index>01</span><span>03</span></div>
+      <span class="scene-rail-track"><i data-scene-progress></i></span>
+      <span class="scene-rail-label" data-scene-label data-i18n="sceneLibrary">KHÔNG GIAN</span>
+    </aside>
     <noscript>
       <div class="noscript-banner" data-i18n="noscript">
         Trang này cần JavaScript để tải thư viện mẫu và gửi brief.
@@ -101,75 +106,98 @@
           aria-labelledby="hero-title"
           data-motion-scene="library"
         >
-          <div class="world-stage" data-xlab-world tabindex="0">
+          <div class="world-stage" data-xlab-world data-parallax-stage tabindex="0">
+            <video
+              class="world-water-video"
+              data-world-water-video
+              muted
+              loop
+              playsinline
+              preload="none"
+              title="Licensed moving water footage under a Three.js water surface"
+              aria-hidden="true"
+            >
+              <source src="/web/portal/water-surface.webm" type="video/webm" />
+            </video>
+            <div class="world-space-image" aria-hidden="true"></div>
             <canvas
               class="world-canvas"
               data-xlab-world-canvas
               role="img"
-              aria-label="Mặt nước cận cảnh được dựng bằng Three.js, có chuyển động và gợn sóng theo con trỏ"
+              aria-label="XLab Three.js water surface with moving reflections and pointer-driven ripples"
             ></canvas>
             <div class="world-atmosphere" aria-hidden="true"></div>
-            <div class="world-grain" aria-hidden="true"></div>
+            <div class="world-scanlines" aria-hidden="true"></div>
 
-            <div class="world-copy" data-reveal="hero-copy">
+            <div class="world-copy">
               <p class="eyebrow">
                 <span class="eyebrow-dot"></span
-                ><span data-i18n="heroEyebrow">XLAB / STUDIO TRÌNH CHIẾU</span>
+                ><span data-i18n="heroEyebrow">INTERACTIVE SLIDE STUDIO</span>
               </p>
               <h1 id="hero-title">
-                <span data-i18n="heroTitleA">Ý tưởng lớn.</span><br />
-                <em data-i18n="heroTitleB">Kể bằng hình ảnh.</em>
+                <span data-i18n="heroTitleA">Kéo câu chuyện đi xa.</span><br />
+                <em data-i18n="heroTitleB">Mỗi slide tạo nhịp.</em>
               </h1>
               <p class="world-lede" data-i18n="heroLede">
-                Tìm đúng ngôn ngữ thị giác, chọn hướng thiết kế và biến câu chuyện thành bộ slide
-                sẵn sàng trình chiếu.
+                Đi qua thư viện 770 hệ thống slide, ghé vào brief room và tìm đúng nhịp trình chiếu
+                cho câu chuyện của bạn.
               </p>
               <div class="world-actions">
-                <a class="world-button world-button-primary" href="#templates" data-world-start>
-                  <span data-i18n="heroExplore">Khám phá thư viện</span><b>↗</b>
-                </a>
+                <button class="world-button world-button-primary" type="button" data-world-start>
+                  <span data-i18n="heroExplore">Bắt đầu khám phá</span><b>↗</b>
+                </button>
                 <button class="world-button world-button-ghost" type="button" data-open-request>
-                  <span data-i18n="heroBrief">Bắt đầu một dự án</span><b>↗</b>
+                  <span data-i18n="heroBrief">Tạo brief</span><b>⌁</b>
                 </button>
               </div>
               <div class="world-stats">
                 <span
                   ><strong>770</strong
-                  ><small data-i18n="heroStatTemplates">hệ thống thị giác</small></span
+                  ><small data-i18n="heroStatTemplates">hệ thống slide</small></span
                 >
                 <span
                   ><strong>16:9</strong
-                  ><small data-i18n="heroStatFormat">sẵn sàng trình chiếu</small></span
+                  ><small data-i18n="heroStatFormat">định dạng slide</small></span
                 >
                 <span
                   ><strong>1–2H</strong
-                  ><small data-i18n="heroStatResponse">phản hồi từ studio</small></span
+                  ><small data-i18n="heroStatResponse">phản hồi studio</small></span
                 >
               </div>
             </div>
 
             <div class="world-hud" aria-hidden="true">
               <div class="world-hud-top">
-                <span><i></i> XLAB / SURFACE STUDY</span>
-                <span>WATER / LIGHT / MOTION</span>
-                <span data-world-status>LIVE / WATER SURFACE</span>
+                <span><i></i> OPEN WATER / 01</span>
+                <span>TIDAL FIELD / 03</span>
+                <span data-world-status>OPEN WATER</span>
+              </div>
+              <div class="world-coordinates">
+                <span>FLOW <b data-world-coordinates>03 / 770</b></span>
+                <span>RIPPLES <b data-world-speed>03</b> LIVE</span>
+              </div>
+              <div class="world-reticle"><i></i><b></b><em></em></div>
+              <div class="world-target-readout">
+                <small>NEAREST TIDE</small>
+                <strong data-world-target-label>NO SIGNAL</strong>
+                <span><i></i> SELECT A WATER NODE</span>
               </div>
             </div>
 
-            <nav class="world-locations" aria-label="Khám phá PresentLab">
+            <nav class="world-locations" aria-label="Điểm đến trong thế giới XLab">
               <button type="button" class="world-location is-active" data-world-target="archive">
                 <span class="world-location-index">01</span>
-                <span><strong>THƯ VIỆN</strong><small>770 hướng thị giác</small></span>
+                <span><strong>SLIDE LIBRARY</strong><small>770 visual systems</small></span>
                 <b>↗</b>
               </button>
               <button type="button" class="world-location" data-world-target="brief">
                 <span class="world-location-index">02</span>
-                <span><strong>GỬI BRIEF</strong><small>bắt đầu dự án</small></span>
+                <span><strong>STORY BRIEF</strong><small>shape the room</small></span>
                 <b>↗</b>
               </button>
               <button type="button" class="world-location" data-world-target="process">
                 <span class="world-location-index">03</span>
-                <span><strong>QUY TRÌNH</strong><small>thiết kế đến bàn giao</small></span>
+                <span><strong>DECK REVIEW</strong><small>build / review / deliver</small></span>
                 <b>↗</b>
               </button>
             </nav>
@@ -181,11 +209,17 @@
               data-i18n-aria-label="scrollToTemplates"
             >
               <span><i></i><i></i><i></i></span
-              ><small data-i18n="scrollCue">CUỘN ĐỂ KHÁM PHÁ</small>
+              ><small data-i18n="scrollCue">CUỘN ĐỂ XEM SLIDE</small>
             </a>
-            <span class="world-media-credit" data-i18n="heroWaterCaption">
-              SURFACE STUDY / WATER IN MOTION
-            </span>
+            <a
+              class="world-media-credit"
+              href="https://creativecommons.org/licenses/by/3.0/"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Water footage by Alexander Grebenkov, Creative Commons Attribution 3.0"
+            >
+              WATER / ALEXANDER GREBENKOV / CC BY 3.0
+            </a>
           </div>
         </section>
 

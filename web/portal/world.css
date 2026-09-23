@@ -1,236 +1,311 @@
+/* XLab World: an original WebGL exploration layer for the client portal. */
 .hero.hero-world {
+  display: block;
   min-height: 0;
-  padding: 0;
-  background: #061215;
+  padding: 24px 0 38px;
 }
 
 .world-stage {
   position: relative;
-  width: 100%;
-  height: 100svh;
-  min-height: 720px;
+  min-height: min(820px, calc(100svh - 128px));
   overflow: hidden;
   isolation: isolate;
-  background: #061215;
-  color: #f4f5ef;
-  --water-pointer-x: 50%;
-  --water-pointer-y: 50%;
+  perspective: 1200px;
+  border: 1px solid rgb(140 232 216 / 24%);
+  border-radius: 32px;
+  background: #03070d;
+  box-shadow:
+    0 42px 100px rgb(0 0 0 / 34%),
+    inset 0 1px 0 rgb(255 255 255 / 8%),
+    inset 0 0 80px rgb(21 190 173 / 7%);
 }
 
-.world-stage::before,
-.world-stage::after,
+.world-space-image,
+.world-water-video,
 .world-canvas,
 .world-atmosphere,
-.world-grain {
+.world-scanlines {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
 }
 
-.world-stage::before {
+.world-space-image {
   z-index: 0;
-  background:
-    radial-gradient(ellipse at 82% 22%, rgb(112 202 194 / 60%) 0, transparent 21%),
-    radial-gradient(ellipse at 70% 58%, rgb(14 111 124 / 62%) 0, transparent 32%),
-    radial-gradient(ellipse at 91% 85%, rgb(105 192 183 / 25%) 0, transparent 28%),
-    repeating-linear-gradient(
-      164deg,
-      transparent 0 19px,
-      rgb(176 231 217 / 11%) 21px 22px,
-      transparent 24px 51px
-    ),
-    linear-gradient(145deg, #071b21 0%, #0b333b 44%, #09222b 100%);
-  background-size:
-    130% 140%,
-    150% 150%,
-    160% 150%,
-    100% 100%,
-    100% 100%;
-  background-position: 50% 50%;
-  content: "";
-  animation: css-water-current 19s ease-in-out infinite alternate;
-}
-
-.world-stage::after {
-  z-index: 2;
-  background: radial-gradient(
-    circle at var(--water-pointer-x) var(--water-pointer-y),
-    rgb(151 238 224 / 17%) 0,
-    rgb(114 212 204 / 8%) 7%,
-    transparent 19%
-  );
-  content: "";
-  opacity: 0;
+  overflow: hidden;
   pointer-events: none;
-  transition: opacity 0.35s ease;
+  background:
+    radial-gradient(circle at 68% 24%, rgb(91 94 255 / 29%), transparent 20%),
+    radial-gradient(ellipse at 54% 57%, rgb(0 187 203 / 25%), transparent 41%),
+    radial-gradient(ellipse at 80% 86%, rgb(235 77 171 / 19%), transparent 34%),
+    radial-gradient(circle at 18% 22%, rgb(110 71 214 / 18%), transparent 24%),
+    linear-gradient(145deg, #01030a 0%, #050819 50%, #10071e 100%);
+  background-blend-mode: screen, screen, screen, screen, normal;
+  background-size:
+    150% 150%,
+    145% 145%,
+    130% 130%,
+    170% 170%,
+    100% 100%;
+  filter: saturate(1.12) contrast(1.08) brightness(0.72);
+  opacity: 0.96;
+  transform: translate3d(
+      calc(
+        var(--parallax-x, 0px) * -3.2 + var(--cosmic-shift-x, 0px) + var(--world-image-shift-x, 0px)
+      ),
+      calc(
+        var(--parallax-y, 0px) * -3.2 + var(--cosmic-shift-y, 0px) + var(--world-image-shift-y, 0px)
+      ),
+      0
+    )
+    rotateX(var(--world-image-tilt-y, 0deg)) rotateY(var(--world-image-tilt-x, 0deg))
+    scale(var(--world-image-scale, 1.12));
+  transform-origin: center;
+  transform-style: preserve-3d;
+  will-change: transform, background-position, filter;
+  animation: world-image-drift 26s ease-in-out infinite alternate;
 }
 
-.world-stage.is-pointer-active::after,
-.world-stage.is-world-pulsing::after {
-  opacity: 1;
+.world-water-video {
+  z-index: 0;
+  object-fit: cover;
+  object-position: center;
+  pointer-events: none;
+  opacity: 0;
+  background: #03131b;
+  filter: saturate(1.12) contrast(1.08) brightness(0.68);
+  transform: translate3d(
+      calc(
+        var(--parallax-x, 0px) * -2.4 + var(--water-shift-x, 0px) + var(--world-image-shift-x, 0px)
+      ),
+      calc(
+        var(--parallax-y, 0px) * -2.4 + var(--water-shift-y, 0px) + var(--world-image-shift-y, 0px)
+      ),
+      0
+    )
+    rotateX(var(--world-image-tilt-y, 0deg)) rotateY(var(--world-image-tilt-x, 0deg))
+    scale(var(--world-image-scale, 1.08));
+  transform-origin: center;
+  will-change: transform, filter;
+  transition: opacity 260ms ease;
+}
+
+.world-space-image::before,
+.world-space-image::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+}
+
+.world-space-image::before {
+  background: radial-gradient(
+    circle at var(--world-pointer-x, 50%) var(--world-pointer-y, 50%),
+    rgb(143 255 238 / 30%) 0,
+    rgb(91 226 255 / 13%) 9%,
+    transparent 28%
+  );
+  mix-blend-mode: screen;
+  opacity: var(--world-pointer-intensity, 0);
+  transform: scale(1.05);
+  transition: opacity 260ms ease;
+}
+
+.world-space-image::after {
+  background:
+    linear-gradient(120deg, transparent 22%, rgb(125 255 238 / 8%) 47%, transparent 67%),
+    radial-gradient(ellipse at 52% 42%, transparent 34%, rgb(0 0 0 / 26%) 100%);
+  mix-blend-mode: screen;
+  opacity: 0.28;
+  animation: world-image-shimmer 11s ease-in-out infinite alternate;
+}
+
+.world-atmosphere {
+  transform: translate3d(
+      calc(var(--parallax-x, 0px) * -0.9 + var(--cosmic-shift-x, 0px) * -0.34),
+      calc(var(--parallax-y, 0px) * -0.9 + var(--cosmic-shift-y, 0px) * -0.34),
+      0
+    )
+    scale(1.03);
+  will-change: transform;
 }
 
 .world-canvas {
   z-index: 1;
   display: block;
-  opacity: 1;
   pointer-events: none;
-  transition: opacity 0.2s ease;
-}
-
-.world-stage.world-fallback .world-canvas {
-  opacity: 0;
+  background: transparent;
+  transition: opacity 260ms ease;
 }
 
 .world-atmosphere {
-  z-index: 3;
+  z-index: 2;
   pointer-events: none;
   background:
-    linear-gradient(
-      90deg,
-      rgb(4 10 10 / 87%) 0%,
-      rgb(4 10 10 / 77%) 26%,
-      rgb(4 10 10 / 41%) 54%,
-      rgb(4 10 10 / 4%) 100%
-    ),
-    linear-gradient(0deg, rgb(4 9 9 / 58%), transparent 28%, transparent 78%, rgb(4 10 10 / 20%));
+    radial-gradient(circle at 57% 55%, rgb(70 247 221 / 10%), transparent 22%),
+    radial-gradient(circle at 83% 25%, rgb(120 111 255 / 12%), transparent 24%),
+    radial-gradient(circle at 24% 86%, rgb(255 143 98 / 9%), transparent 25%),
+    linear-gradient(120deg, transparent 35%, rgb(49 111 142 / 8%) 55%, transparent 75%);
+  mix-blend-mode: screen;
 }
 
-.world-grain {
-  z-index: 4;
+.world-scanlines {
+  z-index: 3;
   pointer-events: none;
-  opacity: 0.1;
-  background-image: repeating-linear-gradient(
-    0deg,
-    rgb(255 255 255 / 12%) 0 1px,
-    transparent 1px 3px
+  opacity: 0.35;
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0,
+    transparent 3px,
+    rgb(194 255 247 / 5%) 4px,
+    transparent 5px
   );
-  mix-blend-mode: soft-light;
+  mask-image: linear-gradient(180deg, transparent, black 18%, black 82%, transparent);
+}
+
+.world-scanlines::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent, rgb(101 233 213 / 8%), transparent 65%);
+  content: "";
+  animation: world-scan 9s linear infinite;
 }
 
 .world-copy {
   position: absolute;
-  z-index: 6;
-  top: clamp(160px, 20vh, 225px);
-  left: clamp(24px, 8.1vw, 128px);
-  width: min(950px, 72vw);
+  top: clamp(62px, 10vh, 112px);
+  left: clamp(28px, 6vw, 92px);
+  z-index: 5;
+  width: min(600px, 48%);
+  transition:
+    opacity 420ms ease,
+    transform 420ms ease;
+}
+
+.world-copy::before {
+  position: absolute;
+  z-index: -1;
+  inset: -34px -48px -34px -28px;
+  background: radial-gradient(ellipse at 34% 35%, rgb(3 9 17 / 88%), transparent 70%);
+  content: "";
+  pointer-events: none;
 }
 
 .world-copy h1 {
-  max-width: 1000px;
-  margin: 27px 0 22px;
-  color: #f4f5ef;
-  font-size: clamp(62px, 7.1vw, 110px);
-  font-weight: 500;
+  max-width: 680px;
+  margin: 23px 0 25px;
+  color: #ecfffb;
+  font-size: clamp(47px, 6.2vw, 94px);
+  font-weight: 760;
   letter-spacing: -0.085em;
   line-height: 0.91;
-}
-
-.world-copy h1 span,
-.world-copy h1 em {
-  display: inline-block;
+  text-shadow: 0 15px 50px rgb(0 0 0 / 32%);
 }
 
 .world-copy h1 em {
-  color: #d4ff7a;
-  font-style: normal;
+  background: linear-gradient(100deg, #e8fff9 0%, #6bf2db 48%, #a8a5ff 100%);
+  background-clip: text;
+  color: transparent;
+  text-shadow: none;
 }
 
 .world-lede {
-  max-width: 510px;
+  max-width: 490px;
   margin: 0;
-  color: rgb(244 245 239 / 72%);
-  font-size: clamp(13px, 1.2vw, 16px);
-  line-height: 1.72;
+  color: rgb(213 236 235 / 70%);
+  font-size: 15px;
+  line-height: 1.7;
 }
 
 .world-actions {
   display: flex;
-  align-items: center;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: 27px;
+  margin-top: 31px;
 }
 
 .world-button {
   display: inline-flex;
-  min-height: 48px;
   align-items: center;
-  justify-content: center;
-  gap: 18px;
-  padding: 0 17px;
+  justify-content: space-between;
+  gap: 26px;
+  min-height: 48px;
+  padding: 0 15px 0 18px;
   border: 1px solid transparent;
-  border-radius: 1px;
-  color: #fff;
-  cursor: pointer;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.11em;
-  text-decoration: none;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   transition:
-    background 0.2s ease,
-    border-color 0.2s ease,
-    color 0.2s ease,
-    transform 0.2s ease;
-}
-
-.world-button:hover {
-  transform: translateY(-2px);
+    border-color 180ms ease,
+    background 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
 }
 
 .world-button b {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 400;
+  line-height: 1;
+}
+
+.world-button:hover {
+  transform: translateY(-3px);
 }
 
 .world-button-primary {
-  background: #caff4a;
-  color: #11170d;
+  background: #70eed9;
+  color: #031318;
+  box-shadow: 0 12px 32px rgb(101 233 213 / 18%);
 }
 
 .world-button-primary:hover {
-  background: #ddff8f;
+  background: #a0f8e8;
 }
 
 .world-button-ghost {
-  border-color: rgb(244 245 239 / 40%);
-  background: rgb(4 10 10 / 12%);
-  color: #fff;
-  backdrop-filter: blur(8px);
+  border-color: rgb(207 238 235 / 25%);
+  background: rgb(7 20 31 / 58%);
+  color: #dff8f3;
+  backdrop-filter: blur(18px);
 }
 
 .world-button-ghost:hover {
-  border-color: #caff4a;
-  color: #d4ff7a;
+  border-color: rgb(101 233 213 / 60%);
+  background: rgb(101 233 213 / 9%);
+  color: #83f3df;
 }
 
 .world-stats {
-  display: flex;
-  width: min(100%, 490px);
-  gap: clamp(22px, 4vw, 58px);
-  margin-top: clamp(38px, 5.2vh, 62px);
-  padding-top: 18px;
-  border-top: 1px solid rgb(244 245 239 / 27%);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(90px, 1fr));
+  gap: 16px;
+  max-width: 520px;
+  margin-top: 56px;
+  padding-top: 17px;
+  border-top: 1px solid rgb(193 230 225 / 18%);
 }
 
 .world-stats span {
   display: grid;
-  gap: 4px;
+  gap: 8px;
 }
 
 .world-stats strong {
-  color: #f4f5ef;
-  font-size: 20px;
-  font-weight: 500;
-  letter-spacing: -0.045em;
+  color: #eafff8;
+  font-size: 18px;
+  font-weight: 690;
+  letter-spacing: -0.06em;
 }
 
 .world-stats small {
-  color: rgb(244 245 239 / 57%);
+  color: rgb(185 215 213 / 58%);
   font-size: 8px;
-  letter-spacing: 0.09em;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  line-height: 1.35;
   text-transform: uppercase;
 }
 
@@ -238,408 +313,1526 @@
 .world-locations,
 .world-scroll-cue,
 .world-media-credit {
-  position: absolute;
-  z-index: 7;
+  z-index: 6;
 }
 
 .world-hud {
-  top: 112px;
-  right: clamp(24px, 5vw, 76px);
-  width: min(300px, 25vw);
-  color: rgb(244 245 239 / 73%);
+  position: absolute;
+  inset: 22px 28px auto;
+  color: rgb(194 240 234 / 56%);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
   pointer-events: none;
-}
-
-.world-hud-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  font-size: 7px;
-  letter-spacing: 0.13em;
   text-transform: uppercase;
 }
 
-.world-hud-top {
-  min-height: 31px;
-  border-top: 1px solid rgb(244 245 239 / 44%);
-  border-bottom: 1px solid rgb(244 245 239 / 18%);
+.world-hud-top,
+.world-coordinates {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
 }
 
-.world-hud-top span {
-  white-space: nowrap;
+.world-hud-top {
+  padding-bottom: 13px;
+  border-bottom: 1px solid rgb(194 240 234 / 15%);
 }
 
 .world-hud-top span:first-child {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  color: #f4f5ef;
+  color: #81efdc;
 }
 
-.world-hud-top i {
+.world-hud-top i,
+.world-target-readout i {
+  display: inline-block;
   width: 5px;
   height: 5px;
+  margin-right: 7px;
   border-radius: 50%;
-  background: #caff4a;
-  box-shadow: 0 0 12px rgb(202 255 74 / 78%);
+  background: #ffae76;
+  box-shadow: 0 0 13px rgb(255 174 118 / 95%);
+}
+
+.world-coordinates {
+  position: absolute;
+  top: 52px;
+  right: 0;
+  left: 0;
+}
+
+.world-coordinates b {
+  color: #bffcf1;
+  font-weight: 700;
+}
+
+.world-reticle {
+  position: absolute;
+  top: 44vh;
+  left: 53%;
+  width: 64px;
+  height: 64px;
+  border: 1px solid rgb(115 249 222 / 23%);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.world-reticle::before,
+.world-reticle::after {
+  position: absolute;
+  background: rgb(115 249 222 / 34%);
+  content: "";
+}
+
+.world-reticle::before {
+  top: 50%;
+  right: -14px;
+  left: -14px;
+  height: 1px;
+}
+
+.world-reticle::after {
+  top: -14px;
+  bottom: -14px;
+  left: 50%;
+  width: 1px;
+}
+
+.world-reticle i,
+.world-reticle b,
+.world-reticle em {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+}
+
+.world-reticle i {
+  inset: 22px;
+  background: #79f4de;
+  box-shadow: 0 0 20px rgb(121 244 222 / 90%);
+}
+
+.world-reticle b,
+.world-reticle em {
+  inset: 11px;
+  border: 1px dashed rgb(121 244 222 / 44%);
+}
+
+.world-reticle em {
+  inset: 7px;
+  border-color: rgb(255 174 118 / 32%);
+  transform: rotate(45deg);
+}
+
+.world-target-readout {
+  position: absolute;
+  top: 97px;
+  right: 0;
+  display: grid;
+  gap: 6px;
+  min-width: 164px;
+  padding: 12px 13px;
+  border: 1px solid rgb(121 244 222 / 17%);
+  background: rgb(3 15 24 / 46%);
+  backdrop-filter: blur(16px);
+}
+
+.world-target-readout small {
+  color: rgb(194 240 234 / 45%);
+  font-size: 7px;
+}
+
+.world-target-readout strong {
+  color: #cffff5;
+  font-size: 10px;
+}
+
+.world-target-readout span {
+  color: rgb(194 240 234 / 44%);
+  font-size: 7px;
+  letter-spacing: 0.08em;
+}
+
+.world-target-readout span i {
+  width: 4px;
+  height: 4px;
+  margin-right: 4px;
+  background: #72ebd7;
+  box-shadow: none;
 }
 
 .world-locations {
-  right: clamp(24px, 5vw, 76px);
-  bottom: 76px;
+  position: absolute;
+  top: 126px;
+  right: 28px;
   display: grid;
-  width: min(360px, 31vw);
-  gap: 0;
+  gap: 8px;
+  width: min(248px, 24%);
 }
 
 .world-location {
   display: grid;
-  grid-template-columns: 28px 1fr 15px;
-  min-height: 53px;
+  grid-template-columns: 26px 1fr 18px;
   align-items: center;
   gap: 9px;
-  padding: 7px 0;
-  border: 0;
-  border-top: 1px solid rgb(244 245 239 / 24%);
-  background: transparent;
-  color: #f4f5ef;
+  min-height: 61px;
+  padding: 8px 10px;
+  border: 1px solid rgb(193 230 225 / 14%);
+  border-radius: 10px;
+  background: rgb(6 19 31 / 58%);
+  color: rgb(222 248 243 / 60%);
   text-align: left;
+  backdrop-filter: blur(16px);
   transition:
-    border-color 0.2s ease,
-    padding 0.2s ease;
-}
-
-.world-location:last-child {
-  border-bottom: 1px solid rgb(244 245 239 / 24%);
+    border-color 180ms ease,
+    background 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
 }
 
 .world-location:hover,
 .world-location.is-active {
-  padding-inline: 7px;
-  border-color: rgb(202 255 74 / 72%);
+  border-color: rgb(115 249 222 / 46%);
+  background: rgb(25 101 99 / 31%);
+  color: #ddfff7;
+  transform: translateX(-5px);
 }
 
 .world-location-index {
-  color: #caff4a;
-  font-size: 8px;
-  letter-spacing: 0.12em;
+  color: #71efd9;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 9px;
 }
 
 .world-location span:nth-child(2) {
   display: grid;
-  gap: 2px;
+  gap: 6px;
 }
 
 .world-location strong {
-  font-size: 8px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
 }
 
 .world-location small {
-  color: rgb(244 245 239 / 55%);
+  color: rgb(194 240 234 / 43%);
   font-size: 8px;
 }
 
 .world-location b {
-  justify-self: end;
-  color: #caff4a;
-  font-size: 13px;
+  color: #82f0dc;
+  font-size: 16px;
   font-weight: 400;
 }
 
 .world-scroll-cue {
-  bottom: 34px;
-  left: clamp(24px, 5vw, 76px);
+  position: absolute;
+  bottom: 32px;
+  left: 30px;
   display: inline-flex;
   align-items: center;
-  gap: 11px;
-  color: rgb(244 245 239 / 65%);
-  font-size: 7px;
-  letter-spacing: 0.18em;
-  text-decoration: none;
+  gap: 12px;
+  color: rgb(194 240 234 / 46%);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 8px;
+  letter-spacing: 0.16em;
 }
 
-.world-scroll-cue > span {
-  display: flex;
-  gap: 2px;
+.world-scroll-cue span {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
 }
 
 .world-scroll-cue i {
   display: block;
-  width: 2px;
-  height: 12px;
-  background: #caff4a;
-  animation: cue-pulse 1.4s ease-in-out infinite;
+  width: 3px;
+  height: 13px;
+  background: #74efdb;
+  opacity: 0.28;
 }
 
 .world-scroll-cue i:nth-child(2) {
-  animation-delay: 0.14s;
+  opacity: 0.58;
 }
 
 .world-scroll-cue i:nth-child(3) {
-  animation-delay: 0.28s;
+  opacity: 0.95;
 }
 
 .world-media-credit {
-  right: clamp(24px, 5vw, 76px);
-  bottom: 34px;
-  color: rgb(244 245 239 / 47%);
+  position: absolute;
+  right: 30px;
+  bottom: 30px;
+  color: rgb(194 240 234 / 38%);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   font-size: 7px;
   letter-spacing: 0.12em;
+  text-decoration: none;
+  transition: color 180ms ease;
 }
 
-.world-stage.is-world-pulsing::before {
-  animation-duration: 4s;
+.world-media-credit:hover,
+.world-media-credit:focus-visible {
+  color: #83f2df;
 }
 
-.world-stage.world-reduced-motion::before,
-.world-stage.world-reduced-motion .world-scroll-cue i {
-  animation: none;
+.world-stage.world-fallback {
+  background:
+    radial-gradient(circle at 74% 34%, rgb(80 245 218 / 19%), transparent 25%),
+    linear-gradient(135deg, #06121d, #061c29 52%, #17152c);
 }
 
-@keyframes css-water-current {
+html[data-theme="light"] .world-stage {
+  border-color: rgb(0 129 126 / 25%);
+  background: #eaf6f4;
+  box-shadow:
+    0 42px 100px rgb(21 91 96 / 14%),
+    inset 0 1px 0 rgb(255 255 255 / 80%),
+    inset 0 0 80px rgb(21 190 173 / 9%);
+}
+
+html[data-theme="light"] .world-copy::before {
+  background: radial-gradient(ellipse at 34% 35%, rgb(238 253 250 / 92%), transparent 70%);
+}
+
+html[data-theme="light"] .world-copy h1 {
+  color: #072a31;
+  text-shadow: 0 15px 50px rgb(27 93 91 / 14%);
+}
+
+html[data-theme="light"] .world-lede {
+  color: rgb(13 61 66 / 68%);
+}
+
+html[data-theme="light"] .world-button-ghost,
+html[data-theme="light"] .world-location,
+html[data-theme="light"] .world-target-readout {
+  border-color: rgb(0 129 126 / 22%);
+  background: rgb(255 255 255 / 54%);
+  color: #0d4a4e;
+}
+
+html[data-theme="light"] .world-stats strong,
+html[data-theme="light"] .world-target-readout strong {
+  color: #093e45;
+}
+
+html[data-theme="light"] .world-stats small,
+html[data-theme="light"] .world-hud,
+html[data-theme="light"] .world-control-copy,
+html[data-theme="light"] .world-scroll-cue,
+html[data-theme="light"] .world-location small {
+  color: rgb(12 71 75 / 56%);
+}
+
+@keyframes world-scan {
   0% {
-    background-position:
-      50% 45%,
-      56% 52%,
-      70% 60%,
-      0 0,
-      center;
-    filter: saturate(0.92) brightness(0.72);
+    transform: translateY(-35%);
   }
 
   100% {
-    background-position:
-      68% 53%,
-      43% 48%,
-      62% 42%,
-      18px -14px,
-      center;
-    filter: saturate(1.12) brightness(0.9);
+    transform: translateY(35%);
   }
 }
 
-@keyframes cue-pulse {
-  0%,
-  100% {
-    opacity: 0.32;
-    transform: scaleY(0.6);
-    transform-origin: center;
-  }
-
-  50% {
-    opacity: 1;
-    transform: scaleY(1);
-  }
-}
-
-@media (max-width: 1050px) {
+@media (max-width: 980px) {
   .world-copy {
-    width: min(800px, 72vw);
-  }
-
-  .world-hud {
-    width: min(260px, 27vw);
+    width: min(600px, 59%);
   }
 
   .world-locations {
-    width: min(300px, 30vw);
+    width: min(224px, 28%);
+  }
+
+  .world-location {
+    grid-template-columns: 22px 1fr;
+  }
+
+  .world-location b {
+    display: none;
   }
 }
 
 @media (max-width: 760px) {
-  .world-stage {
-    min-height: 790px;
-    height: max(100svh, 790px);
+  .hero.hero-world {
+    padding: 16px 0 26px;
   }
 
-  .world-atmosphere {
-    background:
-      linear-gradient(
-        90deg,
-        rgb(4 10 10 / 84%) 0%,
-        rgb(4 10 10 / 60%) 70%,
-        rgb(4 10 10 / 22%) 100%
-      ),
-      linear-gradient(0deg, rgb(4 9 9 / 78%), transparent 42%, rgb(4 10 10 / 28%));
+  .world-stage {
+    min-height: 710px;
+    border-radius: 23px;
   }
 
   .world-copy {
-    top: 156px;
+    top: 60px;
     right: 24px;
     left: 24px;
     width: auto;
   }
 
   .world-copy h1 {
-    max-width: 640px;
-    margin: 21px 0 17px;
-    font-size: clamp(58px, 10.5vw, 82px);
+    margin-top: 17px;
+    font-size: clamp(43px, 12vw, 68px);
   }
 
   .world-lede {
-    max-width: 470px;
+    max-width: 460px;
     font-size: 13px;
   }
 
   .world-stats {
-    width: min(100%, 440px);
-    margin-top: 36px;
+    max-width: 470px;
+    margin-top: 34px;
   }
 
   .world-hud {
-    top: 91px;
-    right: 24px;
-    left: 24px;
-    width: auto;
-  }
-
-  .world-hud-top {
-    justify-content: flex-start;
+    inset: 17px 18px auto;
   }
 
   .world-hud-top span:nth-child(2),
-  .world-hud-top span:last-child {
-    margin-left: auto;
+  .world-coordinates,
+  .world-reticle,
+  .world-target-readout {
+    display: none;
   }
 
   .world-locations {
-    right: 20px;
-    bottom: 93px;
-    left: 20px;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
+    top: auto;
+    right: 18px;
+    bottom: 123px;
+    left: 18px;
+    grid-template-columns: repeat(3, 1fr);
     width: auto;
   }
 
   .world-location {
-    display: grid;
-    min-height: 46px;
-    grid-template-columns: 1fr auto;
-    gap: 4px;
-    padding: 7px 0;
+    display: block;
+    min-height: 53px;
+    padding: 8px 9px;
   }
 
   .world-location-index {
-    grid-column: 1 / -1;
-  }
-
-  .world-location span:nth-child(2) {
-    display: contents;
+    display: block;
+    margin-bottom: 6px;
   }
 
   .world-location strong {
+    display: block;
     overflow: hidden;
     font-size: 7px;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .world-location small,
-  .world-location b {
+  .world-location small {
     display: none;
   }
 
   .world-scroll-cue {
-    bottom: 35px;
-    left: 20px;
+    bottom: 33px;
+    left: 18px;
+    font-size: 7px;
   }
 
   .world-media-credit {
-    right: 20px;
-    bottom: 35px;
-    max-width: 50%;
-    text-align: right;
+    right: 18px;
+    bottom: 31px;
+    font-size: 6px;
   }
 }
 
 @media (max-width: 480px) {
   .world-stage {
-    min-height: 780px;
-    height: max(100svh, 780px);
+    min-height: 660px;
   }
 
   .world-copy {
-    top: 153px;
-    right: 20px;
-    left: 20px;
+    top: 55px;
   }
 
   .world-copy h1 {
-    margin-top: 18px;
-    font-size: clamp(47px, 11.2vw, 58px);
-    line-height: 1.02;
+    font-size: clamp(39px, 12.5vw, 57px);
   }
 
   .world-lede {
-    max-width: 350px;
     font-size: 12px;
+    line-height: 1.55;
   }
 
   .world-actions {
-    align-items: stretch;
-    flex-direction: column;
-    width: min(100%, 290px);
-    gap: 8px;
-    margin-top: 20px;
+    margin-top: 21px;
   }
 
   .world-button {
-    min-height: 44px;
-    justify-content: space-between;
+    min-height: 42px;
+    padding-left: 13px;
+    font-size: 8px;
   }
 
   .world-stats {
-    gap: 17px;
-    margin-top: 28px;
-    padding-top: 14px;
+    gap: 9px;
+    margin-top: 25px;
   }
 
   .world-stats strong {
-    font-size: 17px;
+    font-size: 15px;
   }
 
   .world-stats small {
-    max-width: 94px;
     font-size: 7px;
-    line-height: 1.4;
   }
 
-  .world-hud {
-    right: 20px;
-    left: 20px;
+  .world-locations {
+    bottom: 111px;
   }
 
   .world-location {
     min-height: 48px;
+    padding: 7px;
+  }
+
+  .world-location-index {
+    font-size: 8px;
   }
 
   .world-location strong {
-    font-size: 6.5px;
-    letter-spacing: 0.08em;
-  }
-
-  .world-scroll-cue {
-    left: 20px;
-    font-size: 6px;
-  }
-
-  .world-media-credit {
-    right: 20px;
-    max-width: 48%;
     font-size: 6px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .world-stage::before,
-  .world-scroll-cue i {
+  .world-scanlines::after {
     animation: none;
   }
+}
 
-  .world-stage::after {
-    transition: none;
+/* Final polish: keep the slide story readable over the cosmic field. */
+.world-stage {
+  border-color: rgb(145 244 226 / 30%);
+  border-radius: 28px;
+  background:
+    radial-gradient(ellipse at 70% 34%, rgb(73 74 170 / 24%), transparent 31%),
+    radial-gradient(ellipse at 22% 78%, rgb(0 156 171 / 17%), transparent 34%),
+    radial-gradient(ellipse at 94% 94%, rgb(190 58 107 / 13%), transparent 29%),
+    linear-gradient(145deg, #01030a 0%, #05091a 48%, #11081f 100%);
+}
+
+.world-atmosphere {
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 67% 50%, rgb(70 247 221 / 12%), transparent 25%),
+    radial-gradient(ellipse at 88% 22%, rgb(120 111 255 / 17%), transparent 28%),
+    radial-gradient(ellipse at 18% 91%, rgb(255 105 132 / 9%), transparent 27%),
+    linear-gradient(118deg, transparent 24%, rgb(61 92 185 / 10%) 51%, transparent 76%);
+}
+
+.world-atmosphere::before {
+  position: absolute;
+  inset: -35%;
+  background:
+    radial-gradient(ellipse at 37% 54%, rgb(93 53 190 / 33%) 0%, transparent 37%),
+    radial-gradient(ellipse at 72% 64%, rgb(8 188 191 / 24%) 0%, transparent 34%),
+    conic-gradient(
+      from 225deg at 48% 50%,
+      transparent 0 38%,
+      rgb(138 65 220 / 17%) 49%,
+      transparent 60% 100%
+    );
+  content: "";
+  filter: blur(52px) saturate(120%);
+  opacity: 0.8;
+  transform: rotate(-12deg) scale(1.08);
+  animation: world-nebula-drift 22s ease-in-out infinite alternate;
+}
+
+.world-atmosphere::after {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      ellipse at 50% 48%,
+      transparent 12%,
+      rgb(84 101 216 / 11%) 42%,
+      transparent 70%
+    ),
+    radial-gradient(ellipse at 56% 58%, transparent 35%, rgb(0 0 0 / 22%) 100%);
+  content: "";
+  opacity: 0.9;
+  animation: world-space-bloom 15s ease-in-out infinite alternate;
+}
+
+.world-stage::after {
+  position: absolute;
+  z-index: 4;
+  inset: 0;
+  background:
+    radial-gradient(
+      ellipse at 54% 42%,
+      transparent 24%,
+      rgb(1 3 12 / 12%) 68%,
+      rgb(0 0 0 / 42%) 100%
+    ),
+    linear-gradient(180deg, transparent 55%, rgb(1 4 12 / 26%) 100%);
+  content: "";
+  pointer-events: none;
+}
+
+.world-scanlines {
+  opacity: 0.22;
+}
+
+.world-copy {
+  width: min(700px, 52%);
+  margin-left: -22px;
+  padding: 18px 28px 24px;
+  border-left: 1px solid rgb(122 244 224 / 20%);
+  background: linear-gradient(90deg, rgb(2 7 12 / 96%) 0%, rgb(2 7 12 / 86%) 62%, transparent 100%);
+  backdrop-filter: blur(3px);
+}
+
+.world-copy::before {
+  inset: -26px -90px -30px -30px;
+  background: linear-gradient(90deg, rgb(2 7 12 / 84%), rgb(2 7 12 / 30%) 70%, transparent);
+}
+
+.world-copy h1 {
+  max-width: 680px;
+  margin-top: 20px;
+  margin-bottom: 23px;
+  font-size: clamp(44px, 4.9vw, 72px);
+  line-height: 0.94;
+}
+
+.world-lede {
+  max-width: 470px;
+  color: rgb(222 242 239 / 74%);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.world-actions {
+  margin-top: 27px;
+}
+
+.world-stats {
+  max-width: 500px;
+  margin-top: 42px;
+}
+
+.world-hud-top {
+  padding-bottom: 11px;
+  border-color: rgb(194 240 234 / 18%);
+}
+
+.world-reticle {
+  width: 54px;
+  height: 54px;
+  opacity: 0.78;
+}
+
+.world-reticle i {
+  inset: 19px;
+}
+
+.world-reticle b,
+.world-reticle em {
+  inset: 9px;
+}
+
+.world-reticle em {
+  inset: 6px;
+}
+
+.world-target-readout {
+  top: 87px;
+  min-width: 154px;
+  padding: 10px 12px;
+  border-color: rgb(121 244 222 / 22%);
+  background: rgb(3 15 24 / 60%);
+}
+
+.world-locations {
+  top: 112px;
+  right: 24px;
+  gap: 7px;
+  width: min(232px, 23%);
+}
+
+.world-location {
+  min-height: 56px;
+  border-color: rgb(193 230 225 / 17%);
+  background: rgb(4 16 26 / 62%);
+}
+
+.world-location:hover,
+.world-location.is-active {
+  transform: translateX(-4px);
+}
+
+html[data-theme="light"] .world-stage {
+  background:
+    radial-gradient(ellipse at 70% 34%, rgb(100 105 212 / 14%), transparent 31%),
+    radial-gradient(ellipse at 22% 78%, rgb(16 156 171 / 10%), transparent 34%),
+    linear-gradient(140deg, #f3fbfa 0%, #e7f3f2 54%, #edf1fb 100%);
+}
+
+html[data-theme="light"] .world-atmosphere {
+  background:
+    radial-gradient(ellipse at 67% 50%, rgb(29 182 169 / 10%), transparent 25%),
+    radial-gradient(ellipse at 88% 22%, rgb(120 111 255 / 11%), transparent 28%),
+    radial-gradient(ellipse at 18% 91%, rgb(255 105 132 / 7%), transparent 27%);
+  mix-blend-mode: multiply;
+}
+
+html[data-theme="light"] .world-atmosphere::before {
+  background:
+    radial-gradient(ellipse at 37% 54%, rgb(126 100 204 / 17%) 0%, transparent 37%),
+    radial-gradient(ellipse at 72% 64%, rgb(8 188 191 / 14%) 0%, transparent 34%);
+  opacity: 0.55;
+}
+
+html[data-theme="light"] .world-atmosphere::after {
+  background: radial-gradient(
+    ellipse at 50% 48%,
+    transparent 12%,
+    rgb(84 101 216 / 8%) 42%,
+    transparent 70%
+  );
+}
+
+html[data-theme="light"] .world-stage::after {
+  background:
+    radial-gradient(
+      ellipse at 54% 42%,
+      transparent 24%,
+      rgb(12 67 72 / 5%) 68%,
+      rgb(12 67 72 / 14%) 100%
+    ),
+    linear-gradient(180deg, transparent 55%, rgb(12 67 72 / 7%) 100%);
+}
+
+@keyframes world-nebula-drift {
+  0% {
+    transform: rotate(-12deg) translate3d(-2%, -1%, 0) scale(1.08);
+  }
+
+  100% {
+    transform: rotate(-6deg) translate3d(3%, 2%, 0) scale(1.14);
+  }
+}
+
+@keyframes world-space-bloom {
+  0% {
+    opacity: 0.62;
+    transform: scale(0.98);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+html[data-theme="light"] .world-copy {
+  border-color: rgb(0 129 126 / 20%);
+  background: linear-gradient(
+    90deg,
+    rgb(243 251 250 / 95%) 0%,
+    rgb(243 251 250 / 82%) 62%,
+    transparent 100%
+  );
+}
+
+html[data-theme="light"] .world-copy::before {
+  background: linear-gradient(
+    90deg,
+    rgb(243 251 250 / 86%),
+    rgb(243 251 250 / 26%) 70%,
+    transparent
+  );
+}
+
+@media (max-width: 760px) {
+  .world-locations {
+    top: auto;
+    right: 18px;
+    bottom: 123px;
+    left: 18px;
+    width: auto;
+  }
+
+  .world-copy {
+    width: auto;
+    margin-left: 0;
+    padding: 10px 0 0;
+    border-left: 0;
+    background: none;
+    backdrop-filter: none;
+  }
+
+  .world-copy::before {
+    inset: -20px -26px -24px;
+    background: linear-gradient(
+      180deg,
+      rgb(2 7 12 / 94%) 0%,
+      rgb(2 7 12 / 84%) 78%,
+      transparent 100%
+    );
+  }
+
+  .world-copy h1 {
+    margin-top: 16px;
+    font-size: clamp(40px, 11.6vw, 64px);
+  }
+
+  .world-lede {
+    max-width: 420px;
+    font-size: 12.5px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-atmosphere::before,
+  .world-atmosphere::after {
+    animation: none;
+  }
+}
+
+/* Cosmic studio pass: keep the opening world cinematic in both themes. */
+.world-stage {
+  border-color: rgb(143 246 228 / 36%);
+  background:
+    radial-gradient(ellipse at 75% 16%, rgb(93 83 255 / 26%), transparent 30%),
+    radial-gradient(ellipse at 20% 76%, rgb(0 190 204 / 20%), transparent 32%),
+    radial-gradient(ellipse at 92% 92%, rgb(219 57 136 / 17%), transparent 28%),
+    linear-gradient(145deg, #01030a 0%, #050717 47%, #120621 100%);
+  box-shadow:
+    0 48px 120px rgb(0 0 0 / 48%),
+    inset 0 1px 0 rgb(255 255 255 / 10%),
+    inset 0 0 110px rgb(67 236 222 / 9%);
+}
+
+.world-stage::before {
+  position: absolute;
+  z-index: 2;
+  inset: -28%;
+  background:
+    radial-gradient(ellipse at 26% 38%, rgb(117 79 235 / 24%) 0%, transparent 32%),
+    radial-gradient(ellipse at 72% 68%, rgb(0 218 205 / 17%) 0%, transparent 30%),
+    conic-gradient(
+      from 210deg at 54% 48%,
+      transparent 0 38%,
+      rgb(96 71 219 / 15%) 46%,
+      transparent 56% 100%
+    );
+  content: "";
+  filter: blur(54px) saturate(130%);
+  mix-blend-mode: screen;
+  opacity: 0.82;
+  pointer-events: none;
+  transform: rotate(-9deg) scale(1.08);
+  animation: world-cosmic-flow 28s ease-in-out infinite alternate;
+}
+
+.world-atmosphere {
+  background:
+    radial-gradient(ellipse at 58% 48%, rgb(54 247 224 / 14%), transparent 24%),
+    radial-gradient(ellipse at 86% 21%, rgb(117 111 255 / 20%), transparent 28%),
+    radial-gradient(ellipse at 15% 88%, rgb(255 89 145 / 12%), transparent 27%),
+    linear-gradient(118deg, transparent 18%, rgb(65 89 190 / 12%) 51%, transparent 79%);
+  mix-blend-mode: screen;
+  opacity: 0.94;
+}
+
+.world-atmosphere::before {
+  background:
+    radial-gradient(ellipse at 35% 48%, rgb(111 56 220 / 38%) 0%, transparent 36%),
+    radial-gradient(ellipse at 74% 62%, rgb(0 201 207 / 28%) 0%, transparent 33%),
+    radial-gradient(ellipse at 55% 20%, rgb(61 112 250 / 16%) 0%, transparent 27%),
+    conic-gradient(
+      from 220deg at 49% 50%,
+      transparent 0 34%,
+      rgb(164 75 230 / 20%) 44%,
+      transparent 54% 100%
+    );
+  filter: blur(58px) saturate(135%);
+  opacity: 0.9;
+  transform: rotate(-11deg) scale(1.12);
+  animation: world-cosmic-flow 24s ease-in-out infinite alternate-reverse;
+}
+
+.world-atmosphere::after {
+  background:
+    radial-gradient(
+      ellipse at 51% 48%,
+      transparent 10%,
+      rgb(87 103 239 / 14%) 35%,
+      transparent 68%
+    ),
+    repeating-conic-gradient(
+      from 214deg at 51% 49%,
+      rgb(122 101 255 / 7%) 0deg 1deg,
+      transparent 1deg 12deg
+    ),
+    radial-gradient(ellipse at 53% 55%, transparent 32%, rgb(0 0 0 / 38%) 100%);
+  mix-blend-mode: screen;
+  opacity: 0.94;
+  animation: world-cosmic-pulse 16s ease-in-out infinite alternate;
+}
+
+.world-stage::after {
+  background:
+    radial-gradient(
+      ellipse at 54% 41%,
+      transparent 21%,
+      rgb(1 3 12 / 15%) 64%,
+      rgb(0 0 0 / 52%) 100%
+    ),
+    linear-gradient(180deg, transparent 48%, rgb(1 4 12 / 32%) 100%);
+}
+
+.world-scanlines {
+  opacity: 0.14;
+}
+
+html[data-theme="light"] .world-stage {
+  border-color: rgb(143 246 228 / 36%);
+  background:
+    radial-gradient(ellipse at 75% 16%, rgb(93 83 255 / 26%), transparent 30%),
+    radial-gradient(ellipse at 20% 76%, rgb(0 190 204 / 20%), transparent 32%),
+    radial-gradient(ellipse at 92% 92%, rgb(219 57 136 / 17%), transparent 28%),
+    linear-gradient(145deg, #01030a 0%, #050717 47%, #120621 100%);
+  box-shadow:
+    0 48px 120px rgb(0 0 0 / 48%),
+    inset 0 1px 0 rgb(255 255 255 / 10%),
+    inset 0 0 110px rgb(67 236 222 / 9%);
+}
+
+html[data-theme="light"] .world-atmosphere {
+  background:
+    radial-gradient(ellipse at 58% 48%, rgb(54 247 224 / 14%), transparent 24%),
+    radial-gradient(ellipse at 86% 21%, rgb(117 111 255 / 20%), transparent 28%),
+    radial-gradient(ellipse at 15% 88%, rgb(255 89 145 / 12%), transparent 27%),
+    linear-gradient(118deg, transparent 18%, rgb(65 89 190 / 12%) 51%, transparent 79%);
+  mix-blend-mode: screen;
+}
+
+html[data-theme="light"] .world-copy {
+  border-color: rgb(122 244 224 / 22%);
+  background: linear-gradient(90deg, rgb(2 7 12 / 96%) 0%, rgb(2 7 12 / 84%) 62%, transparent 100%);
+}
+
+html[data-theme="light"] .world-copy::before {
+  background: linear-gradient(90deg, rgb(2 7 12 / 86%), rgb(2 7 12 / 28%) 70%, transparent);
+}
+
+html[data-theme="light"] .world-copy h1 {
+  color: #ecfffb;
+  text-shadow: 0 15px 50px rgb(0 0 0 / 32%);
+}
+
+html[data-theme="light"] .world-copy h1 em {
+  background: linear-gradient(100deg, #e8fff9 0%, #6bf2db 48%, #a8a5ff 100%);
+  background-clip: text;
+  color: transparent;
+  text-shadow: none;
+}
+
+html[data-theme="light"] .world-lede {
+  color: rgb(213 236 235 / 74%);
+}
+
+html[data-theme="light"] .world-button-ghost,
+html[data-theme="light"] .world-location,
+html[data-theme="light"] .world-target-readout {
+  border-color: rgb(193 230 225 / 18%);
+  background: rgb(4 16 26 / 64%);
+  color: rgb(222 248 243 / 76%);
+}
+
+html[data-theme="light"] .world-stats strong,
+html[data-theme="light"] .world-target-readout strong {
+  color: #eafff8;
+}
+
+html[data-theme="light"] .world-stats small,
+html[data-theme="light"] .world-hud,
+html[data-theme="light"] .world-control-copy,
+html[data-theme="light"] .world-scroll-cue,
+html[data-theme="light"] .world-location small {
+  color: rgb(194 240 234 / 56%);
+}
+
+@keyframes world-cosmic-flow {
+  0% {
+    transform: rotate(-11deg) translate3d(-2%, -1%, 0) scale(1.08);
+  }
+
+  100% {
+    transform: rotate(-5deg) translate3d(3%, 2%, 0) scale(1.16);
+  }
+}
+
+@keyframes world-image-drift {
+  0% {
+    background-position:
+      42% 40%,
+      54% 47%,
+      58% 54%,
+      38% 52%,
+      center;
+    filter: saturate(1.04) contrast(1.05) brightness(0.66);
+  }
+
+  50% {
+    background-position:
+      58% 50%,
+      48% 55%,
+      70% 47%,
+      54% 44%,
+      center;
+    filter: saturate(1.18) contrast(1.1) brightness(0.74);
+  }
+
+  100% {
+    background-position:
+      72% 62%,
+      62% 46%,
+      48% 63%,
+      66% 58%,
+      center;
+    filter: saturate(1.26) contrast(1.12) brightness(0.7);
+  }
+}
+
+@keyframes world-image-shimmer {
+  0% {
+    opacity: 0.14;
+    transform: translate3d(-3%, -1%, 0) scale(1.02);
+  }
+
+  100% {
+    opacity: 0.38;
+    transform: translate3d(3%, 2%, 0) scale(1.08);
+  }
+}
+
+@keyframes world-cosmic-pulse {
+  0% {
+    opacity: 0.62;
+    transform: scale(0.98);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1.045);
+  }
+}
+
+@media (max-width: 760px) {
+  html[data-theme="light"] .world-copy {
+    border-left: 0;
+    background: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-stage::before,
+  .world-atmosphere::before,
+  .world-atmosphere::after,
+  .world-space-image,
+  .world-space-image::after,
+  .world-stage.is-world-pulsing .world-space-image::before {
+    animation: none;
+  }
+}
+
+/* CSS water palette stays available while the local photographic clip loads. */
+.world-stage {
+  border-color: rgb(224 244 235 / 36%);
+  background: linear-gradient(180deg, #a9d1d0 0%, #d5dfd1 39%, #5d9c99 48%, #1b555d 100%);
+  box-shadow:
+    0 48px 120px rgb(13 42 45 / 34%),
+    inset 0 1px 0 rgb(255 255 255 / 22%),
+    inset 0 -90px 120px rgb(4 42 47 / 18%);
+}
+
+.world-space-image {
+  background:
+    radial-gradient(ellipse at 75% 12%, rgb(255 227 174 / 34%), transparent 18%),
+    radial-gradient(ellipse at 31% 30%, rgb(255 255 255 / 10%), transparent 27%),
+    linear-gradient(180deg, #a7d1d1 0%, #d9e1d2 38%, #6ea8a0 48%, #235e64 100%),
+    linear-gradient(180deg, #a7d1d1 0%, #1d5860 100%);
+  background-blend-mode: screen, screen, normal, normal;
+  background-size:
+    175% 170%,
+    145% 145%,
+    180% 180%,
+    100% 100%;
+  filter: saturate(0.92) contrast(1.03) brightness(0.96);
+  opacity: 0.98;
+}
+
+.world-space-image::after {
+  background:
+    linear-gradient(180deg, rgb(255 245 215 / 10%), transparent 30%),
+    radial-gradient(ellipse at 54% 41%, transparent 28%, rgb(5 39 43 / 25%) 100%);
+  mix-blend-mode: soft-light;
+  opacity: 0.38;
+  animation: world-lake-haze 18s ease-in-out infinite alternate;
+}
+
+.world-stage::before {
+  background:
+    radial-gradient(ellipse at 76% 17%, rgb(255 220 167 / 18%), transparent 24%),
+    linear-gradient(180deg, rgb(255 255 255 / 6%), transparent 36%, rgb(11 63 68 / 12%) 100%);
+  filter: blur(24px);
+  mix-blend-mode: screen;
+  opacity: 0.56;
+  transform: scale(1.04);
+  animation: world-lake-haze 20s ease-in-out infinite alternate;
+}
+
+.world-atmosphere {
+  background:
+    radial-gradient(ellipse at 74% 18%, rgb(255 224 177 / 12%), transparent 19%),
+    linear-gradient(180deg, rgb(245 255 242 / 8%), transparent 37%, rgb(3 46 52 / 15%) 100%);
+  mix-blend-mode: screen;
+  opacity: 0.6;
+}
+
+.world-atmosphere::before {
+  background: radial-gradient(ellipse at 60% 38%, rgb(255 244 211 / 8%), transparent 35%);
+  filter: blur(30px);
+  opacity: 0.7;
+  transform: scale(1.06);
+  animation: world-lake-haze 24s ease-in-out infinite alternate-reverse;
+}
+
+.world-atmosphere::after {
+  background: linear-gradient(180deg, transparent 20%, rgb(2 31 36 / 18%) 100%);
+  mix-blend-mode: multiply;
+  opacity: 0.62;
+  animation: none;
+}
+
+.world-stage::after {
+  background:
+    radial-gradient(
+      ellipse at 56% 43%,
+      transparent 28%,
+      rgb(4 35 40 / 8%) 70%,
+      rgb(2 22 29 / 32%) 100%
+    ),
+    linear-gradient(180deg, transparent 48%, rgb(1 27 34 / 14%) 100%);
+}
+
+.world-scanlines {
+  opacity: 0;
+}
+
+html[data-theme="light"] .world-stage {
+  border-color: rgb(226 244 236 / 38%);
+  background: linear-gradient(180deg, #a9d1d0 0%, #d5dfd1 39%, #5d9c99 48%, #1b555d 100%);
+  box-shadow:
+    0 48px 120px rgb(13 42 45 / 26%),
+    inset 0 1px 0 rgb(255 255 255 / 26%),
+    inset 0 -90px 120px rgb(4 42 47 / 16%);
+}
+
+@keyframes world-lake-haze {
+  0% {
+    opacity: 0.3;
+    transform: translate3d(-1%, -0.5%, 0) scale(1.03);
+  }
+
+  100% {
+    opacity: 0.68;
+    transform: translate3d(1.5%, 1%, 0) scale(1.08);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-stage::before,
+  .world-atmosphere::before,
+  .world-space-image,
+  .world-space-image::after {
+    animation: none;
+  }
+}
+
+/* Full-bleed cosmic scene: the world owns the viewport below the compact header. */
+.app-shell:has(.hero-world) {
+  overflow-x: clip;
+}
+
+.hero.hero-world {
+  width: 100vw;
+  min-height: max(640px, calc(100svh - 86px));
+  margin-inline: calc(50% - 50vw);
+  padding: 0;
+}
+
+.hero.hero-world .world-stage {
+  width: 100%;
+  height: max(640px, calc(100svh - 86px));
+  min-height: max(640px, calc(100svh - 86px));
+  border-right: 0;
+  border-left: 0;
+  border-radius: 0;
+  box-shadow:
+    0 36px 90px rgb(0 0 0 / 42%),
+    inset 0 1px 0 rgb(255 255 255 / 11%),
+    inset 0 0 110px rgb(67 236 222 / 9%);
+}
+
+@media (max-width: 760px) {
+  .hero.hero-world {
+    min-height: max(660px, calc(100svh - 76px));
+  }
+
+  .hero.hero-world .world-stage {
+    height: max(660px, calc(100svh - 76px));
+    min-height: max(660px, calc(100svh - 76px));
+  }
+
+  .world-space-image {
+    background-position: 64% center;
+  }
+}
+
+.world-stage.is-focused .world-copy {
+  opacity: 0.86;
+  transform: translateY(-5px);
+}
+
+.world-stage.is-focused .world-copy:hover,
+.world-stage.is-focused .world-copy:focus-within {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-space-image,
+  .world-atmosphere {
+    transform: none;
+  }
+}
+
+/* Water-stage base treatment for the local clip and its WebGL compositor. */
+.world-stage {
+  border-color: rgb(112 246 224 / 38%);
+  background:
+    radial-gradient(ellipse at 70% 9%, rgb(154 255 236 / 17%), transparent 22%),
+    radial-gradient(ellipse at 18% 84%, rgb(0 167 191 / 20%), transparent 35%),
+    linear-gradient(158deg, #010912 0%, #031b28 48%, #062e38 100%);
+  box-shadow:
+    0 48px 120px rgb(0 0 0 / 48%),
+    inset 0 1px 0 rgb(229 255 247 / 12%),
+    inset 0 0 110px rgb(47 245 216 / 11%);
+}
+
+/* Keep the local clip visible under the transparent Three.js water surface. */
+.world-water-video {
+  opacity: 0;
+}
+
+.world-space-image {
+  z-index: 1;
+}
+
+.world-canvas {
+  z-index: 3;
+}
+
+.world-stage.is-video-water .world-water-video {
+  opacity: 0.9;
+}
+
+.world-stage.is-video-water .world-space-image {
+  opacity: 0.24;
+  mix-blend-mode: screen;
+}
+
+.world-stage.is-video-water .world-canvas {
+  opacity: 1;
+}
+
+.world-stage.is-video-water .world-water-video {
+  opacity: 1;
+  object-position: 100% 100%;
+  filter: saturate(1.16) contrast(1.1) brightness(0.94);
+  transform: scale(1.6);
+  transform-origin: right bottom;
+}
+
+.world-stage.is-video-water .world-space-image {
+  opacity: 0;
+}
+
+.world-stage.is-video-water.is-threejs-water .world-canvas {
+  opacity: 1;
+}
+
+.world-stage.is-video-water .world-atmosphere {
+  opacity: 0.12;
+  mix-blend-mode: soft-light;
+}
+
+.world-stage.is-video-water .world-reticle {
+  display: none;
+}
+
+.world-stage.is-video-water .world-scanlines {
+  opacity: 0;
+}
+
+.world-stage.is-video-water::before {
+  opacity: 0.12;
+}
+
+.world-stage.is-video-water::after {
+  background: linear-gradient(180deg, rgb(2 12 18 / 4%), rgb(2 10 16 / 18%));
+}
+
+.world-space-image {
+  background:
+    radial-gradient(ellipse at 68% 9%, rgb(203 255 239 / 28%), transparent 14%),
+    radial-gradient(ellipse at 36% 42%, rgb(0 199 211 / 16%), transparent 34%),
+    repeating-linear-gradient(
+      164deg,
+      transparent 0 21px,
+      rgb(89 244 220 / 7%) 22px,
+      transparent 24px 45px
+    ),
+    linear-gradient(180deg, #020912 0%, #062b38 54%, #03141f 100%);
+  background-blend-mode: screen, screen, screen, normal;
+  background-size:
+    175% 170%,
+    145% 145%,
+    180% 180%,
+    100% 100%;
+  filter: saturate(1.18) contrast(1.08) brightness(0.82);
+  opacity: 0.96;
+  transform: translate3d(
+      calc(
+        var(--parallax-x, 0px) * -2.4 + var(--water-shift-x, 0px) + var(--world-image-shift-x, 0px)
+      ),
+      calc(
+        var(--parallax-y, 0px) * -2.4 + var(--water-shift-y, 0px) + var(--world-image-shift-y, 0px)
+      ),
+      0
+    )
+    rotateX(var(--world-image-tilt-y, 0deg)) rotateY(var(--world-image-tilt-x, 0deg))
+    scale(var(--world-image-scale, 1.08));
+  animation: world-water-drift 22s ease-in-out infinite alternate;
+}
+
+.world-space-image::before {
+  background: radial-gradient(
+    circle at var(--world-pointer-x, 50%) var(--world-pointer-y, 50%),
+    rgb(202 255 242 / 10%) 0,
+    rgb(84 245 223 / 5%) 8%,
+    transparent 24%
+  );
+  mix-blend-mode: screen;
+  opacity: var(--world-pointer-intensity, 0);
+  transform: scale(1.04);
+}
+
+.world-space-image::after {
+  background:
+    repeating-linear-gradient(
+      172deg,
+      transparent 0 37px,
+      rgb(193 255 239 / 12%) 38px,
+      transparent 41px 76px
+    ),
+    linear-gradient(120deg, transparent 15%, rgb(125 255 238 / 13%) 47%, transparent 72%),
+    radial-gradient(ellipse at 52% 42%, transparent 30%, rgb(0 0 0 / 34%) 100%);
+  mix-blend-mode: screen;
+  opacity: 0.26;
+  animation: world-water-glint 12s ease-in-out infinite alternate;
+}
+
+.world-stage.is-world-pulsing .world-space-image::before {
+  animation: none;
+}
+
+.world-stage::before {
+  background:
+    radial-gradient(ellipse at 38% 58%, rgb(17 219 208 / 18%) 0%, transparent 34%),
+    radial-gradient(ellipse at 76% 20%, rgb(145 255 231 / 12%) 0%, transparent 24%),
+    repeating-linear-gradient(
+      161deg,
+      transparent 0 34px,
+      rgb(104 247 222 / 6%) 35px 37px,
+      transparent 38px 78px
+    );
+  filter: blur(30px) saturate(125%);
+  mix-blend-mode: screen;
+  opacity: 0.68;
+  transform: rotate(-5deg) scale(1.08);
+  animation: world-water-caustics 24s ease-in-out infinite alternate;
+}
+
+.world-atmosphere {
+  background:
+    radial-gradient(ellipse at 66% 12%, rgb(211 255 242 / 15%), transparent 19%),
+    radial-gradient(ellipse at 17% 78%, rgb(0 172 205 / 14%), transparent 28%),
+    linear-gradient(180deg, rgb(169 255 235 / 7%), transparent 38%, rgb(0 9 19 / 22%));
+  mix-blend-mode: screen;
+  opacity: 0.46;
+}
+
+.world-atmosphere::before {
+  background:
+    repeating-linear-gradient(
+      164deg,
+      transparent 0 26px,
+      rgb(137 255 232 / 8%) 28px 30px,
+      transparent 32px 66px
+    ),
+    radial-gradient(ellipse at 58% 40%, rgb(32 223 210 / 16%) 0%, transparent 34%);
+  filter: blur(26px) saturate(130%);
+  opacity: 0.72;
+  transform: rotate(-6deg) scale(1.1);
+  animation: world-water-caustics 20s ease-in-out infinite alternate-reverse;
+}
+
+.world-atmosphere::after {
+  background:
+    radial-gradient(
+      ellipse at 58% 45%,
+      transparent 12%,
+      rgb(121 246 225 / 10%) 44%,
+      transparent 72%
+    ),
+    linear-gradient(180deg, transparent 20%, rgb(0 5 14 / 32%) 100%);
+  mix-blend-mode: screen;
+  opacity: 0.82;
+  animation: world-water-glint 17s ease-in-out infinite alternate;
+}
+
+.world-stage::after {
+  background:
+    radial-gradient(
+      ellipse at 54% 42%,
+      transparent 24%,
+      rgb(0 7 15 / 10%) 64%,
+      rgb(0 2 8 / 46%) 100%
+    ),
+    linear-gradient(180deg, transparent 47%, rgb(0 5 12 / 25%) 100%);
+}
+
+.world-scanlines {
+  opacity: 0.1;
+}
+
+html[data-theme="light"] .world-stage {
+  border-color: rgb(0 170 159 / 31%);
+  background:
+    radial-gradient(ellipse at 70% 9%, rgb(175 255 238 / 28%), transparent 22%),
+    radial-gradient(ellipse at 18% 84%, rgb(0 167 191 / 18%), transparent 35%),
+    linear-gradient(158deg, #06212b 0%, #0c5360 48%, #082b39 100%);
+  box-shadow:
+    0 48px 120px rgb(16 73 80 / 22%),
+    inset 0 1px 0 rgb(255 255 255 / 32%),
+    inset 0 0 110px rgb(47 245 216 / 15%);
+}
+
+html[data-theme="light"] .world-atmosphere {
+  background:
+    radial-gradient(ellipse at 66% 12%, rgb(211 255 242 / 22%), transparent 19%),
+    radial-gradient(ellipse at 17% 78%, rgb(0 172 205 / 16%), transparent 28%),
+    linear-gradient(180deg, rgb(169 255 235 / 10%), transparent 38%, rgb(0 25 36 / 24%));
+}
+
+html[data-theme="light"] .world-atmosphere::before {
+  background:
+    repeating-linear-gradient(
+      164deg,
+      transparent 0 26px,
+      rgb(137 255 232 / 11%) 28px 30px,
+      transparent 32px 66px
+    ),
+    radial-gradient(ellipse at 58% 40%, rgb(32 223 210 / 19%) 0%, transparent 34%);
+}
+
+html[data-theme="light"] .world-atmosphere::after,
+html[data-theme="light"] .world-stage::after {
+  background:
+    radial-gradient(
+      ellipse at 58% 45%,
+      transparent 12%,
+      rgb(121 246 225 / 12%) 44%,
+      transparent 72%
+    ),
+    linear-gradient(180deg, transparent 20%, rgb(0 30 39 / 22%) 100%);
+}
+
+@keyframes world-water-drift {
+  0% {
+    background-position:
+      56% 12%,
+      40% 46%,
+      38% 48%,
+      center;
+    filter: saturate(1.08) contrast(1.04) brightness(0.76);
+  }
+
+  50% {
+    background-position:
+      69% 16%,
+      52% 42%,
+      55% 52%,
+      center;
+    filter: saturate(1.18) contrast(1.08) brightness(0.86);
+  }
+
+  100% {
+    background-position:
+      78% 8%,
+      62% 56%,
+      70% 44%,
+      center;
+    filter: saturate(1.24) contrast(1.1) brightness(0.8);
+  }
+}
+
+@keyframes world-water-glint {
+  0% {
+    opacity: 0.16;
+    transform: translate3d(-2%, -1%, 0) scale(1.02);
+  }
+
+  100% {
+    opacity: 0.42;
+    transform: translate3d(3%, 2%, 0) scale(1.08);
+  }
+}
+
+@keyframes world-water-caustics {
+  0% {
+    transform: rotate(-6deg) translate3d(-2%, -1%, 0) scale(1.08);
+  }
+
+  100% {
+    transform: rotate(-1deg) translate3d(3%, 2%, 0) scale(1.16);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-stage::before,
+  .world-atmosphere::before,
+  .world-atmosphere::after,
+  .world-space-image,
+  .world-space-image::after,
+  .world-stage.is-world-pulsing .world-space-image::before {
+    animation: none;
   }
 }
