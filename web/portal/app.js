@@ -17,9 +17,9 @@ const DEFAULT_THEME = "dark";
 const SUPPORTED_LOCALES = ["vi", "en", "zh"];
 const SUPPORTED_THEMES = ["dark", "light"];
 const MOTION_SCENES = [
-  { id: "catalog", index: "01" },
-  { id: "templates", index: "02" },
-  { id: "process", index: "03" },
+  { id: "catalog", index: "01", copy: "sceneLibrary" },
+  { id: "templates", index: "02", copy: "sceneTemplates" },
+  { id: "process", index: "03", copy: "sceneProcess" },
 ];
 
 const COPY = {
@@ -35,17 +35,16 @@ const COPY = {
     languageLabel: "Ngôn ngữ",
     menuOpen: "Mở menu",
     menuClose: "Đóng menu",
-    heroEyebrow: "XLAB / STUDIO TRÌNH CHIẾU",
-    heroTitleA: "Để ý tưởng",
-    heroTitleB: "được nhìn thấy.",
+    heroEyebrow: "INTERACTIVE SLIDE STUDIO",
+    heroTitleA: "Kéo câu chuyện đi xa.",
+    heroTitleB: "Mỗi slide tạo nhịp.",
     heroLede:
-      "Tìm đúng ngôn ngữ thị giác, chọn hướng thiết kế và biến câu chuyện thành bộ slide sẵn sàng trình chiếu.",
-    heroExplore: "Khám phá thư viện",
-    heroBrief: "Bắt đầu một dự án",
-    heroStatTemplates: "hệ thống thị giác",
-    heroStatFormat: "sẵn sàng trình chiếu",
-    heroStatResponse: "phản hồi từ studio",
-    heroWaterCaption: "KHÔNG GIAN NƯỚC / ÁNH SÁNG / CHUYỂN ĐỘNG",
+      "Đi qua thư viện 770 hệ thống slide, ghé vào brief room và tìm đúng nhịp trình chiếu cho câu chuyện của bạn.",
+    heroExplore: "Bắt đầu khám phá",
+    heroBrief: "Tạo brief",
+    heroStatTemplates: "hệ thống slide",
+    heroStatFormat: "định dạng slide",
+    heroStatResponse: "phản hồi studio",
     heroVisualLibrary: "LIVE LIBRARY",
     heroVisualPath: "CURATED PATH",
     heroVisualStoryKicker: "YOUR STORY",
@@ -94,7 +93,7 @@ const COPY = {
     clearFilters: "Xóa bộ lọc",
     loadMore: "Tải thêm mẫu",
     remaining: "({{count}} còn lại)",
-    processEyebrow: "02 / HOW IT WORKS",
+    processEyebrow: "03 / HOW IT WORKS",
     processTitle: "Từ lựa chọn đến file bàn giao",
     processIntro: "Bạn chỉ cần mô tả điều cần đạt được. Phần triển khai để chúng tôi lo.",
     processOneTitle: "Chọn hướng",
@@ -198,7 +197,7 @@ const COPY = {
     signalMotion: "NHỊP TRÌNH CHIẾU CÓ CHỦ ĐÍCH",
     signalBrief: "BRIEF / DỰNG / DUYỆT",
     signalOutput: "SẴN SÀNG LÊN SÂN KHẤU",
-    scrollCue: "CUỘN ĐỂ KHÁM PHÁ",
+    scrollCue: "CUỘN ĐỂ XEM SLIDE",
     scrollToTemplates: "Lướt xuống thư viện slide",
     scrollToProcess: "Lướt xuống xem quy trình",
     nextSceneKicker: "03 / CHẶNG CUỐI",
@@ -239,17 +238,16 @@ const COPY = {
     languageLabel: "Language",
     menuOpen: "Open menu",
     menuClose: "Close menu",
-    heroEyebrow: "XLAB / VISUAL STORYTELLING",
-    heroTitleA: "Make ideas",
-    heroTitleB: "impossible to ignore.",
+    heroEyebrow: "INTERACTIVE SLIDE STUDIO",
+    heroTitleA: "Move the story forward.",
+    heroTitleB: "Every slide sets the rhythm.",
     heroLede:
-      "Find the right visual language, choose a direction, and turn a clear story into a presentation made to move people.",
-    heroExplore: "Explore the library",
-    heroBrief: "Start a project",
-    heroStatTemplates: "visual systems",
-    heroStatFormat: "ready to present",
+      "Drive through 770 slide systems, step into the brief room, and find the right rhythm for your story.",
+    heroExplore: "Explore the route",
+    heroBrief: "Create a brief",
+    heroStatTemplates: "slide systems",
+    heroStatFormat: "slide format",
     heroStatResponse: "studio response",
-    heroWaterCaption: "LIQUID SURFACE / LIGHT / MOTION",
     heroVisualLibrary: "LIVE LIBRARY",
     heroVisualPath: "CURATED PATH",
     heroVisualStoryKicker: "YOUR STORY",
@@ -299,7 +297,7 @@ const COPY = {
     clearFilters: "Clear filters",
     loadMore: "Load more templates",
     remaining: "({{count}} left)",
-    processEyebrow: "02 / HOW IT WORKS",
+    processEyebrow: "03 / HOW IT WORKS",
     processTitle: "From direction to delivered deck",
     processIntro: "Tell us what the deck needs to achieve. We will take care of the build.",
     processOneTitle: "Choose a direction",
@@ -403,7 +401,7 @@ const COPY = {
     signalMotion: "PRESENTATION RHYTHM WITH INTENT",
     signalBrief: "BRIEF / BUILD / REVIEW",
     signalOutput: "READY FOR THE ROOM",
-    scrollCue: "SCROLL TO EXPLORE",
+    scrollCue: "SCROLL TO VIEW SLIDES",
     scrollToTemplates: "Scroll to the slide library",
     scrollToProcess: "Scroll to the process",
     nextSceneKicker: "03 / FINAL SCENE",
@@ -444,16 +442,15 @@ const COPY = {
     languageLabel: "语言",
     menuOpen: "打开菜单",
     menuClose: "关闭菜单",
-    heroEyebrow: "XLAB / 视觉叙事",
-    heroTitleA: "让好想法",
-    heroTitleB: "被更多人看见。",
-    heroLede: "找到合适的视觉语言与设计方向，把想法整理成清晰、有力量的演示文稿。",
-    heroExplore: "探索模板库",
-    heroBrief: "开始一个项目",
-    heroStatTemplates: "套视觉系统",
-    heroStatFormat: "适合现场演示",
+    heroEyebrow: "互动幻灯片工作室",
+    heroTitleA: "让故事继续向前。",
+    heroTitleB: "每一页，带来新的节奏。",
+    heroLede: "穿过 770 套幻灯片系统，进入简报空间，为你的故事找到合适的演示节奏。",
+    heroExplore: "开始探索",
+    heroBrief: "创建简报",
+    heroStatTemplates: "套幻灯片系统",
+    heroStatFormat: "幻灯片格式",
     heroStatResponse: "工作室回复",
-    heroWaterCaption: "水面 / 光线 / 动态",
     heroVisualLibrary: "实时模板库",
     heroVisualPath: "精选路径",
     heroVisualStoryKicker: "你的故事",
@@ -502,7 +499,7 @@ const COPY = {
     clearFilters: "清除筛选",
     loadMore: "加载更多模板",
     remaining: "（还剩 {{count}} 套）",
-    processEyebrow: "02 / 工作流程",
+    processEyebrow: "03 / 工作流程",
     processTitle: "从选择方向到交付文件",
     processIntro: "告诉我们演示文稿要达成什么目标，制作交给我们。",
     processOneTitle: "选择方向",
@@ -598,7 +595,7 @@ const COPY = {
     signalMotion: "有目的的演示节奏",
     signalBrief: "简报 / 制作 / 评审",
     signalOutput: "为现场呈现准备",
-    scrollCue: "向下探索",
+    scrollCue: "滚动查看幻灯片",
     scrollToTemplates: "向下浏览幻灯片库",
     scrollToProcess: "向下查看流程",
     nextSceneKicker: "03 / 最后一幕",
@@ -1109,6 +1106,8 @@ const state = {
   theme: getInitialTheme(),
   motionScene: 0,
   motionInitialized: false,
+  lastScrollY: getScrollTop(),
+  motionVelocity: 0,
   sceneTransitioning: false,
   sceneTransitionFinishTimer: 0,
   sceneTransitionScrollTimer: 0,
@@ -1168,9 +1167,15 @@ const elements = {
   themeIcon: document.querySelector("[data-theme-icon]"),
   themeLabel: document.querySelector("[data-theme-label]"),
   scrollProgress: document.querySelector("[data-scroll-progress]"),
+  parallaxStage: document.querySelector("[data-parallax-stage]"),
   hero: document.querySelector(".hero"),
+  heroCopy: document.querySelector('[data-reveal="hero-copy"]'),
   catalogSection: document.querySelector('[data-motion-scene="templates"]'),
   processSection: document.querySelector('[data-motion-scene="process"]'),
+  sceneRail: document.querySelector("[data-scene-rail]"),
+  sceneIndex: document.querySelector("[data-scene-index]"),
+  sceneLabel: document.querySelector("[data-scene-label]"),
+  sceneProgress: document.querySelector("[data-scene-progress]"),
   sceneTransition: document.querySelector("[data-scene-transition]"),
   sceneTransitionIndex: document.querySelector("[data-scene-transition-index]"),
   worldCanvas: document.querySelector("[data-xlab-world-canvas]"),
@@ -1477,6 +1482,7 @@ function renderTemplates() {
       card.style.setProperty("--card-index", String(index));
       card.classList.add("is-in");
     });
+    bindCardMotion();
   });
   elements.emptyState.hidden = results.length !== 0;
   elements.grid.hidden = results.length === 0;
@@ -1495,9 +1501,30 @@ function renderTemplates() {
   });
 }
 
-function bindProcessCardMotion() {
+function bindCardMotion() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  elements.grid.querySelectorAll(".template-card").forEach((card) => {
+    card.addEventListener("pointermove", (event) => {
+      const rect = card.getBoundingClientRect();
+      const x = (event.clientX - rect.left) / rect.width - 0.5;
+      const y = (event.clientY - rect.top) / rect.height - 0.5;
+      card.style.setProperty("--card-rx", `${y * -4.2}deg`);
+      card.style.setProperty("--card-ry", `${x * 5.2}deg`);
+      card.style.setProperty("--pointer-x", `${(x + 0.5) * 100}%`);
+      card.style.setProperty("--pointer-y", `${(y + 0.5) * 100}%`);
+    });
+    card.addEventListener("pointerleave", () => {
+      card.style.removeProperty("--card-rx");
+      card.style.removeProperty("--card-ry");
+      card.style.removeProperty("--pointer-x");
+      card.style.removeProperty("--pointer-y");
+    });
+  });
+}
+
+function bindAmbientSurfaceMotion() {
   if (isReducedMotion() || window.matchMedia("(pointer: coarse)").matches) return;
-  document.querySelectorAll(".process-card").forEach((surface) => {
+  document.querySelectorAll(".process-card, .filter-panel").forEach((surface) => {
     surface.addEventListener("pointermove", (event) => {
       const rect = surface.getBoundingClientRect();
       surface.style.setProperty(
@@ -1514,6 +1541,27 @@ function bindProcessCardMotion() {
       surface.style.removeProperty("--pointer-y");
     });
   });
+}
+
+function bindMagneticMotion() {
+  if (isReducedMotion() || window.matchMedia("(pointer: coarse)").matches) return;
+  document
+    .querySelectorAll(".hero-actions .button, [data-open-request], [data-preview-select]")
+    .forEach((target) => {
+      target.dataset.magnetic = "true";
+      target.addEventListener("pointermove", (event) => {
+        const rect = target.getBoundingClientRect();
+        const intensity = target.classList.contains("button-small") ? 4 : 7;
+        const x = ((event.clientX - rect.left) / rect.width - 0.5) * intensity;
+        const y = ((event.clientY - rect.top) / rect.height - 0.5) * intensity;
+        target.style.setProperty("--mag-x", `${x}px`);
+        target.style.setProperty("--mag-y", `${y}px`);
+      });
+      target.addEventListener("pointerleave", () => {
+        target.style.removeProperty("--mag-x");
+        target.style.removeProperty("--mag-y");
+      });
+    });
 }
 
 function renderActiveFilters() {
@@ -2099,12 +2147,63 @@ function updateScrollProgress() {
   elements.scrollProgress.style.transform = `scaleX(${progress})`;
 }
 
+function clampUnit(value) {
+  return Math.min(Math.max(value, 0), 1);
+}
+
+function sceneProgressFor(section) {
+  if (!section) return 0;
+  const rect = section.getBoundingClientRect();
+  return clampUnit((window.innerHeight - rect.top) / (window.innerHeight + rect.height));
+}
+
 function updateMotionSceneChrome(index = state.motionScene) {
   const scene = MOTION_SCENES[index] || MOTION_SCENES[0];
+  if (elements.sceneIndex) elements.sceneIndex.textContent = scene.index;
+  if (elements.sceneLabel) elements.sceneLabel.textContent = t(scene.copy);
   document.documentElement.dataset.motionScene = scene.id;
 }
 
 function updateMotionChoreography() {
+  const scrollTop = getScrollTop();
+  const scrollDelta = scrollTop - state.lastScrollY;
+  state.motionVelocity =
+    state.motionVelocity * 0.72 + Math.min(Math.max(scrollDelta, -40), 40) * 0.28;
+  state.lastScrollY = scrollTop;
+  const heroProgress = elements.hero
+    ? clampUnit(scrollTop / Math.max(elements.hero.offsetHeight * 0.72, 1))
+    : 0;
+  const catalogProgress = sceneProgressFor(elements.catalogSection);
+  const processProgress = sceneProgressFor(elements.processSection);
+  const scrollable = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
+  const totalProgress = clampUnit(scrollTop / scrollable);
+
+  document.documentElement.style.setProperty("--scroll-progress", totalProgress.toFixed(4));
+  document.documentElement.style.setProperty(
+    "--motion-velocity",
+    String(state.motionVelocity.toFixed(2)) + "px",
+  );
+  document.documentElement.dataset.scrollDirection =
+    state.motionVelocity >= 0 ? "forward" : "backward";
+  elements.hero?.style.setProperty("--hero-progress", heroProgress.toFixed(4));
+  elements.heroCopy?.style.setProperty("--hero-copy-shift", `${heroProgress * -58}px`);
+  elements.heroCopy?.style.setProperty("--hero-copy-blur", `${heroProgress * 1.25}px`);
+  elements.parallaxStage?.style.setProperty("--hero-visual-shift", `${heroProgress * 72}px`);
+  elements.parallaxStage?.style.setProperty("--hero-visual-scale", `${1 - heroProgress * 0.055}`);
+  elements.parallaxStage?.style.setProperty("--hero-board-y", `${heroProgress * 56}px`);
+  elements.parallaxStage?.style.setProperty("--hero-board-rotate", `${heroProgress * -3.5}deg`);
+  elements.parallaxStage?.style.setProperty("--hero-grid-shift", `${heroProgress * 36}px`);
+  elements.catalogSection?.style.setProperty("--section-progress", catalogProgress.toFixed(4));
+  elements.processSection?.style.setProperty("--section-progress", processProgress.toFixed(4));
+  elements.catalogSection?.style.setProperty(
+    "--scene-shift",
+    String((0.5 - catalogProgress) * 72 + state.motionVelocity * 0.4) + "px",
+  );
+  elements.processSection?.style.setProperty(
+    "--scene-shift",
+    String((0.5 - processProgress) * 84 + state.motionVelocity * 0.4) + "px",
+  );
+
   const sceneElements = [elements.hero, elements.catalogSection, elements.processSection].filter(
     Boolean,
   );
@@ -2116,6 +2215,9 @@ function updateMotionChoreography() {
       return rect.top <= marker && rect.bottom >= marker;
     }),
   );
+  sceneElements.forEach((section, index) => {
+    section.classList.toggle("is-active-scene", index === activeIndex);
+  });
   if (activeIndex !== state.motionScene) {
     const nextScene = MOTION_SCENES[activeIndex] || MOTION_SCENES[0];
     state.motionScene = activeIndex;
@@ -2123,6 +2225,12 @@ function updateMotionChoreography() {
     if (state.motionInitialized) triggerSceneCurtain(nextScene);
   }
   state.motionInitialized = true;
+  const activeSection = sceneElements[state.motionScene] || sceneElements[0];
+  const activeProgress = sceneProgressFor(activeSection);
+  elements.sceneProgress?.style.setProperty(
+    "transform",
+    `scaleY(${Math.max(0.16, activeProgress)})`,
+  );
 }
 
 let motionFrame = 0;
@@ -2240,6 +2348,33 @@ function bindRevealMotion() {
   revealItems.forEach((element) => observer.observe(element));
 }
 
+function bindStageParallax() {
+  if (!elements.parallaxStage || isReducedMotion()) return;
+  elements.parallaxStage.addEventListener("pointerenter", () => {
+    elements.parallaxStage.classList.add("is-pointer-active");
+  });
+  elements.parallaxStage.addEventListener("pointermove", (event) => {
+    const rect = elements.parallaxStage.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width - 0.5;
+    const y = (event.clientY - rect.top) / rect.height - 0.5;
+    elements.parallaxStage.style.setProperty("--parallax-x", `${x * 24}px`);
+    elements.parallaxStage.style.setProperty("--parallax-y", `${y * 18}px`);
+    elements.parallaxStage.style.setProperty("--pointer-angle", `${Math.atan2(y, x)}rad`);
+    elements.parallaxStage.style.setProperty("--pointer-depth", `${Math.hypot(x, y).toFixed(3)}`);
+    elements.parallaxStage.style.setProperty("--pointer-x", `${(x + 0.5) * 100}%`);
+    elements.parallaxStage.style.setProperty("--pointer-y", `${(y + 0.5) * 100}%`);
+  });
+  elements.parallaxStage.addEventListener("pointerleave", () => {
+    elements.parallaxStage.classList.remove("is-pointer-active");
+    elements.parallaxStage.style.removeProperty("--parallax-x");
+    elements.parallaxStage.style.removeProperty("--parallax-y");
+    elements.parallaxStage.style.removeProperty("--pointer-angle");
+    elements.parallaxStage.style.removeProperty("--pointer-depth");
+    elements.parallaxStage.style.removeProperty("--pointer-x");
+    elements.parallaxStage.style.removeProperty("--pointer-y");
+  });
+}
+
 function handleWorldTarget(targetId) {
   if (targetId === "brief") {
     openDrawer();
@@ -2254,7 +2389,9 @@ function setupExperience() {
   bindRevealMotion();
   bindAnchorNavigation();
   bindSectionObserver();
-  bindProcessCardMotion();
+  bindStageParallax();
+  bindAmbientSurfaceMotion();
+  bindMagneticMotion();
   bindMotionScroll();
   setupXLabWorld({
     canvas: elements.worldCanvas,
