@@ -544,8 +544,6 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     renderer.toneMappingExposure = 0.75;
     rippleField = createRippleField(renderer);
 
-    if (!waterVideoElement) throw new Error("The licensed water footage is unavailable.");
-
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(42, 1, 0.1, 1200);
     camera.position.set(0, 11, 18);
@@ -589,7 +587,7 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
       sunColor: 0xccecff,
       waterColor: 0x285768,
       distortionScale: 1.7,
-      alpha: 0.3,
+      alpha: 0.52,
       fog: false,
     });
     water.rotation.x = -Math.PI / 2;

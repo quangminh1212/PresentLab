@@ -7,7 +7,6 @@ const requiredAssets = [
   "public/web/portal/app.js",
   "public/web/portal/world.css",
   "public/web/portal/world.js",
-  "public/web/portal/water-surface.webm",
   "public/web/vendor/three/three.module.js",
   "public/web/vendor/three/three.core.js",
   "public/web/vendor/three/addons/objects/Water.js",
@@ -30,15 +29,19 @@ for (const [source, reference] of [
   [worldSource, "../vendor/three/three.module.js"],
   [worldSource, "../vendor/three/addons/objects/Water.js"],
   [worldSource, "../vendor/three/addons/objects/Sky.js"],
-  [worldSource, "threejs-reflective-water-over-live-footage"],
+  [worldSource, "threejs-water-addon-over-studio-backdrop"],
   [worldSource, "/web/vendor/three/textures/waternormals.jpg"],
   [portalHtml, "/web/portal/world.css"],
-  [portalHtml, "/web/portal/water-surface.webm"],
+  [portalHtml, "data-xlab-world-canvas"],
   [appSource, "./world.js"],
 ]) {
   if (!source.includes(reference)) {
     throw new Error(`Built portal is missing the expected water runtime reference: ${reference}`);
   }
+}
+
+if (portalHtml.includes("data-world-water-video") || portalHtml.includes("water-surface.webm")) {
+  throw new Error("Portal hero still references the removed ocean footage.");
 }
 
 console.log(`Portal runtime assets verified: ${requiredAssets.length} files.`);
