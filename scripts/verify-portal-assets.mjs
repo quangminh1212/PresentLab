@@ -29,7 +29,7 @@ for (const [source, reference] of [
   [worldSource, "../vendor/three/three.module.js"],
   [worldSource, "../vendor/three/addons/objects/Water.js"],
   [worldSource, "../vendor/three/addons/objects/Sky.js"],
-  [worldSource, "threejs-water-addon-over-studio-backdrop"],
+  [worldSource, "threejs-water-addon-over-open-ocean-horizon"],
   [worldSource, "/web/vendor/three/textures/waternormals.jpg"],
   [portalHtml, "/web/portal/world.css"],
   [portalHtml, "data-xlab-world-canvas"],

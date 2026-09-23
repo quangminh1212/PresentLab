@@ -10,7 +10,7 @@ const RIPPLE_SPEED = 0.1;
 const RIPPLE_GRID_SIZE = 256;
 const RIPPLE_WORLD_MIN = new THREE.Vector2(-90, -74);
 const RIPPLE_WORLD_SIZE = new THREE.Vector2(180, 240);
-const RIPPLE_HEIGHT_RANGE = 0.85;
+const RIPPLE_HEIGHT_RANGE = 0.55;
 const RIPPLE_TIME_STEP = 1 / 60;
 const RIPPLE_DAMPING = 0.012;
 const RIPPLE_PENDING_LIMIT = 12;
@@ -19,13 +19,13 @@ const RIPPLE_HOVER_MIN_NDC_DISTANCE = 0.004;
 const RIPPLE_HOVER_MIN_WORLD_DISTANCE = 1.35;
 const RIPPLE_HOVER_STRENGTH = 0.17;
 const RIPPLE_HOVER_MAX_STRENGTH = 0.25;
-const RIPPLE_HOVER_RADIUS = 1.6;
-const RIPPLE_HOVER_MAX_RADIUS = 2.2;
+const RIPPLE_HOVER_RADIUS = 0.9;
+const RIPPLE_HOVER_MAX_RADIUS = 1.25;
 const RIPPLE_HOVER_LIFETIME = 0.18;
-const RIPPLE_CLICK_STRENGTH = 0.24;
-const RIPPLE_CLICK_RADIUS = 2.2;
+const RIPPLE_CLICK_STRENGTH = 0.3;
+const RIPPLE_CLICK_RADIUS = 0.9;
 
-/* The Three.js Water addon draws a reflective surface over the studio backdrop.
+/* The Three.js Water addon draws a reflective surface over a procedural sea horizon.
  * Its GPU height field adds ripples where the pointer meets the water plane. */
 const landmarks = [
   {
@@ -585,16 +585,16 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
       waterNormals,
       sunDirection: new THREE.Vector3(-0.35, 0.65, 0.68).normalize(),
       sunColor: 0xccecff,
-      waterColor: 0x286b8a,
-      distortionScale: 1.7,
-      alpha: 0.52,
+      waterColor: 0x0b5f9c,
+      distortionScale: 2.2,
+      alpha: 0.58,
       fog: false,
     });
     water.rotation.x = -Math.PI / 2;
     water.position.set(0, -0.42, -46);
     water.material.transparent = true;
     water.material.depthWrite = false;
-    water.material.uniforms.size.value = 1.15;
+    water.material.uniforms.size.value = 1.25;
     water.material.uniforms.rippleWaveTime = { value: 0 };
     water.material.uniforms.rippleImpacts = {
       value: Array.from({ length: RIPPLE_SLOT_COUNT }, () => new THREE.Vector4(0, 0, -1000, 0)),
@@ -653,30 +653,30 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
           if ( age >= 0.0 && age < 2.8 && impact.w > 0.0 ) {
             vec2 rippleDelta = ( rippleUv - impact.xy ) * rippleWorldSize;
             float distanceToImpact = length( rippleDelta );
-            float waveFront = distanceToImpact - age * 5.0;
-            float envelope = exp( -waveFront * waveFront * 0.58 ) * exp( -age * 0.9 );
-            float wave = sin( waveFront * 3.0 ) * envelope * impact.w * 0.16;
+          float waveFront = distanceToImpact - age * 1.4;
+          float envelope = exp( -waveFront * waveFront * 2.4 ) * exp( -age * 0.9 );
+          float wave = sin( waveFront * 4.2 ) * envelope * impact.w * 0.14;
             rippleSlope += rippleDelta / max( distanceToImpact, 0.001 ) * wave;
             float crest = exp( -waveFront * waveFront * 2.2 ) * exp( -age * 1.1 ) * impact.w;
             rippleCrestLight = max( rippleCrestLight, crest );
           }
         }
-        surfaceNormal = normalize( surfaceNormal + vec3( -rippleSlope.x, 0.0, rippleSlope.y ) * 12.0 );`,
+        surfaceNormal = normalize( surfaceNormal + vec3( -rippleSlope.x, 0.0, rippleSlope.y ) * 5.5 );`,
       );
       shader.fragmentShader = shader.fragmentShader.replace(
         "vec3 outgoingLight = albedo;",
         `vec3 outgoingLight = albedo;
-        float rippleCrest = smoothstep( 0.012, 0.075, length( rippleSlope ) );
+        float rippleCrest = smoothstep( 0.012, 0.065, length( rippleSlope ) );
         float rippleFacingSun = max( 0.0, dot( surfaceNormal, normalize( sunDirection ) ) );
         outgoingLight += sunColor * rippleCrest * rippleFacingSun * 0.42;
-        outgoingLight += sunColor * rippleCrestLight * 0.75;`,
+        outgoingLight += sunColor * rippleCrestLight * 1.25;`,
       );
       stage.dataset.worldRippleShader =
         shader.vertexShader.includes("ripplePosition.z +=") &&
         shader.fragmentShader.includes("rippleSlope = rippleField.ba") &&
         shader.fragmentShader.includes("rippleCrest = smoothstep") &&
         shader.fragmentShader.includes("float waveFront = distanceToImpact") &&
-        shader.fragmentShader.includes("rippleCrestLight * 0.75")
+        shader.fragmentShader.includes("rippleCrestLight * 1.25")
           ? "threejs-water-displacement-and-normal-map"
           : "threejs-water-patch-missing";
     };
@@ -693,7 +693,7 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     };
     stage.dataset.worldSurfaceProfile = waterVideoElement
       ? "threejs-water-addon-over-licensed-moving-water"
-      : "threejs-water-addon-over-studio-backdrop";
+      : "threejs-water-addon-over-open-ocean-horizon";
     stage.dataset.worldWaterNormalMap = waterNormalMapState;
     stage.dataset.worldWaterTexture = waterVideoElement
       ? waterVideoElement.readyState >= 2

@@ -108,7 +108,7 @@ describe("client request portal browser flow", () => {
       expect(await page.locator("[data-world-water-video]").count()).toBe(0);
       expect(await page.locator(".world-space-image").count()).toBe(0);
       expect(await stage.getAttribute("data-world-surface-profile")).toBe(
-        "threejs-water-addon-over-studio-backdrop",
+        "threejs-water-addon-over-open-ocean-horizon",
       );
       expect(await stage.getAttribute("data-world-ripple-mode")).toBe(
         "raycast-water-surface-ripple",
@@ -345,7 +345,7 @@ describe("client request portal browser flow", () => {
             stage?.dataset.worldRenderMode === "threejs-water-addon-overlay" &&
             stage.dataset.worldShading === "threejs-reflective-water-over-css-backdrop" &&
             stage.dataset.worldSurface === "threejs-water-normal-map-over-css-backdrop" &&
-            stage.dataset.worldSurfaceProfile === "threejs-water-addon-over-studio-backdrop" &&
+            stage.dataset.worldSurfaceProfile === "threejs-water-addon-over-open-ocean-horizon" &&
             stage.dataset.worldWaterTexture === "not-used" &&
             stage.dataset.worldWaterNormalMap === "ready" &&
             stage.dataset.worldVideoState === "unavailable"
