@@ -382,22 +382,279 @@
               </div>
               <a
                 class="next-scene-cue"
-                href="#process"
+                href="#journey"
                 data-reveal="next-scene-cue"
-                aria-label="Lướt xuống xem quy trình"
-                data-i18n-aria-label="scrollToProcess"
+                aria-label="Lướt xuống xem hành trình thiết kế"
+                data-i18n-aria-label="scrollToJourney"
               >
-                <span class="next-scene-kicker" data-i18n="nextSceneKicker">03 / CHẶNG CUỐI</span>
+                <span class="next-scene-kicker" data-i18n="nextSceneKicker"
+                  >03 / FLIGHT JOURNAL</span
+                >
                 <span class="next-scene-copy">
                   <strong class="next-scene-title" data-i18n="nextSceneTitle"
-                    >Lướt xuống để xem quy trình</strong
+                    >Cuộn vào hành trình thiết kế</strong
                   >
                   <small data-i18n="nextSceneCopy"
-                    >Từ hướng nhìn đã chọn đến bản dựng hoàn chỉnh.</small
+                    >Theo dấu ý tưởng từ brief đến khoảnh khắc lên sân khấu.</small
                   >
                 </span>
                 <span class="next-scene-arrow" aria-hidden="true">↓</span>
               </a>
+            </div>
+          </div>
+        </section>
+
+        <section
+          class="journey-section"
+          id="journey"
+          aria-labelledby="journey-title"
+          data-reveal-section
+          data-motion-scene="journey"
+          data-journey-phase="1"
+        >
+          <div class="journey-track">
+            <div class="journey-sticky">
+              <div class="journey-backdrop" aria-hidden="true">
+                <span class="journey-backdrop-glow journey-backdrop-glow--one"></span>
+                <span class="journey-backdrop-glow journey-backdrop-glow--two"></span>
+                <span class="journey-backdrop-grid"></span>
+              </div>
+              <div class="journey-frame">
+                <div class="journey-topline" aria-hidden="true">
+                  <span>PRESENTLAB <i>／</i> FIELD JOURNAL</span>
+                  <span>SCROLL TO NAVIGATE <i>↘</i></span>
+                </div>
+                <div class="journey-layout">
+                  <div class="journey-copy">
+                    <p class="eyebrow journey-eyebrow" data-i18n="journeyEyebrow">
+                      03 / FLIGHT JOURNAL
+                    </p>
+                    <h2 id="journey-title" data-i18n="journeyTitle">
+                      Ý tưởng cất cánh. Câu chuyện chạm tới khán phòng.
+                    </h2>
+                    <p class="journey-intro" data-i18n="journeyIntro">
+                      Theo dõi một bản trình chiếu đi từ brief đến khoảnh khắc sẵn sàng lên sân
+                      khấu.
+                    </p>
+                  </div>
+
+                  <ol
+                    class="journey-steps"
+                    aria-label="Các chặng của hành trình trình chiếu"
+                    data-i18n-aria-label="journeyStepsLabel"
+                  >
+                    <li class="journey-step is-active" data-journey-step="1">
+                      <span class="journey-step-index">01</span>
+                      <span>
+                        <strong data-i18n="journeyStepOneTitle">Nạp dữ liệu nhiệm vụ</strong>
+                        <small data-i18n="journeyStepOneCopy"
+                          >Chốt người nghe, mục tiêu và điều họ cần nhớ.</small
+                        >
+                      </span>
+                      <span class="journey-step-state" aria-hidden="true">↗</span>
+                    </li>
+                    <li class="journey-step" data-journey-step="2">
+                      <span class="journey-step-index">02</span>
+                      <span>
+                        <strong data-i18n="journeyStepTwoTitle"
+                          >Xếp câu chuyện thành quỹ đạo</strong
+                        >
+                        <small data-i18n="journeyStepTwoCopy"
+                          >Tìm mạch kể rõ ràng, để mỗi slide dẫn tới điều tiếp theo.</small
+                        >
+                      </span>
+                      <span class="journey-step-state" aria-hidden="true">↗</span>
+                    </li>
+                    <li class="journey-step" data-journey-step="3">
+                      <span class="journey-step-index">03</span>
+                      <span>
+                        <strong data-i18n="journeyStepThreeTitle">Thiết kế nhịp chuyển động</strong>
+                        <small data-i18n="journeyStepThreeCopy"
+                          >Cân hình ảnh, chữ và khoảng nghỉ cho mỗi điểm nhấn.</small
+                        >
+                      </span>
+                      <span class="journey-step-state" aria-hidden="true">↗</span>
+                    </li>
+                    <li class="journey-step" data-journey-step="4">
+                      <span class="journey-step-index">04</span>
+                      <span>
+                        <strong data-i18n="journeyStepFourTitle">Hạ cánh thành bộ slide</strong>
+                        <small data-i18n="journeyStepFourCopy"
+                          >Rà soát chi tiết, đóng gói và bàn giao đúng định dạng.</small
+                        >
+                      </span>
+                      <span class="journey-step-state" aria-hidden="true">✓</span>
+                    </li>
+                  </ol>
+
+                  <div class="journey-actions">
+                    <button class="button journey-brief-button" type="button" data-open-request>
+                      <span data-i18n="journeyBriefAction">Bắt đầu với brief</span>
+                      <span aria-hidden="true">↗</span>
+                    </button>
+                    <a class="journey-process-link" href="#process" data-i18n="journeyToProcess">
+                      Xem cách chúng tôi triển khai
+                    </a>
+                  </div>
+
+                  <div class="journey-stage" data-journey-stage aria-hidden="true">
+                    <div class="journey-stage-header">
+                      <span>XL / 04</span>
+                      <span data-i18n="journeyVisualLabel">MISSION LOG / 04</span>
+                    </div>
+                    <div class="journey-artboard">
+                      <span class="journey-orbit journey-orbit--outer"></span>
+                      <span class="journey-orbit journey-orbit--inner"></span>
+                      <span class="journey-orbit journey-orbit--dash"></span>
+                      <span class="journey-orbit-point journey-orbit-point--top"></span>
+                      <span class="journey-orbit-point journey-orbit-point--bottom"></span>
+
+                      <svg class="journey-astronaut" viewBox="0 0 620 740" focusable="false">
+                        <defs>
+                          <radialGradient id="journeyVisor" cx="38%" cy="26%" r="82%">
+                            <stop offset="0" stop-color="#78edff" />
+                            <stop offset="0.38" stop-color="#177fd3" />
+                            <stop offset="1" stop-color="#071a43" />
+                          </radialGradient>
+                          <linearGradient id="journeySuit" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0" stop-color="#f5fbff" />
+                            <stop offset="0.53" stop-color="#c5d8eb" />
+                            <stop offset="1" stop-color="#6f91b6" />
+                          </linearGradient>
+                          <linearGradient id="journeyPanel" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0" stop-color="#1d9aff" />
+                            <stop offset="1" stop-color="#82efff" />
+                          </linearGradient>
+                          <filter
+                            id="journeySuitShadow"
+                            x="-40%"
+                            y="-30%"
+                            width="180%"
+                            height="170%"
+                          >
+                            <feDropShadow
+                              dx="0"
+                              dy="20"
+                              stdDeviation="18"
+                              flood-color="#02142d"
+                              flood-opacity="0.46"
+                            />
+                          </filter>
+                        </defs>
+                        <g class="journey-astronaut-body" filter="url(#journeySuitShadow)">
+                          <path class="journey-tether" d="M421 265 C516 214 510 127 450 107" />
+                          <rect
+                            class="journey-pack"
+                            x="216"
+                            y="310"
+                            width="66"
+                            height="178"
+                            rx="26"
+                          />
+                          <path class="journey-pack-detail" d="M229 341h40M229 357h40M230 444h38" />
+                          <path
+                            class="journey-arm journey-arm--left"
+                            d="M253 346 C214 349 196 384 184 425 L158 476 C149 495 160 516 180 518 C194 520 206 509 214 494 L264 424"
+                          />
+                          <path
+                            class="journey-arm journey-arm--right"
+                            d="M404 343 C444 352 463 383 474 420 L493 467 C501 488 490 508 470 510 C454 512 442 503 435 486 L395 418"
+                          />
+                          <path class="journey-arm-trim" d="M171 480l31 15M455 473l34-12" />
+                          <path
+                            class="journey-leg journey-leg--left"
+                            d="M276 465 C255 512 249 560 243 615 L236 648 C232 669 248 684 270 681 L310 676 C329 674 338 659 330 642 L318 614 L348 504"
+                          />
+                          <path
+                            class="journey-leg journey-leg--right"
+                            d="M345 495 C354 545 381 573 406 611 L428 646 C440 665 458 669 477 658 L505 640 C520 630 518 611 502 599 L472 576 L438 518 L415 448"
+                          />
+                          <path
+                            class="journey-boot"
+                            d="M238 642 C257 649 287 649 314 641 L331 660 C337 670 329 680 314 683 L258 691 C240 693 228 680 232 665z"
+                          />
+                          <path
+                            class="journey-boot"
+                            d="M423 638 C444 643 466 637 486 624 L507 613 C524 613 530 629 519 641 L480 669 C463 682 444 678 434 665z"
+                          />
+                          <path
+                            class="journey-torso"
+                            d="M258 317 C276 297 300 289 326 289 C354 289 383 300 401 321 L427 387 L411 480 C376 502 296 505 258 481 L238 391z"
+                          />
+                          <path
+                            class="journey-torso-seam"
+                            d="M262 355 C300 375 366 377 409 352M257 463 C304 480 372 481 415 461"
+                          />
+                          <path
+                            class="journey-collar"
+                            d="M277 303 C291 284 304 277 326 277 C348 277 367 287 382 306 L365 331 C339 341 305 337 285 324z"
+                          />
+                          <rect
+                            class="journey-chest-panel"
+                            x="303"
+                            y="364"
+                            width="78"
+                            height="65"
+                            rx="12"
+                          />
+                          <path class="journey-chest-line" d="M318 383h48M318 395h30M318 408h40" />
+                          <circle class="journey-chest-light" cx="370" cy="408" r="4" />
+                          <circle class="journey-shoulder-mark" cx="272" cy="355" r="11" />
+                          <circle class="journey-shoulder-mark" cx="397" cy="354" r="11" />
+                          <path
+                            class="journey-helmet-ring"
+                            d="M222 246 C222 171 266 125 326 125 C387 125 431 172 431 246 C431 318 386 354 326 354 C267 354 222 314 222 246z"
+                          />
+                          <ellipse class="journey-visor" cx="326" cy="239" rx="82" ry="94" />
+                          <path class="journey-visor-glint" d="M278 179 C301 158 330 151 355 161" />
+                          <path
+                            class="journey-helmet-rim"
+                            d="M236 260 C247 312 279 339 326 341 C370 342 402 316 416 267"
+                          />
+                          <path
+                            class="journey-glove"
+                            d="M157 470 C145 468 132 477 126 490 C119 507 130 526 150 531 L177 537 C192 539 204 528 202 513 L198 497z"
+                          />
+                          <path
+                            class="journey-glove"
+                            d="M488 459 C500 451 516 457 524 470 L540 496 C549 511 541 528 524 535 L500 543 C483 548 470 536 472 519 L475 486z"
+                          />
+                          <path class="journey-glove-line" d="M137 496l47 15M489 502l42-17" />
+                        </g>
+                      </svg>
+
+                      <div class="journey-float-card journey-float-card--brief">
+                        <span class="journey-card-label"
+                          >01 <i>／</i> <span data-i18n="journeyCardBrief">BRIEF LOCKED</span></span
+                        >
+                        <strong>01:24</strong>
+                        <span class="journey-card-meter"><i></i><i></i><i></i><i></i><i></i></span>
+                      </div>
+                      <div class="journey-float-card journey-float-card--deck">
+                        <span class="journey-card-label"
+                          >XL / 04 <i>·</i>
+                          <span data-i18n="journeyCardDeck">SLIDE SYSTEM</span></span
+                        >
+                        <span class="journey-mini-deck">
+                          <i><b></b><b></b></i><i><b></b><b></b></i><i><b></b><b></b></i>
+                        </span>
+                        <strong data-i18n="journeyVisualHeading">Câu chuyện đã vào quỹ đạo</strong>
+                      </div>
+                      <span class="journey-stage-caption" data-i18n="journeyStageCaption">
+                        STORY / DESIGN / DELIVERY
+                      </span>
+                    </div>
+                    <div class="journey-stage-footer">
+                      <span data-i18n="journeyProgressLabel">TIẾN ĐỘ HÀNH TRÌNH</span>
+                      <span><b data-journey-phase-count>01</b> <i>／</i> 04</span>
+                      <span class="journey-progress-track"><i></i></span>
+                      <span class="journey-scroll-hint" data-i18n="journeyScrollHint"
+                        >CUỘN ĐỂ ĐI QUA 4 CHẶNG</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -411,7 +668,7 @@
         >
           <div class="section-heading process-heading" data-reveal="section-heading">
             <div>
-              <p class="eyebrow" data-i18n="processEyebrow">02 / HOW IT WORKS</p>
+              <p class="eyebrow" data-i18n="processEyebrow">04 / HOW IT WORKS</p>
               <h2 id="process-title" data-i18n="processTitle">Từ lựa chọn đến file bàn giao</h2>
             </div>
             <p class="section-intro" data-i18n="processIntro">
@@ -446,7 +703,7 @@
           </div>
           <div class="process-close" data-reveal="process-close">
             <div class="process-close-copy">
-              <p class="eyebrow" data-i18n="processCloseEyebrow">03 / SẴN SÀNG DỰNG</p>
+              <p class="eyebrow" data-i18n="processCloseEyebrow">04 / SẴN SÀNG DỰNG</p>
               <h3 data-i18n="processCloseTitle">Để phần còn lại cho đội ngũ.</h3>
               <p data-i18n="processCloseCopy">
                 Gửi brief, mục tiêu và deadline. Chúng tôi sẽ check và phản hồi trong 1–2 tiếng.

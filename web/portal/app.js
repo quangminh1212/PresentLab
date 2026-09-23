@@ -19,7 +19,8 @@ const SUPPORTED_THEMES = ["dark", "light"];
 const MOTION_SCENES = [
   { id: "catalog", index: "01" },
   { id: "templates", index: "02" },
-  { id: "process", index: "03" },
+  { id: "journey", index: "03" },
+  { id: "process", index: "04" },
 ];
 
 const COPY = {
@@ -101,7 +102,7 @@ const COPY = {
     clearFilters: "Xóa bộ lọc",
     loadMore: "Tải thêm mẫu",
     remaining: "({{count}} còn lại)",
-    processEyebrow: "03 / HOW IT WORKS",
+    processEyebrow: "04 / HOW IT WORKS",
     processTitle: "Từ lựa chọn đến file bàn giao",
     processIntro: "Bạn chỉ cần mô tả điều cần đạt được. Phần triển khai để chúng tôi lo.",
     processOneTitle: "Chọn hướng",
@@ -208,10 +209,32 @@ const COPY = {
     scrollCue: "CUỘN ĐỂ XEM SLIDE",
     scrollToTemplates: "Lướt xuống thư viện slide",
     scrollToProcess: "Lướt xuống xem quy trình",
-    nextSceneKicker: "03 / CHẶNG CUỐI",
-    nextSceneTitle: "Lướt xuống để xem quy trình",
-    nextSceneCopy: "Từ hướng nhìn đã chọn đến bản dựng hoàn chỉnh.",
-    processCloseEyebrow: "03 / SẴN SÀNG DỰNG",
+    scrollToJourney: "Lướt xuống xem hành trình thiết kế",
+    nextSceneKicker: "03 / FLIGHT JOURNAL",
+    nextSceneTitle: "Theo dấu câu chuyện từ brief đến sân khấu",
+    nextSceneCopy: "Bốn chặng kể chuyện, tạo nhịp và hoàn thiện bộ slide.",
+    journeyEyebrow: "03 / FLIGHT JOURNAL",
+    journeyTitle: "Ý tưởng cất cánh. Câu chuyện chạm tới khán phòng.",
+    journeyIntro: "Theo dõi một bản trình chiếu đi từ brief đến khoảnh khắc sẵn sàng lên sân khấu.",
+    journeyStepsLabel: "Các chặng của hành trình trình chiếu",
+    journeyStepOneTitle: "Nạp dữ liệu nhiệm vụ",
+    journeyStepOneCopy: "Chốt người nghe, mục tiêu và điều họ cần nhớ.",
+    journeyStepTwoTitle: "Xếp câu chuyện thành quỹ đạo",
+    journeyStepTwoCopy: "Tìm mạch kể rõ ràng, để mỗi slide dẫn tới điều tiếp theo.",
+    journeyStepThreeTitle: "Thiết kế nhịp chuyển động",
+    journeyStepThreeCopy: "Cân hình ảnh, chữ và khoảng nghỉ cho mỗi điểm nhấn.",
+    journeyStepFourTitle: "Hạ cánh thành bộ slide",
+    journeyStepFourCopy: "Rà soát chi tiết, đóng gói và bàn giao đúng định dạng.",
+    journeyBriefAction: "Bắt đầu với brief",
+    journeyToProcess: "Xem cách chúng tôi triển khai",
+    journeyVisualLabel: "MISSION LOG / 04",
+    journeyVisualHeading: "Câu chuyện đã vào quỹ đạo",
+    journeyCardBrief: "BRIEF LOCKED",
+    journeyCardDeck: "SLIDE SYSTEM",
+    journeyStageCaption: "STORY / DESIGN / DELIVERY",
+    journeyProgressLabel: "TIẾN ĐỘ HÀNH TRÌNH",
+    journeyScrollHint: "CUỘN ĐỂ ĐI QUA 4 CHẶNG",
+    processCloseEyebrow: "04 / SẴN SÀNG DỰNG",
     processCloseTitle: "Để phần còn lại cho đội ngũ.",
     processCloseCopy:
       "Gửi brief, mục tiêu và deadline. Chúng tôi sẽ check và phản hồi trong 1–2 tiếng.",
@@ -310,7 +333,7 @@ const COPY = {
     clearFilters: "Clear filters",
     loadMore: "Load more templates",
     remaining: "({{count}} left)",
-    processEyebrow: "03 / HOW IT WORKS",
+    processEyebrow: "04 / HOW IT WORKS",
     processTitle: "From direction to delivered deck",
     processIntro: "Tell us what the deck needs to achieve. We will take care of the build.",
     processOneTitle: "Choose a direction",
@@ -417,10 +440,34 @@ const COPY = {
     scrollCue: "SCROLL TO VIEW SLIDES",
     scrollToTemplates: "Scroll to the slide library",
     scrollToProcess: "Scroll to the process",
-    nextSceneKicker: "03 / FINAL SCENE",
-    nextSceneTitle: "Scroll into the production flow",
-    nextSceneCopy: "From the chosen direction to a finished deck.",
-    processCloseEyebrow: "03 / READY TO BUILD",
+    scrollToJourney: "Scroll through the design journey",
+    nextSceneKicker: "03 / FLIGHT JOURNAL",
+    nextSceneTitle: "Follow the story from brief to stage",
+    nextSceneCopy: "Four steps to shape the story, set its rhythm and finish the deck.",
+    journeyEyebrow: "03 / FLIGHT JOURNAL",
+    journeyTitle: "An idea takes off. A story reaches the room.",
+    journeyIntro:
+      "Follow a presentation from its first brief to the moment it is ready for the stage.",
+    journeyStepsLabel: "Steps in the presentation journey",
+    journeyStepOneTitle: "Load the mission",
+    journeyStepOneCopy: "Set the audience, the goal and what they should remember.",
+    journeyStepTwoTitle: "Put the story in orbit",
+    journeyStepTwoCopy: "Find a clear narrative, with every slide leading to the next.",
+    journeyStepThreeTitle: "Design the rhythm",
+    journeyStepThreeCopy: "Balance imagery, type and pauses around each key moment.",
+    journeyStepFourTitle: "Land the finished deck",
+    journeyStepFourCopy:
+      "Review the details, package the files and hand them over in the right format.",
+    journeyBriefAction: "Start with a brief",
+    journeyToProcess: "See how we bring it to life",
+    journeyVisualLabel: "MISSION LOG / 04",
+    journeyVisualHeading: "The story is in orbit",
+    journeyCardBrief: "BRIEF LOCKED",
+    journeyCardDeck: "SLIDE SYSTEM",
+    journeyStageCaption: "STORY / DESIGN / DELIVERY",
+    journeyProgressLabel: "JOURNEY PROGRESS",
+    journeyScrollHint: "SCROLL THROUGH 4 PHASES",
+    processCloseEyebrow: "04 / READY TO BUILD",
     processCloseTitle: "Leave the rest to the studio.",
     processCloseCopy:
       "Send the brief, goal and deadline. We will check and reply within 1–2 hours.",
@@ -517,7 +564,7 @@ const COPY = {
     clearFilters: "清除筛选",
     loadMore: "加载更多模板",
     remaining: "（还剩 {{count}} 套）",
-    processEyebrow: "03 / 工作流程",
+    processEyebrow: "04 / 工作流程",
     processTitle: "从选择方向到交付文件",
     processIntro: "告诉我们演示文稿要达成什么目标，制作交给我们。",
     processOneTitle: "选择方向",
@@ -616,10 +663,32 @@ const COPY = {
     scrollCue: "滚动查看幻灯片",
     scrollToTemplates: "向下浏览幻灯片库",
     scrollToProcess: "向下查看流程",
-    nextSceneKicker: "03 / 最后一幕",
-    nextSceneTitle: "向下进入制作流程",
-    nextSceneCopy: "从选定方向到完整演示文稿。",
-    processCloseEyebrow: "03 / 准备制作",
+    scrollToJourney: "向下浏览设计旅程",
+    nextSceneKicker: "03 / 飞行日志",
+    nextSceneTitle: "从简报出发，跟随故事抵达舞台",
+    nextSceneCopy: "四个阶段，梳理故事、设计节奏并完成演示文稿。",
+    journeyEyebrow: "03 / 飞行日志",
+    journeyTitle: "让创意起飞，让故事抵达现场。",
+    journeyIntro: "跟随演示文稿从第一份简报，走到准备登台的那一刻。",
+    journeyStepsLabel: "演示文稿旅程的各个阶段",
+    journeyStepOneTitle: "载入任务信息",
+    journeyStepOneCopy: "明确听众、目标，以及他们需要记住的重点。",
+    journeyStepTwoTitle: "让故事进入轨道",
+    journeyStepTwoCopy: "梳理清晰的叙事，让每一页自然引向下一页。",
+    journeyStepThreeTitle: "设计演示节奏",
+    journeyStepThreeCopy: "协调图像、文字和停顿，突出每个关键时刻。",
+    journeyStepFourTitle: "完成演示文稿",
+    journeyStepFourCopy: "检查细节、整理文件，并按正确格式交付。",
+    journeyBriefAction: "从简报开始",
+    journeyToProcess: "查看我们的制作流程",
+    journeyVisualLabel: "MISSION LOG / 04",
+    journeyVisualHeading: "故事已进入轨道",
+    journeyCardBrief: "BRIEF LOCKED",
+    journeyCardDeck: "SLIDE SYSTEM",
+    journeyStageCaption: "STORY / DESIGN / DELIVERY",
+    journeyProgressLabel: "旅程进度",
+    journeyScrollHint: "滚动浏览四个阶段",
+    processCloseEyebrow: "04 / 准备制作",
     processCloseTitle: "剩下的交给制作团队。",
     processCloseCopy: "发送简报、目标和截止时间，我们会在 1–2 小时内确认并回复。",
     processCloseAction: "立即发送简报",
@@ -1220,6 +1289,9 @@ const elements = {
   hero: document.querySelector(".hero"),
   heroCopy: document.querySelector('[data-reveal="hero-copy"]'),
   catalogSection: document.querySelector('[data-motion-scene="templates"]'),
+  journeySection: document.querySelector('[data-motion-scene="journey"]'),
+  journeySteps: [...document.querySelectorAll("[data-journey-step]")],
+  journeyPhaseCount: document.querySelector("[data-journey-phase-count]"),
   processSection: document.querySelector('[data-motion-scene="process"]'),
   sceneTransition: document.querySelector("[data-scene-transition]"),
   sceneTransitionIndex: document.querySelector("[data-scene-transition-index]"),
@@ -2243,6 +2315,14 @@ function sceneProgressFor(section) {
   return clampUnit((window.innerHeight - rect.top) / (window.innerHeight + rect.height));
 }
 
+function journeyProgressFor(section) {
+  if (!section) return 0;
+  const rect = section.getBoundingClientRect();
+  const track = section.querySelector(".journey-track");
+  const travel = Math.max((track?.offsetHeight || section.offsetHeight) - window.innerHeight, 1);
+  return clampUnit(Math.max(0, -rect.top) / travel);
+}
+
 function updateMotionSceneState(index = state.motionScene) {
   const scene = MOTION_SCENES[index] || MOTION_SCENES[0];
   document.documentElement.dataset.motionScene = scene.id;
@@ -2258,6 +2338,7 @@ function updateMotionChoreography() {
     ? clampUnit(scrollTop / Math.max(elements.hero.offsetHeight * 0.72, 1))
     : 0;
   const catalogProgress = sceneProgressFor(elements.catalogSection);
+  const journeyProgress = journeyProgressFor(elements.journeySection);
   const processProgress = sceneProgressFor(elements.processSection);
   const scrollable = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
   const totalProgress = clampUnit(scrollTop / scrollable);
@@ -2278,6 +2359,17 @@ function updateMotionChoreography() {
   elements.parallaxStage?.style.setProperty("--hero-board-rotate", `${heroProgress * -3.5}deg`);
   elements.parallaxStage?.style.setProperty("--hero-grid-shift", `${heroProgress * 36}px`);
   elements.catalogSection?.style.setProperty("--section-progress", catalogProgress.toFixed(4));
+  elements.journeySection?.style.setProperty("--journey-progress", journeyProgress.toFixed(4));
+  if (elements.journeySection) {
+    const journeyPhase = Math.min(4, Math.floor(journeyProgress * 4) + 1);
+    elements.journeySection.dataset.journeyPhase = String(journeyPhase);
+    if (elements.journeyPhaseCount) {
+      elements.journeyPhaseCount.textContent = String(journeyPhase).padStart(2, "0");
+    }
+    elements.journeySteps.forEach((step) => {
+      step.classList.toggle("is-active", Number(step.dataset.journeyStep) === journeyPhase);
+    });
+  }
   elements.processSection?.style.setProperty("--section-progress", processProgress.toFixed(4));
   elements.catalogSection?.style.setProperty(
     "--scene-shift",
@@ -2288,9 +2380,12 @@ function updateMotionChoreography() {
     String((0.5 - processProgress) * 84 + state.motionVelocity * 0.4) + "px",
   );
 
-  const sceneElements = [elements.hero, elements.catalogSection, elements.processSection].filter(
-    Boolean,
-  );
+  const sceneElements = [
+    elements.hero,
+    elements.catalogSection,
+    elements.journeySection,
+    elements.processSection,
+  ].filter(Boolean);
   const marker = window.innerHeight * 0.42;
   const activeIndex = Math.max(
     0,
