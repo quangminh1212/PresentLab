@@ -1,5 +1,3 @@
-import { setupXLabWorld } from "./world.js";
-
 const TEMPLATE_INDEX_URL = "/resources/templates/index.json";
 const PALETTE_INDEX_URL = "/resources/palettes/index.json";
 const REQUEST_STORAGE_KEY = "presentlab.slide-requests";
@@ -1178,7 +1176,6 @@ const elements = {
   sceneProgress: document.querySelector("[data-scene-progress]"),
   sceneTransition: document.querySelector("[data-scene-transition]"),
   sceneTransitionIndex: document.querySelector("[data-scene-transition-index]"),
-  worldCanvas: document.querySelector("[data-xlab-world-canvas]"),
   worldStage: document.querySelector("[data-xlab-world]"),
 };
 
@@ -2385,6 +2382,42 @@ function handleWorldTarget(targetId) {
   if (target) playSceneTransition(target, href);
 }
 
+function setupWorldNavigation() {
+  const stage = elements.worldStage;
+  if (!stage) return;
+
+  const statusElement = stage.querySelector("[data-world-status]");
+  const targetLabelElement = stage.querySelector("[data-world-target-label]");
+  const locationButtons = new Map(
+    [...stage.querySelectorAll("[data-world-target]")].map((button) => [
+      button.dataset.worldTarget,
+      button,
+    ]),
+  );
+
+  const selectTarget = (target) => {
+    const button = locationButtons.get(target);
+    if (!button) return;
+    stage.classList.add("is-focused");
+    if (statusElement) statusElement.textContent = "SECTION LOCKED";
+    if (targetLabelElement) {
+      targetLabelElement.textContent = button.querySelector("strong")?.textContent || target;
+    }
+    locationButtons.forEach((item, id) => item.classList.toggle("is-active", id === target));
+    handleWorldTarget(target);
+  };
+
+  stage.querySelector("[data-world-start]")?.addEventListener("click", () => {
+    stage.classList.add("is-focused");
+    if (statusElement) statusElement.textContent = "STUDIO FOCUS";
+    stage.focus({ preventScroll: true });
+  });
+
+  locationButtons.forEach((button, target) => {
+    button.addEventListener("click", () => selectTarget(target));
+  });
+}
+
 function setupExperience() {
   bindRevealMotion();
   bindAnchorNavigation();
@@ -2393,11 +2426,7 @@ function setupExperience() {
   bindAmbientSurfaceMotion();
   bindMagneticMotion();
   bindMotionScroll();
-  setupXLabWorld({
-    canvas: elements.worldCanvas,
-    stage: elements.worldStage,
-    onTarget: handleWorldTarget,
-  });
+  setupWorldNavigation();
   requestAnimationFrame(() => document.documentElement.classList.add("is-ready"));
 }
 

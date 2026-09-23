@@ -1836,3 +1836,31 @@ html[data-theme="light"] .world-stage::after {
     animation: none;
   }
 }
+
+/* A quiet studio surface keeps the hero clear of the old ocean scene. */
+.world-stage {
+  border-color: rgb(140 232 216 / 20%);
+  background:
+    radial-gradient(ellipse at 78% 16%, rgb(62 111 132 / 18%), transparent 36%),
+    radial-gradient(ellipse at 18% 86%, rgb(47 79 101 / 15%), transparent 40%),
+    linear-gradient(145deg, #111820 0%, #18222c 54%, #101820 100%);
+  box-shadow:
+    0 36px 90px rgb(0 0 0 / 38%),
+    inset 0 1px 0 rgb(255 255 255 / 7%);
+}
+
+.world-stage::before,
+.world-stage::after {
+  display: none;
+}
+
+html[data-theme="light"] .world-stage {
+  border-color: rgb(0 129 126 / 22%);
+  background:
+    radial-gradient(ellipse at 78% 16%, rgb(255 255 255 / 76%), transparent 36%),
+    radial-gradient(ellipse at 18% 86%, rgb(202 224 226 / 34%), transparent 40%),
+    linear-gradient(145deg, #eef3f4 0%, #e5edef 54%, #f3f6f6 100%);
+  box-shadow:
+    0 36px 90px rgb(24 69 77 / 13%),
+    inset 0 1px 0 rgb(255 255 255 / 78%);
+}

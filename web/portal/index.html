@@ -107,28 +107,6 @@
           data-motion-scene="library"
         >
           <div class="world-stage" data-xlab-world data-parallax-stage tabindex="0">
-            <video
-              class="world-water-video"
-              data-world-water-video
-              muted
-              loop
-              playsinline
-              preload="none"
-              title="Licensed moving water footage under a Three.js water surface"
-              aria-hidden="true"
-            >
-              <source src="/web/portal/water-surface.webm" type="video/webm" />
-            </video>
-            <div class="world-space-image" aria-hidden="true"></div>
-            <canvas
-              class="world-canvas"
-              data-xlab-world-canvas
-              role="img"
-              aria-label="XLab Three.js water surface with moving reflections and pointer-driven ripples"
-            ></canvas>
-            <div class="world-atmosphere" aria-hidden="true"></div>
-            <div class="world-scanlines" aria-hidden="true"></div>
-
             <div class="world-copy">
               <p class="eyebrow">
                 <span class="eyebrow-dot"></span
@@ -168,19 +146,18 @@
 
             <div class="world-hud" aria-hidden="true">
               <div class="world-hud-top">
-                <span><i></i> OPEN WATER / 01</span>
-                <span>TIDAL FIELD / 03</span>
-                <span data-world-status>OPEN WATER</span>
+                <span><i></i> XLAB / 01</span>
+                <span>STUDIO FIELD / 03</span>
+                <span data-world-status>STUDIO READY</span>
               </div>
               <div class="world-coordinates">
-                <span>FLOW <b data-world-coordinates>03 / 770</b></span>
-                <span>RIPPLES <b data-world-speed>03</b> LIVE</span>
+                <span>LIBRARY <b data-world-coordinates>770</b></span>
+                <span>FORMAT <b>16:9</b> LIVE</span>
               </div>
-              <div class="world-reticle"><i></i><b></b><em></em></div>
               <div class="world-target-readout">
-                <small>NEAREST TIDE</small>
-                <strong data-world-target-label>NO SIGNAL</strong>
-                <span><i></i> SELECT A WATER NODE</span>
+                <small>ACTIVE SECTION</small>
+                <strong data-world-target-label>SLIDE LIBRARY</strong>
+                <span><i></i> CHOOSE A DESTINATION</span>
               </div>
             </div>
 
@@ -210,15 +187,6 @@
             >
               <span><i></i><i></i><i></i></span
               ><small data-i18n="scrollCue">CUỘN ĐỂ XEM SLIDE</small>
-            </a>
-            <a
-              class="world-media-credit"
-              href="https://creativecommons.org/licenses/by/3.0/"
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Water footage by Alexander Grebenkov, Creative Commons Attribution 3.0"
-            >
-              WATER / ALEXANDER GREBENKOV / CC BY 3.0
             </a>
           </div>
         </section>
