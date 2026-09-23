@@ -400,7 +400,6 @@ describe("client request portal browser flow", () => {
         .locator(".world-stage")
         .evaluate((element) => element.style.getPropertyValue("--world-image-shift-x"));
       const firstImageMotion = await page.locator(".world-space-image").evaluate((element) => ({
-        backgroundPosition: getComputedStyle(element).backgroundPosition,
         transform: getComputedStyle(element).transform,
       }));
       const reducedMotion = await page.evaluate(
@@ -424,16 +423,33 @@ describe("client request portal browser flow", () => {
         .locator(".world-stage")
         .getAttribute("data-world-water-state");
       const nextImageMotion = await page.locator(".world-space-image").evaluate((element) => ({
-        backgroundPosition: getComputedStyle(element).backgroundPosition,
         transform: getComputedStyle(element).transform,
       }));
+      const nextImageShift = await page
+        .locator(".world-stage")
+        .evaluate((element) => element.style.getPropertyValue("--world-image-shift-x"));
       if (!reducedMotion) {
         expect(nextWaterState).not.toBe(firstWaterState);
-        expect(nextImageMotion.backgroundPosition).not.toBe(firstImageMotion.backgroundPosition);
+        expect(nextImageShift).not.toBe(firstImageShift);
         expect(nextImageMotion.transform).not.toBe(firstImageMotion.transform);
       }
       expect(await page.locator(".world-stage").getAttribute("data-world-water-phase")).toMatch(
         /^\d+\.\d+$/,
+      );
+
+      await page.waitForFunction(
+        () => Number(document.querySelector(".world-stage")?.dataset.worldRippleHoverCount) > 0,
+        undefined,
+        { timeout: 3_000 },
+      );
+      expect(
+        Number(await page.locator(".world-stage").getAttribute("data-world-ripple-hover-count")),
+      ).toBeGreaterThan(0);
+      expect(await page.locator(".world-stage").getAttribute("data-world-ripple-last-type")).toBe(
+        "hover",
+      );
+      expect(await page.locator(".world-stage").getAttribute("data-world-ripple-input")).toBe(
+        "gpu-raycast-hover",
       );
 
       const initialRippleCount = Number(
