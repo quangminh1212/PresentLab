@@ -69,9 +69,17 @@ const COPY = {
     filterLabel: "LỌC THƯ VIỆN",
     resetFilters: "Đặt lại",
     searchLabel: "Tìm kiếm mẫu",
-    searchPlaceholder: "Tìm theo tên, style, mục đích...",
+    searchPlaceholder: "Tìm mẫu, chủ đề hoặc phong cách...",
+    heroQuickSearches: "Gợi ý chủ đề slide",
+    heroPopularSearches: "GỢI Ý KHÁM PHÁ",
+    shortcutPitch: "Pitch deck",
+    shortcutEditorial: "Biên tập",
+    shortcutResearch: "Nghiên cứu",
+    shortcutCulture: "Văn hóa",
     familyLabel: "Hệ thống hình ảnh",
     familyAll: "Tất cả hệ thống",
+    archetypeLabel: "Mục đích / lĩnh vực",
+    archetypeAll: "Tất cả mục đích",
     categoryLabel: "Phong cách / chuyển động",
     categoryAll: "Tất cả phong cách",
     paletteLabel: "Bảng màu",
@@ -270,9 +278,17 @@ const COPY = {
     filterLabel: "LIBRARY FILTERS",
     resetFilters: "Reset",
     searchLabel: "Search templates",
-    searchPlaceholder: "Search by name, style, purpose...",
+    searchPlaceholder: "Search by template, topic or style...",
+    heroQuickSearches: "Suggested presentation topics",
+    heroPopularSearches: "EXPLORE BY TOPIC",
+    shortcutPitch: "Pitch deck",
+    shortcutEditorial: "Editorial",
+    shortcutResearch: "Research",
+    shortcutCulture: "Culture",
     familyLabel: "Visual system",
     familyAll: "All systems",
+    archetypeLabel: "Use case / industry",
+    archetypeAll: "All use cases",
     categoryLabel: "Style / movement",
     categoryAll: "All styles",
     paletteLabel: "Color palette",
@@ -469,9 +485,17 @@ const COPY = {
     filterLabel: "筛选模板库",
     resetFilters: "重置",
     searchLabel: "搜索模板",
-    searchPlaceholder: "按名称、风格、用途搜索……",
+    searchPlaceholder: "搜索模板、主题或风格……",
+    heroQuickSearches: "推荐演示主题",
+    heroPopularSearches: "按主题探索",
+    shortcutPitch: "商业计划",
+    shortcutEditorial: "编辑风格",
+    shortcutResearch: "研究报告",
+    shortcutCulture: "文化创意",
     familyLabel: "视觉系统",
     familyAll: "全部系统",
+    archetypeLabel: "用途 / 领域",
+    archetypeAll: "所有用途",
     categoryLabel: "风格 / 动势",
     categoryAll: "全部风格",
     paletteLabel: "色彩方案",
@@ -646,6 +670,39 @@ const FAMILY_LABELS = {
     datanoir: "Data Noir / 暗色数据",
     luxury: "Luxury / 静谧奢华",
     retrofuture: "Retro Future / 霓虹未来",
+  },
+};
+
+const ARCHETYPE_LABELS = {
+  vi: {
+    culture: "Văn hóa",
+    editorial: "Biên tập",
+    keynote: "Keynote",
+    manifesto: "Tuyên ngôn",
+    pitch: "Pitch deck",
+    product: "Sản phẩm",
+    research: "Nghiên cứu",
+    strategy: "Chiến lược",
+  },
+  en: {
+    culture: "Culture",
+    editorial: "Editorial",
+    keynote: "Keynote",
+    manifesto: "Manifesto",
+    pitch: "Pitch deck",
+    product: "Product",
+    research: "Research",
+    strategy: "Strategy",
+  },
+  zh: {
+    culture: "文化创意",
+    editorial: "编辑风格",
+    keynote: "主题演讲",
+    manifesto: "宣言",
+    pitch: "商业计划书",
+    product: "产品",
+    research: "研究报告",
+    strategy: "战略",
   },
 };
 
@@ -1104,6 +1161,7 @@ const state = {
   sceneTransitionScrollTimer: 0,
   query: "",
   family: "all",
+  archetype: "all",
   category: "all",
   palette: "all",
   sort: "featured",
@@ -1178,6 +1236,10 @@ function localizedFamily(name) {
   return (
     FAMILY_LABELS[state.locale]?.[name] || FAMILY_LABELS[DEFAULT_LOCALE][name] || humanize(name)
   );
+}
+
+function localizedArchetype(name) {
+  return ARCHETYPE_LABELS[state.locale]?.[name] || humanize(name);
 }
 
 function localizedCategory(value) {
@@ -1340,7 +1402,11 @@ function themeFor(template) {
 function previewMarkup(template, theme) {
   const familyClass = `family-${slug(templateFamily(template))}`;
   const safeTitle = escapeHtml(templateName(template).replace(/\s+\/\s+.*/, ""));
-  const category = escapeHtml(template.styleCategory || localizedFamily(templateFamily(template)));
+  const category = escapeHtml(
+    template.styleCategory ||
+      localizedArchetype(template.archetype) ||
+      localizedFamily(templateFamily(template)),
+  );
   return `<div class="template-visual ${familyClass}" style="--preview-paper:${escapeHtml(theme.paper)};--preview-ink:${escapeHtml(theme.ink)};--preview-muted:${escapeHtml(theme.muted)};--preview-accent:${escapeHtml(theme.accent)};--preview-art:${escapeHtml(theme.artOne)};--preview-soft:${escapeHtml(theme.accentSoft)}">
     <div class="visual-top"><span>PL / 01</span><span>${escapeHtml(paletteTitle(templatePalette(template)))}</span></div>
     <div class="visual-shape"></div>
@@ -1405,7 +1471,10 @@ function navigatePreview(direction) {
 function cardMarkup(template) {
   const theme = themeFor(template);
   const selected = state.selected.has(template.name);
-  const category = template.styleCategory || localizedFamily(templateFamily(template));
+  const category =
+    template.styleCategory ||
+    localizedArchetype(template.archetype) ||
+    localizedFamily(templateFamily(template));
   const treatment = template.styleTreatment || template.modifier || "base";
   return `<article class="template-card${selected ? " is-selected" : ""}" data-template-card="${escapeHtml(template.name)}">
     <span class="card-check" aria-hidden="true">✓</span>
@@ -1432,6 +1501,7 @@ function filteredTemplates() {
       template.description,
       template.family,
       template.baseFamily,
+      template.archetype,
       template.styleCategory,
       template.styleTreatment,
       templatePalette(template),
@@ -1441,10 +1511,11 @@ function filteredTemplates() {
       .toLowerCase();
     const matchesQuery = !query || haystack.includes(query);
     const matchesFamily = state.family === "all" || templateFamily(template) === state.family;
+    const matchesArchetype = state.archetype === "all" || template.archetype === state.archetype;
     const matchesCategory =
       state.category === "all" || templateCategory(template) === state.category;
     const matchesPalette = state.palette === "all" || templatePalette(template) === state.palette;
-    return matchesQuery && matchesFamily && matchesCategory && matchesPalette;
+    return matchesQuery && matchesFamily && matchesArchetype && matchesCategory && matchesPalette;
   });
 
   if (state.sort === "name") {
@@ -1555,6 +1626,8 @@ function renderActiveFilters() {
   const filters = [];
   if (state.query) filters.push({ key: "query", label: t("filterQuery", { query: state.query }) });
   if (state.family !== "all") filters.push({ key: "family", label: localizedFamily(state.family) });
+  if (state.archetype !== "all")
+    filters.push({ key: "archetype", label: localizedArchetype(state.archetype) });
   if (state.category !== "all")
     filters.push({ key: "category", label: localizedCategory(state.category) });
   if (state.palette !== "all") filters.push({ key: "palette", label: paletteTitle(state.palette) });
@@ -1585,10 +1658,16 @@ function renderActiveFilters() {
 
 function renderFilterOptions() {
   const familySelect = document.querySelector("[data-family-filter]");
+  const archetypeSelect = document.querySelector("[data-archetype-filter]");
   const categorySelect = document.querySelector("[data-category-filter]");
   const paletteSelect = document.querySelector("[data-palette-filter]");
   const families = [...new Set(state.templates.map(templateFamily))].sort((left, right) =>
     localizedFamily(left).localeCompare(localizedFamily(right), state.locale),
+  );
+  const archetypes = [
+    ...new Set(state.templates.map((template) => template.archetype).filter(Boolean)),
+  ].sort((left, right) =>
+    localizedArchetype(left).localeCompare(localizedArchetype(right), state.locale),
   );
   const categories = [...new Set(state.templates.map(templateCategory))].sort((left, right) =>
     left.localeCompare(right, state.locale),
@@ -1597,9 +1676,11 @@ function renderFilterOptions() {
     paletteTitle(left).localeCompare(paletteTitle(right), state.locale),
   );
   familySelect.innerHTML = `<option value="all">${escapeHtml(t("familyAll"))}</option>${families.map((family) => `<option value="${escapeHtml(family)}">${escapeHtml(localizedFamily(family))}</option>`).join("")}`;
+  archetypeSelect.innerHTML = `<option value="all">${escapeHtml(t("archetypeAll"))}</option>${archetypes.map((archetype) => `<option value="${escapeHtml(archetype)}">${escapeHtml(localizedArchetype(archetype))}</option>`).join("")}`;
   categorySelect.innerHTML = `<option value="all">${escapeHtml(t("categoryAll"))}</option>${categories.map((category) => `<option value="${escapeHtml(category)}">${escapeHtml(localizedCategory(category))}</option>`).join("")}`;
   paletteSelect.innerHTML = `<option value="all">${escapeHtml(t("paletteAll"))}</option>${palettes.map((palette) => `<option value="${escapeHtml(palette)}">${escapeHtml(paletteTitle(palette))}</option>`).join("")}`;
   familySelect.value = state.family;
+  archetypeSelect.value = state.archetype;
   categorySelect.value = state.category;
   paletteSelect.value = state.palette;
 }
@@ -2007,8 +2088,24 @@ function bindEvents() {
     state.visibleCount = PAGE_SIZE;
     renderTemplates();
   });
+  document.querySelectorAll("[data-search-term]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const search = document.querySelector("[data-search]");
+      search.value = button.dataset.searchTerm;
+      search.dispatchEvent(new Event("input", { bubbles: true }));
+      document.querySelector("#templates")?.scrollIntoView({
+        behavior: isReducedMotion() ? "auto" : "smooth",
+        block: "start",
+      });
+    });
+  });
   document.querySelector("[data-family-filter]").addEventListener("change", (event) => {
     state.family = event.target.value;
+    state.visibleCount = PAGE_SIZE;
+    renderTemplates();
+  });
+  document.querySelector("[data-archetype-filter]").addEventListener("change", (event) => {
+    state.archetype = event.target.value;
     state.visibleCount = PAGE_SIZE;
     renderTemplates();
   });
@@ -2076,11 +2173,13 @@ function bindEvents() {
 function clearFilters() {
   state.query = "";
   state.family = "all";
+  state.archetype = "all";
   state.category = "all";
   state.palette = "all";
   state.visibleCount = PAGE_SIZE;
   document.querySelector("[data-search]").value = "";
   document.querySelector("[data-family-filter]").value = "all";
+  document.querySelector("[data-archetype-filter]").value = "all";
   document.querySelector("[data-category-filter]").value = "all";
   document.querySelector("[data-palette-filter]").value = "all";
   renderTemplates();

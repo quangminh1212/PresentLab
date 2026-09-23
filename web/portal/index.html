@@ -121,6 +121,59 @@
                 Đi qua thư viện 770 hệ thống slide, ghé vào brief room và tìm đúng nhịp trình chiếu
                 cho câu chuyện của bạn.
               </p>
+              <label class="search-field world-search-field">
+                <span class="sr-only" data-i18n="searchLabel">Tìm kiếm mẫu</span>
+                <span class="search-icon" aria-hidden="true">⌕</span>
+                <input
+                  type="search"
+                  placeholder="Tìm mẫu, chủ đề hoặc phong cách..."
+                  data-search
+                  data-i18n-placeholder="searchPlaceholder"
+                />
+                <kbd>/</kbd>
+              </label>
+              <div
+                class="world-search-shortcuts"
+                role="group"
+                aria-label="Gợi ý chủ đề slide"
+                data-i18n-aria-label="heroQuickSearches"
+              >
+                <span class="world-search-shortcuts-label" data-i18n="heroPopularSearches">
+                  CHỦ ĐỀ ĐƯỢC QUAN TÂM
+                </span>
+                <button
+                  type="button"
+                  class="world-search-chip"
+                  data-search-term="pitch"
+                  data-i18n="shortcutPitch"
+                >
+                  Pitch deck
+                </button>
+                <button
+                  type="button"
+                  class="world-search-chip"
+                  data-search-term="editorial"
+                  data-i18n="shortcutEditorial"
+                >
+                  Biên tập
+                </button>
+                <button
+                  type="button"
+                  class="world-search-chip"
+                  data-search-term="research"
+                  data-i18n="shortcutResearch"
+                >
+                  Nghiên cứu
+                </button>
+                <button
+                  type="button"
+                  class="world-search-chip"
+                  data-search-term="culture"
+                  data-i18n="shortcutCulture"
+                >
+                  Văn hóa
+                </button>
+              </div>
               <div class="world-actions">
                 <button class="world-button world-button-primary" type="button" data-world-start>
                   <span data-i18n="heroExplore">Bắt đầu khám phá</span><b>↗</b>
@@ -243,24 +296,20 @@
                   Đặt lại
                 </button>
               </div>
-              <label class="search-field">
-                <span class="sr-only" data-i18n="searchLabel">Tìm kiếm mẫu</span>
-                <span class="search-icon" aria-hidden="true">⌕</span>
-                <input
-                  type="search"
-                  placeholder="Tìm theo tên, style, mục đích..."
-                  data-search
-                  data-i18n-placeholder="searchPlaceholder"
-                />
-                <kbd>/</kbd>
-              </label>
-
               <div class="filter-group">
                 <label class="field-label" for="family-filter" data-i18n="familyLabel"
                   >Hệ thống hình ảnh</label
                 >
                 <select id="family-filter" class="select-field" data-family-filter>
                   <option value="all" data-i18n="familyAll">Tất cả hệ thống</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <label class="field-label" for="archetype-filter" data-i18n="archetypeLabel"
+                  >Mục đích / lĩnh vực</label
+                >
+                <select id="archetype-filter" class="select-field" data-archetype-filter>
+                  <option value="all" data-i18n="archetypeAll">Tất cả mục đích</option>
                 </select>
               </div>
               <div class="filter-group">
