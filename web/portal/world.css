@@ -1351,21 +1351,7 @@ html[data-theme="light"] .world-location small {
   }
 }
 
-/* Let the real WebGL surface carry the scene instead of the HUD reticle or
-   scanline treatment reading as a synthetic ripple. */
-.world-stage[data-world-render-mode="webgl-water-3d"] .world-reticle {
-  display: none;
-}
-
-.world-stage[data-world-render-mode="webgl-water-3d"] .world-scanlines {
-  opacity: 0.06;
-}
-
-.world-stage[data-world-render-mode="webgl-water-3d"] .world-atmosphere {
-  opacity: 0.28;
-}
-
-/* Natural lake pass: keep the interaction, remove the synthetic neon-water treatment. */
+/* CSS water palette stays available while the local photographic clip loads. */
 .world-stage {
   border-color: rgb(224 244 235 / 36%);
   background: linear-gradient(180deg, #a9d1d0 0%, #d5dfd1 39%, #5d9c99 48%, #1b555d 100%);
@@ -1481,7 +1467,7 @@ html[data-theme="light"] .world-stage {
 
 /* Full-bleed cosmic scene: the world owns the viewport below the compact header. */
 .app-shell:has(.hero-world) {
-  overflow-x: visible;
+  overflow-x: clip;
 }
 
 .hero.hero-world {
@@ -1505,10 +1491,6 @@ html[data-theme="light"] .world-stage {
 }
 
 @media (max-width: 760px) {
-  .app-shell:has(.hero-world) {
-    overflow-x: clip;
-  }
-
   .hero.hero-world {
     min-height: max(660px, calc(100svh - 76px));
   }
@@ -1541,7 +1523,7 @@ html[data-theme="light"] .world-stage {
   }
 }
 
-/* Water studio pass: the vendored Three.js Water surface owns the interaction. */
+/* Water-stage base treatment for the local clip and its WebGL compositor. */
 .world-stage {
   border-color: rgb(112 246 224 / 38%);
   background:
@@ -1554,7 +1536,7 @@ html[data-theme="light"] .world-stage {
     inset 0 0 110px rgb(47 245 216 / 11%);
 }
 
-/* Three.js Water is the primary surface; the local capture appears only as fallback. */
+/* Keep the local clip visible under the transparent Three.js water surface. */
 .world-water-video {
   opacity: 0;
 }
@@ -1577,7 +1559,44 @@ html[data-theme="light"] .world-stage {
 }
 
 .world-stage.is-video-water .world-canvas {
+  opacity: 1;
+}
+
+.world-stage.is-video-water .world-water-video {
+  opacity: 1;
+  object-position: 100% 100%;
+  filter: saturate(1.16) contrast(1.1) brightness(0.94);
+  transform: scale(1.6);
+  transform-origin: right bottom;
+}
+
+.world-stage.is-video-water .world-space-image {
   opacity: 0;
+}
+
+.world-stage.is-video-water.is-threejs-water .world-canvas {
+  opacity: 1;
+}
+
+.world-stage.is-video-water .world-atmosphere {
+  opacity: 0.12;
+  mix-blend-mode: soft-light;
+}
+
+.world-stage.is-video-water .world-reticle {
+  display: none;
+}
+
+.world-stage.is-video-water .world-scanlines {
+  opacity: 0;
+}
+
+.world-stage.is-video-water::before {
+  opacity: 0.12;
+}
+
+.world-stage.is-video-water::after {
+  background: linear-gradient(180deg, rgb(2 12 18 / 4%), rgb(2 10 16 / 18%));
 }
 
 .world-space-image {

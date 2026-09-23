@@ -2,61 +2,32 @@ import * as THREE from "../vendor/three/three.module.js";
 import { Sky } from "../vendor/three/addons/objects/Sky.js";
 import { Water } from "../vendor/three/addons/objects/Water.js";
 
-const MAX_PIXEL_RATIO = 2;
-const WORLD_RENDER_SCALE = 0.82;
+const MAX_PIXEL_RATIO = 1.25;
+const WORLD_RENDER_SCALE = 1;
 const WATER_NORMALS_URL = "/web/vendor/three/textures/waternormals.jpg";
 const RIPPLE_SLOT_COUNT = 4;
-const RIPPLE_SPEED = 0.18;
+const RIPPLE_SPEED = 0.1;
 const RIPPLE_GRID_SIZE = 256;
-const RIPPLE_SURFACE_SEGMENTS = 180;
-const RIPPLE_WORLD_MIN = new THREE.Vector2(-90, -166);
+const RIPPLE_WORLD_MIN = new THREE.Vector2(-90, -74);
 const RIPPLE_WORLD_SIZE = new THREE.Vector2(180, 240);
-const RIPPLE_HEIGHT_RANGE = 0.36;
+const RIPPLE_HEIGHT_RANGE = 0.85;
 const RIPPLE_TIME_STEP = 1 / 60;
 const RIPPLE_DAMPING = 0.012;
 const RIPPLE_PENDING_LIMIT = 12;
-const RIPPLE_HOVER_MIN_INTERVAL = 0.075;
-const RIPPLE_HOVER_MIN_NDC_DISTANCE = 0.012;
+const RIPPLE_HOVER_MIN_INTERVAL = 0.04;
+const RIPPLE_HOVER_MIN_NDC_DISTANCE = 0.004;
 const RIPPLE_HOVER_MIN_WORLD_DISTANCE = 1.35;
 const RIPPLE_HOVER_STRENGTH = 0.17;
 const RIPPLE_HOVER_MAX_STRENGTH = 0.25;
 const RIPPLE_HOVER_RADIUS = 1.6;
 const RIPPLE_HOVER_MAX_RADIUS = 2.2;
-const RIPPLE_HOVER_LIFETIME = 0.22;
+const RIPPLE_HOVER_LIFETIME = 0.18;
 const RIPPLE_CLICK_STRENGTH = 0.24;
 const RIPPLE_CLICK_RADIUS = 2.2;
 
-const AMBIENT_WAVE_GLSL = `
-float sampleAmbientWaveHeight( vec2 position ) {
-  float height = 0.0;
-  height += 0.105 * sin( dot( position, normalize( vec2( 0.82, 0.18 ) ) ) * 0.22 + rippleWaveTime * 0.46 );
-  height += 0.050 * sin( dot( position, normalize( vec2( -0.28, 0.96 ) ) ) * 0.39 + rippleWaveTime * 0.68 + 1.7 );
-  height += 0.022 * sin( dot( position, normalize( vec2( 0.62, -0.78 ) ) ) * 0.78 + rippleWaveTime * 1.02 + 3.1 );
-  return height;
-}
-
-vec2 sampleAmbientWaveSlope( vec2 position ) {
-  vec2 slope = vec2( 0.0 );
-  vec2 direction = normalize( vec2( 0.82, 0.18 ) );
-  float frequency = 0.22;
-  slope += direction * ( 0.105 * frequency ) * cos( dot( position, direction ) * frequency + rippleWaveTime * 0.46 );
-  direction = normalize( vec2( -0.28, 0.96 ) );
-  frequency = 0.39;
-  slope += direction * ( 0.050 * frequency ) * cos( dot( position, direction ) * frequency + rippleWaveTime * 0.68 + 1.7 );
-  direction = normalize( vec2( 0.62, -0.78 ) );
-  frequency = 0.78;
-  slope += direction * ( 0.022 * frequency ) * cos( dot( position, direction ) * frequency + rippleWaveTime * 1.02 + 3.1 );
-  return slope;
-}
-`;
-
-/*
- * The surface is the official Three.js Water addon, vendored under web/vendor
- * with its MIT license. This file only connects that existing scene to the
- * portal camera, pointer state, and lifecycle. A small compile-time normal
- * blend is applied to the addon material so its open-ocean defaults read as a
- * calmer lake surface at this camera distance.
- */
+/* The official Three.js Water addon overlays a reflective, moving surface on
+ * the locally licensed Iceland-water clip. Its GPU height field adds ripples
+ * where the pointer actually meets the raycast water plane. */
 const landmarks = [
   {
     id: "archive",
@@ -112,6 +83,7 @@ function createRippleField(renderer) {
       },
       rippleHover: { value: new THREE.Vector4() },
       rippleHoverDirection: { value: new THREE.Vector2() },
+      rippleHoverTravel: { value: 0 },
     },
     vertexShader: `
       varying vec2 rippleUv;
@@ -130,6 +102,7 @@ function createRippleField(renderer) {
       uniform vec4 rippleImpacts[${RIPPLE_SLOT_COUNT}];
       uniform vec4 rippleHover;
       uniform vec2 rippleHoverDirection;
+      uniform float rippleHoverTravel;
       varying vec2 rippleUv;
 
       void main() {
@@ -144,9 +117,9 @@ function createRippleField(renderer) {
         float laplacian =
           ( left + right - 2.0 * center ) / ( worldStep.x * worldStep.x ) +
           ( back + front - 2.0 * center ) / ( worldStep.y * worldStep.y );
-        velocity += laplacian * rippleSpeed * frameScale;
-        velocity *= exp(-rippleDamping * frameScale);
-        float nextHeight = center + velocity * frameScale;
+        float nextVelocity = velocity + laplacian * rippleSpeed * frameScale;
+        nextVelocity *= exp(-rippleDamping * frameScale);
+        float nextHeightOffset = 0.0;
 
         for (int index = 0; index < ${RIPPLE_SLOT_COUNT}; index += 1) {
           vec4 impact = rippleImpacts[index];
@@ -154,8 +127,12 @@ function createRippleField(renderer) {
           vec2 worldDelta = (rippleUv - impact.xy) * rippleWorldSize;
           float distanceToImpact = length(worldDelta);
           float radius = max(impact.w, 0.001);
-          float contact = clamp(1.0 - distanceToImpact / radius, 0.0, 1.0);
-          contact = 0.5 - 0.5 * cos(contact * 3.14159265);
+          float radiusSquared = radius * radius;
+          float core = exp(-dot(worldDelta, worldDelta) / max(radiusSquared * 0.34, 0.001));
+          float ringOffset = distanceToImpact - radius * 0.68;
+          float ring = exp(-(ringOffset * ringOffset) / max(radiusSquared * 0.075, 0.001));
+          float contact = core * 0.72 + ring * 0.26;
+          contact *= 0.5 - 0.5 * cos(clamp(contact, 0.0, 1.0) * 3.14159265);
           contact *= clamp(
             1.0 +
               0.045 * sin(worldDelta.x * 0.52 + worldDelta.y * 0.31) +
@@ -163,37 +140,53 @@ function createRippleField(renderer) {
             0.9,
             1.1
           );
-          nextHeight -= impact.z * contact * 0.07;
-          velocity -= impact.z * contact * 0.36;
+          nextHeightOffset -= impact.z * core * 0.012;
+          nextVelocity -= impact.z * contact * 0.42;
         }
 
         if (rippleHover.z > 0.0 && rippleHover.w > 0.0) {
           vec2 hoverDelta = (rippleUv - rippleHover.xy) * rippleWorldSize;
           float hoverDistance = length(hoverDelta);
-          float hoverContact = clamp(1.0 - hoverDistance / rippleHover.w, 0.0, 1.0);
-          hoverContact = 0.5 - 0.5 * cos(hoverContact * 3.14159265);
           float directionLength = length(rippleHoverDirection);
-          float directionalBias = directionLength > 0.001
-            ? dot(hoverDelta / max(hoverDistance, 0.001), rippleHoverDirection / directionLength)
-            : 0.0;
-          hoverContact *= clamp(1.0 + directionalBias * 0.18, 0.82, 1.18);
-          nextHeight -= rippleHover.z * hoverContact * 0.016;
-          velocity -= rippleHover.z * hoverContact * 0.09;
+          float hoverRadius = rippleHover.w;
+          float hoverCore = exp(-dot(hoverDelta, hoverDelta) / max(hoverRadius * hoverRadius * 0.52, 0.001));
+          float hoverRingOffset = hoverDistance - hoverRadius * 0.72;
+          float hoverRing = exp(-(hoverRingOffset * hoverRingOffset) / max(hoverRadius * hoverRadius * 0.09, 0.001));
+          float hoverTrail = 0.0;
+          if (directionLength > 0.001 && rippleHoverTravel > 0.01) {
+            vec2 direction = rippleHoverDirection / directionLength;
+            vec2 perpendicular = vec2(-direction.y, direction.x);
+            float along = dot(hoverDelta, direction);
+            float across = dot(hoverDelta, perpendicular);
+            float trailLength = max(rippleHoverTravel + hoverRadius * 0.45, hoverRadius * 0.65);
+            float trailGate = smoothstep(-trailLength, -hoverRadius * 0.08, along);
+            float trailFade = exp(-max(-along, 0.0) / max(trailLength * 0.72, 0.001));
+            float trailWidth = exp(-(across * across) / max(hoverRadius * hoverRadius * 0.42, 0.001));
+            hoverTrail = trailGate * trailFade * trailWidth;
+          }
+          float hoverContact = hoverCore * 0.72 + hoverRing * 0.18 + hoverTrail * 0.24;
+          hoverContact *= 0.5 - 0.5 * cos(clamp(hoverContact, 0.0, 1.0) * 3.14159265);
+          nextHeightOffset -= rippleHover.z * hoverCore * 0.006;
+          nextVelocity -= rippleHover.z * hoverContact * 0.16;
         }
+
+        float nextHeight = center + nextHeightOffset + nextVelocity * frameScale;
 
         float edgeDistance = min(
           min(rippleUv.x, 1.0 - rippleUv.x),
           min(rippleUv.y, 1.0 - rippleUv.y)
         );
-        velocity *= mix(0.78, 1.0, smoothstep(0.0, 0.1, edgeDistance));
+        nextVelocity *= mix(0.78, 1.0, smoothstep(0.0, 0.1, edgeDistance));
 
-        if (center != center || velocity != velocity) {
+        if (center != center || nextVelocity != nextVelocity) {
           center = 0.0;
-          velocity = 0.0;
+          nextVelocity = 0.0;
         }
         nextHeight = clamp(nextHeight, -0.5, 0.5);
         if (nextHeight != nextHeight) nextHeight = 0.0;
-        gl_FragColor = vec4(nextHeight, velocity, 0.0, 1.0);
+        float gradientX = (right - left) / (2.0 * worldStep.x);
+        float gradientY = (front - back) / (2.0 * worldStep.y);
+        gl_FragColor = vec4(nextHeight, nextVelocity, gradientX, gradientY);
       }
     `,
   });
@@ -266,11 +259,9 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     ndc: new THREE.Vector2(),
     hoverPoint: new THREE.Vector2(),
     hasHoverPoint: false,
-    uniforms: null,
   };
   let rippleField;
   const waterVideoElement = stage.querySelector("[data-world-water-video]");
-  const imageElement = stage.querySelector(".world-space-image");
   const statusElement = stage.querySelector("[data-world-status]");
   const coordinatesElement = stage.querySelector("[data-world-coordinates]");
   const speedElement = stage.querySelector("[data-world-speed]");
@@ -288,19 +279,21 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
   let height = 1;
   let pointerStrength = 0;
   let videoWaterReady = false;
+  let videoWaterFailed = false;
+  let videoPlaybackBlocked = false;
   let webglWaterAvailable = false;
   let renderer;
   let scene;
   let camera;
-  let raycaster;
-  let sky;
   let water;
-  let cameraTarget;
-  let desiredCameraPosition;
-  let desiredCameraTarget;
+  let sky;
+  let waterNormals;
+  let waterNormalMapState = "loading";
+  let raycaster;
 
   const setFallbackState = () => {
     if (videoWaterReady) return;
+    stage.classList.remove("is-video-water", "is-threejs-water");
     stage.dataset.worldRenderMode = "css-fallback";
     stage.dataset.worldShading = "water-css-fallback";
     stage.dataset.worldSurface = "css-water-fallback";
@@ -309,18 +302,33 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     stage.classList.add("world-fallback", "world-ready");
   };
 
+  const getVideoPlaybackState = () => {
+    if (videoWaterReady) return reducedMotion || videoPlaybackBlocked ? "paused" : "playing";
+    if (videoWaterFailed) return "fallback";
+    return waterVideoElement ? "loading" : "unavailable";
+  };
+
   const setWebglWaterState = () => {
-    videoWaterReady = false;
-    waterVideoElement?.pause();
-    stage.classList.remove("is-video-water", "world-fallback");
-    stage.dataset.worldVideoState = waterVideoElement ? "standby" : "unavailable";
-    stage.dataset.worldRenderMode = "webgl-water-3d";
-    stage.dataset.worldShading = "threejs-water-addon";
-    stage.dataset.worldSurface = "official-water-module";
-    stage.dataset.worldInteraction = "pointer-camera-ripple";
-    stage.dataset.worldWaterProvider = "threejs-official-water";
+    stage.classList.remove("world-fallback");
+    stage.classList.toggle("is-video-water", videoWaterReady);
+    stage.classList.add("is-threejs-water", "world-ready");
+    stage.dataset.worldVideoState = getVideoPlaybackState();
+    stage.dataset.worldRenderMode = "threejs-water-addon-overlay";
+    stage.dataset.worldShading = videoWaterReady
+      ? "threejs-reflective-water-over-live-footage"
+      : "threejs-reflective-water-over-css-backdrop";
+    stage.dataset.worldSurface = videoWaterReady
+      ? "threejs-water-normal-map-over-video"
+      : "threejs-water-normal-map-over-css-backdrop";
+    stage.dataset.worldWaterTexture = videoWaterReady
+      ? "ready"
+      : videoWaterFailed
+        ? "unavailable"
+        : "loading";
+    stage.dataset.worldInteraction = "raycast-gpu-water-ripple";
+    stage.dataset.worldWaterProvider = "threejs-water-addon";
     stage.dataset.worldRippleProvider = "threejs-gpu-heightfield";
-    stage.dataset.worldRippleMode = "gpu-heightfield-pingpong";
+    stage.dataset.worldRippleMode = "raycast-water-surface-ripple";
     stage.dataset.worldRippleField = `${RIPPLE_GRID_SIZE}x${RIPPLE_GRID_SIZE}`;
     stage.dataset.worldRippleCount = String(rippleState.count);
     stage.dataset.worldRipplePeak ||= "0.0000";
@@ -331,55 +339,68 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     stage.dataset.worldRippleClickCount ||= "0";
     stage.dataset.worldRippleHoverCount ||= "0";
     stage.dataset.worldRippleLastType ||= "idle";
-    stage.dataset.worldRippleInput ||= "gpu-raycast";
+    stage.dataset.worldRippleInput ||= "gpu-world-space";
   };
 
   const setVideoWaterState = (ready) => {
-    if (ready && webglWaterAvailable) {
-      setWebglWaterState();
-      return;
-    }
     videoWaterReady = ready;
+    videoWaterFailed = !ready;
     stage.classList.toggle("is-video-water", ready);
-    stage.dataset.worldVideoState = ready ? "playing" : "fallback";
+    stage.dataset.worldVideoState = ready ? getVideoPlaybackState() : "fallback";
     if (ready) {
       stage.classList.add("world-ready");
       stage.classList.remove("world-fallback");
-      stage.dataset.worldRenderMode = "video-water-fallback";
-      stage.dataset.worldShading = "captured-water-loop";
-      stage.dataset.worldSurface = "licensed-video-loop";
-      stage.dataset.worldInteraction = "pointer-parallax-overlay";
-    } else if (webglWaterAvailable) {
-      setWebglWaterState();
+      stage.dataset.worldWaterTexture = "ready";
+      if (webglWaterAvailable) setWebglWaterState();
+      else {
+        stage.dataset.worldRenderMode = "video-water-fallback";
+        stage.dataset.worldShading = "captured-water-loop";
+        stage.dataset.worldSurface = "licensed-video-loop";
+        stage.dataset.worldInteraction = "pointer-parallax-overlay";
+      }
     } else {
-      setFallbackState();
+      stage.dataset.worldWaterTexture = "unavailable";
+      if (webglWaterAvailable) setWebglWaterState();
+      else setFallbackState();
     }
   };
 
   const activateVideoWater = () => {
     if (!waterVideoElement) return;
-    if (webglWaterAvailable) {
-      setWebglWaterState();
-      return;
-    }
     waterVideoElement.muted = true;
     setVideoWaterState(true);
     if (reducedMotion) {
       waterVideoElement.pause();
+      stage.dataset.worldVideoState = "paused";
       return;
     }
     const playback = waterVideoElement.play();
-    playback?.catch(() => setVideoWaterState(false));
+    playback
+      ?.then(() => {
+        videoPlaybackBlocked = false;
+        stage.dataset.worldVideoState = getVideoPlaybackState();
+      })
+      .catch(() => {
+        videoPlaybackBlocked = true;
+        stage.dataset.worldVideoState = "paused";
+        if (webglWaterAvailable) setWebglWaterState();
+      });
   };
 
   if (waterVideoElement) {
     stage.dataset.worldVideoState = "loading";
     waterVideoElement.addEventListener("loadedmetadata", activateVideoWater, { once: true });
-    waterVideoElement.addEventListener("error", () => setVideoWaterState(false));
+    waterVideoElement.addEventListener("loadeddata", activateVideoWater, { once: true });
+    const markVideoUnavailable = () => setVideoWaterState(false);
+    waterVideoElement.addEventListener("error", markVideoUnavailable, { once: true });
+    waterVideoElement.querySelectorAll("source").forEach((source) => {
+      source.addEventListener("error", markVideoUnavailable, { once: true });
+    });
     waterVideoElement.addEventListener("timeupdate", () => {
       stage.dataset.worldVideoTime = waterVideoElement.currentTime.toFixed(3);
     });
     if (waterVideoElement.readyState >= 1) activateVideoWater();
+    else waterVideoElement.load();
   }
 
   const setSelectedTarget = (target) => {
@@ -519,229 +540,169 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     renderer.setClearColor(0x000000, 0);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 0.1;
+    renderer.toneMappingExposure = 0.75;
     rippleField = createRippleField(renderer);
 
-    scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(0x6c8f94, 38, 188);
-    camera = new THREE.PerspectiveCamera(47, 1, 0.1, 320);
-    raycaster = new THREE.Raycaster();
-    camera.position.set(0, 7.8, 15);
-    cameraTarget = new THREE.Vector3(0, -0.2, -46);
-    desiredCameraPosition = new THREE.Vector3();
-    desiredCameraTarget = new THREE.Vector3();
+    if (!waterVideoElement) throw new Error("The licensed water footage is unavailable.");
 
-    const sunDirection = new THREE.Vector3(0.34, 0.4, -0.85).normalize();
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(42, 1, 0.1, 1200);
+    camera.position.set(0, 11, 18);
+    camera.lookAt(0, 0, 0);
+    raycaster = new THREE.Raycaster();
+
     sky = new Sky();
     sky.scale.setScalar(10000);
-    sky.renderOrder = -2;
-    scene.add(sky);
     const skyUniforms = sky.material.uniforms;
-    skyUniforms.turbidity.value = 1.7;
-    skyUniforms.rayleigh.value = 1.45;
-    skyUniforms.mieCoefficient.value = 0.0011;
-    skyUniforms.mieDirectionalG.value = 0.7;
-    skyUniforms.cloudCoverage.value = 0.28;
-    skyUniforms.cloudDensity.value = 0.26;
-    skyUniforms.cloudElevation.value = 0.58;
-    skyUniforms.cloudSpeed.value = 0.000012;
-    skyUniforms.showSunDisc.value = 0;
-    skyUniforms.sunPosition.value.copy(sunDirection).multiplyScalar(450);
-    stage.dataset.worldSkyProvider = "threejs-official-sky";
-    stage.dataset.worldSkyProfile = "hazy-lake-daylight";
+    skyUniforms.turbidity.value = 2.4;
+    skyUniforms.rayleigh.value = 1.7;
+    skyUniforms.mieCoefficient.value = 0.003;
+    skyUniforms.mieDirectionalG.value = 0.77;
+    skyUniforms.sunPosition.value.set(-0.35, 0.65, 0.68).normalize().multiplyScalar(450);
+    skyUniforms.showSunDisc.value = false;
+    sky.visible = false;
+    scene.add(sky);
 
-    const shorelineShape = new THREE.Shape();
-    shorelineShape.moveTo(-112, -4.2);
-    for (let index = 0; index <= 22; index += 1) {
-      const x = -112 + index * 10;
-      const y =
-        0.24 +
-        Math.sin(index * 0.67) * 0.28 +
-        Math.sin(index * 1.71) * 0.14 +
-        Math.sin(index * 0.19) * 0.3;
-      shorelineShape.lineTo(x, y);
-    }
-    shorelineShape.lineTo(112, -4.2);
-    shorelineShape.closePath();
-    const shoreline = new THREE.Mesh(
-      new THREE.ShapeGeometry(shorelineShape),
-      new THREE.MeshBasicMaterial({
-        color: 0x315e57,
-        fog: true,
-        opacity: 0.24,
-        transparent: true,
-        depthWrite: false,
-      }),
-    );
-    shoreline.position.z = -128;
-    shoreline.renderOrder = -1;
-    scene.add(shoreline);
-
-    const waterNormals = new THREE.TextureLoader().load(
+    waterNormals = new THREE.TextureLoader().load(
       WATER_NORMALS_URL,
-      (texture) => {
-        texture.wrapS = THREE.RepeatWrapping;
-        texture.wrapT = THREE.RepeatWrapping;
-        texture.colorSpace = THREE.NoColorSpace;
-        stage.dataset.worldWaterTexture = "ready";
+      () => {
+        waterNormalMapState = "ready";
+        stage.dataset.worldWaterNormalMap = waterNormalMapState;
+        if (reducedMotion && webglWaterAvailable) draw(window.performance.now());
       },
       undefined,
       () => {
-        stage.dataset.worldWaterTexture = "error";
+        waterNormalMapState = "unavailable";
+        stage.dataset.worldWaterNormalMap = waterNormalMapState;
+        if (reducedMotion && webglWaterAvailable) draw(window.performance.now());
       },
     );
-    stage.dataset.worldWaterTexture = "loading";
-
-    water = new Water(
-      new THREE.PlaneGeometry(180, 240, RIPPLE_SURFACE_SEGMENTS, RIPPLE_SURFACE_SEGMENTS),
-      {
-        textureWidth: 512,
-        textureHeight: 512,
-        waterNormals,
-        sunDirection,
-        sunColor: 0xfff2d3,
-        waterColor: 0x0c414c,
-        distortionScale: 3.6,
-        alpha: 0.98,
-        fog: true,
-      },
-    );
+    waterNormals.wrapS = THREE.RepeatWrapping;
+    waterNormals.wrapT = THREE.RepeatWrapping;
+    waterNormals.colorSpace = THREE.NoColorSpace;
+    water = new Water(new THREE.PlaneGeometry(180, 240, 180, 240), {
+      textureWidth: 512,
+      textureHeight: 512,
+      waterNormals,
+      sunDirection: new THREE.Vector3(-0.35, 0.65, 0.68).normalize(),
+      sunColor: 0xccecff,
+      waterColor: 0x285768,
+      distortionScale: 1.7,
+      alpha: 0.3,
+      fog: false,
+    });
+    water.rotation.x = -Math.PI / 2;
+    water.position.set(0, -0.42, -46);
+    water.material.transparent = true;
+    water.material.depthWrite = false;
+    water.material.uniforms.size.value = 1.15;
     water.material.uniforms.rippleWaveTime = { value: 0 };
-    water.material.uniforms.rippleHeightMap = { value: rippleField.texture };
-    water.material.uniforms.rippleHeightBounds = {
-      value: new THREE.Vector4(
-        RIPPLE_WORLD_MIN.x,
-        RIPPLE_WORLD_MIN.y,
-        RIPPLE_WORLD_SIZE.x,
-        RIPPLE_WORLD_SIZE.y,
-      ),
-    };
-    water.material.uniforms.rippleHeightTexel = {
-      value: new THREE.Vector2(1 / RIPPLE_GRID_SIZE, 1 / RIPPLE_GRID_SIZE),
+    water.material.uniforms.rippleImpacts = {
+      value: Array.from({ length: RIPPLE_SLOT_COUNT }, () => new THREE.Vector4(0, 0, -1000, 0)),
     };
     water.material.onBeforeCompile = (shader) => {
-      rippleState.uniforms = shader.uniforms;
+      shader.uniforms.rippleHeightMap = { value: rippleField.texture };
+      shader.uniforms.rippleWorldSize = { value: RIPPLE_WORLD_SIZE };
+      shader.uniforms.rippleWorldMin = { value: RIPPLE_WORLD_MIN };
+      shader.uniforms.rippleHeightRange = { value: RIPPLE_HEIGHT_RANGE };
       shader.vertexShader = shader.vertexShader.replace(
-        "uniform mat4 textureMatrix;",
-        `uniform mat4 textureMatrix;
-uniform sampler2D rippleHeightMap;
-uniform vec4 rippleHeightBounds;
-uniform float rippleWaveTime;
-${AMBIENT_WAVE_GLSL}
-
-float sampleRippleVertexHeight( vec2 position ) {
-  vec2 uv = clamp(
-    ( position - rippleHeightBounds.xy ) / rippleHeightBounds.zw,
-    0.0,
-    1.0
-  );
-  return texture2D( rippleHeightMap, uv ).r * ${RIPPLE_HEIGHT_RANGE.toFixed(2)} + sampleAmbientWaveHeight( position );
-}`,
+        "uniform float time;",
+        `uniform float time;
+        uniform sampler2D rippleHeightMap;
+        uniform vec2 rippleWorldSize;
+        uniform vec2 rippleWorldMin;
+        uniform float rippleHeightRange;`,
       );
       shader.vertexShader = shader.vertexShader.replace(
-        "mirrorCoord = modelMatrix * vec4( position, 1.0 );\n\t\t\t\t\tworldPosition = mirrorCoord.xyzw;",
+        "mirrorCoord = modelMatrix * vec4( position, 1.0 );",
         `vec3 ripplePosition = position;
-  vec3 rippleWorldPosition = ( modelMatrix * vec4( position, 1.0 ) ).xyz;
-  ripplePosition.z += sampleRippleVertexHeight( rippleWorldPosition.xz );
-  mirrorCoord = modelMatrix * vec4( ripplePosition, 1.0 );
-  worldPosition = mirrorCoord.xyzw;`,
+        vec3 baseWorldPosition = ( modelMatrix * vec4( position, 1.0 ) ).xyz;
+        vec2 surfaceCoordinate = vec2( baseWorldPosition.x, -baseWorldPosition.z );
+        vec2 rippleUv = ( surfaceCoordinate - rippleWorldMin ) / rippleWorldSize;
+        ripplePosition.z += texture2D( rippleHeightMap, clamp( rippleUv, vec2( 0.001 ), vec2( 0.999 ) ) ).r * rippleHeightRange;
+        mirrorCoord = modelMatrix * vec4( ripplePosition, 1.0 );`,
       );
       shader.vertexShader = shader.vertexShader.replace(
-        "vec4 mvPosition =  modelViewMatrix * vec4( position, 1.0 );",
-        "vec4 mvPosition =  modelViewMatrix * vec4( ripplePosition, 1.0 );",
+        "modelViewMatrix * vec4( position, 1.0 )",
+        "modelViewMatrix * vec4( ripplePosition, 1.0 )",
       );
       shader.fragmentShader = shader.fragmentShader.replace(
-        "uniform vec3 waterColor;",
-        `uniform vec3 waterColor;
-uniform sampler2D rippleHeightMap;
-uniform vec4 rippleHeightBounds;
-uniform vec2 rippleHeightTexel;
-uniform float rippleWaveTime;
-${AMBIENT_WAVE_GLSL}
-
-float sampleRippleHeight( vec2 position ) {
-  vec2 uv = clamp(
-    ( position - rippleHeightBounds.xy ) / rippleHeightBounds.zw,
-    0.0,
-    1.0
-  );
-  return texture2D( rippleHeightMap, uv ).r * ${RIPPLE_HEIGHT_RANGE.toFixed(2)};
-}`,
+        "uniform float distortionScale;",
+        `uniform float distortionScale;
+        uniform sampler2D rippleHeightMap;
+        uniform vec2 rippleWorldSize;
+        uniform vec2 rippleWorldMin;
+        uniform float rippleHeightRange;`,
+      );
+      shader.fragmentShader = shader.fragmentShader.replace(
+        "uniform float distortionScale;",
+        `uniform float distortionScale;
+        uniform float rippleWaveTime;
+        uniform vec4 rippleImpacts[${RIPPLE_SLOT_COUNT}];`,
       );
       shader.fragmentShader = shader.fragmentShader.replace(
         "vec3 surfaceNormal = normalize( noise.xzy * vec3( 1.5, 1.0, 1.5 ) );",
-        `vec3 surfaceNormal = normalize( mix( vec3( 0.0, 1.0, 0.0 ), noise.xzy * vec3( 1.5, 1.0, 1.5 ), 0.3 ) );
-  vec2 rippleStep = rippleHeightTexel * rippleHeightBounds.zw;
-  float rippleCenter = sampleRippleHeight( worldPosition.xz );
-  float rippleLeft = sampleRippleHeight( worldPosition.xz - vec2( rippleStep.x, 0.0 ) );
-  float rippleRight = sampleRippleHeight( worldPosition.xz + vec2( rippleStep.x, 0.0 ) );
-  float rippleBack = sampleRippleHeight( worldPosition.xz - vec2( 0.0, rippleStep.y ) );
-  float rippleFront = sampleRippleHeight( worldPosition.xz + vec2( 0.0, rippleStep.y ) );
-  vec2 rippleGradient = vec2(
-    ( rippleRight - rippleLeft ) / ( 2.0 * rippleStep.x ),
-    ( rippleFront - rippleBack ) / ( 2.0 * rippleStep.y )
-  );
-  vec2 ambientSlope = sampleAmbientWaveSlope( worldPosition.xz );
-  vec4 microNoiseSample =
-    texture2D( normalSampler, worldPosition.xz * 0.082 + vec2( rippleWaveTime * 0.008, -rippleWaveTime * 0.011 ) ) +
-    texture2D( normalSampler, worldPosition.xz * 0.137 - vec2( rippleWaveTime * 0.006, rippleWaveTime * 0.009 ) );
-  vec3 microNormal = normalize( ( microNoiseSample.xzy - 1.0 ) * vec3( 1.15, 0.42, 1.15 ) );
-  float rippleCurvature =
-    ( rippleLeft + rippleRight + rippleBack + rippleFront - rippleCenter * 4.0 ) /
-    ( rippleStep.x * rippleStep.y );
-  float rippleVelocity = abs( texture2D( rippleHeightMap, clamp(
-    ( worldPosition.xz - rippleHeightBounds.xy ) / rippleHeightBounds.zw,
-    0.0,
-    1.0
-  ) ).g );
-  float rippleEnergy = clamp( rippleVelocity * 8.0 + abs( rippleCurvature ) * 0.028, 0.0, 1.0 );
-  float rippleTextureBreakup = clamp( 0.82 + noise.x * 0.22 + noise.w * 0.12, 0.58, 1.08 );
-  vec3 rippleNormal = vec3( -rippleGradient.x, 0.0, -rippleGradient.y ) *
-    ( 4.2 + noise.x * 0.75 ) * rippleTextureBreakup;
-  vec3 ambientNormal = vec3( -ambientSlope.x, 0.0, -ambientSlope.y ) * 0.72;
-  vec2 rippleDistortion = -rippleGradient * ( 3.2 + noise.z * 0.5 ) * rippleTextureBreakup;
-  surfaceNormal = normalize( surfaceNormal + ambientNormal + rippleNormal + microNormal * 0.16 );`,
+        `vec3 surfaceNormal = normalize( noise.xzy * vec3( 1.5, 1.0, 1.5 ) );
+        vec2 rippleCoordinate = vec2( worldPosition.x, -worldPosition.z );
+        vec2 rippleUv = ( rippleCoordinate - rippleWorldMin ) / rippleWorldSize;
+        vec4 rippleField = texture2D( rippleHeightMap, clamp( rippleUv, vec2( 0.001 ), vec2( 0.999 ) ) );
+        vec2 rippleSlope = rippleField.ba * rippleHeightRange;
+        float rippleCrestLight = 0.0;
+        for ( int index = 0; index < ${RIPPLE_SLOT_COUNT}; index += 1 ) {
+          vec4 impact = rippleImpacts[ index ];
+          float age = rippleWaveTime - impact.z;
+          if ( age >= 0.0 && age < 2.8 && impact.w > 0.0 ) {
+            vec2 rippleDelta = ( rippleUv - impact.xy ) * rippleWorldSize;
+            float distanceToImpact = length( rippleDelta );
+            float waveFront = distanceToImpact - age * 5.0;
+            float envelope = exp( -waveFront * waveFront * 0.58 ) * exp( -age * 0.9 );
+            float wave = sin( waveFront * 3.0 ) * envelope * impact.w * 0.16;
+            rippleSlope += rippleDelta / max( distanceToImpact, 0.001 ) * wave;
+            float crest = exp( -waveFront * waveFront * 2.2 ) * exp( -age * 1.1 ) * impact.w;
+            rippleCrestLight = max( rippleCrestLight, crest );
+          }
+        }
+        surfaceNormal = normalize( surfaceNormal + vec3( -rippleSlope.x, 0.0, rippleSlope.y ) * 12.0 );`,
       );
       shader.fragmentShader = shader.fragmentShader.replace(
-        "vec2 distortion = surfaceNormal.xz * ( 0.001 + 1.0 / distance ) * distortionScale;",
-        "vec2 distortion = surfaceNormal.xz * ( 0.001 + 1.0 / distance ) * distortionScale + rippleDistortion;",
-      );
-      shader.fragmentShader = shader.fragmentShader.replace(
-        "sunLight( surfaceNormal, eyeDirection, 100.0, 2.0, 0.5, diffuseLight, specularLight );",
-        `sunLight( surfaceNormal, eyeDirection, 100.0, 2.0, 0.5, diffuseLight, specularLight );
-  float microGlint = pow( max( dot( eyeDirection, normalize( reflect( -sunDirection, surfaceNormal ) ) ), 0.0 ), 180.0 );
-  specularLight += sunColor * microGlint * ( 0.38 + noise.x * 0.16 );
-  float rippleSlope = length( rippleGradient );
-  float rippleCrest =
-    smoothstep( 0.00005, 0.0015, abs( rippleCurvature ) ) *
-    smoothstep( 0.0004, 0.009, rippleSlope ) * rippleTextureBreakup;
-  float rippleVelocityCrest = smoothstep( 0.008, 0.04, rippleVelocity ) *
-    ( 0.22 + rippleEnergy * 0.2 );
-  rippleCrest = clamp( rippleCrest + rippleVelocityCrest, 0.0, 1.0 );
-  float rippleSheen =
-    pow( max( dot( eyeDirection, normalize( reflect( -sunDirection, surfaceNormal ) ) ), 0.0 ), 42.0 ) *
-    rippleCrest *
-    clamp( 0.65 + noise.x * 0.3, 0.35, 1.0 ) *
-    ( 0.72 + rippleEnergy * 1.35 );
-  float rippleCaustic = smoothstep( 0.00006, 0.0016, abs( rippleCurvature ) ) *
-    ( 0.35 + rippleEnergy * 0.65 );
-  diffuseLight += sunColor * rippleCrest * 0.8;
-  specularLight += sunColor * ( rippleSheen * 1.65 + rippleCaustic * 0.42 );`,
+        "vec3 outgoingLight = albedo;",
+        `vec3 outgoingLight = albedo;
+        float rippleCrest = smoothstep( 0.012, 0.075, length( rippleSlope ) );
+        float rippleFacingSun = max( 0.0, dot( surfaceNormal, normalize( sunDirection ) ) );
+        outgoingLight += sunColor * rippleCrest * rippleFacingSun * 0.42;
+        outgoingLight += sunColor * rippleCrestLight * 0.75;`,
       );
       stage.dataset.worldRippleShader =
-        shader.vertexShader.includes("sampleRippleVertexHeight") &&
-        shader.vertexShader.includes("ripplePosition") &&
-        shader.fragmentShader.includes("rippleCrest")
-          ? "gpu-heightfield-gradient"
-          : "unpatched";
+        shader.vertexShader.includes("ripplePosition.z +=") &&
+        shader.fragmentShader.includes("rippleSlope = rippleField.ba") &&
+        shader.fragmentShader.includes("rippleCrest = smoothstep") &&
+        shader.fragmentShader.includes("float waveFront = distanceToImpact") &&
+        shader.fragmentShader.includes("rippleCrestLight * 0.75")
+          ? "threejs-water-displacement-and-normal-map"
+          : "threejs-water-patch-missing";
     };
-    stage.dataset.worldSurfaceProfile = "calm-lake";
-    water.rotation.x = -Math.PI / 2;
-    water.position.set(0, -0.42, -46);
-    water.renderOrder = 2;
     scene.add(water);
+    const waterRender = water.onBeforeRender;
+    water.onBeforeRender = function (targetRenderer, targetScene, targetCamera) {
+      const wasVisible = sky.visible;
+      sky.visible = true;
+      try {
+        return waterRender.call(this, targetRenderer, targetScene, targetCamera);
+      } finally {
+        sky.visible = wasVisible;
+      }
+    };
+    stage.dataset.worldSurfaceProfile = "threejs-water-addon-over-licensed-moving-water";
+    stage.dataset.worldWaterNormalMap = waterNormalMapState;
+    stage.dataset.worldWaterTexture = waterVideoElement.readyState >= 2 ? "ready" : "loading";
   } catch {
     renderer?.dispose();
+    water?.material?.uniforms?.mirrorSampler?.value?.dispose?.();
+    water?.geometry?.dispose();
+    water?.material?.dispose();
+    waterNormals?.dispose();
+    sky?.geometry?.dispose();
+    sky?.material?.dispose();
     rippleField?.targets.forEach((target) => target.dispose());
     rippleField?.simulationMaterial.dispose();
     rippleField?.simulationScene.traverse((object) => object.geometry?.dispose());
@@ -751,7 +712,6 @@ float sampleRippleHeight( vec2 position ) {
 
   webglWaterAvailable = true;
   setWebglWaterState();
-
   function resize() {
     const bounds = stage.getBoundingClientRect();
     width = Math.max(1, bounds.width);
@@ -761,17 +721,16 @@ float sampleRippleHeight( vec2 position ) {
     renderer.setSize(width, height, false);
     canvas.style.width = width + "px";
     canvas.style.height = height + "px";
+    rippleField.simulationMaterial.uniforms.rippleWorldSize.value.copy(RIPPLE_WORLD_SIZE);
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
+    camera.lookAt(0, 0, 0);
   }
 
   function setRippleTexture(texture) {
     rippleField.texture = texture;
     if (water?.material?.uniforms?.rippleHeightMap) {
       water.material.uniforms.rippleHeightMap.value = texture;
-    }
-    if (rippleState.uniforms?.rippleHeightMap) {
-      rippleState.uniforms.rippleHeightMap.value = texture;
     }
   }
 
@@ -803,15 +762,18 @@ float sampleRippleHeight( vec2 position ) {
     const hover = rippleField.hoverImpact;
     const hoverUniform = rippleField.simulationMaterial.uniforms.rippleHover.value;
     const directionUniform = rippleField.simulationMaterial.uniforms.rippleHoverDirection.value;
+    const travelUniform = rippleField.simulationMaterial.uniforms.rippleHoverTravel;
     if (!hover || seconds >= hover.until) {
       rippleField.hoverImpact = null;
       hoverUniform.set(0, 0, 0, 0);
       directionUniform.set(0, 0);
+      travelUniform.value = 0;
       return;
     }
     const fade = clamp((hover.until - seconds) / RIPPLE_HOVER_LIFETIME, 0, 1);
     hoverUniform.set(hover.x, hover.y, hover.strength * fade, hover.radius);
     directionUniform.set(hover.directionX, hover.directionY);
+    travelUniform.value = hover.travel;
   }
 
   function advanceRippleField(deltaSeconds) {
@@ -862,24 +824,27 @@ float sampleRippleHeight( vec2 position ) {
   }
 
   function commitPendingRipple(seconds) {
-    if (!rippleState.pending.length || !raycaster || !camera || !water || !rippleField) return;
+    if (!rippleState.pending.length || !rippleField) return;
 
     const pending = rippleState.pending.splice(0);
-    let lastHit = null;
+    let committed = 0;
     for (const pointerHit of pending) {
-      rippleState.ndc.set(pointerHit.x, pointerHit.y);
-      camera.updateMatrixWorld();
-      water.updateMatrixWorld();
-      raycaster.setFromCamera(rippleState.ndc, camera);
-      const hit = raycaster.intersectObject(water, false)[0];
-      if (!hit) continue;
-
       const isHoverRipple = pointerHit.type === "hover";
+      raycaster.setFromCamera(new THREE.Vector2(pointerHit.x, pointerHit.y), camera);
+      const waterHit = raycaster.intersectObject(water, false)[0];
+      if (!waterHit) continue;
+      const rippleUv = new THREE.Vector2(
+        clamp((waterHit.point.x - RIPPLE_WORLD_MIN.x) / RIPPLE_WORLD_SIZE.x, 0, 1),
+        clamp((-waterHit.point.z - RIPPLE_WORLD_MIN.y) / RIPPLE_WORLD_SIZE.y, 0, 1),
+      );
+      const ripplePoint = new THREE.Vector2(
+        (rippleUv.x - 0.5) * RIPPLE_WORLD_SIZE.x,
+        (rippleUv.y - 0.5) * RIPPLE_WORLD_SIZE.y,
+      );
       if (
         isHoverRipple &&
         rippleState.hasHoverPoint &&
-        Math.hypot(hit.point.x - rippleState.hoverPoint.x, hit.point.z - rippleState.hoverPoint.y) <
-          RIPPLE_HOVER_MIN_WORLD_DISTANCE
+        ripplePoint.distanceTo(rippleState.hoverPoint) < RIPPLE_HOVER_MIN_WORLD_DISTANCE
       ) {
         continue;
       }
@@ -887,35 +852,32 @@ float sampleRippleHeight( vec2 position ) {
       const impactStrength = pointerHit.strength ?? RIPPLE_CLICK_STRENGTH;
       const impactRadius = pointerHit.radius ?? RIPPLE_CLICK_RADIUS;
       const hoverDirection = new THREE.Vector2();
+      const hoverTravel =
+        isHoverRipple && rippleState.hasHoverPoint
+          ? ripplePoint.distanceTo(rippleState.hoverPoint)
+          : 0;
       if (isHoverRipple && rippleState.hasHoverPoint) {
-        const directionX = hit.point.x - rippleState.hoverPoint.x;
-        const directionY = hit.point.z - rippleState.hoverPoint.y;
-        const directionLength = Math.hypot(directionX, directionY);
-        if (directionLength > 0.001) {
-          hoverDirection.set(directionX / directionLength, directionY / directionLength);
-        }
+        const direction = ripplePoint.clone().sub(rippleState.hoverPoint);
+        if (direction.lengthSq() > 0.000001) hoverDirection.copy(direction.normalize());
       }
 
       const slot = rippleState.nextSlot;
-      const start = reducedMotion ? -0.35 : seconds;
-      const rippleUv = new THREE.Vector2(
-        clamp((hit.point.x - RIPPLE_WORLD_MIN.x) / RIPPLE_WORLD_SIZE.x, 0, 1),
-        clamp((hit.point.z - RIPPLE_WORLD_MIN.y) / RIPPLE_WORLD_SIZE.y, 0, 1),
-      );
-      rippleState.centers[slot].set(hit.point.x, hit.point.z);
+      const start = seconds;
+      rippleState.centers[slot].copy(rippleUv);
       rippleState.starts[slot] = start;
-      rippleState.strengths[slot] = pointerHit.strength ?? RIPPLE_CLICK_STRENGTH;
+      rippleState.strengths[slot] = impactStrength;
       rippleState.nextSlot = (slot + 1) % RIPPLE_SLOT_COUNT;
       rippleState.lastSlot = slot;
       rippleState.lastStart = start;
       rippleState.count += 1;
       if (isHoverRipple) {
-        rippleState.hoverPoint.set(hit.point.x, hit.point.z);
+        rippleState.hoverPoint.copy(ripplePoint);
         rippleState.hasHoverPoint = true;
         rippleState.hoverCount += 1;
       } else {
         rippleState.clickCount += 1;
       }
+
       if (isHoverRipple) {
         rippleField.hoverImpact = {
           x: rippleUv.x,
@@ -925,6 +887,7 @@ float sampleRippleHeight( vec2 position ) {
           until: seconds + RIPPLE_HOVER_LIFETIME,
           directionX: hoverDirection.x,
           directionY: hoverDirection.y,
+          travel: Math.min(hoverTravel, RIPPLE_HOVER_MAX_RADIUS * 2.5),
         };
       } else {
         rippleField.pendingImpacts.push({
@@ -946,21 +909,23 @@ float sampleRippleHeight( vec2 position ) {
       stage.dataset.worldRippleClickCount = String(rippleState.clickCount);
       stage.dataset.worldRippleHoverCount = String(rippleState.hoverCount);
       stage.dataset.worldRippleLastType = isHoverRipple ? "hover" : "click";
-      stage.dataset.worldRippleInput = isHoverRipple ? "gpu-raycast-hover" : "gpu-raycast-click";
+      stage.dataset.worldRippleInput = isHoverRipple
+        ? "raycast-gpu-water-hover"
+        : "raycast-gpu-water-click";
       stage.dataset.worldRippleLastSlot = String(slot);
-      stage.dataset.worldRippleState = `${rippleState.count}|${slot}|${start.toFixed(3)}|${hit.point.x.toFixed(2)},${hit.point.z.toFixed(2)}`;
+      stage.dataset.worldRippleState = [
+        rippleState.count,
+        slot,
+        start.toFixed(3),
+        rippleUv.x.toFixed(3) + "," + rippleUv.y.toFixed(3),
+      ].join("|");
       stage.dataset.worldRipplePeak = rippleField.peak.toFixed(4);
-      lastHit = hit;
+      committed += 1;
     }
 
-    if (!lastHit) {
-      stage.dataset.worldRippleQueued = "false";
-      stage.dataset.worldRippleState = "unmapped";
-      return;
-    }
     stage.dataset.worldRippleQueued = "false";
+    if (committed === 0) stage.dataset.worldRippleState = "idle";
   }
-
   function draw(time) {
     const seconds = time * 0.001;
     pointer.x += (pointer.targetX - pointer.x) * (reducedMotion ? 1 : 0.055);
@@ -970,41 +935,17 @@ float sampleRippleHeight( vec2 position ) {
     pointerStrength = reducedMotion
       ? 0
       : clamp(pointer.active ? 0.2 + pointerDistance * 1.25 : 0, 0, 1);
-    const waterShiftX = reducedMotion
-      ? 0
-      : Math.sin(time * 0.0001) * 15 + Math.cos(time * 0.000043) * 8;
-    const waterShiftY = reducedMotion
-      ? 0
-      : Math.cos(time * 0.000082) * 10 + Math.sin(time * 0.000039) * 6;
-    const pointerIntensity = clamp(pointerStrength * 0.95, 0, 1);
-    const waterTiltX = -pointer.x * 2.35;
-    const waterTiltY = pointer.y * 1.75;
+    const pointerIntensity = clamp(pointerStrength * 0.48, 0, 1);
 
-    stage.style.setProperty("--cosmic-shift-x", -pointer.x * 32 + "px");
-    stage.style.setProperty("--cosmic-shift-y", -pointer.y * 22 + "px");
-    stage.style.setProperty("--water-shift-x", waterShiftX - pointer.x * 35 + "px");
-    stage.style.setProperty("--water-shift-y", waterShiftY - pointer.y * 24 + "px");
-    stage.style.setProperty("--world-image-shift-x", waterShiftX - pointer.x * 35 + "px");
-    stage.style.setProperty("--world-image-shift-y", waterShiftY - pointer.y * 24 + "px");
-    stage.style.setProperty("--world-image-tilt-x", waterTiltX + "deg");
-    stage.style.setProperty("--world-image-tilt-y", waterTiltY + "deg");
     stage.style.setProperty("--world-pointer-x", (pointer.x + 0.5) * 100 + "%");
-    stage.style.setProperty("--world-pointer-y", (pointer.y + 0.5) * 100 + "%");
+    stage.style.setProperty("--world-pointer-y", (0.5 - pointer.y) * 100 + "%");
     stage.style.setProperty("--world-pointer-intensity", pointerIntensity.toFixed(3));
     stage.style.setProperty("--water-ripple-strength", pointerStrength.toFixed(3));
-    [imageElement, waterVideoElement].forEach((element) => {
-      element?.style.setProperty(
-        "--world-image-scale",
-        pointer.active || pointer.impact > 0.03 ? "1.12" : "1.08",
-      );
-    });
+    stage.style.setProperty("--world-image-shift-x", "0px");
+    stage.style.setProperty("--world-image-shift-y", "0px");
+    stage.style.setProperty("--world-image-tilt-x", "0deg");
+    stage.style.setProperty("--world-image-tilt-y", "0deg");
 
-    desiredCameraPosition.set(pointer.x * 4.8, 7.8 - pointer.y * 1.8, 15 + pointer.y * 2.8);
-    desiredCameraTarget.set(pointer.x * 2.8, -0.2 - pointer.y * 0.4, -46 + pointer.y * 7);
-    camera.position.lerp(desiredCameraPosition, reducedMotion ? 1 : 0.11);
-    cameraTarget.lerp(desiredCameraTarget, reducedMotion ? 1 : 0.11);
-    camera.lookAt(cameraTarget);
-    camera.updateMatrixWorld();
     const deltaSeconds =
       rippleField.lastTime === null ? 0 : clamp(seconds - rippleField.lastTime, 0, 0.05);
     rippleField.lastTime = seconds;
@@ -1012,12 +953,25 @@ float sampleRippleHeight( vec2 position ) {
     updateRippleHoverUniform(seconds);
     advanceRippleField(deltaSeconds);
 
-    const uniforms = water.material.uniforms;
-    uniforms.time.value = reducedMotion ? 0 : seconds;
-    uniforms.rippleWaveTime.value = reducedMotion ? 0 : seconds;
-    uniforms.distortionScale.value = 3.4 + pointerStrength * 0.8;
-    uniforms.size.value = 3.8;
-    if (sky) sky.material.uniforms.time.value = reducedMotion ? 0 : seconds;
+    const hasVideoFrame =
+      waterVideoElement && waterVideoElement.readyState >= 2 && waterVideoElement.videoWidth > 0;
+    if (hasVideoFrame) {
+      stage.dataset.worldWaterTexture = "ready";
+      stage.classList.add("is-threejs-water");
+    }
+
+    water.material.uniforms.time.value = reducedMotion ? 0 : seconds;
+    water.material.uniforms.rippleWaveTime.value = reducedMotion ? 0 : seconds;
+    const shaderImpacts = water.material.uniforms.rippleImpacts.value;
+    for (let index = 0; index < RIPPLE_SLOT_COUNT; index += 1) {
+      shaderImpacts[index].set(
+        rippleState.centers[index].x,
+        rippleState.centers[index].y,
+        rippleState.starts[index],
+        rippleState.strengths[index],
+      );
+    }
+    stage.dataset.worldWaterNormalMap = waterNormalMapState;
     renderer.render(scene, camera);
     stage.dataset.worldGpuRender =
       renderer.info.render.calls + "|" + renderer.info.render.triangles;
@@ -1033,16 +987,14 @@ float sampleRippleHeight( vec2 position ) {
       pointerStrength.toFixed(3);
     stage.dataset.worldWaterPhase = (seconds * 0.45).toFixed(3);
     stage.dataset.worldPointerRipple = pointerStrength.toFixed(3);
-    stage.dataset.worldRippleRadius = reducedMotion
-      ? (RIPPLE_SPEED * 0.35).toFixed(3)
-      : rippleState.lastSlot < 0
+    stage.dataset.worldRippleRadius =
+      rippleState.lastSlot < 0 || reducedMotion
         ? "0.000"
-        : (Math.max(0, seconds - rippleState.lastStart) * RIPPLE_SPEED).toFixed(3);
+        : (Math.max(0, seconds - rippleState.lastStart) * 6.2).toFixed(3);
     if (waterVideoElement) {
       stage.dataset.worldVideoTime = waterVideoElement.currentTime.toFixed(3);
     }
   }
-
   function loop(time) {
     animationFrame = 0;
     if (!isVisible || document.hidden) return;
@@ -1083,6 +1035,5 @@ float sampleRippleHeight( vec2 position ) {
 
   stage.classList.add("world-ready");
   resize();
-  camera.lookAt(cameraTarget);
   start();
 }
