@@ -1839,21 +1839,21 @@ html[data-theme="light"] .world-stage::after {
 
 /* A procedural sea horizon gives the water surface an open-ocean setting. */
 .world-stage {
-  border-color: rgb(126 213 238 / 30%);
+  border-color: rgb(151 235 225 / 34%);
   background:
-    radial-gradient(ellipse at 76% 38%, rgb(230 248 252 / 39%), transparent 26%),
+    radial-gradient(ellipse at 76% 38%, rgb(218 250 243 / 35%), transparent 26%),
     linear-gradient(
       180deg,
-      #1b5073 0%,
-      #387f9c 25%,
-      #a6d2d5 38%,
-      #458fa5 42%,
-      #12668e 59%,
-      #0a4e78 78%,
-      #062f50 100%
+      #164654 0%,
+      #347985 25%,
+      #a8d0c9 38%,
+      #3b7c7f 42%,
+      #155963 59%,
+      #0b4350 78%,
+      #062c39 100%
     );
   box-shadow:
-    0 36px 90px rgb(0 0 0 / 38%),
+    0 36px 90px rgb(0 18 26 / 42%),
     inset 0 1px 0 rgb(255 255 255 / 7%);
 }
 
@@ -1863,24 +1863,24 @@ html[data-theme="light"] .world-stage::after {
 }
 
 html[data-theme="light"] .world-stage {
-  border-color: rgb(0 112 155 / 24%);
+  border-color: rgb(0 133 132 / 28%);
   background:
-    radial-gradient(ellipse at 76% 38%, rgb(255 255 255 / 76%), transparent 26%),
+    radial-gradient(ellipse at 76% 38%, rgb(231 255 248 / 74%), transparent 26%),
     linear-gradient(
       180deg,
-      #75adc4 0%,
-      #a7d0da 27%,
-      #e2f1f0 38%,
-      #70adbf 42%,
-      #267b9f 62%,
-      #0a4e78 100%
+      #709fa6 0%,
+      #a5ceca 27%,
+      #e1f0e9 38%,
+      #70aaa5 42%,
+      #28777b 62%,
+      #0a4852 100%
     );
   box-shadow:
-    0 36px 90px rgb(24 69 77 / 13%),
+    0 36px 90px rgb(24 69 77 / 18%),
     inset 0 1px 0 rgb(255 255 255 / 78%);
 }
 
-/* Let the ocean hero take the entire first screen without the site header. */
+/* Keep the full-screen ocean scene framed by the XLab navigation and palette. */
 .app-shell:has(> main > .hero.hero-world) {
   width: 100%;
   max-width: none;
@@ -1889,7 +1889,60 @@ html[data-theme="light"] .world-stage {
 }
 
 .app-shell:has(> main > .hero.hero-world) > .topbar {
-  display: none;
+  position: fixed;
+  z-index: 20;
+  top: 18px;
+  left: 50%;
+  width: min(1360px, calc(100% - 64px));
+  min-height: 68px;
+  margin: 0;
+  padding: 8px 13px 8px 16px;
+  transform: translateX(-50%);
+  border: 1px solid rgb(206 246 239 / 24%);
+  border-radius: 999px;
+  background: linear-gradient(115deg, rgb(4 28 38 / 68%), rgb(8 39 47 / 54%));
+  box-shadow:
+    0 18px 54px rgb(0 21 30 / 22%),
+    inset 0 1px 0 rgb(255 255 255 / 12%);
+  color: #effdfa;
+  backdrop-filter: blur(24px) saturate(135%);
+}
+
+html.is-transitioning .app-shell:has(> main > .hero.hero-world) {
+  transform: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .brand strong,
+.app-shell:has(> main > .hero.hero-world) > .topbar .topnav-link,
+.app-shell:has(> main > .hero.hero-world) > .topbar .locale-picker,
+.app-shell:has(> main > .hero.hero-world) > .topbar .theme-toggle {
+  color: #effdfa;
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .brand small {
+  color: rgb(218 244 240 / 64%);
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .topnav-link:hover,
+.app-shell:has(> main > .hero.hero-world) > .topbar .topnav-link.is-active {
+  border-color: rgb(153 239 222 / 35%);
+  background: rgb(103 226 204 / 12%);
+  color: #b9fff0;
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .locale-picker,
+.app-shell:has(> main > .hero.hero-world) > .topbar .theme-toggle {
+  border-color: rgb(206 246 239 / 20%);
+  background: rgb(6 34 44 / 48%);
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .menu-button {
+  border-color: rgb(206 246 239 / 24%);
+  background: rgb(6 34 44 / 55%);
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .menu-button span {
+  background: #dcfbf4;
 }
 
 .app-shell:has(> main > .hero.hero-world) > main > .hero.hero-world {
@@ -1899,9 +1952,229 @@ html[data-theme="light"] .world-stage {
   padding: 0;
 }
 
+.app-shell:has(> main > .hero.hero-world) #templates,
+.app-shell:has(> main > .hero.hero-world) #process {
+  scroll-margin-top: 112px;
+}
+
 .app-shell:has(> main > .hero.hero-world) .world-stage {
   width: 100%;
-  height: 100svh;
-  min-height: 100svh;
+  height: max(100svh, 660px);
+  min-height: max(100svh, 660px);
   border-radius: 0;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-hud {
+  display: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy {
+  top: clamp(112px, 14vh, 144px);
+  left: clamp(28px, 5vw, 76px);
+  width: min(650px, 49%);
+  margin: 0;
+  padding: clamp(24px, 3vw, 38px);
+  border: 1px solid rgb(205 247 238 / 20%);
+  border-radius: 28px;
+  background: linear-gradient(138deg, rgb(5 31 40 / 74%), rgb(6 36 45 / 57%));
+  box-shadow:
+    0 28px 78px rgb(0 24 32 / 26%),
+    inset 0 1px 0 rgb(255 255 255 / 11%);
+  backdrop-filter: blur(22px) saturate(125%);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy::before {
+  display: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy h1 {
+  font-size: clamp(42px, 4.3vw, 60px);
+  color: #effdfa;
+  letter-spacing: -0.055em;
+  line-height: 1;
+  text-shadow: 0 12px 42px rgb(0 7 14 / 28%);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-lede {
+  color: rgb(231 249 245 / 82%);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-stats {
+  margin-top: 32px;
+  border-color: rgb(202 241 233 / 22%);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-stats strong {
+  color: #f0fff9;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-stats small {
+  color: rgb(216 242 237 / 72%);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-button-primary {
+  border-color: rgb(230 255 248 / 42%);
+  background: #65e9d5;
+  box-shadow:
+    0 12px 32px rgb(39 147 135 / 23%),
+    0 0 0 1px rgb(6 54 60 / 16%);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-button-primary:hover {
+  background: #8af3e2;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-locations {
+  top: 112px;
+  right: clamp(20px, 3vw, 42px);
+  width: min(260px, 22%);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-location {
+  min-height: 64px;
+  border-color: rgb(200 241 234 / 24%);
+  background: linear-gradient(130deg, rgb(5 34 44 / 76%), rgb(8 48 55 / 61%));
+  color: rgb(235 252 248 / 84%);
+  box-shadow: 0 14px 32px rgb(0 22 30 / 18%), inset 0 1px 0 rgb(255 255 255 / 8%);
+  backdrop-filter: blur(20px) saturate(130%);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-location:hover,
+.app-shell:has(> main > .hero.hero-world) .world-location.is-active {
+  border-color: rgb(160 246 226 / 56%);
+  background: linear-gradient(130deg, rgb(26 113 103 / 68%), rgb(12 75 78 / 70%));
+  color: #f0fff9;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-location small {
+  color: rgb(214 241 236 / 68%);
+}
+
+@media (max-width: 980px) {
+  .app-shell:has(> main > .hero.hero-world) .world-copy {
+    width: min(620px, 58%);
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-locations {
+    width: min(230px, 27%);
+  }
+}
+
+@media (max-width: 760px) {
+  .app-shell:has(> main > .hero.hero-world) > .topbar {
+    top: 10px;
+    width: calc(100% - 24px);
+    min-height: 62px;
+    margin: 0;
+    padding: 6px 10px;
+    border-radius: 20px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy {
+    top: 92px;
+    right: 14px;
+    left: 14px;
+    width: auto;
+    padding: 20px 18px 21px;
+    border-radius: 22px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 {
+    margin: 15px 0 17px;
+    font-size: clamp(35px, 9.5vw, 43px);
+    line-height: 1.02;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-lede {
+    font-size: 13px;
+    line-height: 1.58;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-actions {
+    gap: 8px;
+    margin-top: 18px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-stats {
+    gap: 9px;
+    margin-top: 23px;
+    padding-top: 14px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-locations {
+    top: auto;
+    right: 14px;
+    bottom: 112px;
+    left: 14px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: auto;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy,
+  .app-shell:has(> main > .hero.hero-world) .world-location,
+  .app-shell:has(> main > .hero.hero-world) > .topbar {
+    backdrop-filter: blur(12px) saturate(120%);
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-location strong {
+    font-size: clamp(8px, 2.3vw, 9px);
+    letter-spacing: 0.05em;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-stats small {
+    font-size: 7px;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-shell:has(> main > .hero.hero-world) > .topbar {
+    top: 9px;
+    left: 50%;
+    width: calc(100% - 18px);
+    min-height: 58px;
+    margin: 0;
+    padding: 5px 8px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .brand-logo-frame {
+    width: 66px;
+    height: 38px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .brand-copy small {
+    display: none;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy {
+    top: 82px;
+    right: 10px;
+    left: 10px;
+    padding: 17px 16px 18px;
+    border-radius: 19px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 {
+    font-size: clamp(31px, 8.6vw, 36px);
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-stats {
+    gap: 7px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-stats small {
+    font-size: 7px;
+    letter-spacing: 0.06em;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-locations {
+    right: 10px;
+    left: 10px;
+    bottom: 105px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell:has(> main > .hero.hero-world) .world-location {
+    transition: none;
+  }
 }
