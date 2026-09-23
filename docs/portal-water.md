@@ -8,14 +8,10 @@ surface reads as a calmer lake rather than open ocean. A fogged distant
 shoreline, sky reflection, and lower-intensity sun complete the lake horizon.
 
 Pointer movement steers the Three.js camera over the water and changes the
-distortion strength. As the cursor travels, throttled raycast hits inject
-small speed-scaled impulses along its path and a short GPU contact term that
-fades with the cursor's travel; a click injects a larger localized impulse.
-Both inputs feed the same 256x256 GPU height field. The finite-difference
-stencil is weighted by the physical x/z texel lengths so a circular disturbance
-does not travel faster along the short axis. Two render targets ping-pong a
-height/velocity state through a damped wave equation, following the heightfield
-approach used by the open-source
+distortion strength. Clicking the stage raycasts onto the Water plane and
+injects a localized impulse into a 256x256 GPU height field. Two render
+targets ping-pong a height/velocity state through a damped finite-difference
+wave equation, following the heightfield approach used by the open-source
 [Evan Wallace WebGL Water demo](https://github.com/jeantimex/threejs-water).
 The render loop catches up with bounded fixed 1/60 simulation substeps so the
 wave speed stays stable when the reflective water pass briefly costs more
@@ -23,11 +19,9 @@ than one frame.
 The live field is sampled for vertex displacement, gradient normals, reflection
 distortion, and restrained crest/caustic highlights. A separate three-band
 Gerstner swell plus moving micro-normal detail keeps the lake from reading as a
-single synthetic ring pattern. Four bookkeeping slots allow rapid click
-impulses to overlap before they decay; the cursor contact is kept separately
-for a short fade so hover motion does not become a queue of isolated dots. The
-`data-world-ripple-*` state exposes the mapped hit, active slot, input type,
-hover/click counts, peak height, and expanding radius for browser checks.
+single synthetic ring pattern. Four bookkeeping slots allow rapid clicks to
+overlap before they decay; the `data-world-ripple-*` state exposes the mapped
+hit, active slot, count, peak height, and expanding radius for browser checks.
 A local muted WebM capture remains a fallback only for browsers that cannot
 create the WebGL scene.
 
