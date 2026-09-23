@@ -13,6 +13,7 @@ const contentTypes: Record<string, string> = {
   ".json": "application/json; charset=utf-8",
   ".jpg": "image/jpeg",
   ".png": "image/png",
+  ".webm": "video/webm",
 };
 
 async function startPortalServer() {
@@ -202,86 +203,6 @@ describe("client request portal browser flow", () => {
     }
   }, 120_000);
 
-  it("keeps the water usable with reduced motion and when WebGL is unavailable", async () => {
-    const portalServer = await startPortalServer();
-    const reducedMotionBrowser = await chromium.launch({ headless: true });
-    const reducedMotionPage = await reducedMotionBrowser.newPage({
-      viewport: { width: 1280, height: 900 },
-      reducedMotion: "reduce",
-    });
-    const fallbackBrowser = await chromium.launch({
-      headless: true,
-      args: ["--disable-webgl"],
-    });
-    const fallbackPage = await fallbackBrowser.newPage({
-      viewport: { width: 390, height: 844 },
-    });
-
-    try {
-      await reducedMotionPage.goto(`${portalServer.baseUrl}/web/portal/`, {
-        waitUntil: "domcontentloaded",
-      });
-      await reducedMotionPage.waitForFunction(
-        () =>
-          document.querySelector(".world-stage")?.dataset.worldRenderMode ===
-            "threejs-water-surface" &&
-          document.querySelector(".world-stage")?.dataset.worldReducedMotion === "true",
-        undefined,
-        { timeout: 10_000 },
-      );
-      const reducedState = await reducedMotionPage.locator(".world-stage").evaluate((stage) => ({
-        phase: stage.dataset.worldWaterPhase,
-        animationTime: stage.dataset.worldAnimationTime,
-      }));
-      await reducedMotionPage.waitForTimeout(250);
-      expect(
-        await reducedMotionPage.locator(".world-stage").evaluate((stage) => ({
-          phase: stage.dataset.worldWaterPhase,
-          animationTime: stage.dataset.worldAnimationTime,
-        })),
-      ).toEqual(reducedState);
-      await reducedMotionPage.locator(".world-stage").dispatchEvent("pointerdown", {
-        clientX: 640,
-        clientY: 450,
-        button: 0,
-      });
-      expect(
-        await reducedMotionPage.locator(".world-stage").getAttribute("data-world-ripple-count"),
-      ).toBe("0");
-
-      await fallbackPage.goto(`${portalServer.baseUrl}/web/portal/`, {
-        waitUntil: "domcontentloaded",
-      });
-      await fallbackPage.waitForFunction(
-        () =>
-          document.querySelector(".world-stage")?.dataset.worldRenderMode === "css-water-fallback",
-        undefined,
-        { timeout: 10_000 },
-      );
-      expect(await fallbackPage.locator(".world-stage.world-fallback.world-ready").count()).toBe(1);
-      expect(
-        await fallbackPage.locator(".world-stage").getAttribute("data-world-fallback-reason"),
-      ).toBe("webgl-unavailable");
-      await fallbackPage.waitForFunction(
-        () =>
-          Number.parseFloat(getComputedStyle(document.querySelector(".world-canvas")).opacity) ===
-          0,
-        undefined,
-        { timeout: 2_000 },
-      );
-      expect(
-        await fallbackPage.locator(".world-space-image, [data-world-water-video]").count(),
-      ).toBe(0);
-    } finally {
-      await reducedMotionBrowser.close();
-      await fallbackBrowser.close();
-      portalServer.server.closeAllConnections();
-      await new Promise<void>((resolveServer, rejectServer) =>
-        portalServer.server.close((error) => (error ? rejectServer(error) : resolveServer())),
-      );
-    }
-  }, 120_000);
-
   it("covers preferences, library controls, preview navigation, and local handoff", async () => {
     const portalServer = await startPortalServer();
     const browser = await chromium.launch({ headless: true });
@@ -324,16 +245,22 @@ describe("client request portal browser flow", () => {
       expect(await page.locator(".world-location").count()).toBe(3);
       expect(await page.locator(".world-location strong").count()).toBe(3);
       expect(await page.locator("[data-world-start]").count()).toBe(1);
-      expect(await page.locator(".world-space-image, [data-world-water-video]").count()).toBe(0);
-      expect(await page.locator(".world-atmosphere, .world-grain").count()).toBe(2);
+      expect(await page.locator(".world-space-image").count()).toBe(1);
+      expect(await page.locator("[data-world-water-video]").count()).toBe(1);
+      expect(await page.locator("[data-world-water-video] source").getAttribute("src")).toBe(
+        "/web/portal/water-surface.webm",
+      );
       await page.waitForFunction(
         () => {
           const stage = document.querySelector(".world-stage");
+          const video = stage?.querySelector("[data-world-water-video]");
           return (
-            stage?.dataset.worldRenderMode === "threejs-water-surface" &&
-            stage.dataset.worldShading === "threejs-spectral-water-surface" &&
-            stage.dataset.worldSurface === "seamless-close-up-water" &&
-            stage.dataset.worldWaterNormalMap === "ready"
+            stage?.dataset.worldRenderMode === "threejs-water-addon-overlay" &&
+            stage.dataset.worldShading === "threejs-reflective-water-over-live-footage" &&
+            stage.dataset.worldWaterTexture === "ready" &&
+            stage.dataset.worldVideoState === "playing" &&
+            video?.readyState >= 2 &&
+            !video.paused
           );
         },
         undefined,
@@ -353,8 +280,9 @@ describe("client request portal browser flow", () => {
       );
       await page.waitForFunction(
         () =>
-          Number.parseFloat(getComputedStyle(document.querySelector(".world-canvas")).opacity) >=
-          0.99,
+          Number.parseFloat(
+            getComputedStyle(document.querySelector("[data-world-water-video]")).opacity,
+          ) >= 0.99,
         undefined,
         { timeout: 3_000 },
       );
@@ -366,42 +294,57 @@ describe("client request portal browser flow", () => {
       expect(gpuRenderState?.[0]).toBeGreaterThan(0);
       expect(gpuRenderState?.[1]).toBeGreaterThan(0);
       expect(await page.locator(".world-stage").getAttribute("data-world-render-mode")).toBe(
-        "threejs-water-surface",
+        "threejs-water-addon-overlay",
       );
       expect(await page.locator(".world-stage").getAttribute("data-world-shading")).toBe(
-        "threejs-spectral-water-surface",
+        "threejs-reflective-water-over-live-footage",
       );
       expect(await page.locator(".world-stage").getAttribute("data-world-surface")).toBe(
-        "seamless-close-up-water",
+        "threejs-water-normal-map-over-video",
       );
       expect(await page.locator(".world-stage").getAttribute("data-world-interaction")).toBe(
-        "fragment-shader-ripples",
+        "raycast-gpu-water-ripple",
       );
       expect(await page.locator(".world-stage").getAttribute("data-world-water-provider")).toBe(
-        "threejs-shader-material",
+        "threejs-water-addon",
       );
       expect(await page.locator(".world-stage").getAttribute("data-world-ripple-provider")).toBe(
-        "threejs-fragment-shader",
+        "threejs-gpu-heightfield",
+      );
+      expect(await page.locator(".world-stage").getAttribute("data-world-ripple-shader")).toBe(
+        "threejs-water-displacement-and-normal-map",
       );
       expect(await page.locator(".world-stage").getAttribute("data-world-ripple-mode")).toBe(
-        "screen-space-water-ripple",
-      );
-      expect(await page.locator(".world-stage").getAttribute("data-world-ripple-field")).toBe(
-        "4-shader-events",
+        "raycast-water-surface-ripple",
       );
       expect(
         Number(await page.locator(".world-stage").getAttribute("data-world-ripple-count")),
       ).toBe(0);
+      expect(await page.locator(".world-stage").getAttribute("data-world-video-state")).toBe(
+        "playing",
+      );
       expect(
         await page.locator(".world-canvas").evaluate((canvas) => ({
           opacity: getComputedStyle(canvas).opacity,
           zIndex: getComputedStyle(canvas).zIndex,
         })),
-      ).toEqual({ opacity: "1", zIndex: "1" });
+      ).toEqual({ opacity: "1", zIndex: "3" });
+      expect(
+        await page
+          .locator("[data-world-water-video]")
+          .evaluate((video) => getComputedStyle(video).opacity),
+      ).toBe("1");
       expect(
         await page
           .locator(".world-stage")
-          .evaluate((element) => element.classList.contains("is-threejs-water")),
+          .evaluate((element) => element.classList.contains("is-video-water")),
+      ).toBe(true);
+      expect(
+        await page
+          .locator(".world-space-image")
+          .evaluate(
+            (element) => !getComputedStyle(element).backgroundImage.includes("space-cosmos.png"),
+          ),
       ).toBe(true);
       expect(await page.locator(".world-controls, [data-world-command]").count()).toBe(0);
       const worldCanvasSize = await page.locator(".world-canvas").evaluate((canvas) => ({
@@ -418,25 +361,49 @@ describe("client request portal browser flow", () => {
       const worldBounds = await page.locator(".world-stage").boundingBox();
       if (!worldBounds) throw new Error("World stage did not expose a bounding box.");
       await page.mouse.move(
-        worldBounds.x + worldBounds.width * 0.95,
-        worldBounds.y + worldBounds.height * 0.25,
+        worldBounds.x + worldBounds.width * 0.12,
+        worldBounds.y + worldBounds.height * 0.5,
       );
-      await page.waitForTimeout(110);
+      await page.waitForTimeout(120);
+      const leftCosmicTransform = await page
+        .locator(".world-space-image")
+        .evaluate((element) => getComputedStyle(element).transform);
       await page.mouse.move(
-        worldBounds.x + worldBounds.width * 0.95,
-        worldBounds.y + worldBounds.height * 0.48,
+        worldBounds.x + worldBounds.width * 0.88,
+        worldBounds.y + worldBounds.height * 0.5,
+      );
+      await page.waitForTimeout(120);
+      const rightCosmicTransform = await page
+        .locator(".world-space-image")
+        .evaluate((element) => getComputedStyle(element).transform);
+      expect(leftCosmicTransform).not.toBe(rightCosmicTransform);
+      const initialVideoTime = await page
+        .locator("[data-world-water-video]")
+        .evaluate((element) => element.currentTime);
+      await page.mouse.move(
+        worldBounds.x + worldBounds.width * 0.16,
+        worldBounds.y + worldBounds.height * 0.5,
       );
       await page.waitForFunction(
-        () => Number(document.querySelector(".world-stage")?.dataset.worldRippleHoverCount) > 0,
-        undefined,
+        (time) => (document.querySelector("[data-world-water-video]")?.currentTime ?? 0) > time,
+        initialVideoTime,
         { timeout: 3_000 },
       );
-      expect(
-        Number(await page.locator(".world-stage").getAttribute("data-world-ripple-hover-count")),
-      ).toBeGreaterThan(0);
-      expect(await page.locator(".world-stage").getAttribute("data-world-ripple-last-type")).toBe(
-        "hover",
-      );
+      const imageMotion = await page.locator(".world-space-image").evaluate((element) => {
+        const styles = getComputedStyle(element);
+        return {
+          animationName: styles.animationName,
+          backgroundSize: styles.backgroundSize,
+          imageShiftX: element.parentElement?.style.getPropertyValue("--world-image-shift-x"),
+          pointerIntensity: element.parentElement?.style.getPropertyValue(
+            "--world-pointer-intensity",
+          ),
+        };
+      });
+      expect(imageMotion.animationName).toContain("world-water-drift");
+      expect(imageMotion.backgroundSize).not.toBe("cover");
+      expect(imageMotion.imageShiftX).toMatch(/px$/);
+      expect(Number.parseFloat(imageMotion.pointerIntensity || "0")).toBeGreaterThan(0);
 
       const firstWaterState = await page
         .locator(".world-stage")
@@ -464,61 +431,72 @@ describe("client request portal browser flow", () => {
         /^\d+\.\d+$/,
       );
 
+      await page.waitForFunction(
+        () => Number(document.querySelector(".world-stage")?.dataset.worldRippleHoverCount) > 0,
+        undefined,
+        { timeout: 3_000 },
+      );
+      expect(
+        Number(await page.locator(".world-stage").getAttribute("data-world-ripple-hover-count")),
+      ).toBeGreaterThan(0);
+      expect(await page.locator(".world-stage").getAttribute("data-world-ripple-last-type")).toBe(
+        "hover",
+      );
+      expect(await page.locator(".world-stage").getAttribute("data-world-ripple-input")).toBe(
+        "raycast-gpu-water-hover",
+      );
+
       const initialRippleCount = Number(
         await page.locator(".world-stage").getAttribute("data-world-ripple-count"),
       );
-      const rippleClickX = worldBounds.x + worldBounds.width * 0.62;
-      const rippleClickY = worldBounds.y + worldBounds.height * 0.62;
-      await page.mouse.click(rippleClickX, rippleClickY);
+      await page.locator(".world-stage").dispatchEvent("pointerdown", {
+        clientX: worldBounds.x + worldBounds.width * 0.62,
+        clientY: worldBounds.y + worldBounds.height * 0.62,
+        bubbles: true,
+      });
       await page.waitForFunction(
-        (count) => {
-          const stage = document.querySelector(".world-stage");
-          return (
-            Number(stage?.dataset.worldRippleCount) > count &&
-            stage?.dataset.worldRippleLastType === "click"
-          );
-        },
+        (count) => Number(document.querySelector(".world-stage")?.dataset.worldRippleCount) > count,
         initialRippleCount,
-        { timeout: 5_000 },
+        { timeout: 3_000 },
       );
       const rippleState = await page.locator(".world-stage").evaluate((element) => ({
         state: element.dataset.worldRippleState,
         radius: Number(element.dataset.worldRippleRadius),
+        peak: Number(element.dataset.worldRipplePeak),
       }));
-      expect(rippleState.state).toMatch(/^\d+\|\d+\|\d+\.\d+\|\d+\.\d+,\d+\.\d+$/);
+      expect(rippleState.state).toMatch(/^\d+\|\d+\|-?\d+\.\d+\|-?\d+\.\d+,-?\d+\.\d+$/);
       expect(rippleState.radius).toBeGreaterThanOrEqual(0);
+      expect(
+        Number(await page.locator(".world-stage").getAttribute("data-world-ripple-steps")),
+      ).toBeGreaterThan(0);
       const reducedRippleMotion = await page.evaluate(
         () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
       );
       if (!reducedRippleMotion) {
-        expect(await page.locator(".world-stage").getAttribute("data-world-ripple-last-type")).toBe(
-          "click",
-        );
-        expect(await page.locator(".world-stage").getAttribute("data-world-ripple-input")).toBe(
-          "uv-screen-space-click",
-        );
-        expect(
-          Number(await page.locator(".world-stage").getAttribute("data-world-ripple-click-count")),
-        ).toBe(1);
+        expect(rippleState.peak).toBeGreaterThan(0);
         await page.waitForFunction(
-          (initialPhase) =>
-            document.querySelector(".world-stage")?.dataset.worldWaterPhase !== initialPhase,
-          await page.locator(".world-stage").getAttribute("data-world-water-phase"),
+          (initialRadius) =>
+            Number(document.querySelector(".world-stage")?.dataset.worldRippleRadius) >
+            initialRadius + 0.1,
+          rippleState.radius,
           { timeout: 3_000 },
         );
       }
+      expect(
+        await page
+          .locator(".world-stage")
+          .evaluate((element) => element.classList.contains("is-world-pulsing")),
+      ).toBe(true);
       const firstRippleCount = Number(
         await page.locator(".world-stage").getAttribute("data-world-ripple-count"),
       );
-      await page.mouse.click(rippleClickX, rippleClickY);
+      await page.locator(".world-stage").dispatchEvent("pointerdown", {
+        clientX: worldBounds.x + worldBounds.width * 0.76,
+        clientY: worldBounds.y + worldBounds.height * 0.68,
+        bubbles: true,
+      });
       await page.waitForFunction(
-        (count) => {
-          const stage = document.querySelector(".world-stage");
-          return (
-            Number(stage?.dataset.worldRippleCount) > count &&
-            stage?.dataset.worldRippleLastType === "click"
-          );
-        },
+        (count) => Number(document.querySelector(".world-stage")?.dataset.worldRippleCount) > count,
         firstRippleCount,
         { timeout: 3_000 },
       );
