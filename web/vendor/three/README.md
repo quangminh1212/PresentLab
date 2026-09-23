@@ -1,15 +1,16 @@
 # Vendored Three.js runtime
 
-This directory contains the `three` `0.186.0` runtime plus the official
-`Water.js` and `Sky.js` addons used by the PresentLab portal.
+This directory contains the pinned Three.js `0.186.0` runtime and selected official
+addons. The PresentLab portal uses the local renderer and water-normal texture for its
+custom close-up surface shader. The `Water.js` and `Sky.js` addons remain available in
+the repository but are not part of the portal's static deployment.
 
 - Upstream: https://github.com/mrdoob/three.js/tree/r186
 - License: see [`LICENSE`](./LICENSE) (MIT)
-- Water addon: [`addons/objects/Water.js`](./addons/objects/Water.js)
-- Sky addon: [`addons/objects/Sky.js`](./addons/objects/Sky.js)
-- Normal map: [`textures/waternormals.jpg`](./textures/waternormals.jpg)
+- Runtime entry: [`three.module.js`](./three.module.js)
+- Runtime core: [`three.core.js`](./three.core.js)
+- Water normal map: [`textures/waternormals.jpg`](./textures/waternormals.jpg)
 
-The addons have only their package imports rewritten to the adjacent local
-`three.module.js`, allowing the static portal to run without a CDN or import
-map. The Three.js implementations are otherwise kept from upstream; the
-portal applies its calmer lake profile at runtime in `web/portal/world.js`.
+The renderer and texture are served locally, so the portal does not need a CDN or import
+map at runtime. `scripts/build-vercel.mjs` copies only the files needed by the deployed
+portal.
