@@ -653,9 +653,9 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
           if ( age >= 0.0 && age < 2.8 && impact.w > 0.0 ) {
             vec2 rippleDelta = ( rippleUv - impact.xy ) * rippleWorldSize;
             float distanceToImpact = length( rippleDelta );
-          float waveFront = distanceToImpact - age * 1.4;
-          float envelope = exp( -waveFront * waveFront * 2.4 ) * exp( -age * 0.9 );
-          float wave = sin( waveFront * 4.2 ) * envelope * impact.w * 0.14;
+            float waveFront = distanceToImpact - age * 1.4;
+            float envelope = exp( -waveFront * waveFront * 2.4 ) * exp( -age * 0.9 );
+            float wave = sin( waveFront * 4.2 ) * envelope * impact.w * 0.14;
             rippleSlope += rippleDelta / max( distanceToImpact, 0.001 ) * wave;
             float crest = exp( -waveFront * waveFront * 2.2 ) * exp( -age * 1.1 ) * impact.w;
             rippleCrestLight = max( rippleCrestLight, crest );
