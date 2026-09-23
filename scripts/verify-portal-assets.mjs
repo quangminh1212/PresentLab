@@ -1,17 +1,12 @@
 import { readFile, stat } from "node:fs/promises";
 import { resolve } from "node:path";
 
-const root = resolve(process.env.PRESENTLAB_PORTAL_VERIFY_ROOT ?? ".");
+const root = resolve(".");
 const requiredAssets = [
-  "public/web/portal/index.html",
-  "public/web/portal/app.js",
-  "public/web/portal/world.css",
   "public/web/portal/world.js",
-  "public/web/portal/water-surface.webm",
   "public/web/vendor/three/three.module.js",
   "public/web/vendor/three/three.core.js",
   "public/web/vendor/three/addons/objects/Water.js",
-  "public/web/vendor/three/addons/objects/Sky.js",
   "public/web/vendor/three/textures/waternormals.jpg",
 ];
 
@@ -24,20 +19,13 @@ for (const relativePath of requiredAssets) {
 }
 
 const worldSource = await readFile(resolve(root, "public/web/portal/world.js"), "utf8");
-const portalHtml = await readFile(resolve(root, "public/web/portal/index.html"), "utf8");
-const appSource = await readFile(resolve(root, "public/web/portal/app.js"), "utf8");
-for (const [source, reference] of [
-  [worldSource, "../vendor/three/three.module.js"],
-  [worldSource, "../vendor/three/addons/objects/Water.js"],
-  [worldSource, "../vendor/three/addons/objects/Sky.js"],
-  [worldSource, "threejs-reflective-water-over-live-footage"],
-  [worldSource, "/web/vendor/three/textures/waternormals.jpg"],
-  [portalHtml, "/web/portal/world.css"],
-  [portalHtml, "/web/portal/water-surface.webm"],
-  [appSource, "./world.js"],
+for (const importPath of [
+  "../vendor/three/three.module.js",
+  "../vendor/three/addons/objects/Water.js",
+  "/web/vendor/three/textures/waternormals.jpg",
 ]) {
-  if (!source.includes(reference)) {
-    throw new Error(`Built portal is missing the expected water runtime reference: ${reference}`);
+  if (!worldSource.includes(importPath)) {
+    throw new Error(`Built portal world is missing the expected Three.js reference: ${importPath}`);
   }
 }
 

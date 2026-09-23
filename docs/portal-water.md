@@ -1,34 +1,60 @@
 # Portal water background
 
-The portal layers the official vendored Three.js `Water` and `Sky` addons over
-the locally stored `web/portal/water-surface.webm`. The 1920x1080 footage
-preserves real wave shape, foam, reflections, and irregular motion while the
-Three.js normal map supplies continuously moving reflections and surface
-distortion. The CSS crop keeps the view over open water and moves the narrow
-shoreline toward the edge of the frame.
+The portal now uses the official Three.js `Water` addon together with the
+official analytic `Sky` addon as its primary 3D background. The water keeps the
+upstream reflective/distorted material and animated normal-map flow, while
+`web/portal/world.js` adds a small runtime normal-strength adjustment so the
+surface reads as a calmer lake rather than open ocean. A fogged distant
+shoreline, sky reflection, and lower-intensity sun complete the lake horizon.
 
-Clicks and pointer movement raycast against the Three.js water plane and feed a
-256x256 GPU height field. Two render targets ping-pong height and velocity
-through a damped wave equation with fixed 1/60 simulation steps. The addon
-shader uses the field for local surface displacement and changing normals, so
-the interaction is anchored to the visible water rather than screen pixels.
-The semi-transparent Three.js surface leaves the licensed footage visible
-underneath. If WebGL is unavailable, the clip remains available as a video
-fallback; if the clip cannot load, the portal falls back to its CSS water
-treatment.
+Pointer movement steers the Three.js camera over the water and changes the
+distortion strength. As the cursor travels, throttled raycast hits inject
+small speed-scaled impulses along its path and a short GPU contact term that
+fades with the cursor's travel; a click injects a larger localized impulse.
+Both inputs feed the same 256x256 GPU height field. The finite-difference
+stencil is weighted by the physical x/z texel lengths so a circular disturbance
+does not travel faster along the short axis. Two render targets ping-pong a
+height/velocity state through a damped wave equation, following the heightfield
+approach used by the open-source
+[Evan Wallace WebGL Water demo](https://github.com/jeantimex/threejs-water).
+The render loop catches up with bounded fixed 1/60 simulation substeps so the
+wave speed stays stable when the reflective water pass briefly costs more
+than one frame.
+The live field is sampled for vertex displacement, gradient normals, reflection
+distortion, and restrained crest/caustic highlights. A separate three-band
+Gerstner swell plus moving micro-normal detail keeps the lake from reading as a
+single synthetic ring pattern. Four bookkeeping slots allow rapid click
+impulses to overlap before they decay; the cursor contact is kept separately
+for a short fade so hover motion does not become a queue of isolated dots. The
+`data-world-ripple-*` state exposes the mapped hit, active slot, input type,
+hover/click counts, peak height, and expanding radius for browser checks.
+A local muted WebM capture remains a fallback only for browsers that cannot
+create the WebGL scene.
 
-The portal requests no external media at runtime. The video element remains
-muted, loops locally, and pauses when reduced motion is enabled. Its credit is
-shown in the hero and in the markup. The Three.js files and normal map are
-served from the repository's vendored runtime.
+## Vendored Three.js source
 
-## Video provenance
+- Package: `three` `0.186.0`, MIT licensed.
+- Core: `web/vendor/three/three.module.js` and `web/vendor/three/three.core.js`.
+- Water addon: `web/vendor/three/addons/objects/Water.js`.
+- Sky addon: `web/vendor/three/addons/objects/Sky.js`.
+- Normal map: `web/vendor/three/textures/waternormals.jpg`.
+- License copy: `web/vendor/three/LICENSE`.
+- Source: [Three.js Water.js](https://github.com/mrdoob/three.js/blob/r186/examples/jsm/objects/Water.js), [Three.js Sky.js](https://github.com/mrdoob/three.js/blob/r186/examples/jsm/objects/Sky.js), [the official ocean/sky example](https://github.com/mrdoob/three.js/blob/r186/examples/webgl_shaders_ocean.html), [Three.js r186 license](https://github.com/mrdoob/three.js/blob/r186/LICENSE), and [the official water normal map](https://github.com/mrdoob/three.js/blob/r186/examples/textures/waternormals.jpg).
+- Research references: [jeantimex/threejs-water](https://github.com/jeantimex/threejs-water) for GPU height/velocity simulation, Fresnel optics, caustics, and interaction; [brucira/water-ripple-effect](https://github.com/brucira/water-ripple-effect) for WebGL2 ping-pong ripple interaction; and [DCtheTall/webgl-ripple](https://github.com/DCtheTall/webgl-ripple) for the finite-difference ripple formulation.
 
-- File: `web/portal/water-surface.webm`
+The vendored addons have mechanical import-path adjustments so the static
+portal can load them without a CDN. The Water implementation remains the
+upstream Three.js source; the lake profile is a runtime material override, not
+a replacement renderer. The runtime stays within the portal's `script-src
+'self'` / `connect-src 'self'` policy.
+
+## Video fallback provenance
+
+- File: `web/portal/water-surface.webm` (fallback only)
 - Source: [Ocean waves at Lækjavik beach, Iceland](https://commons.wikimedia.org/wiki/File:Ocean_waves_at_L%C3%A6kjavik_beach%2C_Iceland.webm)
 - Author: Alexander Grebenkov
 - License: [Creative Commons Attribution 3.0 Unported](https://creativecommons.org/licenses/by/3.0/)
 - SHA-256: `538FB3999C7426FD32E49AEC4329CF88CD8FB1A36C81484BBC8297BEDCE61E4B`
 
-The source asset is checked into the portal so production does not depend on a
-third-party hotlink.
+The fallback binary is checked into the portal so production does not depend
+on a third-party hotlink.
