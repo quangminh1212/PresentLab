@@ -4461,66 +4461,6 @@ html.theme-switching .process-grid {
   animation: scene-label 640ms var(--ease-expo) 110ms both;
 }
 
-.scene-rail {
-  position: fixed;
-  top: 50%;
-  right: max(12px, calc((100vw - 1500px) / 2 + 6px));
-  z-index: 22;
-  display: grid;
-  width: 30px;
-  justify-items: center;
-  gap: 10px;
-  color: var(--faint);
-  pointer-events: none;
-  transform: translateY(-50%);
-}
-
-.scene-rail-meta {
-  display: flex;
-  width: 100%;
-  justify-content: space-between;
-  font-size: 8px;
-  font-weight: 850;
-  letter-spacing: 0.12em;
-}
-
-.scene-rail-meta span:first-child,
-.scene-rail-label {
-  color: var(--accent);
-}
-
-.scene-rail-track {
-  position: relative;
-  display: block;
-  width: 1px;
-  height: 105px;
-  overflow: hidden;
-  background: var(--line);
-}
-
-.scene-rail-track i {
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(180deg, var(--accent), var(--warm));
-  box-shadow: 0 0 14px rgb(140 232 216 / 75%);
-  transform: scaleY(0.16);
-  transform-origin: top;
-  transition: transform 360ms var(--ease-expo);
-}
-
-.scene-rail-label {
-  writing-mode: vertical-rl;
-  font-size: 8px;
-  font-weight: 850;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  transform: rotate(180deg);
-}
-
 .hero {
   position: relative;
   isolation: isolate;
@@ -4783,17 +4723,7 @@ html.is-transitioning .app-shell {
   }
 }
 
-@media (max-width: 1100px) {
-  .scene-rail {
-    right: 8px;
-  }
-}
-
 @media (max-width: 760px) {
-  .scene-rail {
-    display: none;
-  }
-
   .hero-scroll-cue {
     margin-top: 27px;
   }
@@ -5613,10 +5543,6 @@ html[data-theme="light"] .scene-transition-wash {
 
 .scene-transition.is-active .scene-transition-content {
   animation-duration: 560ms;
-}
-
-.scene-rail {
-  filter: drop-shadow(0 0 14px rgb(0 212 170 / 18%));
 }
 
 .catalog-section,

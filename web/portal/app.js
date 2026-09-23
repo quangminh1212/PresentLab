@@ -17,9 +17,9 @@ const DEFAULT_THEME = "dark";
 const SUPPORTED_LOCALES = ["vi", "en", "zh"];
 const SUPPORTED_THEMES = ["dark", "light"];
 const MOTION_SCENES = [
-  { id: "catalog", index: "01", copy: "sceneLibrary" },
-  { id: "templates", index: "02", copy: "sceneTemplates" },
-  { id: "process", index: "03", copy: "sceneProcess" },
+  { id: "catalog", index: "01" },
+  { id: "templates", index: "02" },
+  { id: "process", index: "03" },
 ];
 
 const COPY = {
@@ -208,9 +208,6 @@ const COPY = {
     processCloseCopy:
       "Gửi brief, mục tiêu và deadline. Chúng tôi sẽ check và phản hồi trong 1–2 tiếng.",
     processCloseAction: "Gửi brief ngay",
-    sceneLibrary: "KHÔNG GIAN",
-    sceneTemplates: "TUYỂN HƯỚNG",
-    sceneProcess: "THỰC THI",
     sceneTransition: "ĐANG CHUYỂN CẢNH",
     previewLive: "KHUNG ĐANG XEM",
     previewPrevious: "Mẫu trước",
@@ -412,9 +409,6 @@ const COPY = {
     processCloseCopy:
       "Send the brief, goal and deadline. We will check and reply within 1–2 hours.",
     processCloseAction: "Send the brief",
-    sceneLibrary: "LIBRARY",
-    sceneTemplates: "DIRECTIONS",
-    sceneProcess: "PRODUCTION",
     sceneTransition: "MOVING TO NEXT SCENE",
     previewLive: "LIVE FRAME",
     previewPrevious: "Previous template",
@@ -605,9 +599,6 @@ const COPY = {
     processCloseTitle: "剩下的交给制作团队。",
     processCloseCopy: "发送简报、目标和截止时间，我们会在 1–2 小时内确认并回复。",
     processCloseAction: "立即发送简报",
-    sceneLibrary: "素材库",
-    sceneTemplates: "选择方向",
-    sceneProcess: "制作",
     sceneTransition: "正在切换场景",
     previewLive: "实时画面",
     previewPrevious: "上一个模板",
@@ -1172,10 +1163,6 @@ const elements = {
   heroCopy: document.querySelector('[data-reveal="hero-copy"]'),
   catalogSection: document.querySelector('[data-motion-scene="templates"]'),
   processSection: document.querySelector('[data-motion-scene="process"]'),
-  sceneRail: document.querySelector("[data-scene-rail]"),
-  sceneIndex: document.querySelector("[data-scene-index]"),
-  sceneLabel: document.querySelector("[data-scene-label]"),
-  sceneProgress: document.querySelector("[data-scene-progress]"),
   sceneTransition: document.querySelector("[data-scene-transition]"),
   sceneTransitionIndex: document.querySelector("[data-scene-transition-index]"),
   worldCanvas: document.querySelector("[data-xlab-world-canvas]"),
@@ -1230,7 +1217,7 @@ function applyLocale() {
     element.setAttribute("title", t(element.dataset.i18nTitle));
   });
   applyTheme();
-  updateMotionSceneChrome();
+  updateMotionSceneState();
   elements.sourceStatus.textContent =
     state.libraryStatus === "loaded"
       ? t("sourceLoaded", { count: state.templates.length })
@@ -2157,10 +2144,8 @@ function sceneProgressFor(section) {
   return clampUnit((window.innerHeight - rect.top) / (window.innerHeight + rect.height));
 }
 
-function updateMotionSceneChrome(index = state.motionScene) {
+function updateMotionSceneState(index = state.motionScene) {
   const scene = MOTION_SCENES[index] || MOTION_SCENES[0];
-  if (elements.sceneIndex) elements.sceneIndex.textContent = scene.index;
-  if (elements.sceneLabel) elements.sceneLabel.textContent = t(scene.copy);
   document.documentElement.dataset.motionScene = scene.id;
 }
 
@@ -2221,16 +2206,10 @@ function updateMotionChoreography() {
   if (activeIndex !== state.motionScene) {
     const nextScene = MOTION_SCENES[activeIndex] || MOTION_SCENES[0];
     state.motionScene = activeIndex;
-    updateMotionSceneChrome(activeIndex);
+    updateMotionSceneState(activeIndex);
     if (state.motionInitialized) triggerSceneCurtain(nextScene);
   }
   state.motionInitialized = true;
-  const activeSection = sceneElements[state.motionScene] || sceneElements[0];
-  const activeProgress = sceneProgressFor(activeSection);
-  elements.sceneProgress?.style.setProperty(
-    "transform",
-    `scaleY(${Math.max(0.16, activeProgress)})`,
-  );
 }
 
 let motionFrame = 0;
