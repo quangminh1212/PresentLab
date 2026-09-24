@@ -2301,3 +2301,30 @@ html.is-transitioning .app-shell:has(> main > .hero.hero-world) {
     transition: none;
   }
 }
+
+/* Water-only opening: let the animated ocean fill the initial viewport. */
+.app-shell:has(> main > .hero.hero-world) > .topbar,
+.app-shell:has(> main > .hero.hero-world) .world-copy,
+.app-shell:has(> main > .hero.hero-world) .world-hud,
+.app-shell:has(> main > .hero.hero-world) .world-locations,
+.app-shell:has(> main > .hero.hero-world) .world-scroll-cue,
+.scroll-progress {
+  display: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) > main > .hero.hero-world {
+  width: 100%;
+  height: 100svh;
+  min-height: 100svh;
+  margin: 0;
+  padding: 0;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-stage {
+  width: 100%;
+  height: 100svh;
+  min-height: 100svh;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
