@@ -188,7 +188,7 @@ describe("client request portal browser flow", () => {
     }
   }, 45_000);
 
-  it("keeps the water opening scrollable into the full Lusion homepage", async () => {
+  it("scrolls from the water opening into XLab without the reel placeholder", async () => {
     const portalServer = await startPortalServer();
     const browser = await chromium.launch({ headless: true });
     const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
@@ -202,12 +202,13 @@ describe("client request portal browser flow", () => {
       await page.waitForFunction(
         () => document.querySelector("#templates")?.getBoundingClientRect().height !== 0,
       );
+      await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+      await page.mouse.move(720, 450);
+      await page.mouse.wheel(0, 1_250);
       await page.waitForFunction(
-        () => {
-          const target = document.querySelector("#templates");
-          const top = target?.getBoundingClientRect().top;
-          return top !== undefined && top >= 0 && top < window.innerHeight;
-        },
+        () =>
+          Math.abs(document.querySelector("#templates")?.getBoundingClientRect().top ?? Infinity) <
+          2,
         undefined,
         { timeout: 5_000 },
       );
@@ -220,6 +221,7 @@ describe("client request portal browser flow", () => {
         projectsTop: body.ownerDocument.querySelector("#projects-main")?.getBoundingClientRect()
           .top,
         footer: Boolean(body.ownerDocument.querySelector("#footer-section")),
+        homeReelDisplay: getComputedStyle(body.ownerDocument.querySelector("#home-reel")!).display,
         copyright: body.ownerDocument.querySelector("#footer-bottom-copyright")?.textContent,
         tagline: body.ownerDocument.querySelector("#footer-bottom-tagline")?.textContent,
         hasOldBrand: /\bLusion\b/i.test(body.innerText),
@@ -237,6 +239,7 @@ describe("client request portal browser flow", () => {
         pageHeight: document.documentElement.scrollHeight,
         viewportHeight: window.innerHeight,
         scrollY: window.scrollY,
+        templatesTop: document.querySelector("#templates")?.getBoundingClientRect().top ?? Infinity,
       }));
       expect(pageState.heroHeight).toBeGreaterThan(0);
       expect(pageState.templatesHeight).toBeGreaterThan(0);
@@ -247,27 +250,14 @@ describe("client request portal browser flow", () => {
       expect(new URL(embeddedHome.href).pathname).toBe("/lusion/");
       expect(embeddedHome.logo).toBe("XLab");
       expect(embeddedHome.projectsTop).toBeDefined();
+      expect(embeddedHome.homeReelDisplay).toBe("none");
       expect(embeddedHome.footer).toBe(true);
       expect(embeddedHome.copyright).toContain("XLab Creative Studio");
       expect(embeddedHome.tagline).toContain("Built by XLab");
       expect(embeddedHome.hasOldBrand).toBe(false);
       expect(homeRouteFetch).toEqual({ status: 200, isLusionHome: true });
 
-      await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
-      await page.mouse.move(720, 450);
-      await page.mouse.wheel(0, 1_250);
-      await page.waitForFunction(
-        () => {
-          const section = document.querySelector("#templates");
-          return section && Math.abs(section.getBoundingClientRect().top) < 2;
-        },
-        undefined,
-        { timeout: 5_000 },
-      );
-      const snappedSectionTop = await page.evaluate(
-        () => document.querySelector("#templates")?.getBoundingClientRect().top ?? Infinity,
-      );
-      expect(snappedSectionTop).toBeCloseTo(0, 0);
+      expect(pageState.templatesTop).toBeCloseTo(0, 0);
       expect(pageErrors).toEqual([]);
     } finally {
       await browser.close();

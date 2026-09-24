@@ -1,4 +1,8 @@
 /* Home-only layout for the copied About and Projects sections. */
+#home-reel {
+	display: none !important;
+}
+
 #page-container-inner > #about-who,
 #page-container-inner > #about-clients,
 #page-container-inner > #about-award,

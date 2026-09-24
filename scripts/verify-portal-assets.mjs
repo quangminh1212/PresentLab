@@ -129,6 +129,10 @@ const localOnlySource = await readFile(resolve(root, "public/_astro/local-only.j
 if (localOnlySource.includes("Lusion Reel") || !localOnlySource.includes("XLab Reel")) {
   throw new Error("The offline reel message is missing its XLab branding.");
 }
+const homeScrollSource = await readFile(resolve(root, "public/home-scroll.css"), "utf8");
+if (!/#home-reel\s*\{\s*display:\s*none\s*!important\s*;/i.test(homeScrollSource)) {
+  throw new Error("The broken full-screen reel section is still visible on the XLab homepage.");
+}
 
 const sourceProjectAssets = (await listFiles(resolve(root, "web/lusion/assets"))).filter(
   (asset) => asset !== "meta/social_sharing.jpg",
