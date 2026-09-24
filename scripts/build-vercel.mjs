@@ -54,7 +54,7 @@ const replaceBrandText = (text) =>
 const headerLogoPattern =
   /(<a\b[^>]*id="header-logo"[^>]*>\s*<svg\b[^>]*>)[\s\S]*?(<\/svg>\s*<\/a>)/gi;
 const headerLogo =
-  '$1<g><text x="0" y="23" font-family="Aeonik, Arial, sans-serif" font-size="30" font-weight="600" letter-spacing="0.2"><tspan fill="#238f8f">X</tspan><tspan fill="currentColor">Lab</tspan></text></g>$2';
+  '$1<g><text x="0" y="23" fill="currentColor" font-family="Aeonik, Arial, sans-serif" font-size="30" font-weight="600" letter-spacing="0.2">XLab</text><path fill="#238f8f" d="M13 15h3.5l4.8 8h-3.5z"/></g>$2';
 const projectCardLinkPattern =
   /<a\b(?=[^>]*\bclass="[^"]*\bproject-item\b[^"]*")([^>]*)>([\s\S]*?)<\/a>/gi;
 const labsMenuLinkPattern = /<a\b(?=[^>]*\bid="header-menu-labs")[^>]*>[\s\S]*?<\/a>/i;
