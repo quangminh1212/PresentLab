@@ -2356,3 +2356,14 @@ html.is-transitioning .app-shell:has(> main > .hero.hero-world) {
   min-height: 100svh;
   border: 0;
 }
+
+html:has(.app-shell > main > .hero.hero-world) {
+  scroll-snap-type: y mandatory;
+  scroll-padding-block: 0;
+}
+
+.app-shell:has(> main > .hero.hero-world) > main > .hero.hero-world,
+.app-shell:has(> main > .hero.hero-world) > main > .lusion-home-section {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}

@@ -248,8 +248,18 @@ describe("client request portal browser flow", () => {
       await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
       await page.mouse.move(720, 450);
       await page.mouse.wheel(0, 1_250);
-      await page.waitForFunction(() => window.scrollY > 0, undefined, { timeout: 5_000 });
-      expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+      await page.waitForFunction(
+        () => {
+          const section = document.querySelector("#templates");
+          return section && Math.abs(section.getBoundingClientRect().top) < 2;
+        },
+        undefined,
+        { timeout: 5_000 },
+      );
+      const snappedSectionTop = await page.evaluate(
+        () => document.querySelector("#templates")?.getBoundingClientRect().top ?? Infinity,
+      );
+      expect(snappedSectionTop).toBeCloseTo(0, 0);
       expect(pageErrors).toEqual([]);
     } finally {
       await browser.close();
