@@ -127,6 +127,16 @@ if (lusionBundle.split(astronautRevealSource).length - 1 !== 1) {
   throw new Error("The copied Lusion astronaut transform no longer matches the reveal patch.");
 }
 lusionBundle = lusionBundle.replace(astronautRevealSource, astronautRevealReplacement);
+
+// Keep the Home scroll manual once its About intro reaches the viewport.
+const homeScrollBoundarySource =
+  "window.__AUTO_SCROLL__&&(scrollManager.autoScrollSpeed=window.__AUTO_SCROLL__),taskManager.update()";
+const homeScrollBoundaryReplacement =
+  'window.__AUTO_SCROLL__&&(scrollManager.autoScrollSpeed=window.__AUTO_SCROLL__),routeManager.currRoute.target===homePage&&(window.__XLAB_HOME_SCROLL_STOPPED__||document.getElementById("about-who-subsection-details")&&scrollManager.scrollPixel>=scrollManager.getDomRange(document.getElementById("about-who-subsection-details")).top)&&(window.__XLAB_HOME_SCROLL_STOPPED__=!0,scrollManager.autoScrollSpeed=0),taskManager.update()';
+if (lusionBundle.split(homeScrollBoundarySource).length - 1 !== 1) {
+  throw new Error("The copied Lusion scroll manager no longer matches the Home intro boundary patch.");
+}
+lusionBundle = lusionBundle.replace(homeScrollBoundarySource, homeScrollBoundaryReplacement);
 await writeFile(lusionBundlePath, lusionBundle);
 
 console.log(`Vercel static output prepared: ${output}`);
