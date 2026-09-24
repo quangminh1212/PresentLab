@@ -9,6 +9,12 @@
 	pointer-events: none !important;
 }
 
+/* Keep the contact link out of the Home header. */
+#header-right-talk-btn {
+	visibility: hidden !important;
+	pointer-events: none !important;
+}
+
 /* Remove the Awards and Articles block from the combined Home scroll. */
 #page-container-inner > #about-award {
 	display: none !important;
