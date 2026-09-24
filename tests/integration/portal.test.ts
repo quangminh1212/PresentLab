@@ -218,10 +218,16 @@ describe("client request portal browser flow", () => {
         title: body.ownerDocument.title,
         href: body.ownerDocument.location.href,
         logo: body.ownerDocument.querySelector("#header-logo")?.textContent?.trim(),
+        logoFontSize: body.ownerDocument
+          .querySelector("#header-logo svg text")
+          ?.getAttribute("font-size"),
+        heroTitle: body.ownerDocument.querySelector("#home-hero-title")?.textContent,
         projectsTop: body.ownerDocument.querySelector("#projects-main")?.getBoundingClientRect()
           .top,
         footer: Boolean(body.ownerDocument.querySelector("#footer-section")),
         homeReelDisplay: getComputedStyle(body.ownerDocument.querySelector("#home-reel")!).display,
+        talksDisplay: getComputedStyle(body.ownerDocument.querySelector(".award-category-talks")!)
+          .display,
         copyright: body.ownerDocument.querySelector("#footer-bottom-copyright")?.textContent,
         tagline: body.ownerDocument.querySelector("#footer-bottom-tagline")?.textContent,
         hasOldBrand: /\bLusion\b/i.test(body.innerText),
@@ -249,8 +255,11 @@ describe("client request portal browser flow", () => {
       expect(embeddedHome.title).toContain("XLab");
       expect(new URL(embeddedHome.href).pathname).toBe("/lusion/");
       expect(embeddedHome.logo).toBe("XLab");
+      expect(embeddedHome.logoFontSize).toBe("30");
+      expect(embeddedHome.heroTitle).toContain("presentation slides");
       expect(embeddedHome.projectsTop).toBeDefined();
       expect(embeddedHome.homeReelDisplay).toBe("none");
+      expect(embeddedHome.talksDisplay).toBe("none");
       expect(embeddedHome.footer).toBe(true);
       expect(embeddedHome.copyright).toContain("XLab Creative Studio");
       expect(embeddedHome.tagline).toContain("Built by XLab");

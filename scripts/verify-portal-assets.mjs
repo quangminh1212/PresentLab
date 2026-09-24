@@ -41,6 +41,7 @@ const portalHtml = await readFile(resolve(root, "public/web/portal/index.html"),
 const appSource = await readFile(resolve(root, "public/web/portal/app.js"), "utf8");
 const lusionHtml = await readFile(resolve(root, "public/lusion/index.html"), "utf8");
 const lusionBundle = await readFile(resolve(root, "public/_astro/hoisted.CUO_IjfL.js"), "utf8");
+const lusionStyles = await readFile(resolve(root, "public/_astro/about.CNa9RfUh.css"), "utf8");
 const portalStyles = await readFile(resolve(root, "public/web/portal/world.css"), "utf8");
 for (const [source, reference] of [
   [worldSource, "../vendor/three/three.module.js"],
@@ -132,6 +133,18 @@ if (localOnlySource.includes("Lusion Reel") || !localOnlySource.includes("XLab R
 const homeScrollSource = await readFile(resolve(root, "public/home-scroll.css"), "utf8");
 if (!/#home-reel\s*\{\s*display:\s*none\s*!important\s*;/i.test(homeScrollSource)) {
   throw new Error("The broken full-screen reel section is still visible on the XLab homepage.");
+}
+if (!/\.about-award-category\.award-category-talks\{display:none!important\}/i.test(lusionStyles)) {
+  throw new Error("The Talks category is still visible on the XLab site.");
+}
+const homePageSource = await readFile(resolve(root, "public/lusion/index.html"), "utf8");
+if (
+  !homePageSource.includes(
+    "We create bold presentation slides and visual stories that help ideas stand out",
+  ) ||
+  homePageSource.includes("We create 3D visual storytelling and interactive web experiences")
+) {
+  throw new Error("The XLab homepage opening text has not been updated for slide design.");
 }
 
 const sourceProjectAssets = (await listFiles(resolve(root, "web/lusion/assets"))).filter(

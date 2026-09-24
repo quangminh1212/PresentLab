@@ -46,11 +46,15 @@ const replaceBrandText = (text) =>
     .replace(/hello@lusion\.co/gi, "Contact XLab")
     .replace(/business@lusion\.co/gi, "Business inquiries")
     .replace(/R&D:\s*labs\.lusion\.co/gi, "XLab R&D")
+    .replace(
+      "We create 3D visual storytelling and interactive web experiences that help brands stand out",
+      "We create bold presentation slides and visual stories that help ideas stand out",
+    )
     .replace(/\bLusion\b/gi, "XLab");
 const headerLogoPattern =
   /(<a\b[^>]*id="header-logo"[^>]*>\s*<svg\b[^>]*>)[\s\S]*?(<\/svg>\s*<\/a>)/gi;
 const headerLogo =
-  '$1<g fill="currentColor" style="mix-blend-mode:exclusion"><text x="0" y="19" fill="currentColor" font-family="Aeonik, Arial, sans-serif" font-size="21" font-weight="600" letter-spacing="0.2">XLab</text></g>$2';
+  '$1<g fill="currentColor" style="mix-blend-mode:exclusion"><text x="0" y="23" fill="currentColor" font-family="Aeonik, Arial, sans-serif" font-size="30" font-weight="600" letter-spacing="0.2">XLab</text></g>$2';
 for (const pagePath of (await Promise.all(lusionPageRoots.map(findHtmlFiles))).flat()) {
   let html = await readFile(pagePath, "utf8");
   const logos = html.match(headerLogoPattern);
