@@ -1,23 +1,23 @@
 /* Home-only layout for the copied About and Projects sections. */
 #home-reel {
-	display: none !important;
+  display: none !important;
 }
 
 /* The sound toggle is not part of the Home header. */
 #header-right-sound-btn {
-	visibility: hidden !important;
-	pointer-events: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
 /* Keep the contact link out of the Home header. */
 #header-right-talk-btn {
-	visibility: hidden !important;
-	pointer-events: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
 /* Remove the newsletter card from the Home menu. */
 #header-menu-newsletter {
-	display: none !important;
+  display: none !important;
 }
 
 /* Keep only the XLab contact link in the footer. */
@@ -25,95 +25,95 @@
 #footer-contact-socials,
 #footer-contact-business,
 #footer-enquires-header {
-	display: none !important;
+  display: none !important;
 }
 
 #footer-contact-enquires {
-	grid-column: 1 / span 3;
-	margin-top: 0;
+  grid-column: 1 / span 3;
+  margin-top: 0;
 }
 
 /* Remove client brands, Awards, Articles and Expertise from the Home scroll. */
 #page-container-inner > #about-award,
 #page-container-inner > #about-clients,
 #page-container-inner > #about-capability {
-	display: none !important;
+  display: none !important;
 }
 
 #page-container-inner > #about-who,
 #page-container-inner > #about-clients,
 #page-container-inner > #about-award,
 #page-container-inner > #about-capability {
-	background-color: var(--color-black);
-	color: var(--color-white);
+  background-color: var(--color-black);
+  color: var(--color-white);
 }
 
 #page-container-inner > #about-clients,
 #page-container-inner > #about-award {
-	color: var(--color-off-white);
+  color: var(--color-off-white);
 }
 
 /* Remove the Projects heading and its project gallery from the Home scroll. */
 #page-container-inner > #projects-main {
-	display: none !important;
+  display: none !important;
 }
 
 /* The source About page advances these three panels sideways as the user scrolls.
    Stack the same panels vertically in the combined Home flow. */
 #page-container-inner > #about-who {
-	width: 100%;
-	height: auto;
-	padding-bottom: 0;
+  width: 100%;
+  height: auto;
+  padding-bottom: 0;
 }
 
 #page-container-inner #about-who-subsection-container {
-	width: 100%;
-	height: auto;
-	transform: none !important;
+  width: 100%;
+  height: auto;
+  transform: none !important;
 }
 
 #page-container-inner #about-who-subsection-we-are,
 #page-container-inner #about-who-subsection-team {
-	display: none !important;
+  display: none !important;
 }
 
 #page-container-inner .about-who-subsection {
-	position: relative !important;
-	float: none;
-	width: 100%;
-	height: auto;
-	min-height: calc(var(--vh, 1vh) * 100);
+  position: relative !important;
+  float: none;
+  width: 100%;
+  height: auto;
+  min-height: calc(var(--vh, 1vh) * 100);
 }
 
 #page-container-inner #about-who-team {
-	height: calc(var(--vh, 1vh) * 100);
+  height: calc(var(--vh, 1vh) * 100);
 }
 
 /* Keep all four capability cards in normal document flow without their route animation. */
 #page-container-inner #about-capability-cards-wrapper {
-	height: auto;
-	margin: 4em auto 5em;
+  height: auto;
+  margin: 4em auto 5em;
 }
 
 #page-container-inner #about-capability-cards {
-	display: grid;
-	grid-template-columns: repeat(4, minmax(0, 1fr));
-	gap: var(--grid-gap);
-	height: auto !important;
-	transform: none !important;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--grid-gap);
+  height: auto !important;
+  transform: none !important;
 }
 
 #page-container-inner .about-capability-card {
-	position: relative !important;
-	top: auto;
-	left: auto;
-	width: 100%;
-	margin: 0;
-	transform: none !important;
+  position: relative !important;
+  top: auto;
+  left: auto;
+  width: 100%;
+  margin: 0;
+  transform: none !important;
 }
 
 @media (max-width: 812px) {
-	#page-container-inner #about-capability-cards {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-	}
+  #page-container-inner #about-capability-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }

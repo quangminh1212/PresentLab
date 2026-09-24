@@ -27,6 +27,7 @@ HTML + local resources
 - `src/core/catalog.ts` creates a browsable HTML contact sheet and A4 landscape PDF.
 - `src/mcp/server.ts` exposes the same core operations through MCP tools, resources, and prompts.
 - `web/portal/` is the static customer-facing template selection and request handoff application.
+- `web/lusion/` is an isolated static showcase microsite. First-party localization and local media handling live in `web/lusion/scripts/`; generated frontend bundles stay in `_astro/`.
 - `api/slide-requests.ts` is the Vercel Node.js boundary; it validates briefs and relays them to a configured webhook without persisting data locally.
 - `resources/` contains reusable design tokens, themes, and MCP indexes; the 770-template gallery is consumed from the private `PresentTemplate` Git submodule at `templates/`.
 - `plugins/presentlab-ai/` packages the MCP registration and agent workflow as a Codex plugin/skill.

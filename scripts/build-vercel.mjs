@@ -1,6 +1,7 @@
 import { cp, mkdir, readFile, readdir, rm, unlink, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import ts from "typescript";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const output = join(root, "public");
@@ -18,6 +19,8 @@ const assets = [
   ["resources/palettes/catalog.html", "resources/palettes/catalog.html"],
   ["web/lusion/assets", "assets"],
   ["web/lusion/_astro", "_astro"],
+  // Keep the current deployed URL while keeping first-party code outside generated bundles.
+  ["web/lusion/scripts/site-overrides.js", "_astro/local-only.js"],
   ["web/lusion/about", "about"],
   ["web/lusion/projects", "projects"],
   ["web/lusion/home-scroll.css", "home-scroll.css"],
@@ -93,16 +96,130 @@ for (const pagePath of (await Promise.all(lusionPageRoots.map(findHtmlFiles))).f
 
 const retiredShareImage = join(output, "assets", "meta", "social_sharing.jpg");
 await unlink(retiredShareImage);
-const localOnlyPath = join(output, "_astro", "local-only.js");
-const localOnly = await readFile(localOnlyPath, "utf8");
-await writeFile(localOnlyPath, localOnly.replaceAll("Lusion Reel", "XLab Reel"));
+const siteOverridesPath = join(output, "_astro", "local-only.js");
+const siteOverrides = (await readFile(siteOverridesPath, "utf8")).replaceAll(
+  "Lusion Reel",
+  "XLab Reel",
+);
+const siteOverridesAst = ts.createSourceFile(
+  "site-overrides.js",
+  siteOverrides,
+  ts.ScriptTarget.Latest,
+  true,
+  ts.ScriptKind.JS,
+);
+let languagePackDeclaration;
+const findLanguagePackDeclaration = (node) => {
+  if (
+    ts.isVariableDeclaration(node) &&
+    ts.isIdentifier(node.name) &&
+    node.name.text === "languagePack"
+  ) {
+    languagePackDeclaration = node;
+    return;
+  }
+  ts.forEachChild(node, findLanguagePackDeclaration);
+};
+findLanguagePackDeclaration(siteOverridesAst);
+if (!languagePackDeclaration?.initializer) {
+  throw new Error("The site override language pack could not be found.");
+}
+const parseStaticLocaleData = (node) => {
+  if (ts.isObjectLiteralExpression(node)) {
+    const object = Object.create(null);
+    for (const property of node.properties) {
+      if (!ts.isPropertyAssignment(property)) {
+        throw new Error("The site override language pack must use static properties.");
+      }
+      const key = ts.isIdentifier(property.name)
+        ? property.name.text
+        : ts.isStringLiteralLike(property.name)
+          ? property.name.text
+          : null;
+      if (!key || Object.hasOwn(object, key)) {
+        throw new Error("The site override language pack contains an unsupported key.");
+      }
+      object[key] = parseStaticLocaleData(property.initializer);
+    }
+    return object;
+  }
+  if (ts.isStringLiteralLike(node)) return node.text;
+  throw new Error("The site override language pack must contain only static text objects.");
+};
+const languagePack = parseStaticLocaleData(languagePackDeclaration.initializer);
+const originalHomeHero =
+  "We create 3D visual storytelling and interactive web experiences that help brands stand out";
+const xlabHomeHero =
+  "We create bold presentation slides and visual stories that help ideas stand out";
+const localeOverrides = {
+  vi: {
+    "Contact XLab": "Liên hệ",
+    "Business inquiries": "Yêu cầu hợp tác",
+    "XLab R&D": "XLab · Nghiên cứu và phát triển",
+  },
+  "zh-CN": {
+    "Contact XLab": "联系 XLab",
+    "Business inquiries": "商务合作咨询",
+    "XLab R&D": "XLab 研发",
+  },
+};
+const localeTextCorrections = {
+  vi: [
+    ["Awwards HM", "Awwwards HM"],
+    ["Github", "GitHub"],
+  ],
+  "zh-CN": [
+    ["网页GL", "WebGL"],
+    ["吉图布", "GitHub"],
+    ["网络增强现实", "WebAR"],
+    ["网络XR", "WebXR"],
+    ["奖项 HM", "Awwwards HM"],
+  ],
+};
+const rebrandTranslation = (translation) =>
+  translation.replace(/(?<![\w@.])Lusion(?!\.\w+\b|\w)/gi, "XLab");
+const correctTranslation = (locale, translation) =>
+  (localeTextCorrections[locale] || []).reduce(
+    (result, [incorrect, corrected]) => result.replaceAll(incorrect, corrected),
+    translation,
+  );
+for (const [locale, dictionary] of Object.entries(languagePack)) {
+  if (!dictionary[xlabHomeHero]) {
+    throw new Error(`The XLab homepage hero is missing its ${locale} translation.`);
+  }
+  const brandedDictionary = Object.create(null);
+  for (const [sourceText, translation] of Object.entries(dictionary)) {
+    if (sourceText === originalHomeHero || sourceText.trim().length <= 1) continue;
+    const brandedSource = replaceBrandText(sourceText);
+    if (Object.hasOwn(brandedDictionary, brandedSource)) {
+      throw new Error(
+        `The ${locale} translation key collides after XLab branding: ${brandedSource}`,
+      );
+    }
+    brandedDictionary[brandedSource] = correctTranslation(locale, rebrandTranslation(translation));
+  }
+  for (const [sourceText, translation] of Object.entries(localeOverrides[locale] || {})) {
+    brandedDictionary[sourceText] = translation;
+  }
+  languagePack[locale] = brandedDictionary;
+}
+const escapedLanguagePack = JSON.stringify(languagePack).replace(
+  /[\u0080-\uFFFF]/g,
+  (character) => `\\u${character.charCodeAt(0).toString(16).padStart(4, "0")}`,
+);
+const initializer = languagePackDeclaration.initializer;
+const localizedSiteOverrides =
+  siteOverrides.slice(0, initializer.getStart(siteOverridesAst)) +
+  escapedLanguagePack +
+  siteOverrides.slice(initializer.end);
+await writeFile(siteOverridesPath, localizedSiteOverrides);
 
 const lusionBundlePath = join(output, "_astro", "hoisted.CUO_IjfL.js");
 let lusionBundle = await readFile(lusionBundlePath, "utf8");
 for (const [source, replacement] of [
   [
-    'const settings=new Settings;var commonjsGlobal$1',
-    'const settings=new Settings;settings.USE_AUDIO=!1;var commonjsGlobal$1',
+    "const settings=new Settings;var commonjsGlobal$1",
+    "const settings=new Settings;settings.USE_AUDIO=!1;var commonjsGlobal$1",
   ],
   [
     'this.containers.forEach((e,t)=>{e.style.setProperty("--open-delay",t/50+"s"),e.style.setProperty("--close-delay",Math.abs(t-this.containers.length)/50+"s")})',
@@ -142,7 +259,9 @@ const homeScrollBoundarySource =
 const homeScrollBoundaryReplacement =
   'window.__AUTO_SCROLL__&&(scrollManager.autoScrollSpeed=window.__AUTO_SCROLL__),routeManager.currRoute.target===homePage&&(window.__XLAB_HOME_SCROLL_STOPPED__||document.getElementById("about-who-subsection-details")&&scrollManager.scrollPixel>=scrollManager.getDomRange(document.getElementById("about-who-subsection-details")).top)&&(window.__XLAB_HOME_SCROLL_STOPPED__=!0,scrollManager.autoScrollSpeed=0),taskManager.update()';
 if (lusionBundle.split(homeScrollBoundarySource).length - 1 !== 1) {
-  throw new Error("The copied Lusion scroll manager no longer matches the Home intro boundary patch.");
+  throw new Error(
+    "The copied Lusion scroll manager no longer matches the Home intro boundary patch.",
+  );
 }
 lusionBundle = lusionBundle.replace(homeScrollBoundarySource, homeScrollBoundaryReplacement);
 await writeFile(lusionBundlePath, lusionBundle);

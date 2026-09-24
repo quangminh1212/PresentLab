@@ -12,6 +12,7 @@ The repository also ships an MCP server, a Codex-compatible skill/plugin, reusab
 - Catalog generation as HTML and PDF.
 - A 770-template gallery with 34,650 sample slides. Sources are organized into 75 design-style folders and published with filenames beginning with the folder's style key; PDF/PPTX files are rendered on demand only.
 - A customer request portal at [`web/portal/`](web/portal/) for choosing templates and handing a brief to a production team.
+- A localized showcase microsite at [`web/lusion/`](web/lusion/), kept separate from generated frontend bundles and the renderer.
 - MCP tools, resources, and prompts for validation, rendering, catalogs, templates, and deck design guidance.
 - A repo-local `presentlab-ai` plugin with a reusable design skill.
 - Strict TypeScript, unit tests, integration smoke tests, formatting, linting, security boundaries, and GitHub Actions CI.

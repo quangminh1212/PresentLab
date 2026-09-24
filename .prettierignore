@@ -6,3 +6,8 @@ templates/
 *.pdf
 *.pptx
 web/vendor/three/
+# Imported microsite snapshot and generated frontend bundles are kept byte-stable.
+web/lusion/_astro/
+web/lusion/**/*.html
+web/lusion/assets/**/*.json
+web/lusion/assets/**/*.webmanifest
