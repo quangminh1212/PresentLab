@@ -228,6 +228,16 @@ describe("client request portal browser flow", () => {
         homeReelDisplay: getComputedStyle(body.ownerDocument.querySelector("#home-reel")!).display,
         talksDisplay: getComputedStyle(body.ownerDocument.querySelector(".award-category-talks")!)
           .display,
+        projectCardsAreNonNavigable: (() => {
+          const cards = [...body.ownerDocument.querySelectorAll(".project-item")];
+          const currentUrl = body.ownerDocument.location.href;
+          cards[0]?.click();
+          return (
+            cards.length > 0 &&
+            cards.every((item) => item.tagName === "DIV" && !item.hasAttribute("href")) &&
+            body.ownerDocument.location.href === currentUrl
+          );
+        })(),
         copyright: body.ownerDocument.querySelector("#footer-bottom-copyright")?.textContent,
         tagline: body.ownerDocument.querySelector("#footer-bottom-tagline")?.textContent,
         hasOldBrand: /\bLusion\b/i.test(body.innerText),
@@ -260,6 +270,7 @@ describe("client request portal browser flow", () => {
       expect(embeddedHome.projectsTop).toBeDefined();
       expect(embeddedHome.homeReelDisplay).toBe("none");
       expect(embeddedHome.talksDisplay).toBe("none");
+      expect(embeddedHome.projectCardsAreNonNavigable).toBe(true);
       expect(embeddedHome.footer).toBe(true);
       expect(embeddedHome.copyright).toContain("XLab Creative Studio");
       expect(embeddedHome.tagline).toContain("Built by XLab");

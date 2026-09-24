@@ -55,6 +55,8 @@ const headerLogoPattern =
   /(<a\b[^>]*id="header-logo"[^>]*>\s*<svg\b[^>]*>)[\s\S]*?(<\/svg>\s*<\/a>)/gi;
 const headerLogo =
   '$1<g fill="currentColor" style="mix-blend-mode:exclusion"><text x="0" y="23" fill="currentColor" font-family="Aeonik, Arial, sans-serif" font-size="30" font-weight="600" letter-spacing="0.2">XLab</text></g>$2';
+const projectCardLinkPattern =
+  /<a\b(?=[^>]*\bclass="[^"]*\bproject-item\b[^"]*")([^>]*)>([\s\S]*?)<\/a>/gi;
 for (const pagePath of (await Promise.all(lusionPageRoots.map(findHtmlFiles))).flat()) {
   let html = await readFile(pagePath, "utf8");
   const logos = html.match(headerLogoPattern);
@@ -62,6 +64,10 @@ for (const pagePath of (await Promise.all(lusionPageRoots.map(findHtmlFiles))).f
     throw new Error(`Expected one Lusion header logo in ${pagePath}.`);
   }
   html = html.replace(headerLogoPattern, headerLogo);
+  html = html.replace(projectCardLinkPattern, (_match, attributes, content) => {
+    const nonLinkAttributes = attributes.replace(/\s+href=(?:"[^"]*"|'[^']*')/i, "");
+    return `<div${nonLinkAttributes}>${content}</div>`;
+  });
   html = html.replace(/<meta\b[^>]*>/gi, (tag) => {
     const content = tag.match(/\bcontent=(["'])(.*?)\1/i);
     if (!content) return tag;

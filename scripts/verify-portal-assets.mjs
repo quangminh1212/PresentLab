@@ -108,6 +108,9 @@ const lusionPages = (
 ).flat();
 for (const pagePath of lusionPages) {
   const html = await readFile(pagePath, "utf8");
+  if (/<a\b[^>]*\bclass="[^"]*\bproject-item\b[^"]*"/i.test(html)) {
+    throw new Error(`A project card still links to a detail page: ${pagePath}`);
+  }
   const visibleMarkup = html.replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi, "");
   const staleTextNode = />[^<>]*\bLusion\b[^<>]*</i.test(visibleMarkup);
   const staleAttribute = [...visibleMarkup.matchAll(/<[^>]+>/g)].some((match) =>
@@ -136,6 +139,9 @@ if (!/#home-reel\s*\{\s*display:\s*none\s*!important\s*;/i.test(homeScrollSource
 }
 if (!/\.about-award-category\.award-category-talks\{display:none!important\}/i.test(lusionStyles)) {
   throw new Error("The Talks category is still visible on the XLab site.");
+}
+if (!/\.project-item\{cursor:default\}/i.test(lusionStyles)) {
+  throw new Error("XLab project cards still look clickable.");
 }
 const homePageSource = await readFile(resolve(root, "public/lusion/index.html"), "utf8");
 if (
