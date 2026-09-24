@@ -101,6 +101,10 @@ const lusionBundlePath = join(output, "_astro", "hoisted.CUO_IjfL.js");
 let lusionBundle = await readFile(lusionBundlePath, "utf8");
 for (const [source, replacement] of [
   [
+    'const settings=new Settings;var commonjsGlobal$1',
+    'const settings=new Settings;settings.USE_AUDIO=!1;var commonjsGlobal$1',
+  ],
+  [
     'parsePath(e){return e=e.replace(/^\\/|\\/$/g,""),e}',
     'parsePath(e){return e=e.replace(/^\\/|\\/$/g,""),e==="lusion"?"":e.startsWith("lusion/")?e.slice(7):e}',
   ],
