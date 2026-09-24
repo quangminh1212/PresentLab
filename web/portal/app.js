@@ -1,5 +1,9 @@
 import { setupXLabWorld } from "./world.js";
 
+if ("scrollRestoration" in window.history) {
+  window.history.scrollRestoration = "manual";
+}
+
 const TEMPLATE_INDEX_URL = "/resources/templates/index.json";
 const PALETTE_INDEX_URL = "/resources/palettes/index.json";
 const REQUEST_STORAGE_KEY = "presentlab.slide-requests";
@@ -2523,9 +2527,9 @@ function setupExperience() {
 }
 
 function resetInitialFragmentToWater() {
-  if (!window.location.hash) return;
-
-  window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
+  if (window.location.hash) {
+    window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
+  }
   window.scrollTo({ top: 0, behavior: "instant" });
 }
 
