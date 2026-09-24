@@ -15,6 +15,11 @@
 	pointer-events: none !important;
 }
 
+/* Remove the newsletter card from the Home menu. */
+#header-menu-newsletter {
+	display: none !important;
+}
+
 /* Remove client brands, Awards, Articles and Expertise from the Home scroll. */
 #page-container-inner > #about-award,
 #page-container-inner > #about-clients,
