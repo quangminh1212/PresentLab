@@ -1,4 +1,4 @@
-import { readFile, stat } from "node:fs/promises";
+import { readdir, readFile, stat } from "node:fs/promises";
 import { resolve } from "node:path";
 
 const root = resolve(process.env.PRESENTLAB_PORTAL_VERIFY_ROOT ?? ".");
@@ -12,6 +12,19 @@ const requiredAssets = [
   "public/web/vendor/three/addons/objects/Water.js",
   "public/web/vendor/three/addons/objects/Sky.js",
   "public/web/vendor/three/textures/waternormals.jpg",
+  "public/lusion/index.html",
+  "public/home-scroll.css",
+  "public/_astro/hoisted.CUO_IjfL.js",
+  "public/_astro/about.CNa9RfUh.css",
+  "public/_astro/local-only.js",
+  "public/assets/meta/favicon.ico",
+  "public/assets/fonts/Aeonik-Regular.woff2",
+  "public/assets/models/home/cross.buf",
+  "public/assets/projects/lusion_labs/home.webp",
+  "public/assets/projects/porsche_dream_machine/video0.mp4",
+  "public/about/index.html",
+  "public/projects/index.html",
+  "public/projects/porsche_dream_machine/index.html",
 ];
 
 for (const relativePath of requiredAssets) {
@@ -25,6 +38,9 @@ for (const relativePath of requiredAssets) {
 const worldSource = await readFile(resolve(root, "public/web/portal/world.js"), "utf8");
 const portalHtml = await readFile(resolve(root, "public/web/portal/index.html"), "utf8");
 const appSource = await readFile(resolve(root, "public/web/portal/app.js"), "utf8");
+const lusionHtml = await readFile(resolve(root, "public/lusion/index.html"), "utf8");
+const portalStyles = await readFile(resolve(root, "public/web/portal/world.css"), "utf8");
+const vercelConfig = JSON.parse(await readFile(resolve(root, "vercel.json"), "utf8"));
 for (const [source, reference] of [
   [worldSource, "../vendor/three/three.module.js"],
   [worldSource, "../vendor/three/addons/objects/Water.js"],
@@ -44,4 +60,64 @@ if (portalHtml.includes("data-world-water-video") || portalHtml.includes("water-
   throw new Error("Portal hero still references the removed ocean footage.");
 }
 
-console.log(`Portal runtime assets verified: ${requiredAssets.length} files.`);
+for (const [source, reference] of [
+  [portalHtml, 'class="lusion-home-frame"'],
+  [portalHtml, 'src="/?lusion=1"'],
+  [portalStyles, ".lusion-home-frame"],
+  [lusionHtml, 'id="home-hero"'],
+  [lusionHtml, 'id="projects-main"'],
+  [lusionHtml, 'id="footer-section"'],
+]) {
+  if (!source.includes(reference)) {
+    throw new Error(`Built portal is missing the Lusion home reference: ${reference}`);
+  }
+}
+
+const lusionQueryRewrite = vercelConfig.rewrites.some(
+  (rewrite) =>
+    rewrite.source === "/" &&
+    rewrite.destination === "/lusion" &&
+    rewrite.has?.some(
+      (condition) =>
+        condition.type === "query" && condition.key === "lusion" && condition.value === "1",
+    ),
+);
+const lusionHomeFetchRewrite = vercelConfig.rewrites.some(
+  (rewrite) =>
+    rewrite.source === "/" &&
+    rewrite.destination === "/lusion" &&
+    rewrite.has?.some(
+      (condition) =>
+        condition.type === "header" &&
+        condition.key === "referer" &&
+        condition.value?.suf === "?lusion=1",
+    ),
+);
+if (!lusionQueryRewrite || !lusionHomeFetchRewrite) {
+  throw new Error("Vercel routes are missing the embedded Lusion homepage rewrites.");
+}
+
+const listFiles = async (directory) => {
+  const entries = await readdir(directory, { withFileTypes: true });
+  const files = [];
+  for (const entry of entries) {
+    const entryPath = resolve(directory, entry.name);
+    if (entry.isDirectory()) files.push(...(await listFiles(entryPath)));
+    else if (entry.isFile())
+      files.push(entryPath.slice(directory.length + 1).replaceAll("\\", "/"));
+  }
+  return files.sort();
+};
+
+const sourceProjectAssets = await listFiles(resolve(root, "web/lusion/assets"));
+const deployedProjectAssets = await listFiles(resolve(root, "public/assets"));
+if (
+  sourceProjectAssets.length !== deployedProjectAssets.length ||
+  sourceProjectAssets.some((asset, index) => asset !== deployedProjectAssets[index])
+) {
+  throw new Error("The deployed Lusion asset tree does not match the source asset tree.");
+}
+
+console.log(
+  `Portal and Lusion runtime assets verified: ${requiredAssets.length} required files, ${deployedProjectAssets.length} Lusion assets.`,
+);

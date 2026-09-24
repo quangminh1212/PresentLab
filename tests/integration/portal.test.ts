@@ -1,6 +1,6 @@
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { readFile } from "node:fs/promises";
-import { extname, isAbsolute, relative, resolve, sep } from "node:path";
+import { extname, isAbsolute, join, relative, resolve, sep } from "node:path";
 
 import { chromium } from "playwright";
 import { describe, expect, it } from "vitest";
@@ -13,7 +13,15 @@ const contentTypes: Record<string, string> = {
   ".json": "application/json; charset=utf-8",
   ".jpg": "image/jpeg",
   ".png": "image/png",
+  ".svg": "image/svg+xml",
+  ".webp": "image/webp",
   ".webm": "video/webm",
+  ".mp4": "video/mp4",
+  ".ogg": "audio/ogg",
+  ".woff": "font/woff",
+  ".woff2": "font/woff2",
+  ".buf": "application/octet-stream",
+  ".exr": "application/octet-stream",
 };
 
 async function startPortalServer() {
@@ -33,10 +41,35 @@ async function startPortalServer() {
     }
 
     try {
-      const requestedPath = requestUrl.pathname.endsWith("/")
-        ? `${requestUrl.pathname}index.html`
-        : requestUrl.pathname;
-      const filePath = resolve(root, `.${decodeURIComponent(requestedPath)}`);
+      const requestPath = decodeURIComponent(requestUrl.pathname);
+      const lusionRootRequest =
+        requestPath === "/" &&
+        (requestUrl.searchParams.get("lusion") === "1" ||
+          request.headers.referer?.endsWith("?lusion=1"));
+      const normalizedPath = requestPath.replace(/^\/+|\/+$/g, "");
+      const lusionAssetRoute =
+        normalizedPath === "lusion" ||
+        normalizedPath.startsWith("lusion/") ||
+        normalizedPath === "home-scroll.css" ||
+        normalizedPath.startsWith("_astro/") ||
+        normalizedPath.startsWith("assets/") ||
+        normalizedPath === "about" ||
+        normalizedPath.startsWith("about/") ||
+        normalizedPath === "projects" ||
+        normalizedPath.startsWith("projects/");
+      let relativeRequestPath: string;
+      if (lusionRootRequest || normalizedPath === "lusion") {
+        relativeRequestPath = join("web", "lusion", "index.html");
+      } else if (normalizedPath.startsWith("lusion/")) {
+        relativeRequestPath = join("web", "lusion", normalizedPath.slice("lusion/".length));
+      } else if (lusionAssetRoute) {
+        relativeRequestPath = join("web", "lusion", normalizedPath);
+      } else {
+        relativeRequestPath = normalizedPath || "index.html";
+      }
+      if (!extname(relativeRequestPath))
+        relativeRequestPath = join(relativeRequestPath, "index.html");
+      const filePath = resolve(root, relativeRequestPath);
       const relativePath = relative(root, filePath);
       if (
         relativePath === ".." ||
@@ -163,7 +196,7 @@ describe("client request portal browser flow", () => {
     }
   }, 45_000);
 
-  it("keeps the water opening scrollable through the template library", async () => {
+  it("keeps the water opening scrollable into the full Lusion homepage", async () => {
     const portalServer = await startPortalServer();
     const browser = await chromium.launch({ headless: true });
     const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
@@ -186,6 +219,20 @@ describe("client request portal browser flow", () => {
         undefined,
         { timeout: 5_000 },
       );
+      const lusionFrame = page.frameLocator(".lusion-home-frame");
+      await lusionFrame.locator("#home-hero").waitFor({ timeout: 20_000 });
+      const embeddedHome = await lusionFrame.locator("body").evaluate((body) => ({
+        title: body.ownerDocument.title,
+        href: body.ownerDocument.location.href,
+        projectsTop: body.ownerDocument.querySelector("#projects-main")?.getBoundingClientRect()
+          .top,
+        footer: Boolean(body.ownerDocument.querySelector("#footer-section")),
+      }));
+      const homeRouteFetch = await lusionFrame.locator("body").evaluate(async () => {
+        const response = await fetch("/", { cache: "no-store" });
+        const html = await response.text();
+        return { status: response.status, isLusionHome: html.includes('id="home-hero"') };
+      });
 
       const pageState = await page.evaluate(() => ({
         heroHeight: document.querySelector(".hero-world")?.getBoundingClientRect().height ?? 0,
@@ -200,10 +247,15 @@ describe("client request portal browser flow", () => {
       expect(pageState.scrollCueDisplay).not.toBe("none");
       expect(pageState.pageHeight).toBeGreaterThan(pageState.viewportHeight);
       expect(pageState.scrollY).toBeGreaterThan(0);
+      expect(embeddedHome.title).toContain("Lusion");
+      expect(new URL(embeddedHome.href).searchParams.get("lusion")).toBe("1");
+      expect(embeddedHome.projectsTop).toBeDefined();
+      expect(embeddedHome.footer).toBe(true);
+      expect(homeRouteFetch).toEqual({ status: 200, isLusionHome: true });
 
       await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
       await page.mouse.move(720, 450);
-      await page.mouse.wheel(0, 650);
+      await page.mouse.wheel(0, 1_250);
       await page.waitForFunction(() => window.scrollY > 0, undefined, { timeout: 5_000 });
       expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
       expect(pageErrors).toEqual([]);

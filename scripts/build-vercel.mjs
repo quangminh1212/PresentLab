@@ -16,6 +16,12 @@ const assets = [
   ["resources/templates/index.json", "resources/templates/index.json"],
   ["resources/palettes/index.json", "resources/palettes/index.json"],
   ["resources/palettes/catalog.html", "resources/palettes/catalog.html"],
+  ["web/lusion/assets", "assets"],
+  ["web/lusion/_astro", "_astro"],
+  ["web/lusion/about", "about"],
+  ["web/lusion/projects", "projects"],
+  ["web/lusion/home-scroll.css", "home-scroll.css"],
+  ["web/lusion/index.html", "lusion/index.html"],
 ];
 
 for (const [source, destination] of assets) {
