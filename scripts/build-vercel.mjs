@@ -1,4 +1,4 @@
-import { cp, mkdir, rm } from "node:fs/promises";
+import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -29,5 +29,28 @@ for (const [source, destination] of assets) {
   await mkdir(dirname(target), { recursive: true });
   await cp(join(root, source), target, { recursive: true, force: true });
 }
+
+const lusionBundlePath = join(output, "_astro", "hoisted.CUO_IjfL.js");
+let lusionBundle = await readFile(lusionBundlePath, "utf8");
+for (const [source, replacement] of [
+  [
+    'parsePath(e){return e=e.replace(/^\\/|\\/$/g,""),e}',
+    'parsePath(e){return e=e.replace(/^\\/|\\/$/g,""),e==="lusion"?"":e.startsWith("lusion/")?e.slice(7):e}',
+  ],
+  [
+    'history.pushState(null,null,(e||"/")+(this.queryStr?"?"+this.queryStr:""))',
+    'history.pushState(null,null,(e||"/lusion/")+(this.queryStr?"?"+this.queryStr:""))',
+  ],
+  [
+    'properties.loader.load("/"+e,{type:"text",onLoad:this._initDom.bind(this,this._createRoute(e))})',
+    'properties.loader.load(e?"/"+e:"/lusion/",{type:"text",onLoad:this._initDom.bind(this,this._createRoute(e))})',
+  ],
+]) {
+  if (!lusionBundle.includes(source)) {
+    throw new Error("The copied Lusion bundle no longer matches the subpath routing patch.");
+  }
+  lusionBundle = lusionBundle.replace(source, replacement);
+}
+await writeFile(lusionBundlePath, lusionBundle);
 
 console.log(`Vercel static output prepared: ${output}`);

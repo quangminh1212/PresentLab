@@ -42,10 +42,6 @@ async function startPortalServer() {
 
     try {
       const requestPath = decodeURIComponent(requestUrl.pathname);
-      const lusionRootRequest =
-        requestPath === "/" &&
-        (requestUrl.searchParams.get("lusion") === "1" ||
-          request.headers.referer?.endsWith("?lusion=1"));
       const normalizedPath = requestPath.replace(/^\/+|\/+$/g, "");
       const lusionAssetRoute =
         normalizedPath === "lusion" ||
@@ -58,12 +54,8 @@ async function startPortalServer() {
         normalizedPath === "projects" ||
         normalizedPath.startsWith("projects/");
       let relativeRequestPath: string;
-      if (lusionRootRequest || normalizedPath === "lusion") {
-        relativeRequestPath = join("web", "lusion", "index.html");
-      } else if (normalizedPath.startsWith("lusion/")) {
-        relativeRequestPath = join("web", "lusion", normalizedPath.slice("lusion/".length));
-      } else if (lusionAssetRoute) {
-        relativeRequestPath = join("web", "lusion", normalizedPath);
+      if (lusionAssetRoute) {
+        relativeRequestPath = join("public", normalizedPath);
       } else {
         relativeRequestPath = normalizedPath || "index.html";
       }
@@ -229,7 +221,7 @@ describe("client request portal browser flow", () => {
         footer: Boolean(body.ownerDocument.querySelector("#footer-section")),
       }));
       const homeRouteFetch = await lusionFrame.locator("body").evaluate(async () => {
-        const response = await fetch("/", { cache: "no-store" });
+        const response = await fetch("/lusion/", { cache: "no-store" });
         const html = await response.text();
         return { status: response.status, isLusionHome: html.includes('id="home-hero"') };
       });
@@ -248,7 +240,7 @@ describe("client request portal browser flow", () => {
       expect(pageState.pageHeight).toBeGreaterThan(pageState.viewportHeight);
       expect(pageState.scrollY).toBeGreaterThan(0);
       expect(embeddedHome.title).toContain("Lusion");
-      expect(new URL(embeddedHome.href).searchParams.get("lusion")).toBe("1");
+      expect(new URL(embeddedHome.href).pathname).toBe("/lusion/");
       expect(embeddedHome.projectsTop).toBeDefined();
       expect(embeddedHome.footer).toBe(true);
       expect(homeRouteFetch).toEqual({ status: 200, isLusionHome: true });

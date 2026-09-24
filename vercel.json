@@ -4,16 +4,6 @@
   "outputDirectory": "public",
   "cleanUrls": true,
   "rewrites": [
-    {
-      "source": "/",
-      "has": [{ "type": "query", "key": "lusion", "value": "1" }],
-      "destination": "/lusion"
-    },
-    {
-      "source": "/",
-      "has": [{ "type": "header", "key": "referer", "value": { "suf": "?lusion=1" } }],
-      "destination": "/lusion"
-    },
     { "source": "/", "destination": "/index.html" },
     { "source": "/portal", "destination": "/index.html" },
     { "source": "/portal/:path*", "destination": "/web/portal/:path*" }
