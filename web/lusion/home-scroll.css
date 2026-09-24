@@ -53,6 +53,11 @@
 	transform: none !important;
 }
 
+#page-container-inner #about-who-subsection-we-are,
+#page-container-inner #about-who-subsection-team {
+	display: none !important;
+}
+
 #page-container-inner .about-who-subsection {
 	position: relative !important;
 	float: none;
