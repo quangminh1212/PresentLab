@@ -216,9 +216,13 @@ describe("client request portal browser flow", () => {
       const embeddedHome = await lusionFrame.locator("body").evaluate((body) => ({
         title: body.ownerDocument.title,
         href: body.ownerDocument.location.href,
+        logo: body.ownerDocument.querySelector("#header-logo")?.textContent?.trim(),
         projectsTop: body.ownerDocument.querySelector("#projects-main")?.getBoundingClientRect()
           .top,
         footer: Boolean(body.ownerDocument.querySelector("#footer-section")),
+        copyright: body.ownerDocument.querySelector("#footer-bottom-copyright")?.textContent,
+        tagline: body.ownerDocument.querySelector("#footer-bottom-tagline")?.textContent,
+        hasOldBrand: /\bLusion\b/i.test(body.innerText),
       }));
       const homeRouteFetch = await lusionFrame.locator("body").evaluate(async () => {
         const response = await fetch("/lusion/", { cache: "no-store" });
@@ -239,10 +243,14 @@ describe("client request portal browser flow", () => {
       expect(pageState.scrollCueDisplay).not.toBe("none");
       expect(pageState.pageHeight).toBeGreaterThan(pageState.viewportHeight);
       expect(pageState.scrollY).toBeGreaterThan(0);
-      expect(embeddedHome.title).toContain("Lusion");
+      expect(embeddedHome.title).toContain("XLab");
       expect(new URL(embeddedHome.href).pathname).toBe("/lusion/");
+      expect(embeddedHome.logo).toBe("XLab");
       expect(embeddedHome.projectsTop).toBeDefined();
       expect(embeddedHome.footer).toBe(true);
+      expect(embeddedHome.copyright).toContain("XLab Creative Studio");
+      expect(embeddedHome.tagline).toContain("Built by XLab");
+      expect(embeddedHome.hasOldBrand).toBe(false);
       expect(homeRouteFetch).toEqual({ status: 200, isLusionHome: true });
 
       await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));

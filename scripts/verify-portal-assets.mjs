@@ -18,6 +18,7 @@ const requiredAssets = [
   "public/_astro/about.CNa9RfUh.css",
   "public/_astro/local-only.js",
   "public/assets/meta/favicon.ico",
+  "public/assets/meta/social_sharing_xlab.png",
   "public/assets/fonts/Aeonik-Regular.woff2",
   "public/assets/models/home/cross.buf",
   "public/assets/projects/lusion_labs/home.webp",
@@ -63,6 +64,7 @@ if (portalHtml.includes("data-world-water-video") || portalHtml.includes("water-
 for (const [source, reference] of [
   [portalHtml, 'class="lusion-home-frame"'],
   [portalHtml, 'src="/lusion/"'],
+  [portalHtml, 'title="XLab creative studio home page"'],
   [portalStyles, ".lusion-home-frame"],
   [lusionHtml, 'id="home-hero"'],
   [lusionHtml, 'id="projects-main"'],
@@ -76,27 +78,69 @@ for (const [source, reference] of [
   }
 }
 
-const listFiles = async (directory) => {
+const logoMatch = lusionHtml.match(/<a\b(?=[^>]*id="header-logo")[^>]*>[\s\S]*?<\/a>/i);
+if (!logoMatch || !/<text\b[^>]*>XLab<\/text>/.test(logoMatch[0])) {
+  throw new Error("The XLab wordmark is missing from the embedded home page.");
+}
+
+const listFiles = async (directory, baseDirectory = directory) => {
   const entries = await readdir(directory, { withFileTypes: true });
   const files = [];
   for (const entry of entries) {
     const entryPath = resolve(directory, entry.name);
-    if (entry.isDirectory()) files.push(...(await listFiles(entryPath)));
+    if (entry.isDirectory()) files.push(...(await listFiles(entryPath, baseDirectory)));
     else if (entry.isFile())
-      files.push(entryPath.slice(directory.length + 1).replaceAll("\\", "/"));
+      files.push(entryPath.slice(baseDirectory.length + 1).replaceAll("\\", "/"));
   }
   return files.sort();
 };
 
-const sourceProjectAssets = await listFiles(resolve(root, "web/lusion/assets"));
+const lusionPageRoots = ["lusion", "about", "projects"];
+const lusionPages = (
+  await Promise.all(
+    lusionPageRoots.map(async (pageRoot) =>
+      (await listFiles(resolve(root, "public", pageRoot)))
+        .filter((file) => file.endsWith(".html"))
+        .map((file) => resolve(root, "public", pageRoot, file)),
+    ),
+  )
+).flat();
+for (const pagePath of lusionPages) {
+  const html = await readFile(pagePath, "utf8");
+  const visibleMarkup = html.replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi, "");
+  const staleTextNode = />[^<>]*\bLusion\b[^<>]*</i.test(visibleMarkup);
+  const staleAttribute = [...visibleMarkup.matchAll(/<[^>]+>/g)].some((match) =>
+    /\b(?:aria-label|alt|title)=("|')[^"']*\bLusion\b[^"']*\1/i.test(match[0]),
+  );
+  const staleMetadata = [...html.matchAll(/<meta\b[^>]*>/gi)].some((match) => {
+    const content = match[0].match(/\bcontent=("|')(.*?)\1/i)?.[2];
+    return content && !/^(?:https?:\/\/|mailto:)/i.test(content) && /\bLusion\b/i.test(content);
+  });
+  if (
+    staleTextNode ||
+    staleAttribute ||
+    staleMetadata ||
+    html.includes("/assets/meta/social_sharing.jpg")
+  ) {
+    throw new Error(`The Lusion brand remains in visible XLab page content: ${pagePath}`);
+  }
+}
+const localOnlySource = await readFile(resolve(root, "public/_astro/local-only.js"), "utf8");
+if (localOnlySource.includes("Lusion Reel") || !localOnlySource.includes("XLab Reel")) {
+  throw new Error("The offline reel message is missing its XLab branding.");
+}
+
+const sourceProjectAssets = (await listFiles(resolve(root, "web/lusion/assets"))).filter(
+  (asset) => asset !== "meta/social_sharing.jpg",
+);
 const deployedProjectAssets = await listFiles(resolve(root, "public/assets"));
 if (
   sourceProjectAssets.length !== deployedProjectAssets.length ||
   sourceProjectAssets.some((asset, index) => asset !== deployedProjectAssets[index])
 ) {
-  throw new Error("The deployed Lusion asset tree does not match the source asset tree.");
+  throw new Error("The deployed asset tree does not match the XLab source asset tree.");
 }
 
 console.log(
-  `Portal and Lusion runtime assets verified: ${requiredAssets.length} required files, ${deployedProjectAssets.length} Lusion assets.`,
+  `Portal and XLab runtime assets verified: ${requiredAssets.length} required files, ${deployedProjectAssets.length} project assets.`,
 );
