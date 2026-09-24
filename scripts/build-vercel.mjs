@@ -105,6 +105,10 @@ for (const [source, replacement] of [
     'const settings=new Settings;settings.USE_AUDIO=!1;var commonjsGlobal$1',
   ],
   [
+    'this.containers.forEach((e,t)=>{e.style.setProperty("--open-delay",t/50+"s"),e.style.setProperty("--close-delay",Math.abs(t-this.containers.length)/50+"s")})',
+    'this.containers.filter(Boolean).forEach((e,t)=>{e.style.setProperty("--open-delay",t/50+"s"),e.style.setProperty("--close-delay",Math.abs(t-this.containers.length)/50+"s")})',
+  ],
+  [
     'parsePath(e){return e=e.replace(/^\\/|\\/$/g,""),e}',
     'parsePath(e){return e=e.replace(/^\\/|\\/$/g,""),e==="lusion"?"":e.startsWith("lusion/")?e.slice(7):e}',
   ],
