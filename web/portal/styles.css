@@ -3256,14 +3256,6 @@ html.is-ready .page-curtain {
   transform-origin: left;
 }
 
-html.is-transitioning .app-shell {
-  transition:
-    transform 700ms var(--ease-expo),
-    opacity 700ms ease;
-  opacity: 0.9;
-  transform: translateY(5px);
-}
-
 .signal-rail {
   position: relative;
   display: flex;
@@ -4402,65 +4394,6 @@ html.theme-switching .process-grid {
   }
 }
 
-/* Cinematic interaction system */
-.scene-transition {
-  position: fixed;
-  inset: 0;
-  z-index: 70;
-  display: grid;
-  overflow: hidden;
-  place-items: center;
-  pointer-events: none;
-  visibility: hidden;
-  background:
-    radial-gradient(circle at 16% 22%, rgb(140 232 216 / 14%), transparent 24rem),
-    radial-gradient(circle at 84% 72%, rgb(246 183 141 / 15%), transparent 26rem), var(--paper);
-  clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0 100%);
-  opacity: 0;
-}
-
-.scene-transition-wash {
-  position: absolute;
-  inset: -30%;
-  background:
-    linear-gradient(115deg, transparent 37%, rgb(140 232 216 / 11%) 43%, transparent 49%),
-    repeating-linear-gradient(90deg, transparent 0 84px, rgb(190 220 232 / 5%) 85px 86px);
-  transform: rotate(-8deg) translateX(-8%);
-}
-
-.scene-transition-content {
-  position: relative;
-  display: flex;
-  align-items: baseline;
-  gap: 18px;
-  color: var(--ink);
-  font-size: 10px;
-  font-weight: 850;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  text-shadow: 0 0 26px rgb(140 232 216 / 28%);
-  opacity: 0;
-  transform: translateY(24px);
-}
-
-.scene-transition-index {
-  color: var(--accent);
-  font-size: clamp(72px, 13vw, 190px);
-  font-weight: 760;
-  letter-spacing: -0.09em;
-  line-height: 0.8;
-  text-shadow: 0 0 34px rgb(140 232 216 / 35%);
-}
-
-.scene-transition.is-active {
-  visibility: visible;
-  animation: scene-wipe 980ms var(--ease-expo) both;
-}
-
-.scene-transition.is-active .scene-transition-content {
-  animation: scene-label 640ms var(--ease-expo) 110ms both;
-}
-
 .hero {
   position: relative;
   isolation: isolate;
@@ -4672,48 +4605,6 @@ html.js .process-card.is-visible {
   transform: translate3d(var(--mag-x), var(--mag-y), 0) translateY(-2px);
 }
 
-html.is-transitioning .app-shell {
-  opacity: 0.58;
-  transform: translate3d(0, 12px, 0) scale(0.992);
-  transition:
-    opacity 520ms var(--ease-expo),
-    transform 520ms var(--ease-expo);
-}
-
-@keyframes scene-wipe {
-  0% {
-    opacity: 0;
-    clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0 100%);
-  }
-  16% {
-    opacity: 1;
-  }
-  38%,
-  66% {
-    opacity: 1;
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-  }
-  100% {
-    opacity: 0;
-    clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
-  }
-}
-
-@keyframes scene-label {
-  from {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-  45% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(-14px);
-  }
-}
-
 @keyframes cue-scan {
   from {
     transform: translateX(-28px);
@@ -4728,15 +4619,6 @@ html.is-transitioning .app-shell {
     margin-top: 27px;
   }
 
-  .scene-transition-content {
-    gap: 11px;
-    font-size: 8px;
-  }
-
-  .scene-transition-index {
-    font-size: clamp(68px, 25vw, 120px);
-  }
-
   .process-grid {
     transform: none;
   }
@@ -4747,10 +4629,6 @@ html.is-transitioning .app-shell {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .scene-transition {
-    display: none;
-  }
-
   .hero::after,
   .hero-scroll-cue-line::after {
     animation: none;
@@ -5486,24 +5364,6 @@ html[data-theme="light"] .process-close {
   box-shadow: 0 25px 70px rgb(15 23 42 / 11%);
 }
 
-.scene-transition {
-  background:
-    radial-gradient(circle at 16% 22%, rgb(0 212 170 / 14%), transparent 24rem),
-    radial-gradient(circle at 84% 72%, rgb(55 200 143 / 12%), transparent 26rem), var(--paper);
-}
-
-.scene-transition-wash {
-  background:
-    linear-gradient(115deg, transparent 37%, rgb(0 212 170 / 12%) 43%, transparent 49%),
-    repeating-linear-gradient(90deg, transparent 0 84px, rgb(148 163 184 / 7%) 85px 86px);
-}
-
-html[data-theme="light"] .scene-transition-wash {
-  background:
-    linear-gradient(115deg, transparent 37%, rgb(0 161 154 / 10%) 43%, transparent 49%),
-    repeating-linear-gradient(90deg, transparent 0 84px, rgb(15 23 42 / 5%) 85px 86px);
-}
-
 /* Motion intensity pass */
 :root {
   --motion-velocity: 0px;
@@ -5535,14 +5395,6 @@ html[data-theme="light"] .scene-transition-wash {
 
 .hero-scroll-cue-line::after {
   animation-duration: 1.55s;
-}
-
-.scene-transition.is-active .scene-transition-wash {
-  animation: scene-wash-sweep 980ms var(--ease-expo) both;
-}
-
-.scene-transition.is-active .scene-transition-content {
-  animation-duration: 560ms;
 }
 
 .catalog-section,
@@ -6957,206 +6809,6 @@ html[data-theme="light"] .hero-visual {
 }
 
 /* Full-viewport theatre curtain: the whole scene changes, not only the cards. */
-.scene-transition {
-  isolation: isolate;
-  clip-path: none;
-  opacity: 1;
-  background: transparent;
-}
-
-.scene-curtain {
-  position: absolute;
-  inset: 0 auto 0 0;
-  z-index: 1;
-  width: 56%;
-  overflow: hidden;
-  pointer-events: none;
-  background:
-    radial-gradient(circle at 70% 50%, rgb(101 233 213 / 15%), transparent 42%),
-    repeating-linear-gradient(
-      90deg,
-      rgb(4 15 28 / 96%) 0 8%,
-      rgb(13 49 64 / 96%) 8% 13%,
-      rgb(5 24 39 / 96%) 13% 21%
-    ),
-    linear-gradient(135deg, #07111f, #102a3c 55%, #06101c);
-  box-shadow: 18px 0 60px rgb(0 0 0 / 26%);
-  clip-path: polygon(0 0, 100% 0, 92% 50%, 100% 100%, 0 100%);
-  transform: translate3d(-108%, 0, 0);
-  will-change: transform;
-}
-
-.scene-curtain::before,
-.scene-curtain::after {
-  position: absolute;
-  inset: 0;
-  content: "";
-}
-
-.scene-curtain::before {
-  background:
-    repeating-linear-gradient(
-      90deg,
-      transparent 0 9%,
-      rgb(101 233 213 / 8%) 9.3% 9.6%,
-      transparent 10% 17%
-    ),
-    linear-gradient(90deg, transparent 60%, rgb(101 233 213 / 12%));
-  mix-blend-mode: screen;
-  opacity: 0.8;
-}
-
-.scene-curtain::after {
-  right: 0;
-  left: auto;
-  width: 2px;
-  background: linear-gradient(180deg, transparent, var(--accent), transparent);
-  box-shadow: 0 0 28px rgb(101 233 213 / 64%);
-}
-
-.scene-curtain-right {
-  right: 0;
-  left: auto;
-  box-shadow: -18px 0 60px rgb(0 0 0 / 26%);
-  clip-path: polygon(100% 0, 0 0, 8% 50%, 0 100%, 100% 100%);
-  transform: translate3d(108%, 0, 0);
-}
-
-.scene-curtain-right::after {
-  right: auto;
-  left: 0;
-}
-
-.scene-transition-wash {
-  z-index: 2;
-  inset: -20%;
-  opacity: 0;
-  transform: rotate(-8deg) translate3d(-8%, 0, 0);
-}
-
-.scene-transition-content {
-  z-index: 4;
-}
-
-.scene-transition.is-active {
-  visibility: visible;
-  animation: none;
-}
-
-.scene-transition.is-active .scene-curtain-left {
-  animation: curtain-left 1240ms var(--ease-expo) both;
-}
-
-.scene-transition.is-active .scene-curtain-right {
-  animation: curtain-right 1240ms var(--ease-expo) both;
-}
-
-.scene-transition.is-active .scene-transition-wash {
-  animation: curtain-wash 1240ms ease both;
-}
-
-.scene-transition.is-active .scene-transition-content {
-  animation: curtain-label 860ms var(--ease-expo) 180ms both;
-}
-
-html[data-theme="light"] .scene-curtain {
-  background:
-    radial-gradient(circle at 70% 50%, rgb(47 80 183 / 12%), transparent 42%),
-    repeating-linear-gradient(
-      90deg,
-      rgb(237 240 249 / 98%) 0 8%,
-      rgb(213 231 232 / 98%) 8% 13%,
-      rgb(248 243 233 / 98%) 13% 21%
-    ),
-    linear-gradient(135deg, #f4efe4, #e8edf8 55%, #f8f3e9);
-  box-shadow: 18px 0 60px rgb(44 50 77 / 16%);
-}
-
-html[data-theme="light"] .scene-curtain-right {
-  box-shadow: -18px 0 60px rgb(44 50 77 / 16%);
-}
-
-@keyframes curtain-left {
-  0% {
-    transform: translate3d(-108%, 0, 0) scaleX(0.96);
-  }
-  19%,
-  68% {
-    transform: translate3d(0, 0, 0) scaleX(1);
-  }
-  100% {
-    transform: translate3d(-108%, 0, 0) scaleX(0.96);
-  }
-}
-
-@keyframes curtain-right {
-  0% {
-    transform: translate3d(108%, 0, 0) scaleX(0.96);
-  }
-  19%,
-  68% {
-    transform: translate3d(0, 0, 0) scaleX(1);
-  }
-  100% {
-    transform: translate3d(108%, 0, 0) scaleX(0.96);
-  }
-}
-
-@keyframes curtain-wash {
-  0%,
-  18% {
-    opacity: 0;
-    transform: rotate(-8deg) translate3d(-8%, 0, 0);
-  }
-  38%,
-  65% {
-    opacity: 1;
-    transform: rotate(-8deg) translate3d(8%, 0, 0);
-  }
-  100% {
-    opacity: 0;
-    transform: rotate(-8deg) translate3d(28%, 0, 0);
-  }
-}
-
-@keyframes curtain-label {
-  0%,
-  18% {
-    opacity: 0;
-    transform: translateY(22px) scale(0.96);
-  }
-  38%,
-  68% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-18px) scale(1.02);
-  }
-}
-
-@media (max-width: 760px) {
-  .scene-curtain {
-    width: 62%;
-  }
-
-  .scene-curtain-right {
-    width: 62%;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .scene-transition {
-    display: none;
-  }
-
-  .scene-curtain,
-  .scene-transition-wash,
-  .scene-transition-content {
-    animation: none !important;
-  }
-}
 
 /* Data-rich board motion: make the green canvas feel like a live production desk. */
 .hero-board {

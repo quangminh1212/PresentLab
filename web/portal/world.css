@@ -1908,10 +1908,6 @@ html[data-theme="light"] .world-stage {
   backdrop-filter: blur(24px) saturate(135%);
 }
 
-html.is-transitioning .app-shell:has(> main > .hero.hero-world) {
-  transform: none;
-}
-
 .app-shell:has(> main > .hero.hero-world) > .topbar .brand strong,
 .app-shell:has(> main > .hero.hero-world) > .topbar .topnav-link,
 .app-shell:has(> main > .hero.hero-world) > .topbar .locale-picker,

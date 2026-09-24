@@ -16,12 +16,7 @@ const DEFAULT_LOCALE = "vi";
 const DEFAULT_THEME = "dark";
 const SUPPORTED_LOCALES = ["vi", "en", "zh"];
 const SUPPORTED_THEMES = ["dark", "light"];
-const MOTION_SCENES = [
-  { id: "catalog", index: "01" },
-  { id: "templates", index: "02" },
-  { id: "journey", index: "03" },
-  { id: "process", index: "04" },
-];
+const MOTION_SCENES = ["catalog", "templates", "journey", "process"];
 
 const COPY = {
   vi: {
@@ -239,7 +234,6 @@ const COPY = {
     processCloseCopy:
       "Gửi brief, mục tiêu và deadline. Chúng tôi sẽ check và phản hồi trong 1–2 tiếng.",
     processCloseAction: "Gửi brief ngay",
-    sceneTransition: "ĐANG CHUYỂN CẢNH",
     previewLive: "KHUNG ĐANG XEM",
     previewPrevious: "Mẫu trước",
     previewPreviousShort: "TRƯỚC",
@@ -472,7 +466,6 @@ const COPY = {
     processCloseCopy:
       "Send the brief, goal and deadline. We will check and reply within 1–2 hours.",
     processCloseAction: "Send the brief",
-    sceneTransition: "MOVING TO NEXT SCENE",
     previewLive: "LIVE FRAME",
     previewPrevious: "Previous template",
     previewPreviousShort: "PREV",
@@ -692,7 +685,6 @@ const COPY = {
     processCloseTitle: "剩下的交给制作团队。",
     processCloseCopy: "发送简报、目标和截止时间，我们会在 1–2 小时内确认并回复。",
     processCloseAction: "立即发送简报",
-    sceneTransition: "正在切换场景",
     previewLive: "实时画面",
     previewPrevious: "上一个模板",
     previewPreviousShort: "上一个",
@@ -1222,12 +1214,8 @@ const state = {
   locale: getInitialLocale(),
   theme: getInitialTheme(),
   motionScene: 0,
-  motionInitialized: false,
   lastScrollY: getScrollTop(),
   motionVelocity: 0,
-  sceneTransitioning: false,
-  sceneTransitionFinishTimer: 0,
-  sceneTransitionScrollTimer: 0,
   query: "",
   family: "all",
   archetype: "all",
@@ -1293,8 +1281,6 @@ const elements = {
   journeySteps: [...document.querySelectorAll("[data-journey-step]")],
   journeyPhaseCount: document.querySelector("[data-journey-phase-count]"),
   processSection: document.querySelector('[data-motion-scene="process"]'),
-  sceneTransition: document.querySelector("[data-scene-transition]"),
-  sceneTransitionIndex: document.querySelector("[data-scene-transition-index]"),
   worldCanvas: document.querySelector("[data-xlab-world-canvas]"),
   worldStage: document.querySelector("[data-xlab-world]"),
 };
@@ -2324,8 +2310,7 @@ function journeyProgressFor(section) {
 }
 
 function updateMotionSceneState(index = state.motionScene) {
-  const scene = MOTION_SCENES[index] || MOTION_SCENES[0];
-  document.documentElement.dataset.motionScene = scene.id;
+  document.documentElement.dataset.motionScene = MOTION_SCENES[index] || MOTION_SCENES[0];
 }
 
 function updateMotionChoreography() {
@@ -2398,12 +2383,9 @@ function updateMotionChoreography() {
     section.classList.toggle("is-active-scene", index === activeIndex);
   });
   if (activeIndex !== state.motionScene) {
-    const nextScene = MOTION_SCENES[activeIndex] || MOTION_SCENES[0];
     state.motionScene = activeIndex;
     updateMotionSceneState(activeIndex);
-    if (state.motionInitialized) triggerSceneCurtain(nextScene);
   }
-  state.motionInitialized = true;
 }
 
 let motionFrame = 0;
@@ -2432,40 +2414,6 @@ function scrollToMotionTarget(target, href, smooth = true) {
   window.history.replaceState(null, "", href);
 }
 
-function triggerSceneCurtain(scene) {
-  if (!scene || isReducedMotion() || !elements.sceneTransition) return false;
-
-  elements.sceneTransitionIndex.textContent = scene.index;
-  if (state.sceneTransitioning) return true;
-
-  window.clearTimeout(state.sceneTransitionFinishTimer);
-  state.sceneTransitioning = true;
-  elements.sceneTransition.classList.remove("is-active");
-  void elements.sceneTransition.offsetWidth;
-  document.documentElement.classList.add("is-transitioning");
-  elements.sceneTransition.classList.add("is-active");
-  state.sceneTransitionFinishTimer = window.setTimeout(() => {
-    elements.sceneTransition.classList.remove("is-active");
-    document.documentElement.classList.remove("is-transitioning");
-    state.sceneTransitioning = false;
-  }, 1240);
-  return true;
-}
-
-function playSceneTransition(target, href) {
-  const scene = MOTION_SCENES.find((item) => item.id === target.id);
-  if (!scene || isReducedMotion() || !elements.sceneTransition) {
-    scrollToMotionTarget(target, href);
-    return;
-  }
-  triggerSceneCurtain(scene);
-  window.clearTimeout(state.sceneTransitionScrollTimer);
-  state.sceneTransitionScrollTimer = window.setTimeout(
-    () => scrollToMotionTarget(target, href, false),
-    280,
-  );
-}
-
 function bindAnchorNavigation() {
   document.querySelectorAll('a[href^="#"]').forEach((link) => {
     link.addEventListener("click", (event) => {
@@ -2473,7 +2421,7 @@ function bindAnchorNavigation() {
       if (!target) return;
       event.preventDefault();
       elements.menu.classList.remove("is-open");
-      playSceneTransition(target, link.getAttribute("href"));
+      scrollToMotionTarget(target, link.getAttribute("href"));
     });
   });
 }
@@ -2555,7 +2503,7 @@ function handleWorldTarget(targetId) {
   }
   const href = targetId === "process" ? "#process" : "#templates";
   const target = document.querySelector(href);
-  if (target) playSceneTransition(target, href);
+  if (target) scrollToMotionTarget(target, href);
 }
 
 function setupExperience() {

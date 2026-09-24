@@ -370,7 +370,7 @@ describe("client request portal browser flow", () => {
     }
   }, 120_000);
 
-  it("keeps the mobile shell within the viewport and exposes the menu", async () => {
+  it("keeps the mobile shell within the viewport and scrolls into XLab directly", async () => {
     const portalServer = await startPortalServer();
     const browser = await chromium.launch({ headless: true });
     const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
@@ -379,26 +379,24 @@ describe("client request portal browser flow", () => {
       await page.goto(`${portalServer.baseUrl}/web/portal/`, {
         waitUntil: "domcontentloaded",
       });
-      await page.locator("[data-menu-toggle]").click();
-      expect(await page.locator(".topnav.is-open").count()).toBe(1);
       const viewportOverflow = await page.evaluate(
         () =>
           Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) -
           window.innerWidth,
       );
       expect(viewportOverflow).toBeLessThanOrEqual(1);
-      await page.locator("[data-menu-toggle]").click();
-      await page.evaluate(() => {
-        document.querySelector("#templates")?.scrollIntoView({ behavior: "auto", block: "start" });
-      });
-      await page.waitForFunction(() =>
-        document.querySelector("[data-scene-transition]")?.classList.contains("is-active"),
-      );
+      expect(await page.locator("[data-scene-transition]").count()).toBe(0);
+      await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+      await page.mouse.move(180, 400);
+      await page.mouse.wheel(0, 1_000);
       await page.waitForFunction(
-        () => !document.querySelector("[data-scene-transition]")?.classList.contains("is-active"),
+        () =>
+          Math.abs(document.querySelector("#templates")?.getBoundingClientRect().top ?? Infinity) <
+          2,
         undefined,
-        { timeout: 3_000 },
+        { timeout: 5_000 },
       );
+      expect(await page.locator("[data-scene-transition]").count()).toBe(0);
     } finally {
       await browser.close();
       portalServer.server.closeAllConnections();
