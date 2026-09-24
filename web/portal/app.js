@@ -2522,9 +2522,17 @@ function setupExperience() {
   requestAnimationFrame(() => document.documentElement.classList.add("is-ready"));
 }
 
+function resetInitialFragmentToWater() {
+  if (!window.location.hash) return;
+
+  window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
+  window.scrollTo({ top: 0, behavior: "instant" });
+}
+
 window.addEventListener("resize", scalePreviewFrame);
 
 document.documentElement.classList.add("js");
+resetInitialFragmentToWater();
 bindEvents();
 applyLocale();
 setupExperience();

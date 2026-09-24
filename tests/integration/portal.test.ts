@@ -360,7 +360,7 @@ describe("client request portal browser flow", () => {
     }
   }, 120_000);
 
-  it("keeps the mobile shell within the viewport and scrolls into XLab directly", async () => {
+  it("opens on the water when first loaded with a section hash", async () => {
     const portalServer = await startPortalServer();
     const browser = await chromium.launch({ headless: true });
     const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
@@ -377,12 +377,13 @@ describe("client request portal browser flow", () => {
       expect(viewportOverflow).toBeLessThanOrEqual(1);
       await page.waitForFunction(
         () =>
-          location.hash === "#templates" &&
-          Math.abs(document.querySelector("#templates")?.getBoundingClientRect().top ?? Infinity) <
+          location.hash === "" &&
+          Math.abs(document.querySelector(".hero-world")?.getBoundingClientRect().top ?? Infinity) <
             2,
         undefined,
         { timeout: 5_000 },
       );
+      expect(await page.evaluate(() => window.scrollY)).toBe(0);
       expect(await page.locator("[data-scene-transition]").count()).toBe(0);
     } finally {
       await browser.close();
