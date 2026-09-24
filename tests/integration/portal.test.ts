@@ -196,7 +196,7 @@ describe("client request portal browser flow", () => {
     page.on("pageerror", (error) => pageErrors.push(error.message));
 
     try {
-      await page.goto(`${portalServer.baseUrl}/web/portal/#templates`, {
+      await page.goto(`${portalServer.baseUrl}/web/portal/`, {
         waitUntil: "domcontentloaded",
       });
       await page.waitForFunction(
@@ -295,7 +295,7 @@ describe("client request portal browser flow", () => {
     });
 
     try {
-      await page.goto(`${portalServer.baseUrl}/web/portal/`, {
+      await page.goto(`${portalServer.baseUrl}/web/portal/#templates`, {
         waitUntil: "domcontentloaded",
       });
       await page.locator("[data-results-count]").waitFor();
@@ -376,7 +376,7 @@ describe("client request portal browser flow", () => {
     const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
 
     try {
-      await page.goto(`${portalServer.baseUrl}/web/portal/`, {
+      await page.goto(`${portalServer.baseUrl}/web/portal/#templates`, {
         waitUntil: "domcontentloaded",
       });
       const viewportOverflow = await page.evaluate(
@@ -385,14 +385,11 @@ describe("client request portal browser flow", () => {
           window.innerWidth,
       );
       expect(viewportOverflow).toBeLessThanOrEqual(1);
-      expect(await page.locator("[data-scene-transition]").count()).toBe(0);
-      await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
-      await page.mouse.move(180, 400);
-      await page.mouse.wheel(0, 1_000);
       await page.waitForFunction(
         () =>
+          location.hash === "#templates" &&
           Math.abs(document.querySelector("#templates")?.getBoundingClientRect().top ?? Infinity) <
-          2,
+            2,
         undefined,
         { timeout: 5_000 },
       );

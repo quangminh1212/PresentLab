@@ -1950,7 +1950,7 @@ html[data-theme="light"] .world-stage {
 
 .app-shell:has(> main > .hero.hero-world) #templates,
 .app-shell:has(> main > .hero.hero-world) #process {
-  scroll-margin-top: 112px;
+  scroll-margin-top: 0;
 }
 
 .app-shell:has(> main > .hero.hero-world) .world-stage {
