@@ -3,6 +3,11 @@
 	display: none !important;
 }
 
+/* Remove the Awards and Articles block from the combined Home scroll. */
+#page-container-inner > #about-award {
+	display: none !important;
+}
+
 #page-container-inner > #about-who,
 #page-container-inner > #about-clients,
 #page-container-inner > #about-award,
