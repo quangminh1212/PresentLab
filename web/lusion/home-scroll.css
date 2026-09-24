@@ -15,9 +15,10 @@
 	pointer-events: none !important;
 }
 
-/* Remove the client brands, Awards and Articles blocks from the Home scroll. */
+/* Remove client brands, Awards, Articles and Expertise from the Home scroll. */
 #page-container-inner > #about-award,
-#page-container-inner > #about-clients {
+#page-container-inner > #about-clients,
+#page-container-inner > #about-capability {
 	display: none !important;
 }
 
