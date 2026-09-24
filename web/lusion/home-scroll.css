@@ -20,6 +20,19 @@
 	display: none !important;
 }
 
+/* Keep only the XLab contact link in the footer. */
+#footer-contact-address,
+#footer-contact-socials,
+#footer-contact-business,
+#footer-enquires-header {
+	display: none !important;
+}
+
+#footer-contact-enquires {
+	grid-column: 1 / span 3;
+	margin-top: 0;
+}
+
 /* Remove client brands, Awards, Articles and Expertise from the Home scroll. */
 #page-container-inner > #about-award,
 #page-container-inner > #about-clients,
