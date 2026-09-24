@@ -113,6 +113,15 @@ for (const [source, replacement] of [
   }
   lusionBundle = lusionBundle.replace(source, replacement);
 }
+const astronautRevealSource =
+  "v.position.y-=(properties.useMobileLayout?0:.4)*ease.backInOut(p),v.updateMatrix();";
+// Pull the astronaut back into the viewport during the heading, then release it into the tunnel.
+const astronautRevealReplacement =
+  "v.position.y-=(properties.useMobileLayout?0:.4)*ease.backInOut(p),v.position.z-=(properties.useMobileLayout?1.2:1.6)*math.smoothstep(.25,.45,a)*math.fit(a,.82,1,1,0),v.position.y+=(properties.useMobileLayout?.35:.55)*math.smoothstep(.25,.45,a)*math.fit(a,.82,1,1,0),v.updateMatrix();";
+if (lusionBundle.split(astronautRevealSource).length - 1 !== 1) {
+  throw new Error("The copied Lusion astronaut transform no longer matches the reveal patch.");
+}
+lusionBundle = lusionBundle.replace(astronautRevealSource, astronautRevealReplacement);
 await writeFile(lusionBundlePath, lusionBundle);
 
 console.log(`Vercel static output prepared: ${output}`);
