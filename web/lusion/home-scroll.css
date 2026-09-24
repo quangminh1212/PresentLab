@@ -33,9 +33,9 @@
 	color: var(--color-off-white);
 }
 
+/* Remove the Projects heading and its project gallery from the Home scroll. */
 #page-container-inner > #projects-main {
-	background-color: var(--color-off-white);
-	color: var(--color-black);
+	display: none !important;
 }
 
 /* The source About page advances these three panels sideways as the user scrolls.
