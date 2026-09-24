@@ -163,6 +163,59 @@ describe("client request portal browser flow", () => {
     }
   }, 45_000);
 
+  it("keeps the water opening scrollable through the template library", async () => {
+    const portalServer = await startPortalServer();
+    const browser = await chromium.launch({ headless: true });
+    const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+    const pageErrors: string[] = [];
+    page.on("pageerror", (error) => pageErrors.push(error.message));
+
+    try {
+      await page.goto(`${portalServer.baseUrl}/web/portal/#templates`, {
+        waitUntil: "domcontentloaded",
+      });
+      await page.waitForFunction(
+        () => document.querySelector("#templates")?.getBoundingClientRect().height !== 0,
+      );
+      await page.waitForFunction(
+        () => {
+          const target = document.querySelector("#templates");
+          const top = target?.getBoundingClientRect().top;
+          return top !== undefined && top >= 0 && top < window.innerHeight;
+        },
+        undefined,
+        { timeout: 5_000 },
+      );
+
+      const pageState = await page.evaluate(() => ({
+        heroHeight: document.querySelector(".hero-world")?.getBoundingClientRect().height ?? 0,
+        templatesHeight: document.querySelector("#templates")?.getBoundingClientRect().height ?? 0,
+        scrollCueDisplay: getComputedStyle(document.querySelector(".world-scroll-cue")!).display,
+        pageHeight: document.documentElement.scrollHeight,
+        viewportHeight: window.innerHeight,
+        scrollY: window.scrollY,
+      }));
+      expect(pageState.heroHeight).toBeGreaterThan(0);
+      expect(pageState.templatesHeight).toBeGreaterThan(0);
+      expect(pageState.scrollCueDisplay).not.toBe("none");
+      expect(pageState.pageHeight).toBeGreaterThan(pageState.viewportHeight);
+      expect(pageState.scrollY).toBeGreaterThan(0);
+
+      await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+      await page.mouse.move(720, 450);
+      await page.mouse.wheel(0, 650);
+      await page.waitForFunction(() => window.scrollY > 0, undefined, { timeout: 5_000 });
+      expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+      expect(pageErrors).toEqual([]);
+    } finally {
+      await browser.close();
+      portalServer.server.closeAllConnections();
+      await new Promise<void>((resolveServer, rejectServer) =>
+        portalServer.server.close((error) => (error ? rejectServer(error) : resolveServer())),
+      );
+    }
+  }, 45_000);
+
   it("filters the full library, caps selections, previews a deck, and posts multipart briefs", async () => {
     const portalServer = await startPortalServer();
     const browser = await chromium.launch({ headless: true });
