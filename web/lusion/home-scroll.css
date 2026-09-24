@@ -15,8 +15,9 @@
 	pointer-events: none !important;
 }
 
-/* Remove the Awards and Articles block from the combined Home scroll. */
-#page-container-inner > #about-award {
+/* Remove the client brands, Awards and Articles blocks from the Home scroll. */
+#page-container-inner > #about-award,
+#page-container-inner > #about-clients {
 	display: none !important;
 }
 
