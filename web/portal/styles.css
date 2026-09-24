@@ -36,7 +36,14 @@
 
 html {
   scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   background: var(--paper);
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
 }
 
 body {
