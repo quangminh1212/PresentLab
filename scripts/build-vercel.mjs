@@ -57,12 +57,17 @@ const headerLogo =
   '$1<g fill="currentColor" style="mix-blend-mode:exclusion"><text x="0" y="23" fill="currentColor" font-family="Aeonik, Arial, sans-serif" font-size="30" font-weight="600" letter-spacing="0.2">XLab</text></g>$2';
 const projectCardLinkPattern =
   /<a\b(?=[^>]*\bclass="[^"]*\bproject-item\b[^"]*")([^>]*)>([\s\S]*?)<\/a>/gi;
+const labsMenuLinkPattern = /<a\b(?=[^>]*\bid="header-menu-labs")[^>]*>[\s\S]*?<\/a>/i;
 for (const pagePath of (await Promise.all(lusionPageRoots.map(findHtmlFiles))).flat()) {
   let html = await readFile(pagePath, "utf8");
   const logos = html.match(headerLogoPattern);
   if (!logos || logos.length !== 1) {
     throw new Error(`Expected one Lusion header logo in ${pagePath}.`);
   }
+  if (!labsMenuLinkPattern.test(html)) {
+    throw new Error(`Expected one Labs menu link in ${pagePath}.`);
+  }
+  html = html.replace(labsMenuLinkPattern, "");
   html = html.replace(headerLogoPattern, headerLogo);
   html = html.replace(projectCardLinkPattern, (_match, attributes, content) => {
     const nonLinkAttributes = attributes.replace(/\s+href=(?:"[^"]*"|'[^']*')/i, "");
