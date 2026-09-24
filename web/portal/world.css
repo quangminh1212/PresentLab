@@ -2302,7 +2302,37 @@ html.is-transitioning .app-shell:has(> main > .hero.hero-world) {
   }
 }
 
-/* Water-only opening: let the animated ocean fill the initial viewport. */
+/* Temporary water-only page: hide the portal and keep the ocean full-screen. */
+body:has(.hero-world) {
+  width: 100%;
+  height: 100svh;
+  min-height: 100svh;
+  overflow: hidden;
+}
+
+body:has(.hero-world) > :not(.app-shell) {
+  display: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) {
+  width: 100%;
+  height: 100svh;
+  min-height: 100svh;
+  overflow: hidden;
+}
+
+.app-shell:has(> main > .hero.hero-world) > :not(main),
+.app-shell:has(> main > .hero.hero-world) > main > :not(.hero.hero-world) {
+  display: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) > main {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 .app-shell:has(> main > .hero.hero-world) > .topbar,
 .app-shell:has(> main > .hero.hero-world) .world-copy,
 .app-shell:has(> main > .hero.hero-world) .world-hud,
