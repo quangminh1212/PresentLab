@@ -2633,8 +2633,84 @@ function deferLusionFrame() {
   const frame = document.querySelector("iframe[data-lazy-src]");
   if (!frame) return;
 
+  const bridgeFrameScrollToWater = () => {
+    let frameWindow;
+    let frameDocument;
+    try {
+      frameWindow = frame.contentWindow;
+      frameDocument = frame.contentDocument;
+    } catch {
+      return;
+    }
+    if (!frameWindow || !frameDocument || !elements.hero) return;
+
+    let returningToWater = false;
+    const frameIsAtTop = () => {
+      const scrollTop = Math.max(
+        frameWindow.scrollY || 0,
+        frameDocument.scrollingElement?.scrollTop || 0,
+        frameDocument.body?.scrollTop || 0,
+      );
+      return scrollTop <= 2;
+    };
+    const returnToWater = (event, deltaY) => {
+      if (deltaY >= 0) {
+        returningToWater = false;
+        return;
+      }
+      if (!event.cancelable || !frameIsAtTop() || getScrollTop() <= 0) return;
+
+      event.preventDefault();
+      if (returningToWater) return;
+      returningToWater = true;
+      elements.hero.scrollIntoView({
+        behavior: isReducedMotion() ? "auto" : "smooth",
+        block: "start",
+      });
+    };
+
+    frameDocument.addEventListener(
+      "wheel",
+      (event) => {
+        const deltaScale =
+          event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? frameWindow.innerHeight : 1;
+        returnToWater(event, event.deltaY * deltaScale);
+      },
+      { passive: false },
+    );
+
+    let lastTouchY = null;
+    frameDocument.addEventListener(
+      "touchstart",
+      (event) => {
+        returningToWater = false;
+        lastTouchY = event.touches[0]?.clientY ?? null;
+      },
+      { passive: true },
+    );
+    frameDocument.addEventListener(
+      "touchmove",
+      (event) => {
+        const touch = event.touches[0];
+        if (!touch || lastTouchY === null) return;
+        const deltaY = lastTouchY - touch.clientY;
+        lastTouchY = touch.clientY;
+        returnToWater(event, deltaY);
+      },
+      { passive: false },
+    );
+    frameDocument.addEventListener(
+      "touchend",
+      () => {
+        lastTouchY = null;
+      },
+      { passive: true },
+    );
+  };
+
   const observeFrame = () => {
     const loadFrame = () => {
+      frame.addEventListener("load", bridgeFrameScrollToWater);
       frame.src = frame.dataset.lazySrc;
       delete frame.dataset.lazySrc;
     };
