@@ -253,6 +253,25 @@ for (const [source, replacement] of [
   }
   lusionBundle = lusionBundle.replace(source, replacement);
 }
+
+const loaderBarSource =
+  'l==0)u.fillStyle="#333",u.fillRect(-2.5,-.5,5,1),u.fillStyle="#fff",u.fillRect(-2.5,-.5,5*a,1);';
+const loaderBarReplacement =
+  'l==0)u.fillStyle="#333",u.fillRect(-6,-.12,12,.24),u.fillStyle="#fff",u.fillRect(-6,-.12,12*a,.24);';
+if (lusionBundle.split(loaderBarSource).length - 1 !== 1) {
+  throw new Error("The copied Lusion progress bar no longer matches the loader sizing patch.");
+}
+lusionBundle = lusionBundle.replace(loaderBarSource, loaderBarReplacement);
+
+const loaderEndMarkSource =
+  'else u.translate(-l,1.5*l),u.save(),u.translate(.5,-.5),u.rotate(l*Math.PI*.5),u.globalCompositeOperation="xor",u.fillRect(-3,0,3,1),u.globalCompositeOperation="source-over",u.globalAlpha=1-f,u.fillRect(-3,0,3,1),u.restore(),u.save(),u.translate(.5,-.5),u.globalCompositeOperation="xor",u.fillRect(0,0,2,1),u.globalCompositeOperation="source-over",u.globalAlpha=1-f,u.fillRect(0,0,2,1),u.restore()';
+const loaderEndMarkReplacement =
+  'else u.save(),u.setTransform(settings.DPR,0,0,settings.DPR,0,0),u.globalAlpha=1-f,u.fillStyle="#fff",u.font="500 "+Math.min(42,Math.max(22,t*.032))+"px Aeonik,Arial,sans-serif",u.textAlign="center",u.textBaseline="middle",u.fillText("L Loading",t*.5,r*.5),u.restore()';
+if (lusionBundle.split(loaderEndMarkSource).length - 1 !== 1) {
+  throw new Error("The copied Lusion completion mark no longer matches the L Loading transition patch.");
+}
+lusionBundle = lusionBundle.replace(loaderEndMarkSource, loaderEndMarkReplacement);
+
 const browserZoomGuard = [
   "function preventZoom(o){o.preventDefault(),document.body.style.zoom=1}",
   'window.addEventListener("wheel",o=>o.preventDefault(),{passive:!1});',
