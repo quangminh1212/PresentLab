@@ -8,7 +8,8 @@
   const vietnameseFontStyle = document.createElement("style");
   vietnameseFontStyle.textContent =
     'html[lang="vi"] body,html[lang="vi"] h1,html[lang="vi"] h2,html[lang="vi"] h3,html[lang="vi"] h4,html[lang="vi"] h5,html[lang="vi"] h6,html[lang="vi"] button,html[lang="vi"] input{font-family:system-ui,sans-serif!important}' +
-    'html[lang="vi"] #lusion-language-trigger,html[lang="vi"] #lusion-language-menu .lusion-language-choice,html[lang="vi"] #lusion-mobile-language-controls .lusion-mobile-language-choice{font-family:system-ui,sans-serif!important}';
+    'html[lang="vi"] #lusion-language-trigger,html[lang="vi"] #lusion-language-menu .lusion-language-choice,html[lang="vi"] #lusion-mobile-language-controls .lusion-mobile-language-choice{font-family:system-ui,sans-serif!important}' +
+    '@media (min-aspect-ratio:21/9) and (min-width:813px){html[lang="vi"] #home-hero-title{grid-column:4/span 7!important}}';
   document.head.appendChild(vietnameseFontStyle);
 
   if (new URLSearchParams(window.location.search).has("water-page-embed")) {
