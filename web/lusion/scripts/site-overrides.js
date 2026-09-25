@@ -476,7 +476,7 @@
       "Newsletter sign-up is unavailable in this local copy.":
         "\u0110\u0103ng k\u00fd b\u1ea3n tin kh\u00f4ng c\u00f3 s\u1eb5n trong b\u1ea3n sao \u0111\u1ecba ph\u01b0\u01a1ng n\u00e0y.",
       "We create bold presentation slides and visual stories that help ideas stand out":
-        "Ch\u00fang t\u00f4i t\u1ea1o n\u00ean nh\u1eefng slide thuy\u1ebft tr\u00ecnh t\u00e1o b\u1ea1o v\u00e0 c\u00e2u chuy\u1ec7n h\u00ecnh \u1ea3nh gi\u00fap \u00fd t\u01b0\u1edfng n\u1ed5i b\u1eadt.",
+        "Ch\u00fang t\u00f4i t\u1ea1o n\u00ean nh\u1eefng b\u00e0i thuy\u1ebft tr\u00ecnh t\u00e1o b\u1ea1o v\u00e0 k\u1ec3 chuy\u1ec7n b\u1eb1ng h\u00ecnh \u1ea3nh, gi\u00fap \u00fd t\u01b0\u1edfng n\u1ed5i b\u1eadt.",
     },
     "zh-CN": {
       back: "\u8fd4\u56de",
