@@ -2259,11 +2259,8 @@ html[data-theme="light"] .world-stage {
   display: none;
 }
 
-.app-shell:has(> main > .hero.hero-world) > .topbar,
-.app-shell:has(> main > .hero.hero-world) .world-copy,
 .app-shell:has(> main > .hero.hero-world) .world-hud,
-.app-shell:has(> main > .hero.hero-world) .world-locations,
-.scroll-progress {
+.app-shell:has(> main > .hero.hero-world) .world-locations {
   display: none;
 }
 
@@ -2461,6 +2458,267 @@ html:has(.app-shell > main > .hero.hero-world).is-section-transitioning {
 
 @media (prefers-reduced-motion: reduce) {
   .app-shell:has(> main > .hero.hero-world) .world-stage.world-fallback::before {
+    animation: none;
+  }
+}
+
+/* A compact story-led welcome over the moving water surface. */
+.app-shell:has(> main > .hero.hero-world) .world-copy {
+  top: 50%;
+  left: clamp(28px, 8vw, 136px);
+  width: min(780px, 62vw);
+  margin: 0;
+  padding: 0;
+  transform: translateY(-50%);
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  animation: fusion-copy-reveal 800ms ease-out both;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy::before {
+  display: block;
+  inset: -8vh -10vw -8vh -7vw;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 36% 52%, rgb(0 3 10 / 58%), transparent 69%);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy .eyebrow {
+  color: rgb(234 245 255 / 82%);
+  letter-spacing: 0.22em;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy .eyebrow-dot {
+  background: #7bf2da;
+  box-shadow: 0 0 18px rgb(123 242 218 / 84%);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy h1 {
+  max-width: 880px;
+  margin: 28px 0 20px;
+  color: #f4f7fa;
+  font-size: clamp(58px, 7.2vw, 112px);
+  font-weight: 650;
+  letter-spacing: -0.075em;
+  line-height: 0.94;
+  text-wrap: balance;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy h1 em {
+  background-image: linear-gradient(100deg, #b8f5e8 4%, #c4b8ff 96%);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-lede {
+  max-width: 540px;
+  color: rgb(229 238 244 / 84%);
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-search-field,
+.app-shell:has(> main > .hero.hero-world) .world-search-shortcuts,
+.app-shell:has(> main > .hero.hero-world) .world-stats {
+  display: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-actions {
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-button {
+  min-height: 50px;
+  border-radius: 999px;
+  text-decoration: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-button-primary {
+  border-color: rgb(214 249 242 / 70%);
+  background: linear-gradient(110deg, #c4f7ea, #9bd9ed);
+  color: #08131a;
+  box-shadow: 0 10px 38px rgb(106 223 210 / 24%);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-button-primary:hover {
+  background: linear-gradient(110deg, #e4fff8, #bce8f6);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-button-ghost {
+  border-color: rgb(221 233 247 / 34%);
+  background: rgb(9 15 23 / 28%);
+  color: #f3f6fa;
+  backdrop-filter: blur(12px);
+}
+
+.world-scroll-cue {
+  position: absolute;
+  z-index: 7;
+  bottom: 30px;
+  left: 50%;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: rgb(239 245 249 / 76%);
+  font-size: 9px;
+  font-weight: 760;
+  letter-spacing: 0.2em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transform: translateX(-50%);
+  animation: fusion-cue-reveal 900ms 420ms ease-out both;
+}
+
+.world-scroll-cue-mark {
+  position: relative;
+  display: block;
+  width: 30px;
+  height: 34px;
+  overflow: hidden;
+  border: 1px solid rgb(224 238 245 / 38%);
+  border-radius: 999px;
+}
+
+.world-scroll-cue-mark::before {
+  position: absolute;
+  top: 7px;
+  left: 50%;
+  width: 1px;
+  height: 7px;
+  background: #baf4e8;
+  content: "";
+  transform: translateX(-50%);
+}
+
+.world-scroll-cue-mark i {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 8px #baf4e8;
+  transform: translateX(-50%);
+  animation: fusion-cue-drop 1.7s 1s ease-in-out infinite;
+}
+
+.world-scroll-cue:hover {
+  color: #fff;
+}
+
+.app-shell:has(> main > .hero.hero-world) .scroll-progress {
+  display: block;
+}
+
+@keyframes fusion-copy-reveal {
+  from {
+    opacity: 0;
+    filter: blur(5px);
+  }
+
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+@keyframes fusion-cue-reveal {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fusion-cue-drop {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: translate(-50%, 0);
+  }
+
+  55% {
+    opacity: 1;
+    transform: translate(-50%, 12px);
+  }
+}
+
+@media (max-width: 760px) {
+  .app-shell:has(> main > .hero.hero-world) .world-copy {
+    top: auto;
+    right: 22px;
+    bottom: 17%;
+    left: 22px;
+    width: auto;
+    transform: none;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy::before {
+    inset: -42px -24px -36px;
+    background: radial-gradient(ellipse at 42% 58%, rgb(0 3 10 / 70%), transparent 72%);
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 {
+    margin: 20px 0 15px;
+    font-size: clamp(46px, 11vw, 72px);
+    line-height: 0.98;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-lede {
+    max-width: 420px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-actions {
+    gap: 9px;
+    margin-top: 22px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-button {
+    min-height: 46px;
+    padding-inline: 15px;
+    font-size: 9px;
+  }
+
+  .world-scroll-cue {
+    bottom: 22px;
+  }
+}
+
+@media (max-width: 420px) {
+  .app-shell:has(> main > .hero.hero-world) .world-copy {
+    right: 17px;
+    bottom: 17%;
+    left: 17px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 {
+    font-size: clamp(41px, 11vw, 49px);
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy .eyebrow {
+    font-size: 8px;
+    letter-spacing: 0.16em;
+  }
+
+  .world-scroll-cue {
+    bottom: 18px;
+    font-size: 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell:has(> main > .hero.hero-world) .world-copy,
+  .world-scroll-cue {
+    animation: none;
+  }
+
+  .world-scroll-cue-mark i {
     animation: none;
   }
 }
