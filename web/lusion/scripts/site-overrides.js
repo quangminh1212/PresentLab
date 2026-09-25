@@ -12,8 +12,8 @@
   vietnameseFontStyle.textContent =
     'html[lang="vi"] body,html[lang="vi"] h1,html[lang="vi"] h2,html[lang="vi"] h3,html[lang="vi"] h4,html[lang="vi"] h5,html[lang="vi"] h6,html[lang="vi"] button,html[lang="vi"] input{font-family:system-ui,sans-serif!important}' +
     'html[lang="vi"] #lusion-language-trigger,html[lang="vi"] #lusion-language-menu .lusion-language-choice,html[lang="vi"] #lusion-mobile-language-controls .lusion-mobile-language-choice{font-family:system-ui,sans-serif!important}' +
-    '@media (min-width:813px){html[lang="vi"] #home-hero-title{grid-column:2/span 10!important;font-size:clamp(22px,2.5vw,48px)!important;line-height:1.08!important;text-wrap:balance!important}}' +
-    '@media (max-width:812px){html[lang="vi"] #home-hero-title{grid-column:1/span 6!important;width:100%!important;font-size:clamp(12px,3.2vw,20px)!important;line-height:1.08!important;text-wrap:balance!important}}';
+    '@media (min-width:813px){html[lang="vi"] #home-hero-title{grid-column:2/span 10!important;font-size:clamp(21px,2.35vw,45px)!important;line-height:1.08!important;text-wrap:balance!important}}' +
+    '@media (max-width:812px){html[lang="vi"] #home-hero-title{grid-column:1/span 6!important;width:100%!important;font-size:clamp(11.5px,3vw,19px)!important;line-height:1.08!important;text-wrap:balance!important}}';
   document.head.appendChild(vietnameseFontStyle);
 
   if (new URLSearchParams(window.location.search).has("water-page-embed")) {
