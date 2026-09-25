@@ -1837,23 +1837,23 @@ html[data-theme="light"] .world-stage::after {
   }
 }
 
-/* A procedural sea horizon gives the water surface an open-ocean setting. */
+/* A monochrome horizon ties the moving water to the dark Lusion scene below. */
 .world-stage {
-  border-color: rgb(180 208 255 / 38%);
+  border-color: rgb(220 225 234 / 24%);
   background:
-    radial-gradient(ellipse at 76% 38%, rgb(223 238 255 / 40%), transparent 26%),
+    radial-gradient(ellipse at 76% 38%, rgb(232 235 241 / 25%), transparent 26%),
     linear-gradient(
       180deg,
-      #122d5b 0%,
-      #3267a7 25%,
-      #c0d9f8 38%,
-      #4b83c7 42%,
-      #1553a0 59%,
-      #103f84 78%,
-      #082451 100%
+      #090a0d 0%,
+      #191b20 25%,
+      #b3b8c1 38%,
+      #666b74 42%,
+      #17191e 49%,
+      #0b0c10 66%,
+      #050609 100%
     );
   box-shadow:
-    0 36px 90px rgb(0 18 26 / 42%),
+    0 36px 90px rgb(0 0 0 / 55%),
     inset 0 1px 0 rgb(255 255 255 / 7%);
 }
 
@@ -1863,21 +1863,22 @@ html[data-theme="light"] .world-stage::after {
 }
 
 html[data-theme="light"] .world-stage {
-  border-color: rgb(95 146 211 / 40%);
+  border-color: rgb(220 225 234 / 24%);
   background:
-    radial-gradient(ellipse at 76% 38%, rgb(237 247 255 / 80%), transparent 26%),
+    radial-gradient(ellipse at 76% 38%, rgb(232 235 241 / 25%), transparent 26%),
     linear-gradient(
       180deg,
-      #7599c8 0%,
-      #a7c6eb 27%,
-      #e8f2ff 38%,
-      #739bd4 42%,
-      #356fba 62%,
-      #12477f 100%
+      #090a0d 0%,
+      #191b20 25%,
+      #b3b8c1 38%,
+      #666b74 42%,
+      #17191e 49%,
+      #0b0c10 66%,
+      #050609 100%
     );
   box-shadow:
-    0 36px 90px rgb(24 69 77 / 18%),
-    inset 0 1px 0 rgb(255 255 255 / 78%);
+    0 36px 90px rgb(0 0 0 / 55%),
+    inset 0 1px 0 rgb(255 255 255 / 7%);
 }
 
 /* Keep the full-screen ocean scene framed by the XLab navigation and palette. */
@@ -2391,22 +2392,22 @@ html:has(.app-shell > main > .hero.hero-world) {
   }
 }
 
-/* Let the water fall into the dark Lusion scene with a shared teal horizon. */
+/* Let the water fall into the dark Lusion scene through a shared silver horizon. */
 .app-shell:has(> main > .hero.hero-world) .world-stage::after {
   display: block;
   background:
     linear-gradient(
       180deg,
       transparent 52%,
-      rgb(2 16 23 / 8%) 66%,
-      rgb(1 10 16 / 58%) 88%,
-      rgb(0 4 8 / 96%) 100%
+      rgb(8 9 12 / 12%) 66%,
+      rgb(3 4 6 / 62%) 88%,
+      rgb(0 0 0 / 98%) 100%
     ),
     radial-gradient(
       ellipse at 56% 43%,
       transparent 28%,
-      rgb(4 35 40 / 8%) 70%,
-      rgb(2 22 29 / 32%) 100%
+      rgb(15 16 19 / 7%) 70%,
+      rgb(0 0 0 / 35%) 100%
     );
   pointer-events: none;
 }
@@ -2422,7 +2423,7 @@ html:has(.app-shell > main > .hero.hero-world) {
   z-index: 2;
   inset: 0 0 auto;
   height: clamp(72px, 12svh, 124px);
-  background: linear-gradient(180deg, rgb(8 57 63 / 34%), transparent 100%);
+  background: linear-gradient(180deg, rgb(215 220 228 / 8%), transparent 100%);
   content: "";
   mix-blend-mode: screen;
   pointer-events: none;
@@ -2433,8 +2434,8 @@ html:has(.app-shell > main > .hero.hero-world) {
   z-index: 3;
   inset: 0 0 auto;
   height: 1px;
-  background: linear-gradient(90deg, transparent 8%, rgb(90 228 208 / 64%) 50%, transparent 92%);
-  box-shadow: 0 0 22px rgb(47 208 189 / 32%);
+  background: linear-gradient(90deg, transparent 8%, rgb(215 220 228 / 48%) 50%, transparent 92%);
+  box-shadow: 0 0 22px rgb(215 220 228 / 20%);
   content: "";
   pointer-events: none;
 }
@@ -2445,14 +2446,14 @@ html:has(.app-shell > main > .hero.hero-world) {
       linear-gradient(
         180deg,
         transparent 58%,
-        rgb(2 16 23 / 12%) 72%,
-        rgb(0 4 8 / 90%) 100%
+        rgb(8 9 12 / 15%) 72%,
+        rgb(0 0 0 / 94%) 100%
       ),
       radial-gradient(
         ellipse at 56% 43%,
         transparent 28%,
-        rgb(4 35 40 / 8%) 70%,
-        rgb(2 22 29 / 32%) 100%
+        rgb(15 16 19 / 7%) 70%,
+        rgb(0 0 0 / 35%) 100%
       );
   }
 }

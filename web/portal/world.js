@@ -559,6 +559,14 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     skyUniforms.mieDirectionalG.value = 0.77;
     skyUniforms.sunPosition.value.set(-0.35, 0.65, 0.68).normalize().multiplyScalar(450);
     skyUniforms.showSunDisc.value = false;
+    // Sky is shown only in the water reflection; keep its light neutral and deep.
+    sky.material.fragmentShader = sky.material.fragmentShader.replace(
+      "gl_FragColor = vec4( texColor, 1.0 );",
+      `float skyLuminance = pow( max( dot( texColor, vec3( 0.2126, 0.7152, 0.0722 ) ), 0.0 ), 1.45 );
+      texColor = vec3( skyLuminance );
+      gl_FragColor = vec4( texColor, 1.0 );`,
+    );
+    sky.material.needsUpdate = true;
     sky.visible = false;
     scene.add(sky);
 
@@ -584,8 +592,8 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
       textureHeight: 512,
       waterNormals,
       sunDirection: new THREE.Vector3(-0.35, 0.65, 0.68).normalize(),
-      sunColor: 0xddeaff,
-      waterColor: 0x0b3f9a,
+      sunColor: 0xe9edf3,
+      waterColor: 0x111317,
       distortionScale: 2.2,
       alpha: 0.58,
       fog: false,
