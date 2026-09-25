@@ -2762,40 +2762,76 @@ function startPageCurtain(libraryReady) {
   window.requestAnimationFrame(render);
 }
 
+let sectionScrollFrame = 0;
+let sectionScrollTarget = null;
+
+function scrollPageToSection(target) {
+  if (!target || (sectionScrollTarget === target && sectionScrollFrame)) return;
+
+  if (sectionScrollFrame) window.cancelAnimationFrame(sectionScrollFrame);
+  sectionScrollFrame = 0;
+  sectionScrollTarget = target;
+
+  const startY = getScrollTop();
+  const targetY = Math.max(0, startY + target.getBoundingClientRect().top);
+  const distance = targetY - startY;
+  if (isReducedMotion() || Math.abs(distance) < 1) {
+    window.scrollTo({ top: targetY, behavior: "auto" });
+    document.documentElement.classList.remove("is-section-transitioning");
+    sectionScrollTarget = null;
+    return;
+  }
+
+  // Let the easing animation control intermediate positions before scroll snap resumes.
+  document.documentElement.classList.add("is-section-transitioning");
+  const duration = Math.min(760, Math.max(460, Math.abs(distance) * 0.62));
+  let startTime = null;
+  const render = (time) => {
+    if (startTime === null) startTime = time;
+    const progress = Math.min(1, (time - startTime) / duration);
+    const easedProgress =
+      progress < 0.5
+        ? 4 * progress * progress * progress
+        : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+    window.scrollTo({
+      top: startY + distance * easedProgress,
+      behavior: "auto",
+    });
+
+    if (progress < 1) {
+      sectionScrollFrame = window.requestAnimationFrame(render);
+      return;
+    }
+
+    window.scrollTo({ top: targetY, behavior: "auto" });
+    document.documentElement.classList.remove("is-section-transitioning");
+    sectionScrollFrame = 0;
+    sectionScrollTarget = null;
+  };
+
+  sectionScrollFrame = window.requestAnimationFrame(render);
+}
+
 function bindWaterToLusionScroll() {
   const hero = elements.hero;
   const nextSection = elements.catalogSection;
   if (!hero || !nextSection) return;
 
-  let transitionStarted = false;
-  let transitionUnlockTimer = 0;
-  const unlockTransition = () => {
-    transitionStarted = false;
-    window.clearTimeout(transitionUnlockTimer);
-    transitionUnlockTimer = 0;
-  };
-  window.addEventListener("scrollend", unlockTransition, { passive: true });
   const scrollToLusion = () => {
-    if (transitionStarted || nextSection.getBoundingClientRect().top <= 2) return;
-    transitionStarted = true;
-    transitionUnlockTimer = window.setTimeout(unlockTransition, 1500);
-    nextSection.scrollIntoView({
-      behavior: isReducedMotion() ? "auto" : "smooth",
-      block: "start",
-    });
+    if (nextSection.getBoundingClientRect().top <= 2) return;
+    scrollPageToSection(nextSection);
   };
-  window.addEventListener(
-    "scroll",
-    () => {
-      if (getScrollTop() <= 2) unlockTransition();
-    },
-    { passive: true },
-  );
 
   hero.addEventListener(
     "wheel",
     (event) => {
-      if (event.ctrlKey || event.deltaY <= 0 || !event.cancelable) return;
+      if (event.ctrlKey || !event.cancelable) return;
+      if (event.deltaY < 0 && sectionScrollTarget === nextSection) {
+        event.preventDefault();
+        scrollPageToSection(hero);
+        return;
+      }
+      if (event.deltaY <= 0) return;
       event.preventDefault();
       scrollToLusion();
     },
@@ -2817,7 +2853,13 @@ function bindWaterToLusionScroll() {
       if (!touch || lastTouchY === null) return;
       const scrollDelta = lastTouchY - touch.clientY;
       lastTouchY = touch.clientY;
-      if (scrollDelta <= 2 || !event.cancelable) return;
+      if (!event.cancelable) return;
+      if (scrollDelta < -2 && sectionScrollTarget === nextSection) {
+        event.preventDefault();
+        scrollPageToSection(hero);
+        return;
+      }
+      if (scrollDelta <= 2) return;
       event.preventDefault();
       scrollToLusion();
     },
@@ -2854,7 +2896,6 @@ function deferLusionFrame() {
     }
     if (!frameWindow || !frameDocument || !elements.hero) return;
 
-    let returningToWater = false;
     const frameIsAtTop = () => {
       const scrollTop = Math.max(
         frameWindow.scrollY || 0,
@@ -2864,20 +2905,18 @@ function deferLusionFrame() {
       return scrollTop <= 2;
     };
     const returnToWater = (event, deltaY) => {
-      if (deltaY >= 0) {
-        returningToWater = false;
+      if (!event.cancelable) return;
+      if (deltaY > 0 && sectionScrollTarget === elements.hero) {
+        event.preventDefault();
+        event.stopPropagation();
+        scrollPageToSection(elements.catalogSection);
         return;
       }
-      if (!event.cancelable || !frameIsAtTop() || getScrollTop() <= 0) return;
+      if (deltaY >= 0 || !frameIsAtTop() || getScrollTop() <= 0) return;
 
       event.preventDefault();
       event.stopPropagation();
-      if (returningToWater) return;
-      returningToWater = true;
-      elements.hero.scrollIntoView({
-        behavior: isReducedMotion() ? "auto" : "smooth",
-        block: "start",
-      });
+      scrollPageToSection(elements.hero);
     };
 
     frameDocument.addEventListener(
@@ -2894,7 +2933,6 @@ function deferLusionFrame() {
     frameDocument.addEventListener(
       "touchstart",
       (event) => {
-        returningToWater = false;
         lastTouchY = event.touches[0]?.clientY ?? null;
       },
       { passive: true, capture: true },

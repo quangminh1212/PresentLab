@@ -1021,7 +1021,10 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {}, onReady = (
   function loop(time) {
     animationFrame = 0;
     if (!isVisible || document.hidden || stage.classList.contains("world-fallback")) return;
-    draw(time);
+    // Avoid rendering the water WebGL scene beside Lusion during the section handoff.
+    if (!document.documentElement.classList.contains("is-section-transitioning")) {
+      draw(time);
+    }
     if (!reducedMotion) animationFrame = window.requestAnimationFrame(loop);
   }
 
