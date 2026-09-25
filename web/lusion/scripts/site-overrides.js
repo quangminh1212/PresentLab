@@ -4,6 +4,13 @@
     "#video-overlay.is-offline-media #video-overlay__controls,#video-overlay.is-offline-media #video-overlay-cursor{display:none!important}";
   document.head.appendChild(style);
 
+  if (new URLSearchParams(window.location.search).has("water-page-embed")) {
+    const embeddedLoaderStyle = document.createElement("style");
+    embeddedLoaderStyle.textContent =
+      "html,body{background:#000!important}#preloader,#transition-overlay{display:none!important}";
+    document.head.appendChild(embeddedLoaderStyle);
+  }
+
   const offlineMessage = (detail) =>
     detail && detail.project
       ? "This Porsche: Dream Machine video is not included in the local project files."
