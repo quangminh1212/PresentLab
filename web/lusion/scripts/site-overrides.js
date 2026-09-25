@@ -15,7 +15,7 @@
   if (new URLSearchParams(window.location.search).has("water-page-embed")) {
     const embeddedLoaderStyle = document.createElement("style");
     embeddedLoaderStyle.textContent =
-      "html,body{background:#000!important}#preloader,#transition-overlay{display:none!important}";
+      "html,body{background:#000!important}#transition-overlay{display:none!important}";
     document.head.appendChild(embeddedLoaderStyle);
   }
 
