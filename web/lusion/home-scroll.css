@@ -133,14 +133,14 @@
 
   #home-hero-title {
     z-index: 54;
-    width: fit-content;
+    width: min(100%, 14em);
     max-width: 100%;
     box-sizing: border-box;
     margin-top: calc(var(--base-padding-y) + var(--header-size) * 2 + 40px);
     padding: 0.15em 0.28em 0.2em;
     border-radius: 10px;
     background: rgb(240, 241, 250);
-    font-size: clamp(24px, 6vw, 44px);
+    font-size: clamp(20px, 5vw, 36px);
   }
 
   #home-hero-title .line {
@@ -149,5 +149,13 @@
 
   #home-hero-title .word {
     transform: none !important;
+  }
+}
+
+@media (max-width: 812px) and (max-height: 500px) {
+  #home-hero-title {
+    margin-top: calc(var(--base-padding-y) + var(--header-size) + 24px);
+    font-size: clamp(18px, 4.2vw, 24px);
+    line-height: 1.05;
   }
 }
