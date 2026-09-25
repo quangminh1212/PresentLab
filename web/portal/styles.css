@@ -3224,17 +3224,98 @@ html {
   display: grid;
   place-items: center;
   pointer-events: none;
-  background: radial-gradient(circle at 50% 44%, rgb(140 232 216 / 9%), transparent 22rem), #050a12;
+  background: #000;
   transform-origin: top;
   transition: transform 900ms var(--ease-expo);
 }
 
-.page-curtain-line {
-  width: min(180px, 28vw);
+.page-curtain-mark {
+  position: relative;
+  display: block;
+  width: min(210px, 16.667vw);
+  height: 30px;
+}
+
+.page-curtain-track,
+.page-curtain-fill {
+  position: absolute;
+  top: 50%;
+  left: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--accent), transparent);
-  box-shadow: 0 0 28px rgb(140 232 216 / 55%);
-  animation: curtain-pulse 1000ms ease-in-out infinite alternate;
+  transform: translateY(-50%);
+}
+
+.page-curtain-track {
+  width: 100%;
+  background: #333;
+}
+
+.page-curtain-fill {
+  width: 0;
+  background: #fff;
+  transition: width 80ms linear;
+}
+
+.page-curtain-mark::before,
+.page-curtain-mark::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 28px;
+  height: 1px;
+  background: #fff;
+  content: "";
+  opacity: 0;
+  transform: translate(-50%, -50%) scaleX(0);
+  transition:
+    opacity 100ms ease,
+    transform 180ms var(--ease-expo);
+}
+
+.page-curtain-count {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  height: 0.75em;
+  overflow: hidden;
+  color: #fff;
+  font-size: clamp(7em, 8vw, 20em);
+  font-variant-numeric: tabular-nums;
+  font-weight: 300;
+  letter-spacing: -0.08em;
+  line-height: 0.75em;
+}
+
+.page-curtain-count span {
+  min-width: 0.62em;
+  text-align: center;
+  transform: translateY(-0.05em);
+}
+
+@media (max-width: 812px) {
+  .page-curtain-count {
+    font-size: 13vw;
+  }
+}
+
+.page-curtain.is-complete .page-curtain-track,
+.page-curtain.is-complete .page-curtain-fill {
+  opacity: 0;
+  transform: translateY(-50%) scaleX(0.01);
+  transition:
+    opacity 100ms ease,
+    transform 180ms var(--ease-expo);
+}
+
+.page-curtain.is-complete .page-curtain-mark::before,
+.page-curtain.is-complete .page-curtain-mark::after {
+  opacity: 1;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.page-curtain.is-complete .page-curtain-mark::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
 }
 
 html.is-ready .page-curtain {
@@ -4106,7 +4187,7 @@ html[data-theme="light"] .locale-picker {
 }
 
 html[data-theme="light"] .page-curtain {
-  background: radial-gradient(circle at 50% 44%, rgb(47 80 183 / 10%), transparent 22rem), #f4efe4;
+  background: #000;
 }
 
 .theme-toggle {

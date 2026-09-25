@@ -1235,6 +1235,9 @@ const state = {
 };
 
 const elements = {
+  pageCurtain: document.querySelector("[data-page-curtain]"),
+  curtainProgress: document.querySelector("[data-curtain-progress]"),
+  curtainDigits: document.querySelectorAll("[data-curtain-digit]"),
   grid: document.querySelector("[data-template-grid]"),
   resultsCount: document.querySelector("[data-results-count]"),
   selectionSummary: document.querySelector("[data-selection-summary]"),
@@ -2523,6 +2526,109 @@ function mountXLabWorld() {
     });
 }
 
+function startPageCurtain(libraryReady) {
+  const pageCurtain = elements.pageCurtain;
+  const root = document.documentElement;
+
+  if (!pageCurtain) {
+    root.classList.add("is-ready");
+    mountXLabWorld();
+    return;
+  }
+
+  if (isReducedMotion()) {
+    root.classList.add("is-ready");
+    window.setTimeout(mountXLabWorld, 500);
+    return;
+  }
+
+  const minimumDuration = 900;
+  const finishDuration = 260;
+  const startedAt = performance.now();
+  let previousFrameAt = startedAt;
+  let progress = 0;
+  let isReady = false;
+  let isFinishing = false;
+  let finishStartedAt = 0;
+  let finishStartProgress = 0;
+  let pageHasLoaded = document.readyState === "complete";
+  let fontsAreReady = false;
+  let libraryIsReady = false;
+  const pageLoaded = new Promise((resolve) => {
+    if (document.readyState === "complete") {
+      resolve();
+    } else {
+      window.addEventListener("load", resolve, { once: true });
+    }
+  });
+  const fontsReady = document.fonts?.ready ?? Promise.resolve();
+  const readinessFallback = window.setTimeout(() => {
+    isReady = true;
+    pageHasLoaded = true;
+    fontsAreReady = true;
+    libraryIsReady = true;
+  }, 4000);
+
+  pageLoaded.then(() => {
+    pageHasLoaded = true;
+  });
+  fontsReady.then(() => {
+    fontsAreReady = true;
+  });
+  Promise.resolve(libraryReady).then(
+    () => {
+      libraryIsReady = true;
+    },
+    () => {
+      libraryIsReady = true;
+    },
+  );
+  Promise.allSettled([libraryReady, pageLoaded, fontsReady]).then(() => {
+    isReady = true;
+    window.clearTimeout(readinessFallback);
+  });
+
+  function render(now) {
+    const elapsed = now - startedAt;
+    const stageProgress = libraryIsReady ? 90 : fontsAreReady ? 76 : pageHasLoaded ? 64 : 22;
+    const targetProgress = isReady && elapsed >= minimumDuration ? 100 : stageProgress;
+    progress = Math.min(targetProgress, progress + Math.max(0, now - previousFrameAt) * 0.09);
+    previousFrameAt = now;
+
+    if (targetProgress === 100) {
+      if (!finishStartedAt) {
+        finishStartedAt = now;
+        finishStartProgress = progress;
+      }
+      progress = Math.min(
+        100,
+        finishStartProgress +
+          ((now - finishStartedAt) / finishDuration) * (100 - finishStartProgress),
+      );
+    }
+
+    const percent = Math.floor(progress);
+    if (elements.curtainProgress) elements.curtainProgress.style.width = `${progress}%`;
+    elements.curtainDigits.forEach((digit, index) => {
+      digit.textContent = String(percent).padStart(3, "0")[index] ?? "0";
+    });
+
+    if (progress >= 100 && !isFinishing) {
+      isFinishing = true;
+      pageCurtain.classList.add("is-complete");
+      window.setTimeout(() => {
+        root.classList.add("is-ready");
+        window.setTimeout(mountXLabWorld, 500);
+      }, 220);
+      return;
+    }
+
+    window.requestAnimationFrame(render);
+  }
+
+  window.requestAnimationFrame(render);
+}
+
 function deferLusionFrame() {
   const frame = document.querySelector("iframe[data-lazy-src]");
   if (!frame) return;
@@ -2556,7 +2662,7 @@ function deferLusionFrame() {
   }
 }
 
-function setupExperience() {
+function setupExperience(libraryReady) {
   bindRevealMotion();
   bindAnchorNavigation();
   bindSectionObserver();
@@ -2565,10 +2671,7 @@ function setupExperience() {
   bindMagneticMotion();
   bindMotionScroll();
   deferLusionFrame();
-  requestAnimationFrame(() => {
-    document.documentElement.classList.add("is-ready");
-    window.setTimeout(mountXLabWorld, 500);
-  });
+  startPageCurtain(libraryReady);
 }
 
 function resetInitialFragmentToWater() {
@@ -2584,5 +2687,5 @@ document.documentElement.classList.add("js");
 resetInitialFragmentToWater();
 bindEvents();
 applyLocale();
-setupExperience();
-loadLibrary();
+const libraryReady = loadLibrary();
+setupExperience(libraryReady);
