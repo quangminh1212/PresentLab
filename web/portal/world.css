@@ -2363,3 +2363,26 @@ html:has(.app-shell > main > .hero.hero-world) {
   scroll-snap-align: start;
   scroll-snap-stop: always;
 }
+
+/* Keep the only visible action in water-only mode easy to tap on touch screens. */
+.app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
+  min-height: 44px;
+  padding-inline: 10px;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+@media (max-width: 760px) {
+  .app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
+    bottom: max(16px, calc(env(safe-area-inset-bottom, 0px) + 8px));
+    min-height: 44px;
+    padding-inline: 10px;
+    font-size: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:has(.app-shell > main > .hero.hero-world) {
+    scroll-snap-type: none;
+  }
+}

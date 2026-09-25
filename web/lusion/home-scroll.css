@@ -117,3 +117,37 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* Keep the animated Home headline readable while its 3D scene loads on touch screens. */
+@media (max-width: 812px) {
+  #header-logo {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  #header-right-menu-btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  #home-hero-title {
+    z-index: 54;
+    width: fit-content;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin-top: calc(var(--base-padding-y) + var(--header-size) * 2 + 40px);
+    padding: 0.15em 0.28em 0.2em;
+    border-radius: 10px;
+    background: rgb(240, 241, 250);
+    font-size: clamp(24px, 6vw, 44px);
+  }
+
+  #home-hero-title .line {
+    overflow: visible !important;
+  }
+
+  #home-hero-title .word {
+    transform: none !important;
+  }
+}

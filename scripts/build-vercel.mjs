@@ -243,6 +243,19 @@ for (const [source, replacement] of [
   }
   lusionBundle = lusionBundle.replace(source, replacement);
 }
+const browserZoomGuard = [
+  "function preventZoom(o){o.preventDefault(),document.body.style.zoom=1}",
+  'window.addEventListener("wheel",o=>o.preventDefault(),{passive:!1});',
+  'document.addEventListener("gesturestart",o=>preventZoom(o));',
+  'document.addEventListener("gesturechange",o=>preventZoom(o));',
+  'document.addEventListener("gestureend",o=>preventZoom(o));',
+].join("");
+const browserZoomSupport =
+  'window.addEventListener("wheel",o=>{o.ctrlKey||o.preventDefault()},{passive:!1});';
+if (lusionBundle.split(browserZoomGuard).length - 1 !== 1) {
+  throw new Error("The copied Lusion zoom guard no longer matches the browser accessibility patch.");
+}
+lusionBundle = lusionBundle.replace(browserZoomGuard, browserZoomSupport);
 const astronautRevealSource =
   "v.position.y-=(properties.useMobileLayout?0:.4)*ease.backInOut(p),v.updateMatrix();";
 // Pull the astronaut back into the viewport during the heading, then release it into the tunnel.
