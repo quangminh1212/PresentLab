@@ -2354,14 +2354,14 @@ html[data-theme="light"] .world-stage {
 }
 
 html:has(.app-shell > main > .hero.hero-world) {
-  scroll-snap-type: y proximity;
+  scroll-snap-type: y mandatory;
   scroll-padding-block: 0;
 }
 
 .app-shell:has(> main > .hero.hero-world) > main > .hero.hero-world,
 .app-shell:has(> main > .hero.hero-world) > main > .lusion-home-section {
   scroll-snap-align: start;
-  scroll-snap-stop: normal;
+  scroll-snap-stop: always;
 }
 
 /* Keep the only visible action in water-only mode easy to tap on touch screens. */

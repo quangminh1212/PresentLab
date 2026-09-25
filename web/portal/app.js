@@ -2629,6 +2629,83 @@ function startPageCurtain(libraryReady) {
   window.requestAnimationFrame(render);
 }
 
+function bindWaterToLusionScroll() {
+  const hero = elements.hero;
+  const nextSection = elements.catalogSection;
+  if (!hero || !nextSection) return;
+
+  let transitionStarted = false;
+  let transitionUnlockTimer = 0;
+  const unlockTransition = () => {
+    transitionStarted = false;
+    window.clearTimeout(transitionUnlockTimer);
+    transitionUnlockTimer = 0;
+  };
+  window.addEventListener("scrollend", unlockTransition, { passive: true });
+  const scrollToLusion = () => {
+    if (transitionStarted || nextSection.getBoundingClientRect().top <= 2) return;
+    transitionStarted = true;
+    transitionUnlockTimer = window.setTimeout(unlockTransition, 1500);
+    nextSection.scrollIntoView({
+      behavior: isReducedMotion() ? "auto" : "smooth",
+      block: "start",
+    });
+  };
+  window.addEventListener(
+    "scroll",
+    () => {
+      if (getScrollTop() <= 2) unlockTransition();
+    },
+    { passive: true },
+  );
+
+  hero.addEventListener(
+    "wheel",
+    (event) => {
+      if (event.ctrlKey || event.deltaY <= 0 || !event.cancelable) return;
+      event.preventDefault();
+      scrollToLusion();
+    },
+    { passive: false },
+  );
+
+  let lastTouchY = null;
+  hero.addEventListener(
+    "touchstart",
+    (event) => {
+      lastTouchY = event.touches[0]?.clientY ?? null;
+    },
+    { passive: true },
+  );
+  hero.addEventListener(
+    "touchmove",
+    (event) => {
+      const touch = event.touches[0];
+      if (!touch || lastTouchY === null) return;
+      const scrollDelta = lastTouchY - touch.clientY;
+      lastTouchY = touch.clientY;
+      if (scrollDelta <= 2 || !event.cancelable) return;
+      event.preventDefault();
+      scrollToLusion();
+    },
+    { passive: false },
+  );
+  hero.addEventListener(
+    "touchend",
+    () => {
+      lastTouchY = null;
+    },
+    { passive: true },
+  );
+  hero.addEventListener(
+    "touchcancel",
+    () => {
+      lastTouchY = null;
+    },
+    { passive: true },
+  );
+}
+
 function deferLusionFrame() {
   const frame = document.querySelector("iframe[data-lazy-src]");
   if (!frame) return;
@@ -2743,6 +2820,7 @@ function setupExperience(libraryReady) {
   bindRevealMotion();
   bindAnchorNavigation();
   bindSectionObserver();
+  bindWaterToLusionScroll();
   bindStageParallax();
   bindAmbientSurfaceMotion();
   bindMagneticMotion();
