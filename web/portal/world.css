@@ -2354,14 +2354,14 @@ html[data-theme="light"] .world-stage {
 }
 
 html:has(.app-shell > main > .hero.hero-world) {
-  scroll-snap-type: y mandatory;
+  scroll-snap-type: y proximity;
   scroll-padding-block: 0;
 }
 
 .app-shell:has(> main > .hero.hero-world) > main > .hero.hero-world,
 .app-shell:has(> main > .hero.hero-world) > main > .lusion-home-section {
   scroll-snap-align: start;
-  scroll-snap-stop: always;
+  scroll-snap-stop: normal;
 }
 
 /* Keep the only visible action in water-only mode easy to tap on touch screens. */
@@ -2384,5 +2384,71 @@ html:has(.app-shell > main > .hero.hero-world) {
 @media (prefers-reduced-motion: reduce) {
   html:has(.app-shell > main > .hero.hero-world) {
     scroll-snap-type: none;
+  }
+}
+
+/* Let the water fall into the dark Lusion scene with a shared teal horizon. */
+.app-shell:has(> main > .hero.hero-world) .world-stage::after {
+  display: block;
+  background:
+    linear-gradient(
+      180deg,
+      transparent 52%,
+      rgb(2 16 23 / 8%) 66%,
+      rgb(1 10 16 / 58%) 88%,
+      rgb(0 4 8 / 96%) 100%
+    ),
+    radial-gradient(
+      ellipse at 56% 43%,
+      transparent 28%,
+      rgb(4 35 40 / 8%) 70%,
+      rgb(2 22 29 / 32%) 100%
+    );
+  pointer-events: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) > main > .lusion-home-section {
+  position: relative;
+  isolation: isolate;
+  background: #02070b;
+}
+
+.app-shell:has(> main > .hero.hero-world) > main > .lusion-home-section::before {
+  position: absolute;
+  z-index: 2;
+  inset: 0 0 auto;
+  height: clamp(72px, 12svh, 124px);
+  background: linear-gradient(180deg, rgb(8 57 63 / 34%), transparent 100%);
+  content: "";
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) > main > .lusion-home-section::after {
+  position: absolute;
+  z-index: 3;
+  inset: 0 0 auto;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 8%, rgb(90 228 208 / 64%) 50%, transparent 92%);
+  box-shadow: 0 0 22px rgb(47 208 189 / 32%);
+  content: "";
+  pointer-events: none;
+}
+
+@media (max-width: 760px) {
+  .app-shell:has(> main > .hero.hero-world) .world-stage::after {
+    background:
+      linear-gradient(
+        180deg,
+        transparent 58%,
+        rgb(2 16 23 / 12%) 72%,
+        rgb(0 4 8 / 90%) 100%
+      ),
+      radial-gradient(
+        ellipse at 56% 43%,
+        transparent 28%,
+        rgb(4 35 40 / 8%) 70%,
+        rgb(2 22 29 / 32%) 100%
+      );
   }
 }
