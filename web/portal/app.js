@@ -2661,6 +2661,7 @@ function deferLusionFrame() {
       if (!event.cancelable || !frameIsAtTop() || getScrollTop() <= 0) return;
 
       event.preventDefault();
+      event.stopPropagation();
       if (returningToWater) return;
       returningToWater = true;
       elements.hero.scrollIntoView({
@@ -2676,7 +2677,7 @@ function deferLusionFrame() {
           event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? frameWindow.innerHeight : 1;
         returnToWater(event, event.deltaY * deltaScale);
       },
-      { passive: false },
+      { passive: false, capture: true },
     );
 
     let lastTouchY = null;
@@ -2686,7 +2687,7 @@ function deferLusionFrame() {
         returningToWater = false;
         lastTouchY = event.touches[0]?.clientY ?? null;
       },
-      { passive: true },
+      { passive: true, capture: true },
     );
     frameDocument.addEventListener(
       "touchmove",
@@ -2697,14 +2698,14 @@ function deferLusionFrame() {
         lastTouchY = touch.clientY;
         returnToWater(event, deltaY);
       },
-      { passive: false },
+      { passive: false, capture: true },
     );
     frameDocument.addEventListener(
       "touchend",
       () => {
         lastTouchY = null;
       },
-      { passive: true },
+      { passive: true, capture: true },
     );
   };
 
