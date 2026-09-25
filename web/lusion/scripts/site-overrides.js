@@ -1000,9 +1000,24 @@
   translateTree(document.documentElement);
 
   const languageOptions = [
-    { code: "en", label: "EN", name: "English", htmlLang: "en" },
-    { code: "vi", label: "VI", name: "Ti\u1ebfng Vi\u1ec7t", htmlLang: "vi" },
-    { code: "zh-CN", label: "\u4e2d\u6587", name: "\u7b80\u4f53\u4e2d\u6587", htmlLang: "zh-CN" },
+    {
+      code: "en",
+      name: { en: "English", vi: "Tiếng Anh", "zh-CN": "英语" },
+      mobileName: { en: "English", vi: "Tiếng Anh", "zh-CN": "英语" },
+      htmlLang: "en",
+    },
+    {
+      code: "vi",
+      name: { en: "Vietnamese", vi: "Tiếng Việt", "zh-CN": "越南语" },
+      mobileName: { en: "Vietnamese", vi: "Tiếng Việt", "zh-CN": "越南语" },
+      htmlLang: "vi",
+    },
+    {
+      code: "zh-CN",
+      name: { en: "Simplified Chinese", vi: "Tiếng Trung giản thể", "zh-CN": "简体中文" },
+      mobileName: { en: "Chinese", vi: "Tiếng Trung", "zh-CN": "中文" },
+      htmlLang: "zh-CN",
+    },
   ];
   const chooseLanguage = (code) => {
     if (code === activeLanguage) return;
@@ -1030,7 +1045,10 @@
         "aria-label",
         languagePack[activeLanguage]?.["Select language"] || "Select language",
       );
-      trigger.textContent = languageOptions.find((option) => option.code === activeLanguage).label;
+      const selectedLanguageOption = languageOptions.find(
+        (option) => option.code === activeLanguage,
+      );
+      trigger.textContent = selectedLanguageOption.name[activeLanguage];
       trigger.style.visibility = "hidden";
       trigger.style.opacity = "0";
       const menu = document.createElement("div");
@@ -1046,7 +1064,7 @@
         choice.lang = option.htmlLang;
         choice.setAttribute("role", "menuitemradio");
         choice.setAttribute("aria-checked", String(option.code === activeLanguage));
-        choice.textContent = option.name;
+        choice.textContent = option.name[activeLanguage];
         choice.addEventListener("click", (event) => {
           event.preventDefault();
           event.stopPropagation();
@@ -1237,9 +1255,9 @@
       choice.className = "lusion-mobile-language-choice";
       choice.dataset.locale = option.code;
       choice.lang = option.htmlLang;
-      choice.setAttribute("aria-label", option.name);
+      choice.setAttribute("aria-label", option.name[activeLanguage]);
       choice.setAttribute("aria-pressed", String(option.code === activeLanguage));
-      choice.textContent = option.label;
+      choice.textContent = option.mobileName[activeLanguage];
       choice.addEventListener("click", (event) => {
         event.preventDefault();
         event.stopPropagation();
