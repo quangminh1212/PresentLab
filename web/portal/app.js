@@ -1236,7 +1236,7 @@ const state = {
 
 const elements = {
   pageCurtain: document.querySelector("[data-page-curtain]"),
-  curtainProgress: document.querySelector("[data-curtain-progress]"),
+  curtainCanvas: document.querySelector("[data-curtain-canvas]"),
   curtainDigits: document.querySelectorAll("[data-curtain-digit]"),
   grid: document.querySelector("[data-template-grid]"),
   resultsCount: document.querySelector("[data-results-count]"),
@@ -2526,6 +2526,110 @@ function mountXLabWorld() {
     });
 }
 
+function easeLusionExpo(value) {
+  const progress = clampUnit(value);
+  if (progress === 0 || progress === 1) return progress;
+  return progress < 0.5
+    ? 2 ** (20 * progress - 10) / 2
+    : (2 - 2 ** (-20 * progress + 10)) / 2;
+}
+
+function drawLusionPageCurtain(canvas, progress, lineTransformRatio, contentShowRatio) {
+  if (!canvas) return;
+
+  const width = window.innerWidth + 2;
+  const height = window.innerHeight + 2;
+  const pixelRatio = Math.max(1, window.devicePixelRatio || 1);
+  const canvasWidth = Math.ceil(width * pixelRatio);
+  const canvasHeight = Math.ceil(height * pixelRatio);
+
+  if (canvas.width !== canvasWidth || canvas.height !== canvasHeight) {
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
+    canvas.style.width = `${width}px`;
+    canvas.style.height = `${height}px`;
+  }
+
+  const context = canvas.getContext("2d");
+  if (!context) return;
+
+  context.save();
+  context.scale(pixelRatio, pixelRatio);
+  context.fillStyle = "#000";
+  context.fillRect(0, 0, width, height);
+
+  const barUnit = Math.max(1, Math.trunc(Math.min(42, window.innerWidth / 30)));
+  const activeRatio = Math.min(1 - contentShowRatio, 1);
+  if (activeRatio <= 0) {
+    context.restore();
+    canvas.style.display = "none";
+    return;
+  }
+
+  canvas.style.display = "block";
+  const diagonal = Math.sqrt(width * width + height * height) / barUnit;
+  const transform = easeLusionExpo(1 - activeRatio);
+  const scale = (1 + transform * diagonal) * barUnit;
+  context.translate(width * 0.5, height * 0.5);
+  context.rotate(transform * (contentShowRatio === 0 ? -1 : 1));
+  context.translate(barUnit * transform * diagonal, (-barUnit * 0.5) * transform * diagonal);
+  context.scale(scale, scale);
+
+  if (lineTransformRatio === 0) {
+    context.fillStyle = "#333";
+    context.fillRect(-2.5, -0.5, 5, 1);
+    context.fillStyle = "#fff";
+    context.fillRect(-2.5, -0.5, 5 * clampUnit(progress), 1);
+  } else {
+    context.fillStyle = "#fff";
+    const line = clampUnit(lineTransformRatio);
+    context.translate(-line, 1.5 * line);
+
+    context.save();
+    context.translate(0.5, -0.5);
+    context.rotate(line * Math.PI * 0.5);
+    context.globalCompositeOperation = "xor";
+    context.fillRect(-3, 0, 3, 1);
+    context.globalCompositeOperation = "source-over";
+    context.globalAlpha = 1 - transform;
+    context.fillRect(-3, 0, 3, 1);
+    context.restore();
+
+    context.save();
+    context.translate(0.5, -0.5);
+    context.globalCompositeOperation = "xor";
+    context.fillRect(0, 0, 2, 1);
+    context.globalCompositeOperation = "source-over";
+    context.globalAlpha = 1 - transform;
+    context.fillRect(0, 0, 2, 1);
+    context.restore();
+  }
+
+  context.restore();
+}
+
+function updateLusionPageCurtainDigits(digits, progress, deltaSeconds, startTime) {
+  const easedStartTime = clampUnit(startTime);
+  digits.forEach((digit, index) => {
+    const power = 10 ** (digits.length - index - 1);
+    const target = Math.floor(progress / power);
+    const previous = Number.isFinite(digit._easedValue) ? digit._easedValue : 0;
+    let easedValue = previous + (target - previous) * (1 - Math.exp(-7 * deltaSeconds));
+    if (target - easedValue < 0.01) easedValue = target;
+    digit._easedValue = easedValue;
+
+    const digitValue = easedValue % 10;
+    const lowerDigit = Math.floor(digitValue);
+    const upperDigit = Math.ceil(digitValue) % 10;
+    const digitProgress = digitValue - lowerDigit;
+    const startOffset = easeLusionExpo(easedStartTime * 1.2 - (0.2 * index) / (digits.length - 1));
+    const numbers = digit.querySelectorAll("[data-curtain-num]");
+    if (numbers[0]) numbers[0].textContent = String(lowerDigit);
+    if (numbers[1]) numbers[1].textContent = String(upperDigit);
+    digit.style.transform = `translateY(${-(digitProgress - startOffset) * 50}%) translateY(-0.05em)`;
+  });
+}
+
 function startPageCurtain(libraryReady) {
   const pageCurtain = elements.pageCurtain;
   const root = document.documentElement;
@@ -2542,15 +2646,14 @@ function startPageCurtain(libraryReady) {
     return;
   }
 
-  const minimumDuration = 900;
+  const minimumDuration = 1000;
   const finishDuration = 260;
   const startedAt = performance.now();
   let previousFrameAt = startedAt;
   let progress = 0;
   let isReady = false;
   let isFinishing = false;
-  let finishStartedAt = 0;
-  let finishStartProgress = 0;
+  let markStartedAt = 0;
   let pageHasLoaded = document.readyState === "complete";
   let fontsAreReady = false;
   let libraryIsReady = false;
@@ -2592,28 +2695,35 @@ function startPageCurtain(libraryReady) {
     const elapsed = now - startedAt;
     const stageProgress = libraryIsReady ? 90 : fontsAreReady ? 76 : pageHasLoaded ? 64 : 22;
     const targetProgress = isReady && elapsed >= minimumDuration ? 100 : stageProgress;
-    progress = Math.min(targetProgress, progress + Math.max(0, now - previousFrameAt) * 0.09);
+    const deltaMilliseconds = Math.max(0, now - previousFrameAt);
+    progress = Math.min(targetProgress, progress + deltaMilliseconds / 10);
     previousFrameAt = now;
 
-    if (targetProgress === 100) {
-      if (!finishStartedAt) {
-        finishStartedAt = now;
-        finishStartProgress = progress;
-      }
-      progress = Math.min(
-        100,
-        finishStartProgress +
-          ((now - finishStartedAt) / finishDuration) * (100 - finishStartProgress),
-      );
+    const percent = Math.floor(progress);
+    let lineTransformRatio = 0;
+    let contentShowRatio = 0;
+    if (progress >= 100) {
+      if (!markStartedAt) markStartedAt = now;
+      const markElapsed = now - markStartedAt;
+      lineTransformRatio = easeLusionExpo(markElapsed / 1000);
+      contentShowRatio = clampUnit((markElapsed - 1000) / 1000);
     }
 
-    const percent = Math.floor(progress);
-    if (elements.curtainProgress) elements.curtainProgress.style.width = `${progress}%`;
-    elements.curtainDigits.forEach((digit, index) => {
-      digit.textContent = String(percent).padStart(3, "0")[index] ?? "0";
-    });
+    updateLusionPageCurtainDigits(
+      elements.curtainDigits,
+      percent,
+      deltaMilliseconds / 1000,
+      contentShowRatio,
+    );
 
-    if (progress >= 100 && !isFinishing) {
+    drawLusionPageCurtain(
+      elements.curtainCanvas,
+      progress / 100,
+      lineTransformRatio,
+      contentShowRatio,
+    );
+
+    if (contentShowRatio >= 1 && !isFinishing) {
       isFinishing = true;
       pageCurtain.classList.add("is-complete");
       window.setTimeout(() => {

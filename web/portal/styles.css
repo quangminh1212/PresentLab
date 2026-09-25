@@ -1,3 +1,19 @@
+@font-face {
+  font-family: Aeonik;
+  src: url("/assets/fonts/Aeonik-Regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+}
+
+@font-face {
+  font-family: IBMPlexMono;
+  src: url("/assets/fonts/IBMPlexMono-Regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+}
+
 :root {
   color-scheme: dark;
   --ink: #f3f7ff;
@@ -3221,76 +3237,50 @@ html {
   position: fixed;
   inset: 0;
   z-index: 90;
-  display: grid;
-  place-items: center;
+  overflow: hidden;
   pointer-events: none;
   background: #000;
-  transform-origin: top;
-  transition: transform 900ms var(--ease-expo);
+  opacity: 1;
+  transition: opacity 220ms ease-out;
 }
 
-.page-curtain-mark {
-  position: relative;
-  display: block;
-  width: min(210px, 16.667vw);
-  height: auto;
-  aspect-ratio: 5 / 1;
-}
-
-.page-curtain-track,
-.page-curtain-fill {
+.page-curtain-canvas {
   position: absolute;
   top: 0;
   left: 0;
-  height: 100%;
-}
-
-.page-curtain-track {
-  width: 100%;
-  background: #333;
-}
-
-.page-curtain-fill {
-  width: 0;
-  background: #fff;
-  transition: width 80ms linear;
-}
-
-.page-curtain-mark::before,
-.page-curtain-mark::after {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 28px;
-  height: 1px;
-  background: #fff;
-  content: "";
-  opacity: 0;
-  transform: translate(-50%, -50%) scaleX(0);
-  transition:
-    opacity 100ms ease,
-    transform 180ms var(--ease-expo);
+  display: block;
+  max-width: none;
 }
 
 .page-curtain-count {
-  position: absolute;
+  position: fixed;
+  z-index: 1;
   bottom: 0;
   left: 0;
   display: flex;
   height: 0.75em;
   overflow: hidden;
   color: #fff;
+  font-family: Aeonik, Inter, ui-sans-serif, sans-serif;
   font-size: clamp(7em, 8vw, 20em);
-  font-variant-numeric: tabular-nums;
-  font-weight: 300;
-  letter-spacing: -0.08em;
+  font-weight: 400;
   line-height: 0.75em;
 }
 
-.page-curtain-count span {
-  min-width: 0.62em;
+.page-curtain-digit {
+  position: relative;
+  display: block;
+  flex: 0 0 1ch;
+  width: 1ch;
+  height: 1.5em;
   text-align: center;
   transform: translateY(-0.05em);
+}
+
+.page-curtain-digit > span {
+  display: block;
+  height: 0.75em;
+  line-height: 0.75em;
 }
 
 @media (max-width: 812px) {
@@ -3299,27 +3289,8 @@ html {
   }
 }
 
-.page-curtain.is-complete .page-curtain-track,
-.page-curtain.is-complete .page-curtain-fill {
+.page-curtain.is-complete {
   opacity: 0;
-  transform: scaleX(0.01);
-  transition:
-    opacity 100ms ease,
-    transform 180ms var(--ease-expo);
-}
-
-.page-curtain.is-complete .page-curtain-mark::before,
-.page-curtain.is-complete .page-curtain-mark::after {
-  opacity: 1;
-  transform: translate(-50%, -50%) rotate(45deg);
-}
-
-.page-curtain.is-complete .page-curtain-mark::after {
-  transform: translate(-50%, -50%) rotate(-45deg);
-}
-
-html.is-ready .page-curtain {
-  transform: scaleY(0);
 }
 
 .scroll-progress {
