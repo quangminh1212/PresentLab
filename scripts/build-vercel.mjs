@@ -101,6 +101,16 @@ const siteOverrides = (await readFile(siteOverridesPath, "utf8")).replaceAll(
   "Lusion Reel",
   "XLab Reel",
 );
+const lusionStylesPath = join(output, "_astro", "about.CNa9RfUh.css");
+let lusionStyles = await readFile(lusionStylesPath, "utf8");
+const blockingFontFaceCount = lusionStyles.split("font-display:block").length - 1;
+if (blockingFontFaceCount !== 6) {
+  throw new Error(
+    `Expected six blocking Lusion font declarations, found ${blockingFontFaceCount}.`,
+  );
+}
+lusionStyles = lusionStyles.replaceAll("font-display:block", "font-display:swap");
+await writeFile(lusionStylesPath, lusionStyles);
 const siteOverridesAst = ts.createSourceFile(
   "site-overrides.js",
   siteOverrides,

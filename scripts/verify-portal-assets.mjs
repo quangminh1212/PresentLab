@@ -7,6 +7,7 @@ const requiredAssets = [
   "public/web/portal/app.js",
   "public/web/portal/world.css",
   "public/web/portal/world.js",
+  "public/web/portal/xlab-logo.webp",
   "public/web/vendor/three/three.module.js",
   "public/web/vendor/three/three.core.js",
   "public/web/vendor/three/addons/objects/Water.js",
@@ -64,8 +65,10 @@ if (portalHtml.includes("data-world-water-video") || portalHtml.includes("water-
 
 for (const [source, reference] of [
   [portalHtml, 'class="lusion-home-frame"'],
-  [portalHtml, 'src="/lusion/"'],
+  [portalHtml, 'data-lazy-src="/lusion/"'],
+  [portalHtml, "/web/portal/xlab-logo.webp"],
   [portalHtml, 'title="XLab creative studio home page"'],
+  [appSource, 'rootMargin: "-160px 0px"'],
   [portalStyles, ".lusion-home-frame"],
   [lusionHtml, 'id="home-hero"'],
   [lusionHtml, 'id="projects-main"'],
@@ -142,6 +145,9 @@ if (!/\.about-award-category\.award-category-talks\{display:none!important\}/i.t
 }
 if (!/\.project-item\{cursor:default\}/i.test(lusionStyles)) {
   throw new Error("XLab project cards still look clickable.");
+}
+if ((lusionStyles.match(/font-display:swap/g) || []).length !== 6) {
+  throw new Error("XLab fonts are not configured to render fallback text while loading.");
 }
 const homePageSource = await readFile(resolve(root, "public/lusion/index.html"), "utf8");
 if (

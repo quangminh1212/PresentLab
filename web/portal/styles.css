@@ -5881,6 +5881,12 @@ body::after {
   object-fit: contain;
 }
 
+.brand-logo-frame > picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 .brand-copy {
   min-width: 0;
 }

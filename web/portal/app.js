@@ -1,5 +1,3 @@
-import { setupXLabWorld } from "./world.js";
-
 if ("scrollRestoration" in window.history) {
   window.history.scrollRestoration = "manual";
 }
@@ -2510,6 +2508,54 @@ function handleWorldTarget(targetId) {
   if (target) scrollToMotionTarget(target, href);
 }
 
+function mountXLabWorld() {
+  import("./world.js")
+    .then(({ setupXLabWorld }) => {
+      setupXLabWorld({
+        canvas: elements.worldCanvas,
+        stage: elements.worldStage,
+        onTarget: handleWorldTarget,
+      });
+    })
+    .catch((error) => {
+      elements.worldStage?.classList.add("world-fallback");
+      console.error("The interactive water scene could not be loaded.", error);
+    });
+}
+
+function deferLusionFrame() {
+  const frame = document.querySelector("iframe[data-lazy-src]");
+  if (!frame) return;
+
+  const observeFrame = () => {
+    const loadFrame = () => {
+      frame.src = frame.dataset.lazySrc;
+      delete frame.dataset.lazySrc;
+    };
+
+    if (!("IntersectionObserver" in window)) {
+      loadFrame();
+      return;
+    }
+
+    const observer = new window.IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        observer.disconnect();
+        loadFrame();
+      },
+      { rootMargin: "-160px 0px" },
+    );
+    observer.observe(frame);
+  };
+
+  if (document.readyState === "complete") {
+    observeFrame();
+  } else {
+    window.addEventListener("load", observeFrame, { once: true });
+  }
+}
+
 function setupExperience() {
   bindRevealMotion();
   bindAnchorNavigation();
@@ -2518,12 +2564,11 @@ function setupExperience() {
   bindAmbientSurfaceMotion();
   bindMagneticMotion();
   bindMotionScroll();
-  setupXLabWorld({
-    canvas: elements.worldCanvas,
-    stage: elements.worldStage,
-    onTarget: handleWorldTarget,
+  deferLusionFrame();
+  requestAnimationFrame(() => {
+    document.documentElement.classList.add("is-ready");
+    window.setTimeout(mountXLabWorld, 500);
   });
-  requestAnimationFrame(() => document.documentElement.classList.add("is-ready"));
 }
 
 function resetInitialFragmentToWater() {
