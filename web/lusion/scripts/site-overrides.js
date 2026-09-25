@@ -889,7 +889,7 @@
   if (localeMeta) localeMeta.setAttribute("content", metaLocale[activeLanguage]);
 
   style.textContent +=
-    '#lusion-language-switcher{position:absolute;top:var(--base-padding-y);right:calc(var(--base-padding-x) + 7.8em);z-index:56;pointer-events:auto;font-size:.875em;color:#fff}#lusion-language-trigger{display:flex;align-items:center;justify-content:center;gap:.65em;min-width:4.2em;height:3.2em;padding:0 1em;border:1px solid rgba(255,255,255,.18);border-radius:6.25em;background:var(--color-grey-blue);color:#fff;font-family:inherit;font-size:1em;font-weight:500;line-height:1;text-transform:uppercase;cursor:pointer;transition:background-color .3s,color .3s}#lusion-language-trigger:after{content:"";width:.36em;height:.36em;margin-top:-.2em;border-right:1px solid currentColor;border-bottom:1px solid currentColor;transform:rotate(45deg);transition:transform .2s,margin .2s}#lusion-language-switcher.is-open #lusion-language-trigger:after{margin-top:0;transform:rotate(315deg)}#lusion-language-trigger:hover{background:#071bdf}#lusion-language-menu{position:absolute;top:calc(100% + .55em + var(--lusion-menu-motion-y,0px));left:0;right:auto;z-index:58;display:flex;flex-direction:column;width:12em;max-width:calc(100vw - var(--base-padding-x)*2);min-width:0;gap:0;padding:.65em .3125em;border-radius:.625em;background:#fff;color:#080808;box-shadow:0 12px 30px rgba(0,0,0,.12);font-size:1.142857em}#lusion-language-menu[hidden]{display:none!important}.lusion-language-choice{display:block;position:relative;width:100%;padding:.7em 1.3em;border:0;border-radius:6.25em;background:transparent;color:inherit;font-family:inherit;font-size:1.1em;font-weight:400;line-height:1;text-align:left;text-transform:uppercase;cursor:pointer;transition:background-color .3s,color .3s}.lusion-language-choice:hover{background:rgba(0,0,0,.045)}.lusion-language-choice:after{content:"";position:absolute;top:calc(50% - .2em);right:1.55em;width:.4em;height:.4em;margin:0;border:0;border-radius:50%;background:currentColor;opacity:0;transform:scale(0);transition:opacity .2s,transform .2s}.lusion-language-choice[aria-checked="true"]:after{opacity:1;transform:scale(1)}#lusion-language-trigger:focus-visible,.lusion-language-choice:focus-visible{outline:2px solid #c1ff00;outline-offset:3px}@media(max-width:812px){#lusion-language-switcher{right:calc(var(--base-padding-x) + 8.2em)}#lusion-language-trigger{min-width:3.5em;padding:0 .75em}}html[lang="vi"] body,html[lang="vi"] h1,html[lang="vi"] h2,html[lang="vi"] h3,html[lang="vi"] button,html[lang="vi"] input{font-family:Aeonik,system-ui,sans-serif}html[lang="zh-CN"] body,html[lang="zh-CN"] h1,html[lang="zh-CN"] h2,html[lang="zh-CN"] h3,html[lang="zh-CN"] button,html[lang="zh-CN"] input{font-family:Aeonik,system-ui,"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif}#lusion-language-trigger,#lusion-language-menu .lusion-language-choice,#lusion-mobile-language-controls .lusion-mobile-language-choice{font-family:Aeonik}html[lang="vi"] #lusion-language-trigger,html[lang="vi"] #lusion-language-menu .lusion-language-choice,html[lang="vi"] #lusion-mobile-language-controls .lusion-mobile-language-choice{font-family:Aeonik,system-ui,sans-serif}html[lang="zh-CN"] #lusion-language-trigger,html[lang="zh-CN"] #lusion-language-menu .lusion-language-choice,html[lang="zh-CN"] #lusion-mobile-language-controls .lusion-mobile-language-choice{font-family:Aeonik,system-ui,"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif}';
+    '#lusion-language-switcher{position:absolute;top:var(--base-padding-y);right:calc(var(--base-padding-x) + 7.8em);z-index:56;pointer-events:auto;font-size:.875em;color:#fff}#lusion-language-trigger{display:flex;align-items:center;justify-content:center;gap:.65em;min-width:4.2em;height:3.2em;padding:0 1em;border:1px solid rgba(255,255,255,.18);border-radius:6.25em;background:var(--color-grey-blue);color:#fff;font-family:inherit;font-size:1em;font-weight:500;line-height:1;text-transform:uppercase;cursor:pointer;transition:opacity .45s,background-color .3s,color .3s}#lusion-language-trigger:after{content:"";width:.36em;height:.36em;margin-top:-.2em;border-right:1px solid currentColor;border-bottom:1px solid currentColor;transform:rotate(45deg);transition:transform .2s,margin .2s}#lusion-language-switcher.is-open #lusion-language-trigger:after{margin-top:0;transform:rotate(315deg)}#lusion-language-trigger:hover{background:#071bdf}#lusion-language-menu{position:absolute;top:calc(100% + .55em + var(--lusion-menu-motion-y,0px));left:0;right:auto;z-index:58;display:flex;flex-direction:column;width:12em;max-width:calc(100vw - var(--base-padding-x)*2);min-width:0;gap:0;padding:.65em .3125em;border-radius:.625em;background:#fff;color:#080808;box-shadow:0 12px 30px rgba(0,0,0,.12);font-size:1.142857em}#lusion-language-menu[hidden]{display:none!important}.lusion-language-choice{display:block;position:relative;width:100%;padding:.7em 1.3em;border:0;border-radius:6.25em;background:transparent;color:inherit;font-family:inherit;font-size:1.1em;font-weight:400;line-height:1;text-align:left;text-transform:uppercase;cursor:pointer;transition:background-color .3s,color .3s}.lusion-language-choice:hover{background:rgba(0,0,0,.045)}.lusion-language-choice:after{content:"";position:absolute;top:calc(50% - .2em);right:1.55em;width:.4em;height:.4em;margin:0;border:0;border-radius:50%;background:currentColor;opacity:0;transform:scale(0);transition:opacity .2s,transform .2s}.lusion-language-choice[aria-checked="true"]:after{opacity:1;transform:scale(1)}#lusion-language-trigger:focus-visible,.lusion-language-choice:focus-visible{outline:2px solid #c1ff00;outline-offset:3px}@media(max-width:812px){#lusion-language-switcher{right:calc(var(--base-padding-x) + 8.2em)}#lusion-language-trigger{min-width:3.5em;padding:0 .75em}}html[lang="vi"] body,html[lang="vi"] h1,html[lang="vi"] h2,html[lang="vi"] h3,html[lang="vi"] button,html[lang="vi"] input{font-family:Aeonik,system-ui,sans-serif}html[lang="zh-CN"] body,html[lang="zh-CN"] h1,html[lang="zh-CN"] h2,html[lang="zh-CN"] h3,html[lang="zh-CN"] button,html[lang="zh-CN"] input{font-family:Aeonik,system-ui,"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif}#lusion-language-trigger,#lusion-language-menu .lusion-language-choice,#lusion-mobile-language-controls .lusion-mobile-language-choice{font-family:Aeonik}html[lang="vi"] #lusion-language-trigger,html[lang="vi"] #lusion-language-menu .lusion-language-choice,html[lang="vi"] #lusion-mobile-language-controls .lusion-mobile-language-choice{font-family:Aeonik,system-ui,sans-serif}html[lang="zh-CN"] #lusion-language-trigger,html[lang="zh-CN"] #lusion-language-menu .lusion-language-choice,html[lang="zh-CN"] #lusion-mobile-language-controls .lusion-mobile-language-choice{font-family:Aeonik,system-ui,"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif}';
 
   style.textContent +=
     '#lusion-mobile-language-controls{display:none;margin-top:.35em;padding:.8em .35em .25em;border-top:1px solid rgba(0,0,0,.14);color:#080808;text-transform:none}#lusion-mobile-language-controls .lusion-mobile-language-label{display:block;margin-bottom:.65em;font-size:.72em;font-weight:500;letter-spacing:.08em;text-transform:uppercase;opacity:.55}#lusion-mobile-language-controls .lusion-mobile-language-options{display:flex;gap:.4em}#lusion-mobile-language-controls .lusion-mobile-language-choice{flex:1;min-height:2.7em;padding:.5em .75em;border:1px solid #e4e6ef;border-radius:999px;background:#fff;color:#080808;font-family:inherit;font-size:.78em;font-weight:500;line-height:1;text-align:center;text-transform:uppercase;cursor:pointer}#lusion-mobile-language-controls .lusion-mobile-language-choice[aria-pressed="true"]{background:#080808;color:#fff;border-color:#080808}@media(max-width:812px){#lusion-language-switcher{display:block!important;right:calc(var(--base-padding-x) + 8.2em)}#lusion-language-menu{position:fixed;top:calc(var(--base-padding-y)*2 + 3*var(--header-size) + var(--lusion-menu-motion-y,0px));left:auto;right:var(--base-padding-x);width:12em;max-width:calc(100vw - var(--base-padding-x)*2);max-height:calc(100vh - var(--base-padding-y)*3 - var(--header-size));overflow-y:auto}#lusion-mobile-language-controls{display:none!important}}';
@@ -1031,6 +1031,8 @@
         languagePack[activeLanguage]?.["Select language"] || "Select language",
       );
       trigger.textContent = languageOptions.find((option) => option.code === activeLanguage).label;
+      trigger.style.visibility = "hidden";
+      trigger.style.opacity = "0";
       const menu = document.createElement("div");
       menu.id = "lusion-language-menu";
       menu.setAttribute("role", "menu");
@@ -1055,9 +1057,10 @@
       }
       root.append(trigger, menu);
       header.appendChild(root);
-      const menuButton = document.getElementById("header-right-menu-btn");
-      if (menuButton) {
+      const syncMenuButton = (menuButton) => {
+        const headerContainer = document.getElementById("header-container");
         let lastMenuTransform = "";
+        let initialFrameReady = false;
         const syncMenuMotion = () => {
           const menuStyle = getComputedStyle(menuButton);
           const transform = menuStyle.transform;
@@ -1072,24 +1075,99 @@
           const menuBounds = menuButton.getBoundingClientRect();
           const spacing = activeLanguage === "vi" ? 36 : 24;
           root.style.right = Math.max(0, headerBounds.right - menuBounds.left + spacing) + "px";
-          trigger.style.clipPath = "none";
-          trigger.style.visibility = menuStyle.visibility;
-          trigger.style.opacity = menuStyle.opacity;
+          const triggerBounds = trigger.getBoundingClientRect();
+          const clipBounds = headerContainer?.getBoundingClientRect();
+          let clipPath = "none";
+          let fullyClipped = triggerBounds.width <= 0 || triggerBounds.height <= 0;
+          if (clipBounds && !fullyClipped) {
+            const visibleWidth =
+              Math.min(triggerBounds.right, clipBounds.right) -
+              Math.max(triggerBounds.left, clipBounds.left);
+            const visibleHeight =
+              Math.min(triggerBounds.bottom, clipBounds.bottom) -
+              Math.max(triggerBounds.top, clipBounds.top);
+            fullyClipped = visibleWidth <= 0 || visibleHeight <= 0;
+            if (fullyClipped) {
+              clipPath = "inset(50%)";
+            } else {
+              const toPercent = (value, size) =>
+                `${Math.min(100, Math.max(0, (value / size) * 100))}%`;
+              const top = toPercent(clipBounds.top - triggerBounds.top, triggerBounds.height);
+              const right = toPercent(triggerBounds.right - clipBounds.right, triggerBounds.width);
+              const bottom = toPercent(
+                triggerBounds.bottom - clipBounds.bottom,
+                triggerBounds.height,
+              );
+              const left = toPercent(clipBounds.left - triggerBounds.left, triggerBounds.width);
+              clipPath = `inset(${top} ${right} ${bottom} ${left})`;
+            }
+          }
+          trigger.style.clipPath = clipPath;
+          let menuVisible = !fullyClipped;
+          let menuOpacity = 1;
+          for (
+            let element = menuButton;
+            element && header.contains(element);
+            element = element.parentElement
+          ) {
+            const elementStyle = getComputedStyle(element);
+            if (
+              elementStyle.display === "none" ||
+              elementStyle.visibility === "hidden" ||
+              elementStyle.visibility === "collapse"
+            ) {
+              menuVisible = false;
+            }
+            menuOpacity *= Number(elementStyle.opacity);
+            if (element === header) break;
+          }
+          if (!initialFrameReady || !menuVisible) {
+            trigger.style.visibility = "hidden";
+            trigger.style.opacity = "0";
+          } else {
+            trigger.style.visibility = "visible";
+            trigger.style.opacity = String(menuOpacity);
+          }
         };
         const menuMotionObserver = new MutationObserver(syncMenuMotion);
-        menuMotionObserver.observe(menuButton, {
-          attributes: true,
-          attributeFilter: ["style", "class"],
-        });
+        for (
+          let element = menuButton;
+          element && header.contains(element);
+          element = element.parentElement
+        ) {
+          menuMotionObserver.observe(element, {
+            attributes: true,
+            attributeFilter: ["style", "class"],
+          });
+          if (element === header) break;
+        }
         window.addEventListener("resize", syncMenuMotion, { passive: true });
+        header.addEventListener("transitionend", syncMenuMotion, true);
+        header.addEventListener("animationend", syncMenuMotion, true);
         if ("ResizeObserver" in window) {
           const menuSizeObserver = new ResizeObserver(syncMenuMotion);
           menuSizeObserver.observe(menuButton);
         }
         if (document.fonts?.ready) document.fonts.ready.then(syncMenuMotion);
         syncMenuMotion();
+        window.requestAnimationFrame(() =>
+          window.requestAnimationFrame(() => {
+            initialFrameReady = true;
+            syncMenuMotion();
+          }),
+        );
+      };
+      const menuButton = document.getElementById("header-right-menu-btn");
+      if (menuButton) {
+        syncMenuButton(menuButton);
       } else {
-        trigger.style.visibility = "visible";
+        const menuButtonObserver = new MutationObserver(() => {
+          const delayedMenuButton = document.getElementById("header-right-menu-btn");
+          if (!delayedMenuButton) return;
+          menuButtonObserver.disconnect();
+          syncMenuButton(delayedMenuButton);
+        });
+        menuButtonObserver.observe(header, { childList: true, subtree: true });
       }
 
       const openLanguageMenu = (focusSelected = false) => {
