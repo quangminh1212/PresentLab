@@ -2462,16 +2462,16 @@ html:has(.app-shell > main > .hero.hero-world).is-section-transitioning {
   }
 }
 
-/* Editorial water hero borrowing Lusion's sparse type, open header and scroll cue. */
+/* Editorial water hero with a navigation that matches the Lusion page below. */
 .app-shell:has(> main > .hero.hero-world) > .topbar {
   position: absolute;
   z-index: 20;
-  top: clamp(20px, 3.6vh, 38px);
-  right: clamp(20px, 4.4vw, 68px);
-  left: clamp(20px, 4.4vw, 68px);
+  top: clamp(26px, 5vh, 44px);
+  right: clamp(24px, 6vw, 108px);
+  left: clamp(24px, 6vw, 108px);
   width: auto;
   max-width: none;
-  min-height: 0;
+  min-height: 44px;
   margin: 0;
   padding: 0;
   transform: none;
@@ -2486,6 +2486,10 @@ html:has(.app-shell > main > .hero.hero-world).is-section-transitioning {
 .app-shell:has(> main > .hero.hero-world) > .topbar,
 .app-shell:has(> main > .hero.hero-world) .world-copy {
   font-family: Aeonik, Inter, ui-sans-serif, sans-serif;
+}
+
+body.menu-open {
+  overflow: hidden;
 }
 
 html[lang="vi"] .app-shell:has(> main > .hero.hero-world) > .topbar,
@@ -2504,13 +2508,16 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
 }
 
 .app-shell:has(> main > .hero.hero-world) > .topbar .brand {
-  gap: 12px;
+  position: relative;
+  z-index: 2;
+  gap: 0;
   color: #fff;
 }
 
 .app-shell:has(> main > .hero.hero-world) > .topbar .brand-logo-frame {
-  width: 48px;
-  height: 30px;
+  width: 80px;
+  height: 32px;
+  padding: 0;
   overflow: visible;
   border: 0;
   border-radius: 0;
@@ -2525,25 +2532,28 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   filter: brightness(0) invert(1);
 }
 
-.app-shell:has(> main > .hero.hero-world) > .topbar .brand-copy strong,
 .app-shell:has(> main > .hero.hero-world) > .topbar .topnav-link,
 .app-shell:has(> main > .hero.hero-world) > .topbar .locale-picker,
 .app-shell:has(> main > .hero.hero-world) > .topbar .theme-toggle {
   color: #fff;
 }
 
-.app-shell:has(> main > .hero.hero-world) > .topbar .brand-copy strong {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-}
-
-.app-shell:has(> main > .hero.hero-world) > .topbar .brand-copy small {
+.app-shell:has(> main > .hero.hero-world) > .topbar .topnav {
   display: none;
 }
 
-.app-shell:has(> main > .hero.hero-world) > .topbar .topnav {
-  gap: clamp(14px, 2vw, 30px);
+.app-shell:has(> main > .hero.hero-world) > .topbar .topnav.is-open {
+  position: fixed;
+  z-index: 1;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: clamp(22px, 4vh, 40px);
+  padding: clamp(110px, 15vh, 156px) clamp(24px, 6vw, 108px) 72px;
+  background: rgb(2 4 7 / 94%);
+  backdrop-filter: blur(18px) saturate(110%);
 }
 
 .app-shell:has(> main > .hero.hero-world) > .topbar .topnav-link {
@@ -2552,11 +2562,11 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   border: 0;
   border-radius: 0;
   background: none;
-  color: rgb(255 255 255 / 76%);
-  font-size: 10px;
+  color: rgb(255 255 255 / 88%);
+  font-size: clamp(24px, 4vw, 48px);
   font-weight: 500;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
+  letter-spacing: -0.045em;
+  text-transform: none;
 }
 
 .app-shell:has(> main > .hero.hero-world) > .topbar .topnav-link:hover,
@@ -2564,9 +2574,7 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   border: 0;
   background: none;
   color: #fff;
-  text-decoration: underline;
-  text-decoration-color: rgb(255 255 255 / 52%);
-  text-underline-offset: 6px;
+  text-decoration: none;
 }
 
 .app-shell:has(> main > .hero.hero-world) > .topbar .locale-picker,
@@ -2583,9 +2591,9 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   border: 0;
   background: transparent;
   color: #fff;
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 500;
-  letter-spacing: 0.13em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
@@ -2603,16 +2611,52 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
 }
 
 .app-shell:has(> main > .hero.hero-world) > .topbar .menu-button {
-  min-width: 0;
-  min-height: 0;
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  width: auto;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
   padding: 8px 0 8px 12px;
   border: 0;
   border-radius: 0;
   background: transparent;
   box-shadow: none;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
 }
 
-.app-shell:has(> main > .hero.hero-world) > .topbar .menu-button span {
+.app-shell:has(> main > .hero.hero-world) > .topbar .menu-button .menu-button-label {
+  display: block;
+  width: auto;
+  height: auto;
+  margin: 0;
+  background: none;
+  color: inherit;
+  line-height: 1;
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .menu-button .menu-button-dots {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: auto;
+  height: auto;
+  margin: 0;
+  background: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .menu-button-dots i {
+  display: block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
   background: #fff;
 }
 
@@ -2814,6 +2858,17 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
     max-width: 15em;
     font-size: clamp(30px, 8.4vw, 42px);
     line-height: 1.12;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) > .topbar .brand-logo-frame {
+    width: 80px;
+    height: 32px;
+    padding: 0;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) > .topbar .menu-button {
+    width: auto;
+    height: 44px;
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-lede {

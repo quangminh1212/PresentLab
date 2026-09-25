@@ -2090,6 +2090,15 @@ function handleFiles(input) {
 }
 
 function bindEvents() {
+  const menuButton = document.querySelector("[data-menu-toggle]");
+  const setMenuOpen = (open) => {
+    elements.menu.classList.toggle("is-open", open);
+    document.body.classList.toggle("menu-open", open);
+    menuButton.setAttribute("aria-expanded", String(open));
+    menuButton.setAttribute("aria-label", t(open ? "menuClose" : "menuOpen"));
+    menuButton.querySelector("[data-menu-label]").textContent = open ? "Close" : "Menu";
+  };
+
   document
     .querySelectorAll("[data-open-request]")
     .forEach((button) => button.addEventListener("click", openDrawer));
@@ -2110,6 +2119,10 @@ function bindEvents() {
     if (event.key === "Escape") {
       closePreview();
       closeDrawer();
+      if (elements.menu.classList.contains("is-open")) {
+        setMenuOpen(false);
+        menuButton.focus();
+      }
     }
     if (!elements.previewModal.hidden && event.key === "ArrowLeft") navigatePreview(-1);
     if (!elements.previewModal.hidden && event.key === "ArrowRight") navigatePreview(1);
@@ -2121,11 +2134,8 @@ function bindEvents() {
       document.querySelector("[data-search]").focus();
     }
   });
-  document.querySelector("[data-menu-toggle]").addEventListener("click", (event) => {
-    const button = event.currentTarget;
-    const open = elements.menu.classList.toggle("is-open");
-    button.setAttribute("aria-expanded", String(open));
-    button.setAttribute("aria-label", t(open ? "menuClose" : "menuOpen"));
+  menuButton.addEventListener("click", () => {
+    setMenuOpen(!elements.menu.classList.contains("is-open"));
   });
   document.querySelector("[data-locale]").addEventListener("change", (event) => {
     setLocale(event.target.value);
@@ -2136,7 +2146,7 @@ function bindEvents() {
   document
     .querySelectorAll(".topnav-link")
     .forEach((link) =>
-      link.addEventListener("click", () => elements.menu.classList.remove("is-open")),
+      link.addEventListener("click", () => setMenuOpen(false)),
     );
   document.querySelector("[data-search]").addEventListener("input", (event) => {
     state.query = event.target.value;
