@@ -203,8 +203,6 @@ const COPY = {
     signalMotion: "NHỊP TRÌNH CHIẾU CÓ CHỦ ĐÍCH",
     signalBrief: "BRIEF / DỰNG / DUYỆT",
     signalOutput: "SẴN SÀNG LÊN SÂN KHẤU",
-    scrollCue: "CUỘN ĐỂ XEM SLIDE",
-    scrollToTemplates: "Lướt xuống thư viện slide",
     scrollToProcess: "Lướt xuống xem quy trình",
     scrollToJourney: "Lướt xuống xem hành trình thiết kế",
     nextSceneKicker: "03 / FLIGHT JOURNAL",
@@ -433,8 +431,6 @@ const COPY = {
     signalMotion: "PRESENTATION RHYTHM WITH INTENT",
     signalBrief: "BRIEF / BUILD / REVIEW",
     signalOutput: "READY FOR THE ROOM",
-    scrollCue: "SCROLL TO VIEW SLIDES",
-    scrollToTemplates: "Scroll to the slide library",
     scrollToProcess: "Scroll to the process",
     scrollToJourney: "Scroll through the design journey",
     nextSceneKicker: "03 / FLIGHT JOURNAL",
@@ -655,8 +651,6 @@ const COPY = {
     signalMotion: "有目的的演示节奏",
     signalBrief: "简报 / 制作 / 评审",
     signalOutput: "为现场呈现准备",
-    scrollCue: "滚动查看幻灯片",
-    scrollToTemplates: "向下浏览幻灯片库",
     scrollToProcess: "向下查看流程",
     scrollToJourney: "向下浏览设计旅程",
     nextSceneKicker: "03 / 飞行日志",
@@ -2512,18 +2506,35 @@ function handleWorldTarget(targetId) {
 }
 
 function mountXLabWorld() {
-  import("./world.js")
-    .then(({ setupXLabWorld }) => {
-      setupXLabWorld({
-        canvas: elements.worldCanvas,
-        stage: elements.worldStage,
-        onTarget: handleWorldTarget,
+  return new Promise((resolve) => {
+    let isSettled = false;
+    let fallbackTimer = 0;
+    const markReady = () => {
+      if (isSettled) return;
+      isSettled = true;
+      window.clearTimeout(fallbackTimer);
+      resolve();
+    };
+    fallbackTimer = window.setTimeout(() => {
+      elements.worldStage?.classList.add("world-fallback", "world-ready");
+      markReady();
+    }, 12000);
+
+    import("./world.js")
+      .then(({ setupXLabWorld }) => {
+        setupXLabWorld({
+          canvas: elements.worldCanvas,
+          stage: elements.worldStage,
+          onTarget: handleWorldTarget,
+          onReady: markReady,
+        });
+      })
+      .catch((error) => {
+        elements.worldStage?.classList.add("world-fallback", "world-ready");
+        console.error("The interactive water scene could not be loaded.", error);
+        markReady();
       });
-    })
-    .catch((error) => {
-      elements.worldStage?.classList.add("world-fallback");
-      console.error("The interactive water scene could not be loaded.", error);
-    });
+  });
 }
 
 function easeLusionExpo(value) {
@@ -2633,16 +2644,26 @@ function updateLusionPageCurtainDigits(digits, progress, deltaSeconds, startTime
 function startPageCurtain(libraryReady) {
   const pageCurtain = elements.pageCurtain;
   const root = document.documentElement;
+  const worldReady = mountXLabWorld();
+  const pageLoaded = new Promise((resolve) => {
+    if (document.readyState === "complete") {
+      resolve();
+    } else {
+      window.addEventListener("load", resolve, { once: true });
+    }
+  });
+  const fontsReady = document.fonts?.ready ?? Promise.resolve();
 
   if (!pageCurtain) {
     root.classList.add("is-ready");
-    mountXLabWorld();
     return;
   }
 
   if (isReducedMotion()) {
-    root.classList.add("is-ready");
-    window.setTimeout(mountXLabWorld, 500);
+    Promise.allSettled([libraryReady, pageLoaded, fontsReady, worldReady]).then(() => {
+      pageCurtain.classList.add("is-complete");
+      root.classList.add("is-ready");
+    });
     return;
   }
 
@@ -2657,19 +2678,17 @@ function startPageCurtain(libraryReady) {
   let pageHasLoaded = document.readyState === "complete";
   let fontsAreReady = false;
   let libraryIsReady = false;
-  const pageLoaded = new Promise((resolve) => {
-    if (document.readyState === "complete") {
-      resolve();
-    } else {
-      window.addEventListener("load", resolve, { once: true });
-    }
-  });
-  const fontsReady = document.fonts?.ready ?? Promise.resolve();
+  let pageResourcesAreReady = false;
+  let waterIsReady = false;
+  const updateReadiness = () => {
+    isReady = pageResourcesAreReady && waterIsReady;
+  };
   const readinessFallback = window.setTimeout(() => {
-    isReady = true;
     pageHasLoaded = true;
     fontsAreReady = true;
     libraryIsReady = true;
+    pageResourcesAreReady = true;
+    updateReadiness();
   }, 4000);
 
   pageLoaded.then(() => {
@@ -2687,8 +2706,13 @@ function startPageCurtain(libraryReady) {
     },
   );
   Promise.allSettled([libraryReady, pageLoaded, fontsReady]).then(() => {
-    isReady = true;
+    pageResourcesAreReady = true;
     window.clearTimeout(readinessFallback);
+    updateReadiness();
+  });
+  worldReady.then(() => {
+    waterIsReady = true;
+    updateReadiness();
   });
 
   function render(now) {
@@ -2728,7 +2752,6 @@ function startPageCurtain(libraryReady) {
       pageCurtain.classList.add("is-complete");
       window.setTimeout(() => {
         root.classList.add("is-ready");
-        window.setTimeout(mountXLabWorld, 500);
       }, 220);
       return;
     }

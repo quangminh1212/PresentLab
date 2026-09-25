@@ -229,8 +229,16 @@ function setupDomControls(stage, onTarget, focusField) {
   });
 }
 
-export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
+export function setupXLabWorld({ canvas, stage, onTarget = () => {}, onReady = () => {} }) {
   if (!canvas || !stage) return;
+
+  let hasReportedReady = false;
+  const reportReady = () => {
+    if (hasReportedReady) return;
+    hasReportedReady = true;
+    stage.classList.add("world-ready");
+    onReady();
+  };
 
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const pointer = {
@@ -298,7 +306,8 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     stage.dataset.worldSurface = "css-water-fallback";
     stage.dataset.worldInteraction = "pointer-parallax-overlay";
     stage.dataset.worldRippleProvider = "css-fallback";
-    stage.classList.add("world-fallback", "world-ready");
+    stage.classList.add("world-fallback");
+    reportReady();
   };
 
   const getVideoPlaybackState = () => {
@@ -310,7 +319,7 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
   const setWebglWaterState = () => {
     stage.classList.remove("world-fallback");
     stage.classList.toggle("is-video-water", videoWaterReady);
-    stage.classList.add("is-threejs-water", "world-ready");
+    stage.classList.add("is-threejs-water");
     stage.dataset.worldVideoState = getVideoPlaybackState();
     stage.dataset.worldRenderMode = "threejs-water-addon-overlay";
     stage.dataset.worldShading = videoWaterReady
@@ -349,7 +358,6 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     stage.classList.toggle("is-video-water", ready);
     stage.dataset.worldVideoState = ready ? getVideoPlaybackState() : "fallback";
     if (ready) {
-      stage.classList.add("world-ready");
       stage.classList.remove("world-fallback");
       stage.dataset.worldWaterTexture = "ready";
       if (webglWaterAvailable) setWebglWaterState();
@@ -581,7 +589,8 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
       () => {
         waterNormalMapState = "unavailable";
         stage.dataset.worldWaterNormalMap = waterNormalMapState;
-        if (reducedMotion && webglWaterAvailable) draw(window.performance.now());
+        if (!videoWaterReady) setFallbackState();
+        else if (reducedMotion && webglWaterAvailable) draw(window.performance.now());
       },
     );
     waterNormals.wrapS = THREE.RepeatWrapping;
@@ -986,6 +995,7 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     }
     stage.dataset.worldWaterNormalMap = waterNormalMapState;
     renderer.render(scene, camera);
+    if (waterNormalMapState !== "loading") reportReady();
     stage.dataset.worldGpuRender =
       renderer.info.render.calls + "|" + renderer.info.render.triangles;
 
@@ -1010,7 +1020,7 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
   }
   function loop(time) {
     animationFrame = 0;
-    if (!isVisible || document.hidden) return;
+    if (!isVisible || document.hidden || stage.classList.contains("world-fallback")) return;
     draw(time);
     if (!reducedMotion) animationFrame = window.requestAnimationFrame(loop);
   }
@@ -1046,7 +1056,6 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {} }) {
     visibilityObserver.observe(stage);
   }
 
-  stage.classList.add("world-ready");
   resize();
   start();
 }

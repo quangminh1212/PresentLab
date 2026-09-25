@@ -311,7 +311,6 @@
 
 .world-hud,
 .world-locations,
-.world-scroll-cue,
 .world-media-credit {
   z-index: 6;
 }
@@ -528,41 +527,6 @@
   font-weight: 400;
 }
 
-.world-scroll-cue {
-  position: absolute;
-  bottom: 32px;
-  left: 30px;
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  color: rgb(194 240 234 / 46%);
-  font-family: IBMPlexMono, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-  font-size: 8px;
-  letter-spacing: 0.16em;
-}
-
-.world-scroll-cue span {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-}
-
-.world-scroll-cue i {
-  display: block;
-  width: 3px;
-  height: 13px;
-  background: #74efdb;
-  opacity: 0.28;
-}
-
-.world-scroll-cue i:nth-child(2) {
-  opacity: 0.58;
-}
-
-.world-scroll-cue i:nth-child(3) {
-  opacity: 0.95;
-}
-
 .world-media-credit {
   position: absolute;
   right: 30px;
@@ -624,7 +588,6 @@ html[data-theme="light"] .world-target-readout strong {
 html[data-theme="light"] .world-stats small,
 html[data-theme="light"] .world-hud,
 html[data-theme="light"] .world-control-copy,
-html[data-theme="light"] .world-scroll-cue,
 html[data-theme="light"] .world-location small {
   color: rgb(12 71 75 / 56%);
 }
@@ -730,12 +693,6 @@ html[data-theme="light"] .world-location small {
 
   .world-location small {
     display: none;
-  }
-
-  .world-scroll-cue {
-    bottom: 33px;
-    left: 18px;
-    font-size: 7px;
   }
 
   .world-media-credit {
@@ -1262,7 +1219,6 @@ html[data-theme="light"] .world-target-readout strong {
 html[data-theme="light"] .world-stats small,
 html[data-theme="light"] .world-hud,
 html[data-theme="light"] .world-control-copy,
-html[data-theme="light"] .world-scroll-cue,
 html[data-theme="light"] .world-location small {
   color: rgb(194 240 234 / 56%);
 }
@@ -2369,23 +2325,6 @@ html:has(.app-shell > main > .hero.hero-world) {
   scroll-snap-stop: always;
 }
 
-/* Keep the only visible action in water-only mode easy to tap on touch screens. */
-.app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
-  min-height: 44px;
-  padding-inline: 0;
-  font-size: 8px;
-  line-height: 1.4;
-}
-
-@media (max-width: 760px) {
-  .app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
-    bottom: max(16px, calc(env(safe-area-inset-bottom, 0px) + 8px));
-    min-height: 44px;
-    padding-inline: 0;
-    font-size: 7px;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   html:has(.app-shell > main > .hero.hero-world) {
     scroll-snap-type: none;
@@ -2454,6 +2393,69 @@ html:has(.app-shell > main > .hero.hero-world) {
         transparent 28%,
         rgb(15 16 19 / 7%) 70%,
         rgb(0 0 0 / 35%) 100%
-      );
+    );
+  }
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-stage.world-fallback {
+  background:
+    radial-gradient(ellipse at 52% 39%, rgb(224 229 236 / 22%), transparent 22%),
+    linear-gradient(
+      180deg,
+      #717680 0%,
+      #555a63 34%,
+      #a1a6ad 41%,
+      #50555e 53%,
+      #1d2128 68%,
+      #080b10 100%
+    );
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-stage.world-fallback .world-canvas,
+.app-shell:has(> main > .hero.hero-world) .world-stage.world-fallback .world-space-image,
+.app-shell:has(> main > .hero.hero-world) .world-stage.world-fallback .world-atmosphere,
+.app-shell:has(> main > .hero.hero-world) .world-stage.world-fallback .world-scanlines {
+  display: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-stage.world-fallback::before {
+  display: block;
+  position: absolute;
+  z-index: 5;
+  inset: 38% -18% -16%;
+  background:
+    repeating-linear-gradient(
+      176deg,
+      transparent 0 14px,
+      rgb(244 249 255 / 30%) 15px 18px,
+      transparent 19px 34px
+    ),
+    repeating-linear-gradient(
+      183deg,
+      transparent 0 22px,
+      rgb(171 192 211 / 22%) 23px 27px,
+      transparent 28px 48px
+    );
+  background-size: 210% 100%, 190% 100%;
+  content: "";
+  filter: blur(2px);
+  opacity: 0.72;
+  pointer-events: none;
+  animation: world-css-water-flow 11s ease-in-out infinite alternate;
+}
+
+@keyframes world-css-water-flow {
+  from {
+    background-position: 0% 0%, 100% 0%;
+  }
+
+  to {
+    background-position: 100% 12%, 0% -8%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell:has(> main > .hero.hero-world) .world-stage.world-fallback::before {
+    animation: none;
   }
 }
