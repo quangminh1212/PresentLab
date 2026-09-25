@@ -2302,6 +2302,8 @@ html[data-theme="light"] .world-stage {
   display: none;
 }
 
+.app-shell:has(> main > .hero.hero-world) > .topbar,
+.app-shell:has(> main > .hero.hero-world) .world-copy,
 .app-shell:has(> main > .hero.hero-world) .world-hud,
 .app-shell:has(> main > .hero.hero-world) .world-locations,
 .scroll-progress {
