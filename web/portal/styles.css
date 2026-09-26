@@ -3287,6 +3287,10 @@ html {
   display: none;
 }
 
+html.js:not(.is-ready) .scroll-progress {
+  visibility: hidden;
+}
+
 .scroll-progress {
   position: fixed;
   top: 0;
