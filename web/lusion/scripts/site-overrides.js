@@ -25,7 +25,7 @@
     const embeddedLoaderStyle = document.createElement("style");
     embeddedLoaderStyle.textContent =
       "html,body{background:#000!important}html:not(.lusion-embed-preloader-complete) #header-logo,html:not(.lusion-embed-preloader-complete) #home-hero-title{visibility:hidden!important}html:not(.is-white-bg) #header-logo{color:#2eb7ad!important}html:not(.is-white-bg) #header-logo svg text{fill:#2eb7ad!important}html:not(.is-white-bg) #header-logo .xlab-logo-crop img{filter:brightness(0) saturate(100%) invert(67%) sepia(62%) saturate(559%) hue-rotate(126deg) brightness(92%) contrast(88%)!important}" +
-      "@media (min-width:521px) and (max-width:879px){html[lang=\"vi\"] #home-hero-title{left:10rem!important;right:13rem!important}}";
+      "@media (min-width:521px) and (max-width:879px){html[lang=\"vi\"] #home-hero-title{left:10rem!important;right:13rem!important;color:#f0f1fa!important}}";
     document.head.appendChild(embeddedLoaderStyle);
 
     const revealLogoAfterPreloader = () => {
