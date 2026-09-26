@@ -15,17 +15,17 @@
     '@media (min-width:813px){html[lang="vi"] #home-hero-title{grid-column:2/span 10!important;font-size:clamp(18px,2.1vw,40px)!important;line-height:1.08!important;text-wrap:balance!important}}' +
     '@media (min-width:813px){html[lang="vi"] #home-hero-title{margin-left:max(0px,calc(96px - 7.6vw))!important}}' +
     '@media (max-width:812px){html[lang="vi"] #home-hero-title{grid-column:1/span 6!important;width:100%!important;font-size:clamp(10.5px,2.5vw,15px)!important;line-height:1.08!important;text-wrap:balance!important;margin-top:110px!important}}' +
-    '@media (min-width:521px) and (max-width:879px){html[lang="vi"] #home-hero-title{position:absolute!important;top:var(--base-padding-y)!important;left:6rem!important;right:9rem!important;width:auto!important;max-width:100%!important;margin:0!important;padding:.35em .55em!important;border-radius:8px!important;background:#f0f1fa!important;color:#101116!important;font-size:clamp(10px,1.8vw,12px)!important;line-height:1.08!important;z-index:54!important}}' +
-    '@media (min-width:521px) and (max-width:879px){html[lang="vi"] #home-hero{grid-template-rows:calc(var(--header-size)*3 + 1rem) minmax(0,1fr)!important}html[lang="vi"] #home-hero-visual-container{grid-row:2!important}}' +
-    '@media (min-width:813px) and (max-width:879px){html[lang="vi"] #home-hero-title{top:calc(var(--base-padding-y) + 8px)!important;right:calc(var(--base-padding-x) + 9rem)!important}}' +
-    '@media (min-width:521px) and (max-width:879px){html[lang="vi"] #home-hero-title .line{overflow:visible!important}html[lang="vi"] #home-hero-title .word{transform:none!important}}';
+    '@media (min-width:521px) and (max-width:879px){#home-hero-title{position:absolute!important;top:var(--base-padding-y)!important;left:6rem!important;right:9rem!important;width:auto!important;max-width:100%!important;margin:0!important;padding:.35em .55em!important;border-radius:8px!important;background:#f0f1fa!important;color:#101116!important;font-size:clamp(11px,1.8vw,13px)!important;line-height:1.08!important;z-index:54!important}}' +
+    '@media (min-width:521px) and (max-width:879px){#home-hero{grid-template-rows:calc(var(--header-size)*3 + 1rem) minmax(0,1fr)!important}#home-hero-visual-container{grid-row:2!important}}' +
+    '@media (min-width:813px) and (max-width:879px){#home-hero-title{top:calc(var(--base-padding-y) + 8px)!important}}' +
+    '@media (min-width:521px) and (max-width:879px){#home-hero-title .line{overflow:visible!important}#home-hero-title .word{transform:none!important}}';
   document.head.appendChild(vietnameseFontStyle);
 
   if (new URLSearchParams(window.location.search).has("water-page-embed")) {
     const embeddedLoaderStyle = document.createElement("style");
     embeddedLoaderStyle.textContent =
       "html,body{background:#000!important}html:not(.lusion-embed-preloader-complete) #header-logo,html:not(.lusion-embed-preloader-complete) #home-hero-title{visibility:hidden!important}html:not(.is-white-bg) #header-logo{color:#2eb7ad!important}html:not(.is-white-bg) #header-logo svg text{fill:#2eb7ad!important}html:not(.is-white-bg) #header-logo .xlab-logo-crop img{filter:brightness(0) saturate(100%) invert(67%) sepia(62%) saturate(559%) hue-rotate(126deg) brightness(92%) contrast(88%)!important}" +
-      "@media (min-width:521px) and (max-width:879px){html[lang=\"vi\"] #home-hero-title{left:10rem!important;right:13rem!important}}";
+      "@media (min-width:521px) and (max-width:879px){#home-hero-title{left:10rem!important;right:13rem!important}}";
     document.head.appendChild(embeddedLoaderStyle);
 
     const revealLogoAfterPreloader = () => {
