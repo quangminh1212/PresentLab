@@ -20,7 +20,7 @@
   if (new URLSearchParams(window.location.search).has("water-page-embed")) {
     const embeddedLoaderStyle = document.createElement("style");
     embeddedLoaderStyle.textContent =
-      "html,body{background:#000!important}#transition-overlay{display:none!important}html:not(.lusion-embed-preloader-complete) #header-logo{visibility:hidden!important}html:not(.is-white-bg) #header-logo{color:#2eb7ad!important}html:not(.is-white-bg) #header-logo svg text{fill:#2eb7ad!important}html:not(.is-white-bg) #header-logo .xlab-logo-crop img{filter:brightness(0) saturate(100%) invert(67%) sepia(62%) saturate(559%) hue-rotate(126deg) brightness(92%) contrast(88%)!important}";
+      "html,body{background:#000!important}html:not(.lusion-embed-preloader-complete) #header-logo,html:not(.lusion-embed-preloader-complete) #home-hero-title{visibility:hidden!important}html:not(.is-white-bg) #header-logo{color:#2eb7ad!important}html:not(.is-white-bg) #header-logo svg text{fill:#2eb7ad!important}html:not(.is-white-bg) #header-logo .xlab-logo-crop img{filter:brightness(0) saturate(100%) invert(67%) sepia(62%) saturate(559%) hue-rotate(126deg) brightness(92%) contrast(88%)!important}";
     document.head.appendChild(embeddedLoaderStyle);
 
     const revealLogoAfterPreloader = () => {
