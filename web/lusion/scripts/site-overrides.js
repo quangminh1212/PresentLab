@@ -14,7 +14,8 @@
     'html[lang="vi"] #lusion-language-trigger,html[lang="vi"] #lusion-language-menu .lusion-language-choice,html[lang="vi"] #lusion-mobile-language-controls .lusion-mobile-language-choice{font-family:system-ui,sans-serif!important}' +
     '@media (min-width:813px){html[lang="vi"] #home-hero-title{grid-column:2/span 10!important;font-size:clamp(18px,2.1vw,40px)!important;line-height:1.08!important;text-wrap:balance!important}}' +
     '@media (min-width:813px){html[lang="vi"] #home-hero-title{margin-left:max(0px,calc(96px - 7.6vw))!important}}' +
-    '@media (max-width:812px){html[lang="vi"] #home-hero-title{grid-column:1/span 6!important;width:100%!important;font-size:clamp(11.5px,2.8vw,17px)!important;line-height:1.08!important;text-wrap:balance!important;margin-top:110px!important}}';
+    '@media (max-width:812px){html[lang="vi"] #home-hero-title{grid-column:1/span 6!important;width:100%!important;font-size:clamp(10.5px,2.5vw,15px)!important;line-height:1.08!important;text-wrap:balance!important;margin-top:110px!important}}' +
+    '@media (min-width:560px) and (max-width:812px){html[lang="vi"] #home-hero-title{position:absolute!important;top:calc(var(--base-padding-y) + 9px)!important;left:calc(var(--base-padding-x) + 92px)!important;right:calc(var(--base-padding-x) + 142px)!important;width:auto!important;max-width:none!important;grid-column:auto!important;margin:0!important;padding:0!important;border-radius:0!important;background:transparent!important;font-size:clamp(10px,1.6vw,13px)!important;line-height:1.08!important;transform:translateY(var(--lusion-menu-motion-y,0px))!important;z-index:54!important}}';
   document.head.appendChild(vietnameseFontStyle);
 
   if (new URLSearchParams(window.location.search).has("water-page-embed")) {
@@ -1114,6 +1115,7 @@
             const motionY = motionMatrix ? motionMatrix.m42 : 0;
             trigger.style.transform = transform;
             root.style.setProperty("--lusion-menu-motion-y", `${motionY}px`);
+            document.documentElement.style.setProperty("--lusion-menu-motion-y", `${motionY}px`);
             lastMenuTransform = transform;
           }
           const headerBounds = header.getBoundingClientRect();
