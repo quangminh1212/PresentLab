@@ -3236,26 +3236,9 @@ html {
 .page-curtain {
   position: fixed;
   inset: 0;
-  z-index: 90;
+  z-index: 101;
   overflow: hidden;
   pointer-events: none;
-  background: transparent;
-  opacity: 1;
-  transition: opacity 220ms ease-out;
-}
-
-html:not(.is-ready),
-html:not(.is-ready) body {
-  background: transparent !important;
-}
-
-html:not(.is-ready) body::before,
-html:not(.is-ready) body::after {
-  display: none !important;
-}
-
-html:not(.is-ready) .app-shell {
-  visibility: hidden;
 }
 
 .page-curtain-canvas {
@@ -3267,15 +3250,14 @@ html:not(.is-ready) .app-shell {
 }
 
 .page-curtain-count {
-  position: fixed;
+  position: absolute;
   z-index: 1;
   bottom: 0;
   left: 0;
-  display: flex;
   height: 0.75em;
   overflow: hidden;
   color: #fff;
-  font-family: Aeonik, Inter, ui-sans-serif, sans-serif;
+  font-family: Aeonik;
   font-size: clamp(7em, 8vw, 20em);
   font-weight: 400;
   line-height: 0.75em;
@@ -3283,10 +3265,8 @@ html:not(.is-ready) .app-shell {
 
 .page-curtain-digit {
   position: relative;
-  display: block;
-  flex: 0 0 1ch;
+  float: left;
   width: 1ch;
-  height: 1.5em;
   text-align: center;
   transform: translateY(-0.05em);
 }
@@ -3304,7 +3284,7 @@ html:not(.is-ready) .app-shell {
 }
 
 .page-curtain.is-complete {
-  opacity: 0;
+  display: none;
 }
 
 .scroll-progress {

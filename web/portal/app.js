@@ -2559,8 +2559,8 @@ function drawLusionPageCurtain(canvas, progress, lineTransformRatio, contentShow
   const width = window.innerWidth + 2;
   const height = window.innerHeight + 2;
   const pixelRatio = Math.max(1, window.devicePixelRatio || 1);
-  const canvasWidth = Math.ceil(width * pixelRatio);
-  const canvasHeight = Math.ceil(height * pixelRatio);
+  const canvasWidth = Math.trunc(width * pixelRatio);
+  const canvasHeight = Math.trunc(height * pixelRatio);
 
   if (canvas.width !== canvasWidth || canvas.height !== canvasHeight) {
     canvas.width = canvasWidth;
@@ -2574,9 +2574,10 @@ function drawLusionPageCurtain(canvas, progress, lineTransformRatio, contentShow
 
   context.save();
   context.scale(pixelRatio, pixelRatio);
-  context.clearRect(0, 0, width, height);
+  context.fillStyle = "#000";
+  context.fillRect(0, 0, width, height);
 
-  const barUnit = Math.max(1, Math.trunc(Math.min(42, window.innerWidth / 30)));
+  const barUnit = Math.trunc(Math.min(42, window.innerWidth / 30));
   const activeRatio = Math.min(1 - contentShowRatio, 1);
   if (activeRatio <= 0) {
     context.restore();
@@ -2757,9 +2758,7 @@ function startPageCurtain(libraryReady) {
     if (contentShowRatio >= 1 && !isFinishing) {
       isFinishing = true;
       pageCurtain.classList.add("is-complete");
-      window.setTimeout(() => {
-        root.classList.add("is-ready");
-      }, 220);
+      root.classList.add("is-ready");
       return;
     }
 

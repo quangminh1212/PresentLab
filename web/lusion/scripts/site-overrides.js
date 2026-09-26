@@ -24,34 +24,11 @@
   if (new URLSearchParams(window.location.search).has("water-page-embed")) {
     const embeddedLoaderStyle = document.createElement("style");
     embeddedLoaderStyle.textContent =
-      "html,body{background:#000!important}html:not(.lusion-embed-preloader-complete) #header-logo,html:not(.lusion-embed-preloader-complete) #home-hero-title{visibility:hidden!important}html:not(.is-white-bg) #header-logo{color:#2eb7ad!important}html:not(.is-white-bg) #header-logo svg text{fill:#2eb7ad!important}html:not(.is-white-bg) #header-logo .xlab-logo-crop img{filter:brightness(0) saturate(100%) invert(67%) sepia(62%) saturate(559%) hue-rotate(126deg) brightness(92%) contrast(88%)!important}" +
+      "html:not(.is-white-bg) #header-logo{color:#2eb7ad!important}html:not(.is-white-bg) #header-logo svg text{fill:#2eb7ad!important}html:not(.is-white-bg) #header-logo .xlab-logo-crop img{filter:brightness(0) saturate(100%) invert(67%) sepia(62%) saturate(559%) hue-rotate(126deg) brightness(92%) contrast(88%)!important}" +
       "@media (min-width:521px) and (max-width:879px){html[lang] #home-hero-title{left:10rem!important;right:13rem!important}}";
     document.head.appendChild(embeddedLoaderStyle);
 
-    const revealLogoAfterPreloader = () => {
-      const preloader = document.getElementById("preloader");
-      if (!preloader) {
-        document.documentElement.classList.add("lusion-embed-preloader-complete");
-        return;
-      }
 
-      const observer = new MutationObserver(() => {
-        if (preloader.style.display !== "none") return;
-        document.documentElement.classList.add("lusion-embed-preloader-complete");
-        observer.disconnect();
-      });
-      observer.observe(preloader, { attributes: true, attributeFilter: ["style"] });
-      if (preloader.style.display === "none") {
-        document.documentElement.classList.add("lusion-embed-preloader-complete");
-        observer.disconnect();
-      }
-    };
-
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", revealLogoAfterPreloader, { once: true });
-    } else {
-      revealLogoAfterPreloader();
-    }
   }
 
   const offlineMessage = (detail) =>
