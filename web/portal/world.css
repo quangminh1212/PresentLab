@@ -2924,3 +2924,8 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
     animation: none;
   }
 }
+
+/* Keep the water introduction clear of navigation chrome. */
+.app-shell:has(> main > .hero.hero-world) > .topbar {
+  display: none !important;
+}
