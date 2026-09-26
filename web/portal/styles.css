@@ -3239,9 +3239,23 @@ html {
   z-index: 90;
   overflow: hidden;
   pointer-events: none;
-  background: #000;
+  background: transparent;
   opacity: 1;
   transition: opacity 220ms ease-out;
+}
+
+html:not(.is-ready),
+html:not(.is-ready) body {
+  background: transparent !important;
+}
+
+html:not(.is-ready) body::before,
+html:not(.is-ready) body::after {
+  display: none !important;
+}
+
+html:not(.is-ready) .app-shell {
+  visibility: hidden;
 }
 
 .page-curtain-canvas {
@@ -4155,10 +4169,6 @@ html[data-theme="light"] .theme-toggle,
 html[data-theme="light"] .locale-picker {
   border-color: rgb(30 46 82 / 18%);
   background: rgb(255 253 247 / 64%);
-}
-
-html[data-theme="light"] .page-curtain {
-  background: #000;
 }
 
 .theme-toggle {

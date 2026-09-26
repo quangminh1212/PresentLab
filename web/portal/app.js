@@ -2574,8 +2574,7 @@ function drawLusionPageCurtain(canvas, progress, lineTransformRatio, contentShow
 
   context.save();
   context.scale(pixelRatio, pixelRatio);
-  context.fillStyle = "#000";
-  context.fillRect(0, 0, width, height);
+  context.clearRect(0, 0, width, height);
 
   const barUnit = Math.max(1, Math.trunc(Math.min(42, window.innerWidth / 30)));
   const activeRatio = Math.min(1 - contentShowRatio, 1);
