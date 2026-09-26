@@ -2925,7 +2925,71 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   }
 }
 
-/* Keep the water introduction clear of navigation chrome. */
+/* Compact Lusion-style masthead: brand left, language and menu right. */
 .app-shell:has(> main > .hero.hero-world) > .topbar {
-  display: none !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .topnav {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: clamp(18px, 2.2vw, 34px);
+  margin-left: auto;
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .topnav:not(.is-open) .topnav-link,
+.app-shell:has(> main > .hero.hero-world) > .topbar .topnav:not(.is-open) .theme-toggle {
+  display: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .topnav.is-open .topnav-link {
+  display: block !important;
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .topnav:not(.is-open) .locale-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0 2px;
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .topnav:not(.is-open) .locale-picker::after {
+  width: 6px;
+  height: 6px;
+  border-right: 1px solid currentColor;
+  border-bottom: 1px solid currentColor;
+  content: "";
+  opacity: 0.85;
+  transform: translateY(-2px) rotate(45deg);
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .locale-picker select {
+  padding: 6px 0;
+  appearance: none;
+}
+
+@media (max-width: 760px) {
+  .app-shell:has(> main > .hero.hero-world) > .topbar {
+    top: 20px;
+    right: 20px;
+    left: 20px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) > .topbar .topnav:not(.is-open) {
+    position: static;
+    flex-direction: row;
+    gap: 16px;
+    padding: 0;
+    background: transparent;
+    backdrop-filter: none;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) > .topbar .brand-logo-frame {
+    width: 70px;
+    height: 30px;
+  }
 }
