@@ -3238,7 +3238,8 @@ html {
   inset: 0;
   z-index: 101;
   overflow: hidden;
-  pointer-events: none;
+  background: #000;
+  pointer-events: auto;
 }
 
 .page-curtain-canvas {

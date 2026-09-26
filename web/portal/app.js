@@ -2667,7 +2667,8 @@ function startPageCurtain(libraryReady) {
     return;
   }
 
-  if (isReducedMotion()) {
+  const hasCanvasContext = Boolean(elements.curtainCanvas?.getContext("2d"));
+  if (isReducedMotion() || !hasCanvasContext) {
     Promise.allSettled([libraryReady, pageLoaded, fontsReady, worldReady]).then(() => {
       pageCurtain.classList.add("is-complete");
       root.classList.add("is-ready");

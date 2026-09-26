@@ -119,6 +119,12 @@
 }
 
 /* Keep the animated Home headline readable while its 3D scene loads on touch screens. */
+@media (min-width: 813px) {
+  #home-hero-title .word {
+    transform: none !important;
+  }
+}
+
 @media (max-width: 812px) {
   #header-logo {
     display: inline-flex;
