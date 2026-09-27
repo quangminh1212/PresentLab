@@ -166,7 +166,15 @@
   }
 }
 
-/* Keep the second loading phase black while the preloader is still visible. */
-html.is-ready #preloader {
-  background-color: #000;
+/* Hide the light reveal above the loading mark without covering its progress bar. */
+html.is-ready #preloader::before {
+  position: absolute;
+  z-index: 1;
+  top: 5%;
+  right: 2%;
+  left: 2%;
+  height: 14%;
+  background: #000;
+  content: "";
+  pointer-events: none;
 }
