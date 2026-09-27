@@ -3,248 +3,219 @@ const headerFrame = document.querySelector(
 );
 
 if (headerFrame) {
-  const headerHost = document.createElement("div");
-  headerHost.id = "shared-lusion-header-render";
-  headerHost.setAttribute("data-shared-lusion-header-render", "");
-  document.body.appendChild(headerHost);
-
+  const minimumHeaderHeight = 112;
+  const localeSelect = document.querySelector("select[data-locale]");
+  let headerHeight = minimumHeaderHeight;
   let menuOpen = false;
-  let languageMenuOpen = false;
-  let renderTimer = 0;
+  let sourceDocument = null;
+  let headerObserver = null;
+  let observedHeader = null;
 
-  const sendTheme = () => {
-    headerFrame.contentWindow?.postMessage(
-      {
-        type: "xlab-shared-header-theme",
-        theme: document.documentElement.dataset.theme || "dark",
-      },
-      window.location.origin,
+  const setFrameHeight = () => {
+    headerFrame.style.height = menuOpen
+      ? `${window.innerHeight}px`
+      : `${headerHeight}px`;
+  };
+
+  const syncTheme = () => {
+    const root = headerFrame.contentDocument?.documentElement;
+    if (!root) return;
+
+    const dark = document.documentElement.dataset.theme !== "light";
+    root.classList.toggle("is-black-bg", dark);
+    root.classList.toggle("is-white-bg", !dark);
+  };
+
+  const localeValue = (locale) =>
+    ["en", "vi", "zh"].includes(locale) ? locale : null;
+
+  const syncLocale = () => {
+    const locale = localeValue(localeSelect?.value);
+    if (!locale) return;
+
+    let stored = true;
+    try {
+      localStorage.setItem("presentlab.locale", locale);
+    } catch {
+      // The page-two language control remains available if storage is blocked.
+      stored = false;
+    }
+
+    const documentLocale =
+      sourceDocument?.documentElement.dataset.lusionLanguage ||
+      (sourceDocument?.documentElement.lang === "zh-CN"
+        ? "zh"
+        : sourceDocument?.documentElement.lang);
+    if (stored && documentLocale && documentLocale !== locale) {
+      headerFrame.style.opacity = "0";
+      headerFrame.contentWindow?.location.reload();
+      return false;
+    }
+    return true;
+  };
+
+  const isSourceMenuOpen = () => {
+    if (!sourceDocument) return false;
+
+    return Boolean(
+      sourceDocument
+        .querySelector("#header")
+        ?.classList.contains("--menu-opened") ||
+        sourceDocument
+          .querySelector("#header-menu")
+          ?.classList.contains("--opened") ||
+        sourceDocument
+          .querySelector("#header-right-menu-btn")
+          ?.classList.contains("--opened") ||
+        sourceDocument
+          .querySelector("#lusion-language-switcher")
+          ?.classList.contains("is-open") ||
+        sourceDocument.querySelector("#lusion-language-menu")?.hidden === false
     );
   };
 
-  const styleText = (style) => {
-    const declarations = [];
-    for (let index = 0; index < style.length; index += 1) {
-      const property = style[index];
-      const value = style.getPropertyValue(property);
-      if (value) declarations.push(`${property}:${value} !important`);
+  const syncMenu = () => {
+    menuOpen = isSourceMenuOpen();
+    setFrameHeight();
+  };
+
+  const closeSourceMenu = () => {
+    if (
+      sourceDocument
+        ?.querySelector("#lusion-language-menu")
+        ?.hidden === false
+    ) {
+      sourceDocument.querySelector("#lusion-language-trigger")?.click();
     }
-    return declarations.join(";");
-  };
-
-  const renderHeader = () => {
-    const sourceDocument = headerFrame.contentDocument;
-    const sourceHeader = sourceDocument?.querySelector("#header");
-    if (!sourceHeader) return;
-
-    const clonedHeader = sourceHeader.cloneNode(true);
-    const sourceElements = [
-      sourceHeader,
-      ...sourceHeader.querySelectorAll("*"),
-    ];
-    const clonedElements = [
-      clonedHeader,
-      ...clonedHeader.querySelectorAll("*"),
-    ];
-    if (sourceElements.length !== clonedElements.length) return;
-
-    const pseudoRules = [];
-    for (let index = 0; index < sourceElements.length; index += 1) {
-      const sourceElement = sourceElements[index];
-      const clonedElement = clonedElements[index];
-      clonedElement.setAttribute("style", styleText(getComputedStyle(sourceElement)));
-      if (sourceElement.id === "lusion-language-trigger") {
-        clonedElement.style.setProperty("opacity", "1", "important");
-        clonedElement.style.setProperty("clip-path", "none", "important");
-        clonedElement.style.setProperty("transform", "none", "important");
-      }
-
-      for (const pseudo of ["before", "after"]) {
-        const pseudoStyle = getComputedStyle(sourceElement, `::${pseudo}`);
-        const content = pseudoStyle.getPropertyValue("content");
-        if (!content || content === "none" || content === "normal") continue;
-
-        const attribute = `data-shared-${pseudo}`;
-        clonedElement.setAttribute(attribute, String(index));
-        pseudoRules.push(
-          `[${attribute}="${index}"]::${pseudo}{${styleText(pseudoStyle)}}`,
-        );
-      }
+    if (
+      sourceDocument?.querySelector("#header")?.classList.contains("--menu-opened") ||
+      sourceDocument
+        ?.querySelector("#header-menu")
+        ?.classList.contains("--opened")
+    ) {
+      sourceDocument.querySelector("#header-right-menu-btn")?.click();
     }
-
-    const pseudoStyle = document.createElement("style");
-    pseudoStyle.textContent = pseudoRules.join("\n");
-    headerHost.replaceChildren(clonedHeader, pseudoStyle);
   };
 
-  const scheduleRender = (delay = 0) => {
-    window.clearTimeout(renderTimer);
-    renderTimer = window.setTimeout(renderHeader, delay);
+  const openPortalContact = () => {
+    closeSourceMenu();
+    document.querySelector("[data-open-request]")?.click();
   };
 
-  const mountFromSource = (attempt = 0) => {
-    const sourceDocument = headerFrame.contentDocument;
-    const sourceHeader = sourceDocument?.querySelector("#header");
-    const hasLanguageTrigger = Boolean(
-      sourceDocument?.querySelector("#lusion-language-trigger"),
-    );
-    if ((!sourceHeader || !hasLanguageTrigger) && attempt < 40) {
-      window.setTimeout(() => mountFromSource(attempt + 1), 50);
-      return;
-    }
-    if (!sourceHeader) return;
-
-    renderHeader();
-    sendTheme();
-  };
-
-  const sourceTargetFor = (target) => {
-    const sourceDocument = headerFrame.contentDocument;
-    if (!sourceDocument) return null;
-
-    if (target.id) return sourceDocument.getElementById(target.id);
-
-    for (const attribute of ["data-locale", "data-page", "data-scroll-to"]) {
-      const value = target.getAttribute(attribute);
-      if (value === null) continue;
-      return sourceDocument.querySelector(
-        `[${attribute}="${CSS.escape(value)}"]`,
-      );
-    }
-    return null;
-  };
-
-  headerHost.addEventListener("click", (event) => {
+  const handleSourceClick = (event) => {
     const target = event.target.closest(
-      "a,button,[role='button'],[data-locale],[data-page],[data-scroll-to]",
+      "a[data-page], #header-logo, [data-scroll-to='contact'], #header-right-talk-btn, #header-menu-talk",
     );
     if (!target) return;
 
-    const sourceTarget = sourceTargetFor(target);
-    if (!sourceTarget) return;
+    if (
+      target.matches("[data-scroll-to='contact'], #header-right-talk-btn, #header-menu-talk")
+    ) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      openPortalContact();
+      return;
+    }
+
+    const href = target.getAttribute("href");
+    if (!href?.startsWith("/")) return;
 
     event.preventDefault();
-    event.stopPropagation();
-    sourceTarget.click();
-
-    if (target.id === "lusion-language-trigger") {
-      languageMenuOpen =
-        headerFrame.contentDocument?.querySelector("#lusion-language-menu")
-          ?.hidden === false;
-    } else if (target.hasAttribute("data-locale")) {
-      languageMenuOpen = false;
-    }
-    if (target.id === "lusion-language-trigger" || target.hasAttribute("data-locale")) {
-      scheduleRender();
-    }
-  });
-
-  document.addEventListener("click", (event) => {
+    event.stopImmediatePropagation();
+    const destination = new URL(href, window.location.href);
     if (
-      headerHost.contains(event.target) ||
-      (!menuOpen && !languageMenuOpen)
+      destination.pathname === window.location.pathname &&
+      !destination.hash
     ) {
-      return;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      window.location.assign(destination.href);
     }
-    headerFrame.contentDocument?.dispatchEvent(
-      new MouseEvent("click", { bubbles: true }),
+  };
+
+  const mountSourceHeader = () => {
+    const nextDocument = headerFrame.contentDocument;
+    sourceDocument = nextDocument;
+    const sourceHeader = sourceDocument?.querySelector("#header");
+    if (!sourceHeader) return;
+
+    headerHeight = Math.max(
+      minimumHeaderHeight,
+      Math.ceil(sourceHeader.getBoundingClientRect().height),
     );
-    languageMenuOpen = false;
-    scheduleRender();
-  });
-
-  document.addEventListener("keydown", (event) => {
-    if (event.key !== "Escape" || (!menuOpen && !languageMenuOpen)) return;
-    headerFrame.contentDocument?.dispatchEvent(
-      new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
+    document.documentElement.style.setProperty(
+      "--shared-lusion-header-height",
+      `${headerHeight}px`,
     );
-    languageMenuOpen = false;
-    scheduleRender();
-  });
+    setFrameHeight();
+    syncTheme();
+    const localeIsReady = syncLocale();
 
-  headerFrame.addEventListener("load", () => {
-    menuOpen = false;
-    languageMenuOpen = false;
-    headerHost.style.height = menuOpen ? `${window.innerHeight}px` : "112px";
-    window.setTimeout(() => mountFromSource(), 50);
-  });
-
-  window.addEventListener("resize", () => {
-    headerHost.style.height = menuOpen ? `${window.innerHeight}px` : "112px";
-    scheduleRender(100);
-    sendTheme();
-  });
-
-  window.addEventListener("message", (event) => {
-    if (
-      event.origin !== window.location.origin ||
-      event.source !== headerFrame.contentWindow ||
-      !event.data
-    ) {
-      return;
-    }
-
-    if (event.data.type === "xlab-shared-header-ready") {
-      headerHost.style.height = `${Math.max(
-        112,
-        Number(event.data.height) || 0,
-      )}px`;
-      sendTheme();
-      mountFromSource();
-    } else if (event.data.type === "xlab-shared-header-theme-applied") {
-      scheduleRender();
-    } else if (event.data.type === "xlab-shared-header-menu") {
-      menuOpen = event.data.open === true;
-      headerHost.dataset.menuOpen = String(menuOpen);
-      headerHost.style.height = menuOpen
-        ? `${window.innerHeight}px`
-        : "112px";
-      scheduleRender(menuOpen ? 350 : 0);
-    } else if (event.data.type === "xlab-shared-header-locale") {
-      const locale = event.data.locale;
-      const localeSelect = document.querySelector("select[data-locale]");
-      if (!["en", "vi", "zh"].includes(locale)) return;
-
-      try {
-        localStorage.setItem("presentlab.locale", locale);
-      } catch {
-        // The visible language control remains usable if storage is unavailable.
-      }
-      if (localeSelect) {
-        localeSelect.value = locale;
-        localeSelect.dispatchEvent(new Event("change", { bubbles: true }));
-      }
-      languageMenuOpen = false;
-      headerFrame.contentWindow.postMessage(
-        { type: "xlab-shared-header-locale-applied" },
-        window.location.origin,
+    if (observedHeader !== sourceHeader) {
+      headerObserver?.disconnect();
+      headerObserver = new MutationObserver(syncMenu);
+      headerObserver.observe(sourceHeader, {
+        attributes: true,
+        attributeFilter: ["class", "hidden"],
+        childList: true,
+        subtree: true,
+      });
+      sourceDocument.addEventListener("click", handleSourceClick, true);
+      sourceDocument.addEventListener(
+        "click",
+        () => setTimeout(syncMenu, 0),
+        true,
       );
-    } else if (event.data.type === "xlab-shared-header-navigate") {
-      const destination = new URL(event.data.href, window.location.href);
-      if (destination.origin !== window.location.origin) return;
-      if (
-        destination.pathname === window.location.pathname &&
-        !destination.hash
-      ) {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      } else {
-        window.location.assign(destination.href);
-      }
-    } else if (event.data.type === "xlab-shared-header-contact") {
-      document.querySelector("[data-open-request]")?.click();
+      observedHeader = sourceHeader;
     }
-  });
 
-  const themeObserver = new MutationObserver(() => {
-    sendTheme();
-    scheduleRender();
+    if (localeIsReady) headerFrame.style.opacity = "1";
+    syncMenu();
+  };
+
+  headerFrame.addEventListener("load", mountSourceHeader);
+  window.addEventListener("resize", () => {
+    setFrameHeight();
+    syncTheme();
   });
-  themeObserver.observe(document.documentElement, {
+  new MutationObserver(syncTheme).observe(document.documentElement, {
     attributes: true,
     attributeFilter: ["data-theme"],
   });
+  window.addEventListener("message", (event) => {
+    if (
+      event.origin !== window.location.origin ||
+      event.source !== headerFrame.contentWindow
+    ) return;
+
+    if (event.data?.type === "xlab-shared-header-ready") {
+      mountSourceHeader();
+      return;
+    }
+    if (event.data?.type !== "xlab-shared-header-locale") return;
+
+    const locale = localeValue(event.data.locale);
+    if (!locale) return;
+    let stored = true;
+    try {
+      localStorage.setItem("presentlab.locale", locale);
+    } catch {
+      // The portal language control remains available if storage is blocked.
+      stored = false;
+    }
+    if (localeSelect && localeSelect.value !== locale) {
+      localeSelect.value = locale;
+      localeSelect.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+    if (stored) {
+      headerFrame.style.opacity = "0";
+      headerFrame.contentWindow.location.reload();
+    }
+  });
 
   if (headerFrame.contentDocument?.readyState === "complete") {
-    mountFromSource();
+    mountSourceHeader();
+  } else if (headerFrame.contentDocument?.querySelector("#header")) {
+    mountSourceHeader();
   }
 }
