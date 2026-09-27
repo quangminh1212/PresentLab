@@ -2444,12 +2444,12 @@ html:has(.app-shell > main > .hero.hero-world).is-section-transitioning {
 .app-shell:has(> main > .hero.hero-world) > .topbar {
   position: absolute;
   z-index: 20;
-  top: clamp(26px, 5vh, 44px);
-  right: clamp(24px, 6vw, 108px);
-  left: clamp(24px, 6vw, 108px);
+  top: clamp(30px, 4vw, 50px);
+  right: max(5vw, 40px);
+  left: max(5vw, 40px);
   width: auto;
   max-width: none;
-  min-height: 44px;
+  min-height: 54px;
   margin: 0;
   padding: 0;
   transform: none;
@@ -2493,8 +2493,8 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
 }
 
 .app-shell:has(> main > .hero.hero-world) > .topbar .brand-logo-frame {
-  width: 80px;
-  height: 32px;
+  width: 100px;
+  height: 40px;
   padding: 0;
   overflow: visible;
   border: 0;
@@ -2507,6 +2507,7 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  object-position: left center;
   filter: brightness(0) invert(1);
 }
 
@@ -2555,7 +2556,6 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   text-decoration: none;
 }
 
-.app-shell:has(> main > .hero.hero-world) > .topbar .locale-picker,
 .app-shell:has(> main > .hero.hero-world) > .topbar .theme-toggle {
   min-height: 0;
   padding: 0;
@@ -2565,13 +2565,23 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   box-shadow: none;
 }
 
+.app-shell:has(> main > .hero.hero-world) > .topbar .locale-picker {
+  min-height: 52.2px;
+  padding: 0 0 0 13px;
+  border: 1px solid rgb(255 255 255 / 18%);
+  border-radius: 999px;
+  background: #2b2e3a;
+  box-shadow: none;
+}
+
 .app-shell:has(> main > .hero.hero-world) > .topbar .locale-picker select {
   border: 0;
   background: transparent;
   color: #fff;
-  font-size: 13px;
+  font-size: clamp(14px, 0.875vw, 16.31px);
   font-weight: 500;
-  letter-spacing: 0.1em;
+  letter-spacing: normal;
+  line-height: 1;
   text-transform: uppercase;
 }
 
@@ -2593,20 +2603,20 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   z-index: 2;
   display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: 10.2px;
   width: auto;
-  height: 44px;
+  height: 52.2px;
   min-width: 44px;
-  min-height: 44px;
-  padding: 8px 0 8px 12px;
+  min-height: 52.2px;
+  padding: 0 18.35px 0 26.5px;
   border: 0;
-  border-radius: 0;
-  background: transparent;
+  border-radius: 999px;
+  background: #e4e6ef;
   box-shadow: none;
-  color: #fff;
-  font-size: 11px;
+  color: #080808;
+  font-size: clamp(14px, 0.875vw, 16.31px);
   font-weight: 500;
-  letter-spacing: 0.13em;
+  letter-spacing: normal;
   text-transform: uppercase;
 }
 
@@ -2623,19 +2633,20 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
 .app-shell:has(> main > .hero.hero-world) > .topbar .menu-button .menu-button-dots {
   display: flex;
   align-items: center;
-  gap: 4px;
-  width: auto;
-  height: auto;
+  justify-content: space-between;
+  gap: 0;
+  width: 18.75px;
+  height: 18.75px;
   margin: 0;
   background: none;
 }
 
 .app-shell:has(> main > .hero.hero-world) > .topbar .menu-button-dots i {
   display: block;
-  width: 4px;
-  height: 4px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
-  background: #fff;
+  background: #080808;
 }
 
 .app-shell:has(> main > .hero.hero-world) > main > .hero.hero-world {
@@ -2908,6 +2919,7 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 24px;
 }
 
 .app-shell:has(> main > .hero.hero-world) > .topbar .topnav {
@@ -2932,7 +2944,7 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   align-items: center;
   gap: 8px;
   margin: 0;
-  padding: 0 2px;
+  padding: 0 0 0 13px;
 }
 
 .app-shell:has(> main > .hero.hero-world) > .topbar .topnav:not(.is-open) .locale-picker::after {
@@ -2946,15 +2958,16 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
 }
 
 .app-shell:has(> main > .hero.hero-world) > .topbar .locale-picker select {
-  padding: 6px 0;
+  padding: 0;
   appearance: none;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 812px) {
   .app-shell:has(> main > .hero.hero-world) > .topbar {
-    top: 20px;
-    right: 20px;
-    left: 20px;
+    top: 25px;
+    right: 25px;
+    left: 25px;
+    min-height: 44.8px;
   }
 
   .app-shell:has(> main > .hero.hero-world) > .topbar .topnav:not(.is-open) {
@@ -2967,7 +2980,61 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   }
 
   .app-shell:has(> main > .hero.hero-world) > .topbar .brand-logo-frame {
-    width: 70px;
-    height: 30px;
+    width: 80px;
+    height: 44px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) > .topbar .locale-picker {
+    min-height: 44.8px;
+    padding-left: 10px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) > .topbar .topnav:not(.is-open) .locale-picker {
+    padding-left: 10px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) > .topbar .locale-picker select {
+    width: 29px;
+    min-width: 0;
+    max-width: 29px;
+    flex: 0 0 29px;
+    font-size: 14px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) > .topbar .topnav:not(.is-open) .locale-picker select {
+    width: 29px;
+    min-width: 0;
+    max-width: 29px;
+    flex: 0 0 29px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) > .topbar .menu-button {
+    width: 44.8px;
+    height: 44.8px;
+    min-width: 44.8px;
+    min-height: 44.8px;
+    padding: 0;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) > .topbar .menu-button .menu-button-label {
+    display: none;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) > .topbar .menu-button .menu-button-dots {
+    width: 22.5px;
+    height: 22.5px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) > .topbar .menu-button-dots i {
+    width: 6px;
+    height: 6px;
+  }
+}
+
+@media (max-width: 400px) {
+  .app-shell:has(> main > .hero.hero-world) > .topbar {
+    top: 15px;
+    right: 15px;
+    left: 15px;
   }
 }
