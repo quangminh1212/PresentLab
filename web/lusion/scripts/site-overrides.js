@@ -1,10 +1,4 @@
 (() => {
-  const isSharedHeaderFrame = new URLSearchParams(window.location.search).has(
-    "xlab-shared-header",
-  );
-  if (isSharedHeaderFrame) {
-    document.documentElement.dataset.xlabSharedHeader = "true";
-  }
   const style = document.createElement("style");
   style.textContent =
     "#video-overlay.is-offline-media #video-overlay__controls,#video-overlay.is-offline-media #video-overlay-cursor{display:none!important}" +
@@ -13,40 +7,6 @@
     "html:not(.is-black-bg):not(.is-blue-bg) #header-logo .xlab-logo-crop img{filter:none!important}" +
     "html.is-black-bg #header-logo .xlab-logo-crop img,html.is-blue-bg #header-logo .xlab-logo-crop img{filter:brightness(0) invert(1)}";
   document.head.appendChild(style);
-  if (isSharedHeaderFrame) {
-    // Keep the real Lusion header; hide the page scene and hero behind it.
-    const sharedHeaderStyle = document.createElement("style");
-    sharedHeaderStyle.textContent =
-      "html,body{width:100%;height:100%;min-width:0;min-height:0;margin:0!important;overflow:hidden!important;background:transparent!important}" +
-      "#canvas{display:none!important}" +
-      "#header:not(.--menu-opened) #header-background{opacity:0!important}" +
-      "#header:not(.--menu-opened) #header-right-menu-btn{transform:none!important}" +
-      "#header:not(.--menu-opened) #lusion-language-trigger{visibility:visible!important;opacity:1!important;transform:none!important;clip-path:none!important}" +
-      "#ui{position:fixed!important;inset:0!important;width:100%!important;height:100vh!important;overflow:visible!important;background:#020022!important}" +
-      "#ui>#page-container,#scroll-indicator,#input-blocker,#video-overlay,#transition-overlay,#preloader{display:none!important}";
-    document.head.appendChild(sharedHeaderStyle);
-    const reportSharedHeaderReady = () => {
-      const header = document.getElementById("header");
-      if (!header || window.parent === window) return;
-      window.parent.postMessage(
-        {
-          type: "xlab-shared-header-ready",
-          height: Math.ceil(header.getBoundingClientRect().height),
-        },
-        window.location.origin,
-      );
-    };
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", reportSharedHeaderReady, {
-        once: true,
-      });
-    } else {
-      window.requestAnimationFrame(reportSharedHeaderReady);
-    }
-    window.addEventListener("resize", reportSharedHeaderReady, {
-      passive: true,
-    });
-  }
 
   // Aeonik is missing several extended Vietnamese glyphs; use one complete font for Vietnamese text.
   const vietnameseFontStyle = document.createElement("style");
@@ -943,23 +903,15 @@
         "\u6211\u4eec\u6253\u9020\u5927\u80c6\u7684\u6f14\u793a\u6587\u7a3f\u548c\u89c6\u89c9\u53d9\u4e8b\uff0c\u8ba9\u521b\u610f\u8131\u9896\u800c\u51fa\u3002",
     },
   };
-  const languageKey = isSharedHeaderFrame
-    ? "presentlab.locale"
-    : "lusion-language";
+  const languageKey = "lusion-language";
   const languages = ["en", "vi", "zh-CN"];
   let activeLanguage = "en";
   try {
-    const savedValue = window.localStorage.getItem(languageKey);
-    const savedLanguage =
-      isSharedHeaderFrame && savedValue === "zh" ? "zh-CN" : savedValue;
+    const savedLanguage = window.localStorage.getItem(languageKey);
     if (languages.includes(savedLanguage)) activeLanguage = savedLanguage;
-    else if (isSharedHeaderFrame && languages.includes(document.documentElement.lang)) {
-      activeLanguage = document.documentElement.lang;
-    }
   } catch {
     // Browser storage may be unavailable in private or restricted browsing contexts.
   }
-
   const metaLocale = { en: "en_US", vi: "vi_VN", "zh-CN": "zh_CN" };
   document.documentElement.lang = activeLanguage;
   document.documentElement.dataset.lusionLanguage = activeLanguage;
@@ -1084,21 +1036,8 @@
   ];
   const chooseLanguage = (code) => {
     if (code === activeLanguage) return;
-    if (isSharedHeaderFrame && window.parent !== window) {
-      window.parent.postMessage(
-        {
-          type: "xlab-shared-header-locale",
-          locale: code === "zh-CN" ? "zh" : code,
-        },
-        window.location.origin,
-      );
-      return;
-    }
     try {
-      window.localStorage.setItem(
-        languageKey,
-        isSharedHeaderFrame && code === "zh-CN" ? "zh" : code,
-      );
+      window.localStorage.setItem(languageKey, code);
     } catch {
       // Keep the language switcher usable when browser storage is unavailable.
     }

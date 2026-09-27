@@ -172,20 +172,6 @@ button:disabled {
   border-bottom: 1px solid var(--line);
 }
 
-.shared-lusion-header {
-  /* Keep the original Lusion controls above the scene, beside the hero copy. */
-  position: fixed;
-  z-index: 4;
-  top: 0;
-  left: 0;
-  display: block;
-  width: 100vw;
-  height: var(--shared-lusion-header-height, 112px);
-  border: 0;
-  opacity: 0;
-  background: transparent;
-}
-
 .brand,
 .footer-brand {
   display: inline-flex;

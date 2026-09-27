@@ -2143,9 +2143,6 @@ function bindEvents() {
   document.querySelector("[data-locale]")?.addEventListener("change", (event) => {
     setLocale(event.target.value);
   });
-  document.addEventListener("presentlab:locale-change", (event) => {
-    setLocale(event.detail?.locale);
-  });
   elements.themeToggle?.addEventListener("click", () => {
     setTheme(state.theme === "dark" ? "light" : "dark");
   });
