@@ -3293,6 +3293,7 @@ html.js:not(.is-ready) .scroll-progress {
 }
 
 .scroll-progress {
+  display: none;
   position: fixed;
   top: 0;
   right: 0;
