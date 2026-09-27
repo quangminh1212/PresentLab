@@ -165,3 +165,8 @@
     line-height: 1.05;
   }
 }
+
+/* Keep the second loading phase black while the preloader is still visible. */
+html.is-ready #preloader {
+  background-color: #000;
+}
