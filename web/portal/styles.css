@@ -3288,6 +3288,10 @@ html {
   display: none;
 }
 
+html.js:not(.is-ready) .app-shell {
+  visibility: hidden;
+}
+
 html.js:not(.is-ready) .scroll-progress {
   visibility: hidden;
 }
