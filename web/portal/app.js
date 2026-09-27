@@ -2676,9 +2676,8 @@ function startPageCurtain(libraryReady) {
     return;
   }
 
-  const minimumDuration = 5000;
+  const minimumDuration = 7000;
   const startProgressDuration = 250;
-  const finishDuration = 260;
   const startedAt = performance.now();
   let previousFrameAt = startedAt;
   let progress = 0;
@@ -2728,13 +2727,14 @@ function startPageCurtain(libraryReady) {
 
   function render(now) {
     const elapsed = now - startedAt;
-    const stageProgress = libraryIsReady ? 100 : fontsAreReady ? 76 : pageHasLoaded ? 64 : 22;
+    // Lusion's 70/30 blend leaves an 86% bar when resource progress is at 80%.
+    const stageProgress = libraryIsReady ? 80 : fontsAreReady ? 76 : pageHasLoaded ? 64 : 22;
     const targetProgress = isReady && elapsed >= minimumDuration ? 100 : stageProgress;
     const deltaMilliseconds = Math.max(0, now - previousFrameAt);
     progress = Math.min(targetProgress, progress + deltaMilliseconds / 10);
     previousFrameAt = now;
 
-    if (isReady && elapsed >= minimumDuration && !percentToStartAt) {
+    if (libraryIsReady && !percentToStartAt) {
       percentToStartAt = now;
     }
     const percentToStart = percentToStartAt
