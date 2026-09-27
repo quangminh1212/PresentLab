@@ -2359,28 +2359,6 @@ html:has(.app-shell > main > .hero.hero-world).is-section-transitioning {
   background: #02070b;
 }
 
-.app-shell:has(> main > .hero.hero-world) > main > .lusion-home-section::before {
-  position: absolute;
-  z-index: 2;
-  inset: 0 0 auto;
-  height: clamp(72px, 12svh, 124px);
-  background: linear-gradient(180deg, rgb(215 220 228 / 8%), transparent 100%);
-  content: "";
-  mix-blend-mode: screen;
-  pointer-events: none;
-}
-
-.app-shell:has(> main > .hero.hero-world) > main > .lusion-home-section::after {
-  position: absolute;
-  z-index: 3;
-  inset: 0 0 auto;
-  height: 1px;
-  background: linear-gradient(90deg, transparent 8%, rgb(215 220 228 / 48%) 50%, transparent 92%);
-  box-shadow: 0 0 22px rgb(215 220 228 / 20%);
-  content: "";
-  pointer-events: none;
-}
-
 @media (max-width: 760px) {
   .app-shell:has(> main > .hero.hero-world) .world-stage::after {
     background:
