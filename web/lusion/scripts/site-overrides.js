@@ -903,12 +903,21 @@
         "\u6211\u4eec\u6253\u9020\u5927\u80c6\u7684\u6f14\u793a\u6587\u7a3f\u548c\u89c6\u89c9\u53d9\u4e8b\uff0c\u8ba9\u521b\u610f\u8131\u9896\u800c\u51fa\u3002",
     },
   };
-  const languageKey = "lusion-language";
+  const isSharedHeaderFrame =
+    document.documentElement.dataset.xlabSharedHeader === "true";
+  const languageKey = isSharedHeaderFrame
+    ? "presentlab.locale"
+    : "lusion-language";
   const languages = ["en", "vi", "zh-CN"];
   let activeLanguage = "en";
   try {
-    const savedLanguage = window.localStorage.getItem(languageKey);
+    const savedValue = window.localStorage.getItem(languageKey);
+    const savedLanguage =
+      isSharedHeaderFrame && savedValue === "zh" ? "zh-CN" : savedValue;
     if (languages.includes(savedLanguage)) activeLanguage = savedLanguage;
+    else if (isSharedHeaderFrame && languages.includes(document.documentElement.lang)) {
+      activeLanguage = document.documentElement.lang;
+    }
   } catch {
     // Browser storage may be unavailable in private or restricted browsing contexts.
   }
@@ -1037,8 +1046,21 @@
   ];
   const chooseLanguage = (code) => {
     if (code === activeLanguage) return;
+    if (isSharedHeaderFrame && window.parent !== window) {
+      window.parent.postMessage(
+        {
+          type: "xlab-shared-header-locale",
+          locale: code === "zh-CN" ? "zh" : code,
+        },
+        window.location.origin,
+      );
+      return;
+    }
     try {
-      window.localStorage.setItem(languageKey, code);
+      window.localStorage.setItem(
+        languageKey,
+        isSharedHeaderFrame && code === "zh-CN" ? "zh" : code,
+      );
     } catch {
       // Keep the language switcher usable when browser storage is unavailable.
     }

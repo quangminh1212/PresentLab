@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="/web/portal/styles.css" />
     <link rel="stylesheet" href="/web/portal/world.css" />
   </head>
-  <body>
+  <body data-shared-lusion-header>
     <div class="page-curtain" data-page-curtain aria-hidden="true">
       <canvas class="page-curtain-canvas" data-curtain-canvas></canvas>
       <span class="page-curtain-count" aria-hidden="true">
@@ -95,6 +95,14 @@
           <span class="menu-button-dots" aria-hidden="true"><i></i><i></i></span>
         </button>
       </header>
+      <iframe
+        class="shared-lusion-header"
+        data-shared-lusion-header-frame
+        src="/lusion-header.html"
+        title="XLAB navigation source"
+        aria-hidden="true"
+        tabindex="-1"
+      ></iframe>
 
       <main>
         <section
@@ -1072,5 +1080,6 @@
 
     <div class="toast" data-toast role="status" aria-live="polite"></div>
     <script type="module" src="/web/portal/app.js"></script>
+    <script type="module" src="/web/portal/shared-lusion-header.js"></script>
   </body>
 </html>

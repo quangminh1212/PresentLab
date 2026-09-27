@@ -23,6 +23,7 @@ const assets = [
   ["web/lusion/_astro", "_astro"],
   // Keep the current deployed URL while keeping first-party code outside generated bundles.
   ["web/lusion/scripts/site-overrides.js", "_astro/local-only.js"],
+  ["web/lusion/scripts/header-frame.js", "_astro/header-frame.js"],
   ["web/lusion/about", "about"],
   ["web/lusion/projects", "projects"],
   ["web/lusion/home-scroll.css", "home-scroll.css"],
@@ -290,5 +291,47 @@ if (lusionBundle.split(homeScrollBoundarySource).length - 1 !== 1) {
 }
 lusionBundle = lusionBundle.replace(homeScrollBoundarySource, homeScrollBoundaryReplacement);
 await writeFile(lusionBundlePath, lusionBundle);
+
+const lusionHomeHtml = await readFile(join(output, "lusion", "index.html"), "utf8");
+const lusionHeaderMatches = [
+  ...lusionHomeHtml.matchAll(/<header\b(?=[^>]*\bid="header")[^>]*>[\s\S]*?<\/header>/gi),
+];
+if (lusionHeaderMatches.length !== 1) {
+  throw new Error(
+    `Expected one canonical Lusion header, found ${lusionHeaderMatches.length}.`,
+  );
+}
+const lusionStylesheetHref = lusionHomeHtml.match(
+  /<link\b[^>]*href="([^"]*\/_astro\/about\.[^"]+\.css)"[^>]*>/i,
+)?.[1];
+if (!lusionStylesheetHref) {
+  throw new Error("Could not find the canonical Lusion header stylesheet.");
+}
+const sharedHeaderHtml = `<!doctype html>
+<html lang="vi" class="js is-ready is-black-bg" data-xlab-shared-header="true">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="${lusionStylesheetHref}">
+  <script src="/_astro/local-only.js"></script>
+  <style>
+    html,body{width:100%;height:100%;min-width:0;margin:0!important;overflow:hidden!important;background:transparent!important}
+    body{min-height:0!important}
+    #ui{position:fixed!important;inset:0!important;width:100%!important;height:100%!important;overflow:hidden!important;background:transparent!important;pointer-events:none!important}
+    #header{position:fixed!important;inset:0 0 auto!important;width:100%!important;min-height:0!important;pointer-events:auto!important}
+    #header-container,#header-menu{pointer-events:auto!important}
+    #header-background{opacity:0}
+    #header-logo,#header-right,#header-right-menu-btn,#header-right-menu-btn-inner{transform:none!important;opacity:1!important;visibility:visible!important}
+    #header-center{display:none!important}
+    #canvas{display:none!important}
+    @media(max-width:1000px){#header-right-sound-btn,#header-right-talk-btn-placeholder,#header-right-talk-btn{display:none!important}}
+  </style>
+</head>
+<body>
+  <div id="ui">${lusionHeaderMatches[0][0]}</div>
+  <script src="/_astro/header-frame.js"></script>
+</body>
+</html>`;
+await writeFile(join(output, "lusion-header.html"), sharedHeaderHtml);
 
 console.log(`Vercel static output prepared: ${output}`);
