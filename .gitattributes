@@ -1,2 +1,5 @@
 .gitattributes text eol=lf
 .gitignore text eol=lf
+*.html text eol=lf
+*.js text eol=lf
+*.mjs text eol=lf

@@ -4,7 +4,9 @@ import { fileURLToPath } from "node:url";
 import ts from "typescript";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const output = join(root, "public");
+const output = process.env.PRESENTLAB_BUILD_OUTPUT
+  ? resolve(process.env.PRESENTLAB_BUILD_OUTPUT)
+  : join(root, "public");
 
 await rm(output, { recursive: true, force: true });
 await mkdir(output, { recursive: true });
