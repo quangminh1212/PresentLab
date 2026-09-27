@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="/web/portal/styles.css" />
     <link rel="stylesheet" href="/web/portal/world.css" />
   </head>
-  <body data-shared-lusion-header>
+  <body>
     <div class="page-curtain" data-page-curtain aria-hidden="true">
       <canvas class="page-curtain-canvas" data-curtain-canvas></canvas>
       <span class="page-curtain-count" aria-hidden="true">
@@ -37,67 +37,10 @@
       </div>
     </noscript>
     <div class="app-shell">
-      <header class="topbar">
-        <a
-          class="brand"
-          href="#catalog"
-          aria-label="PresentLab - về đầu trang"
-          data-i18n-aria-label="brandAria"
-        >
-          <span class="brand-logo-frame">
-            <picture>
-              <source srcset="/web/portal/xlab-logo.webp" type="image/webp" />
-              <img class="brand-logo" src="/web/portal/xlab-logo.png" alt="XLab" />
-            </picture>
-          </span>
-        </a>
-        <nav class="topnav" aria-label="Điều hướng chính" data-i18n-aria-label="navAria">
-          <a class="topnav-link is-active" href="#templates" data-i18n="navTemplates">Mẫu slide</a>
-          <a class="topnav-link" href="#process" data-i18n="navProcess">Quy trình</a>
-          <a
-            class="topnav-link"
-            href="/resources/palettes/catalog.html"
-            target="_blank"
-            rel="noreferrer noopener"
-            ><span data-i18n="navPalette">Bảng màu</span></a
-          >
-          <label class="locale-picker">
-            <span class="sr-only" data-i18n="languageLabel">Ngôn ngữ</span>
-            <span class="locale-globe" aria-hidden="true">◎</span>
-            <select data-locale aria-label="Ngôn ngữ" data-i18n-aria-label="languageLabel">
-              <option value="vi">VI</option>
-              <option value="en">EN</option>
-              <option value="zh">中文</option>
-            </select>
-          </label>
-          <button
-            class="theme-toggle"
-            type="button"
-            data-theme-toggle
-            aria-label="Chuyển sang giao diện sáng"
-            data-i18n-aria-label="themeSwitchToLight"
-            aria-pressed="false"
-          >
-            <span class="theme-toggle-icon" data-theme-icon aria-hidden="true">☾</span>
-            <span class="theme-toggle-label" data-theme-label data-i18n="themeDark">Tối</span>
-            <span class="theme-toggle-track" aria-hidden="true"><span></span></span>
-          </button>
-        </nav>
-        <button
-          class="menu-button"
-          type="button"
-          aria-label="Mở menu"
-          data-i18n-aria-label="menuOpen"
-          aria-expanded="false"
-          data-menu-toggle
-        >
-          <span class="menu-button-label" data-menu-label aria-hidden="true">Menu</span>
-          <span class="menu-button-dots" aria-hidden="true"><i></i><i></i></span>
-        </button>
-      </header>
       <iframe
         class="shared-lusion-header"
         data-shared-lusion-header-frame
+        allowtransparency="true"
         src="/lusion/?xlab-shared-header=1"
         title="XLAB navigation"
       ></iframe>

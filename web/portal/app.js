@@ -1369,15 +1369,16 @@ function applyTheme() {
   state.theme = theme;
   document.documentElement.dataset.theme = theme;
   document.documentElement.style.colorScheme = theme;
-  if (!elements.themeToggle) return;
-  elements.themeToggle.dataset.theme = theme;
-  elements.themeToggle.setAttribute(
-    "aria-label",
-    t(theme === "dark" ? "themeSwitchToLight" : "themeSwitchToDark"),
-  );
-  elements.themeToggle.setAttribute("aria-pressed", String(theme === "light"));
-  elements.themeIcon.textContent = theme === "dark" ? "☾" : "☀";
-  elements.themeLabel.textContent = t(theme === "dark" ? "themeDark" : "themeLight");
+  if (elements.themeToggle) {
+    elements.themeToggle.dataset.theme = theme;
+    elements.themeToggle.setAttribute(
+      "aria-label",
+      t(theme === "dark" ? "themeSwitchToLight" : "themeSwitchToDark"),
+    );
+    elements.themeToggle.setAttribute("aria-pressed", String(theme === "light"));
+    elements.themeIcon.textContent = theme === "dark" ? "☾" : "☀";
+    elements.themeLabel.textContent = t(theme === "dark" ? "themeDark" : "themeLight");
+  }
 }
 
 function setTheme(theme) {
@@ -2092,11 +2093,13 @@ function handleFiles(input) {
 function bindEvents() {
   const menuButton = document.querySelector("[data-menu-toggle]");
   const setMenuOpen = (open) => {
+    if (!elements.menu) return;
     elements.menu.classList.toggle("is-open", open);
     document.body.classList.toggle("menu-open", open);
-    menuButton.setAttribute("aria-expanded", String(open));
-    menuButton.setAttribute("aria-label", t(open ? "menuClose" : "menuOpen"));
-    menuButton.querySelector("[data-menu-label]").textContent = open ? "Close" : "Menu";
+    menuButton?.setAttribute("aria-expanded", String(open));
+    menuButton?.setAttribute("aria-label", t(open ? "menuClose" : "menuOpen"));
+    const menuLabel = menuButton?.querySelector("[data-menu-label]");
+    if (menuLabel) menuLabel.textContent = open ? "Close" : "Menu";
   };
 
   document
@@ -2119,9 +2122,9 @@ function bindEvents() {
     if (event.key === "Escape") {
       closePreview();
       closeDrawer();
-      if (elements.menu.classList.contains("is-open")) {
+      if (elements.menu?.classList.contains("is-open")) {
         setMenuOpen(false);
-        menuButton.focus();
+        menuButton?.focus();
       }
     }
     if (!elements.previewModal.hidden && event.key === "ArrowLeft") navigatePreview(-1);
@@ -2134,13 +2137,16 @@ function bindEvents() {
       document.querySelector("[data-search]").focus();
     }
   });
-  menuButton.addEventListener("click", () => {
-    setMenuOpen(!elements.menu.classList.contains("is-open"));
+  menuButton?.addEventListener("click", () => {
+    setMenuOpen(!elements.menu?.classList.contains("is-open"));
   });
-  document.querySelector("[data-locale]").addEventListener("change", (event) => {
+  document.querySelector("[data-locale]")?.addEventListener("change", (event) => {
     setLocale(event.target.value);
   });
-  elements.themeToggle.addEventListener("click", () => {
+  document.addEventListener("presentlab:locale-change", (event) => {
+    setLocale(event.detail?.locale);
+  });
+  elements.themeToggle?.addEventListener("click", () => {
     setTheme(state.theme === "dark" ? "light" : "dark");
   });
   document

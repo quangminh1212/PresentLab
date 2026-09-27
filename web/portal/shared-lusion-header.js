@@ -30,7 +30,17 @@ if (headerFrame) {
     ["en", "vi", "zh"].includes(locale) ? locale : null;
 
   const syncLocale = () => {
-    const locale = localeValue(localeSelect?.value);
+    let storedLocale = null;
+    try {
+      storedLocale = localStorage.getItem("presentlab.locale");
+    } catch {
+      // The document language remains available when storage is blocked.
+    }
+    const locale =
+      localeValue(localeSelect?.value) ||
+      localeValue(document.documentElement.dataset.locale) ||
+      localeValue(storedLocale) ||
+      localeValue(document.documentElement.lang);
     if (!locale) return;
 
     let stored = true;
@@ -200,12 +210,16 @@ if (headerFrame) {
     try {
       localStorage.setItem("presentlab.locale", locale);
     } catch {
-      // The portal language control remains available if storage is blocked.
+      // The Lusion language control remains available if storage is blocked.
       stored = false;
     }
     if (localeSelect && localeSelect.value !== locale) {
       localeSelect.value = locale;
       localeSelect.dispatchEvent(new Event("change", { bubbles: true }));
+    } else {
+      document.dispatchEvent(
+        new CustomEvent("presentlab:locale-change", { detail: { locale } }),
+      );
     }
     if (stored) {
       headerFrame.style.opacity = "0";

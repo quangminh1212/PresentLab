@@ -17,10 +17,12 @@
     // Keep the real Lusion header; hide the page scene and hero behind it.
     const sharedHeaderStyle = document.createElement("style");
     sharedHeaderStyle.textContent =
-      "html,body{width:100%;height:100%;min-width:0;min-height:0;margin:0!important;overflow:hidden!important;background:#000!important}" +
+      "html,body{width:100%;height:100%;min-width:0;min-height:0;margin:0!important;overflow:hidden!important;background:transparent!important}" +
       "#canvas{display:none!important}" +
       "#header:not(.--menu-opened) #header-background{opacity:0!important}" +
-      "#ui{position:fixed!important;inset:0!important;width:100%!important;height:100vh!important;overflow:visible!important;background:#000!important}" +
+      "#header:not(.--menu-opened) #header-right-menu-btn{transform:none!important}" +
+      "#header:not(.--menu-opened) #lusion-language-trigger{visibility:visible!important;opacity:1!important;transform:none!important;clip-path:none!important}" +
+      "#ui{position:fixed!important;inset:0!important;width:100%!important;height:100vh!important;overflow:visible!important;background:#020022!important}" +
       "#ui>#page-container,#scroll-indicator,#input-blocker,#video-overlay,#transition-overlay,#preloader{display:none!important}";
     document.head.appendChild(sharedHeaderStyle);
     const reportSharedHeaderReady = () => {
