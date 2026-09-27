@@ -4,7 +4,7 @@
     "#video-overlay.is-offline-media #video-overlay__controls,#video-overlay.is-offline-media #video-overlay-cursor{display:none!important}" +
     "#header-logo .xlab-logo-crop{display:block;position:relative;flex:0 0 80px;width:80px;height:28px;overflow:hidden}" +
     "#header-logo .xlab-logo-crop img{position:absolute;top:-8.9px;left:0;display:block;width:80px;height:auto;max-width:none}" +
-    "html:not(.is-black-bg):not(.is-blue-bg) #header-logo .xlab-logo-crop img{filter:brightness(0) saturate(100%) invert(67%) sepia(62%) saturate(559%) hue-rotate(126deg) brightness(92%) contrast(88%)!important}" +
+    "html:not(.is-black-bg):not(.is-blue-bg) #header-logo .xlab-logo-crop img{filter:none!important}" +
     "html.is-black-bg #header-logo .xlab-logo-crop img,html.is-blue-bg #header-logo .xlab-logo-crop img{filter:brightness(0) invert(1)}";
   document.head.appendChild(style);
 
@@ -26,7 +26,7 @@
   if (new URLSearchParams(window.location.search).has("water-page-embed")) {
     const embeddedLoaderStyle = document.createElement("style");
     embeddedLoaderStyle.textContent =
-      "html:not(.is-white-bg) #header-logo{color:#2eb7ad!important}html:not(.is-white-bg) #header-logo svg text{fill:#2eb7ad!important}html:not(.is-white-bg) #header-logo .xlab-logo-crop img{filter:brightness(0) saturate(100%) invert(67%) sepia(62%) saturate(559%) hue-rotate(126deg) brightness(92%) contrast(88%)!important}html.water-page-embed-root #header-logo{color:#2eb7ad!important}html.water-page-embed-root #header-logo svg text{fill:#2eb7ad!important}html.water-page-embed-root #header-logo .xlab-logo-crop img{filter:brightness(0) saturate(100%) invert(67%) sepia(62%) saturate(559%) hue-rotate(126deg) brightness(92%) contrast(88%)!important}" +
+      "html:not(.is-white-bg) #header-logo{color:#2eb7ad!important}html:not(.is-white-bg) #header-logo svg text{fill:#2eb7ad!important}html.water-page-embed-root #header-logo{color:#2eb7ad!important}html.water-page-embed-root #header-logo svg text{fill:#2eb7ad!important}" +
       "@media (min-width:813px) and (max-width:879px){html[lang] #home-hero-title{grid-column:1/span 12!important;left:27%!important;right:36.5%!important;font-size:clamp(17px,2.1vw,18px)!important;line-height:1.08!important}html[lang] #home-hero{grid-template-rows:clamp(90px,calc(7vw + 33px),95px) minmax(0,1fr)!important}}" +
       "@media (min-width:641px) and (max-width:812px){html[lang] #home-hero-title{grid-column:1/span 12!important;left:calc(50% - 22px)!important;right:auto!important;width:min(calc(100% - 272px),33rem)!important;max-width:100%!important;box-sizing:border-box!important;transform:translateX(-50%)!important;font-size:clamp(16px,2.2vw,18px)!important;line-height:1.08!important}html[lang] #home-hero{grid-template-rows:clamp(83px,calc(63px + 3.2vw),90px) minmax(0,1fr)!important}html[lang] #home-hero-visual-container{grid-row:2!important}html[lang] #home-hero-title .line{overflow:visible!important}html[lang] #home-hero-title .word{transform:none!important}}" +
       /* FIX: Embedded loader - reduce mobile font size to prevent overlap */
