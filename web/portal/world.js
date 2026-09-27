@@ -617,6 +617,20 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {}, onReady = (
       value: Array.from({ length: RIPPLE_SLOT_COUNT }, () => new THREE.Vector4(0, 0, -1000, 0)),
     };
     water.material.onBeforeCompile = (shader) => {
+      // Keep the moving normal-map glints from clipping into hard streaks.
+      const defaultSunGlint =
+        "sunLight( surfaceNormal, eyeDirection, 100.0, 2.0, 0.5, diffuseLight, specularLight );";
+      const softenedSunGlint =
+        "sunLight( surfaceNormal, eyeDirection, 64.0, 0.65, 0.5, diffuseLight, specularLight );";
+      shader.fragmentShader = shader.fragmentShader.replace(
+        defaultSunGlint,
+        softenedSunGlint,
+      );
+      stage.dataset.worldHighlightProfile = shader.fragmentShader.includes(
+        softenedSunGlint,
+      )
+        ? "softened-normal-map-specular"
+        : "threejs-default";
       shader.uniforms.rippleHeightMap = { value: rippleField.texture };
       shader.uniforms.rippleWorldSize = { value: RIPPLE_WORLD_SIZE };
       shader.uniforms.rippleWorldMin = { value: RIPPLE_WORLD_MIN };
