@@ -2676,7 +2676,8 @@ function startPageCurtain(libraryReady) {
     return;
   }
 
-  const minimumDuration = 1000;
+  const minimumDuration = 5000;
+  const startProgressDuration = 250;
   const finishDuration = 260;
   const startedAt = performance.now();
   let previousFrameAt = startedAt;
@@ -2684,6 +2685,7 @@ function startPageCurtain(libraryReady) {
   let isReady = false;
   let isFinishing = false;
   let markStartedAt = 0;
+  let percentToStartAt = 0;
   let pageHasLoaded = document.readyState === "complete";
   let fontsAreReady = false;
   let libraryIsReady = false;
@@ -2726,16 +2728,23 @@ function startPageCurtain(libraryReady) {
 
   function render(now) {
     const elapsed = now - startedAt;
-    const stageProgress = libraryIsReady ? 90 : fontsAreReady ? 76 : pageHasLoaded ? 64 : 22;
+    const stageProgress = libraryIsReady ? 100 : fontsAreReady ? 76 : pageHasLoaded ? 64 : 22;
     const targetProgress = isReady && elapsed >= minimumDuration ? 100 : stageProgress;
     const deltaMilliseconds = Math.max(0, now - previousFrameAt);
     progress = Math.min(targetProgress, progress + deltaMilliseconds / 10);
     previousFrameAt = now;
 
-    const percent = Math.floor(progress);
+    if (isReady && elapsed >= minimumDuration && !percentToStartAt) {
+      percentToStartAt = now;
+    }
+    const percentToStart = percentToStartAt
+      ? clampUnit((now - percentToStartAt) / startProgressDuration)
+      : 0;
+    const loadRatio = percentToStart * 0.3 + (progress / 100) * 0.7;
+    const percent = Math.floor(loadRatio * 100);
     let lineTransformRatio = 0;
     let contentShowRatio = 0;
-    if (progress >= 100) {
+    if (loadRatio >= 1) {
       if (!markStartedAt) markStartedAt = now;
       const markElapsed = now - markStartedAt;
       lineTransformRatio = easeLusionExpo(markElapsed / 1000);
@@ -2751,7 +2760,7 @@ function startPageCurtain(libraryReady) {
 
     drawLusionPageCurtain(
       elements.curtainCanvas,
-      progress / 100,
+      loadRatio,
       lineTransformRatio,
       contentShowRatio,
     );

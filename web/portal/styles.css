@@ -3242,18 +3242,6 @@ html {
   pointer-events: auto;
 }
 
-.page-curtain::before {
-  position: absolute;
-  z-index: 2;
-  top: 5%;
-  right: 2%;
-  left: 2%;
-  height: 14%;
-  background: #000;
-  content: "";
-  pointer-events: none;
-}
-
 .page-curtain-canvas {
   position: absolute;
   top: 0;
