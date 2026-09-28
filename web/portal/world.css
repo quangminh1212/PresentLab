@@ -3075,6 +3075,9 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   overflow: hidden;
   line-height: 0;
   pointer-events: auto;
+  filter:
+    drop-shadow(0 0 1px rgb(255 255 255 / 96%))
+    drop-shadow(0 0 4px rgb(255 255 255 / 70%));
 }
 
 .portal-header-brand img {
