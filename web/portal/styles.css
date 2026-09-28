@@ -7,6 +7,14 @@
 }
 
 @font-face {
+  font-family: Aeonik;
+  src: url("/assets/fonts/Aeonik-Medium.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 500;
+  font-display: block;
+}
+
+@font-face {
   font-family: IBMPlexMono;
   src: url("/assets/fonts/IBMPlexMono-Regular.woff2") format("woff2");
   font-style: normal;
