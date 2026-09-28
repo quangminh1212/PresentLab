@@ -3110,12 +3110,20 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   border: 0;
   border-radius: 999px;
   padding: 0 18px 0 13px;
-  color: #fff;
-  background: #000;
+  color: #042f2e;
+  background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+  box-shadow:
+    0 14px 30px rgb(0 212 170 / 18%),
+    inset 0 1px 0 rgb(255 255 255 / 28%);
   font: inherit;
   font-size: 12px;
   font-weight: 650;
   cursor: pointer;
+}
+
+.portal-language-control select:hover,
+.portal-category-trigger:hover {
+  background: linear-gradient(135deg, #2dd4bf, var(--accent));
 }
 
 .portal-language-control select:focus-visible,
@@ -3131,8 +3139,8 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   right: 12px;
   width: 4px;
   height: 4px;
-  border-right: 1px solid #fff;
-  border-bottom: 1px solid #fff;
+  border-right: 1px solid currentColor;
+  border-bottom: 1px solid currentColor;
   transform: rotate(45deg);
   pointer-events: none;
 }
@@ -3151,10 +3159,12 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   box-sizing: border-box;
   border-radius: 999px;
   padding: 0 12px 0 16px;
-  color: #171820;
-  border: 1px solid rgb(0 0 0 / 16%);
-  background: #fff;
-  box-shadow: 0 6px 18px rgb(0 0 0 / 16%);
+  color: #042f2e;
+  border: 1px solid transparent;
+  background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+  box-shadow:
+    0 14px 30px rgb(0 212 170 / 18%),
+    inset 0 1px 0 rgb(255 255 255 / 28%);
   font-size: 12px;
   font-weight: 500;
   list-style: none;
