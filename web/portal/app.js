@@ -1427,6 +1427,7 @@ async function mountNativeLusionHeader(frame = lusionFrame()) {
   const adapterStyle = document.createElement("style");
   adapterStyle.textContent =
     ":host{position:fixed;inset:0;z-index:52;pointer-events:none}" +
+    ":host(.is-loading){display:none}" +
     ":host(.is-black-bg) #header,:host(.is-blue-bg) #header{color:var(--color-white)}" +
     ":host(.is-white-bg) #header{color:var(--color-black)}" +
     "#header-logo{visibility:hidden!important;pointer-events:none!important}" +
@@ -1434,6 +1435,7 @@ async function mountNativeLusionHeader(frame = lusionFrame()) {
     "#header-right-menu-btn,#header-menu,#lusion-language-switcher{pointer-events:auto!important}" +
     "#header-right-menu-btn,#lusion-language-trigger{transform:none!important}" +
     "#lusion-language-trigger{visibility:visible!important;opacity:1!important;clip-path:none!important}" +
+    "#lusion-language-trigger:hover{background:#2b2e3a!important}" +
     "@media(max-width:812px){#header-right-menu-btn,#lusion-language-trigger{transform:translateY(49px)!important}}" +
     ':host([data-lusion-language="vi"]) #header,' +
     ':host([data-lusion-language="vi"]) #header button,' +
@@ -1443,11 +1445,24 @@ async function mountNativeLusionHeader(frame = lusionFrame()) {
 
   let disposed = false;
   let styleObserver = null;
+  const syncPageReadiness = () => {
+    host.classList.toggle(
+      "is-loading",
+      !document.documentElement.classList.contains("is-ready"),
+    );
+  };
+  syncPageReadiness();
+  const pageReadinessObserver = new MutationObserver(syncPageReadiness);
+  pageReadinessObserver.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["class"],
+  });
   let removeStyleListeners = () => {};
   const dispose = () => {
     if (disposed) return;
     disposed = true;
     styleObserver?.disconnect();
+    pageReadinessObserver.disconnect();
     removeStyleListeners();
     frameWindow.removeEventListener("pagehide", dispose);
     document.removeEventListener("click", onDocumentClick, true);
@@ -1483,6 +1498,7 @@ async function mountNativeLusionHeader(frame = lusionFrame()) {
   const appliedCustomProperties = new Set();
   const syncFrameStyleState = () => {
     host.className = [...frameDocument.documentElement.classList].join(" ");
+    syncPageReadiness();
     host.dataset.lusionLanguage =
       frameDocument.documentElement.dataset.lusionLanguage ||
       frameDocument.documentElement.lang ||
