@@ -3075,15 +3075,15 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   display: flex;
   align-items: center;
   justify-self: end;
-  gap: clamp(14px, 3.8vw, 44px);
+  gap: clamp(14px, 3.8vw, 36px);
   pointer-events: auto;
 }
 
 .portal-language-control {
   position: relative;
   display: block;
-  width: 74px;
-  height: 56px;
+  width: 60px;
+  height: 45px;
   flex: 0 0 auto;
 }
 
@@ -3093,11 +3093,11 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   appearance: none;
   border: 0;
   border-radius: 999px;
-  padding: 0 28px 0 19px;
+  padding: 0 22px 0 16px;
   color: #fff;
   background: #000;
   font: inherit;
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 650;
   cursor: pointer;
 }
@@ -3111,10 +3111,10 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
 
 .portal-language-chevron {
   position: absolute;
-  top: 23px;
-  right: 17px;
-  width: 6px;
-  height: 6px;
+  top: 18px;
+  right: 14px;
+  width: 5px;
+  height: 5px;
   border-right: 1px solid #fff;
   border-bottom: 1px solid #fff;
   transform: rotate(45deg);
@@ -3129,17 +3129,17 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 14px;
-  min-width: 174px;
-  height: 56px;
+  gap: 11px;
+  min-width: 140px;
+  height: 45px;
   box-sizing: border-box;
   border-radius: 999px;
-  padding: 0 20px 0 28px;
+  padding: 0 16px 0 22px;
   color: #171820;
   border: 1px solid rgb(0 0 0 / 16%);
   background: #fff;
-  box-shadow: 0 8px 24px rgb(0 0 0 / 18%);
-  font-size: 16px;
+  box-shadow: 0 6px 18px rgb(0 0 0 / 16%);
+  font-size: 13px;
   font-weight: 500;
   list-style: none;
   cursor: pointer;
@@ -3157,13 +3157,13 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
 .portal-category-dots {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
+  gap: 2px;
 }
 
 .portal-category-dots i {
   display: block;
-  width: 5px;
-  height: 5px;
+  width: 4px;
+  height: 4px;
   border-radius: 50%;
   background: currentColor;
 }
