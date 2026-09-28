@@ -3070,6 +3070,7 @@ function startPageCurtain(libraryReady) {
   const brandRevealDuration = 180;
   const brandHoldDuration = 1500;
   const brandHideDuration = 180;
+  const contentShowDelay = 1000;
   const contentShowDuration = 1000;
   const startedAt = performance.now();
   let previousFrameAt = startedAt;
@@ -3163,7 +3164,7 @@ function startPageCurtain(libraryReady) {
         );
         brandRevealRatio = 1 - brandHideRatio;
         contentShowRatio = clampUnit(
-          (brandHoldElapsed - brandHoldDuration) / contentShowDuration,
+          (brandHoldElapsed - contentShowDelay) / contentShowDuration,
         );
       }
     }
