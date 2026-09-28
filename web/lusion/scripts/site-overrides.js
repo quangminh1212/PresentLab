@@ -2,6 +2,7 @@
   const style = document.createElement("style");
   style.textContent =
     "#video-overlay.is-offline-media #video-overlay__controls,#video-overlay.is-offline-media #video-overlay-cursor{display:none!important}" +
+    "html.is-lusion-preloading #header-right-menu-btn,html.is-lusion-preloading #lusion-language-trigger{visibility:hidden!important;opacity:0!important;pointer-events:none!important}" +
     "#header-logo .xlab-logo-crop{display:block;position:relative;flex:0 0 80px;width:80px;height:28px;overflow:hidden}" +
     "#header-logo .xlab-logo-crop img{position:absolute;top:-8.9px;left:0;display:block;width:80px;height:auto;max-width:none}" +
     "html:not(.is-black-bg):not(.is-blue-bg) #header-logo .xlab-logo-crop img{filter:none!important}" +
@@ -1183,6 +1184,30 @@
             trigger.style.opacity = String(menuOpacity);
           }
         };
+        const preloader = document.getElementById("preloader");
+        if (preloader) {
+          const syncPreloaderState = () => {
+            const isLoading = getComputedStyle(preloader).display !== "none";
+            document.documentElement.classList.toggle(
+              "is-lusion-preloading",
+              isLoading,
+            );
+            syncMenuMotion();
+          };
+          const preloaderObserver = new MutationObserver(() => {
+            syncPreloaderState();
+            if (getComputedStyle(preloader).display === "none") {
+              preloaderObserver.disconnect();
+            }
+          });
+          syncPreloaderState();
+          if (getComputedStyle(preloader).display !== "none") {
+            preloaderObserver.observe(preloader, {
+              attributes: true,
+              attributeFilter: ["style"],
+            });
+          }
+        }
         const menuMotionObserver = new MutationObserver(syncMenuMotion);
         for (
           let element = menuButton;
