@@ -2837,6 +2837,45 @@ function scrollPageToSection(target) {
   sectionScrollFrame = window.requestAnimationFrame(render);
 }
 
+function bindWaterLusionHandoff() {
+  const hero = elements.hero;
+  const nextSection = elements.catalogSection;
+  if (!hero || !nextSection) return;
+
+  let updateFrame = 0;
+  const update = () => {
+    updateFrame = 0;
+    const heroBounds = hero.getBoundingClientRect();
+    const heroHeight = Math.max(1, heroBounds.height);
+    const progress = clampUnit(-heroBounds.top / heroHeight);
+
+    hero.style.setProperty(
+      "--water-handoff-offset",
+      `${(-12 * progress).toFixed(2)}vh`,
+    );
+    hero.style.setProperty(
+      "--water-handoff-opacity",
+      `${(1 - progress * 0.42).toFixed(3)}`,
+    );
+    nextSection.style.setProperty(
+      "--lusion-handoff-offset",
+      `${(6 * (1 - progress)).toFixed(2)}vh`,
+    );
+    nextSection.style.setProperty(
+      "--lusion-handoff-opacity",
+      `${progress.toFixed(3)}`,
+    );
+  };
+  const scheduleUpdate = () => {
+    if (updateFrame) return;
+    updateFrame = window.requestAnimationFrame(update);
+  };
+
+  window.addEventListener("scroll", scheduleUpdate, { passive: true });
+  window.addEventListener("resize", scheduleUpdate, { passive: true });
+  update();
+}
+
 function bindWaterToLusionScroll() {
   const hero = elements.hero;
   const nextSection = elements.catalogSection;
@@ -2984,7 +3023,14 @@ function deferLusionFrame() {
 
   const observeFrame = () => {
     const loadFrame = () => {
-      frame.addEventListener("load", bridgeFrameScrollToWater);
+      frame.addEventListener(
+        "load",
+        () => {
+          frame.classList.add("is-ready");
+          bridgeFrameScrollToWater();
+        },
+        { once: true },
+      );
       frame.src = frame.dataset.lazySrc;
       delete frame.dataset.lazySrc;
     };
@@ -3016,6 +3062,7 @@ function setupExperience(libraryReady) {
   bindRevealMotion();
   bindAnchorNavigation();
   bindSectionObserver();
+  bindWaterLusionHandoff();
   bindWaterToLusionScroll();
   bindStageParallax();
   bindAmbientSurfaceMotion();
