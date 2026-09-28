@@ -3066,6 +3066,11 @@ function startPageCurtain(libraryReady) {
 
   const minimumDuration = 7000;
   const startProgressDuration = 250;
+  const markTransformDuration = 1000;
+  const brandRevealDuration = 180;
+  const brandHoldDuration = 1500;
+  const brandHideDuration = 180;
+  const contentShowDuration = 1000;
   const startedAt = performance.now();
   let previousFrameAt = startedAt;
   let progress = 0;
@@ -3142,13 +3147,24 @@ function startPageCurtain(libraryReady) {
     if (loadRatio >= 1) {
       if (!markStartedAt) markStartedAt = now;
       const markElapsed = now - markStartedAt;
-      lineTransformRatio = easeLusionExpo(markElapsed / 1000);
-      brandRevealRatio = clampUnit((markElapsed - 1000) / 180);
+      lineTransformRatio = easeLusionExpo(
+        markElapsed / markTransformDuration,
+      );
+      brandRevealRatio = clampUnit(
+        (markElapsed - markTransformDuration) / brandRevealDuration,
+      );
       if (brandRevealRatio >= 1 && !brandHoldStartedAt) {
         brandHoldStartedAt = now;
       }
       if (brandHoldStartedAt) {
-        contentShowRatio = clampUnit((now - brandHoldStartedAt - 1000) / 1000);
+        const brandHoldElapsed = now - brandHoldStartedAt;
+        const brandHideRatio = clampUnit(
+          (brandHoldElapsed - brandHoldDuration) / brandHideDuration,
+        );
+        brandRevealRatio = 1 - brandHideRatio;
+        contentShowRatio = clampUnit(
+          (brandHoldElapsed - brandHoldDuration) / contentShowDuration,
+        );
       }
     }
 
