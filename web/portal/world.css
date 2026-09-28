@@ -1915,6 +1915,7 @@ html[data-theme="light"] .world-stage {
   height: max(100svh, 660px);
   min-height: max(100svh, 660px);
   border-radius: 0;
+  filter: grayscale(1);
 }
 
 .app-shell:has(> main > .hero.hero-world) .world-hud {
