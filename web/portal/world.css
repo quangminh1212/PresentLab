@@ -3107,23 +3107,15 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   width: 100%;
   height: 100%;
   appearance: none;
-  border: 0;
+  border: 1px solid rgb(255 255 255 / 18%);
   border-radius: 999px;
   padding: 0 18px 0 13px;
-  color: #042f2e;
-  background: linear-gradient(135deg, var(--accent), var(--accent-deep));
-  box-shadow:
-    0 14px 30px rgb(0 212 170 / 18%),
-    inset 0 1px 0 rgb(255 255 255 / 28%);
+  color: #fff;
+  background: #2b2e3a;
   font: inherit;
   font-size: 12px;
   font-weight: 650;
   cursor: pointer;
-}
-
-.portal-language-control select:hover,
-.portal-category-trigger:hover {
-  background: linear-gradient(135deg, #2dd4bf, var(--accent));
 }
 
 .portal-language-control select:focus-visible,
@@ -3159,12 +3151,9 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   box-sizing: border-box;
   border-radius: 999px;
   padding: 0 12px 0 16px;
-  color: #042f2e;
-  border: 1px solid transparent;
-  background: linear-gradient(135deg, var(--accent), var(--accent-deep));
-  box-shadow:
-    0 14px 30px rgb(0 212 170 / 18%),
-    inset 0 1px 0 rgb(255 255 255 / 28%);
+  color: #000;
+  border: 0;
+  background: #e4e6ef;
   font-size: 12px;
   font-weight: 500;
   list-style: none;
