@@ -25,6 +25,105 @@ const RIPPLE_HOVER_LIFETIME = 0.18;
 const RIPPLE_CLICK_STRENGTH = 0.3;
 const RIPPLE_CLICK_RADIUS = 0.9;
 
+function createProceduralWaterNormals(size = 128) {
+  const data = new Uint8Array(size * size * 4);
+  const heights = new Float32Array(size * size);
+  const encodeNormal = (value) => Math.round((value * 0.5 + 0.5) * 255);
+  const fade = (value) => value * value * (3 - 2 * value);
+  const lerp = (start, end, weight) => start + (end - start) * weight;
+  const octaveSettings = [
+    [3, 0.48],
+    [6, 0.3],
+    [12, 0.18],
+    [24, 0.105],
+    [48, 0.055],
+  ];
+  const octaves = octaveSettings.map(([frequency, amplitude], octaveIndex) => {
+    const values = new Float32Array(frequency * frequency);
+    let seed = 0x51f15e + octaveIndex * 0x9e3779b9;
+    const random = () => {
+      seed = (seed + 0x6d2b79f5) >>> 0;
+      let value = seed;
+      value = Math.imul(value ^ (value >>> 15), value | 1);
+      value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
+      return ((value ^ (value >>> 14)) >>> 0) / 0x100000000;
+    };
+    for (let index = 0; index < values.length; index += 1) {
+      values[index] = random() * 2 - 1;
+    }
+    return { amplitude, frequency, values };
+  });
+
+  const sampleNoise = (octave, x, y) => {
+    const scaledX = (x / size) * octave.frequency;
+    const scaledY = (y / size) * octave.frequency;
+    const cellX = Math.floor(scaledX);
+    const cellY = Math.floor(scaledY);
+    const fractionX = fade(scaledX - cellX);
+    const fractionY = fade(scaledY - cellY);
+    const x0 = cellX % octave.frequency;
+    const x1 = (x0 + 1) % octave.frequency;
+    const y0 = cellY % octave.frequency;
+    const y1 = (y0 + 1) % octave.frequency;
+    const top = lerp(
+      octave.values[y0 * octave.frequency + x0],
+      octave.values[y0 * octave.frequency + x1],
+      fractionX,
+    );
+    const bottom = lerp(
+      octave.values[y1 * octave.frequency + x0],
+      octave.values[y1 * octave.frequency + x1],
+      fractionX,
+    );
+    return lerp(top, bottom, fractionY);
+  };
+
+  for (let y = 0; y < size; y += 1) {
+    for (let x = 0; x < size; x += 1) {
+      let height = 0;
+      for (const octave of octaves) {
+        height += sampleNoise(octave, x, y) * octave.amplitude;
+      }
+      heights[y * size + x] = height;
+    }
+  }
+
+  for (let y = 0; y < size; y += 1) {
+    const yBefore = ((y - 1 + size) % size) * size;
+    const yAfter = ((y + 1) % size) * size;
+    for (let x = 0; x < size; x += 1) {
+      const xBefore = (x - 1 + size) % size;
+      const xAfter = (x + 1) % size;
+      const offset = (y * size + x) * 4;
+      let normalX =
+        (heights[y * size + xBefore] - heights[y * size + xAfter]) *
+        size *
+        0.055;
+      let normalY =
+        (heights[yBefore + x] - heights[yAfter + x]) * size * 0.055;
+      const length = Math.hypot(normalX, normalY, 1);
+      normalX /= length;
+      normalY /= length;
+      const normalZ = 1 / length;
+
+      data[offset] = encodeNormal(normalX);
+      data[offset + 1] = encodeNormal(normalY);
+      data[offset + 2] = encodeNormal(normalZ);
+      data[offset + 3] = 255;
+    }
+  }
+
+  const texture = new THREE.DataTexture(data, size, size, THREE.RGBAFormat);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.minFilter = THREE.LinearFilter;
+  texture.magFilter = THREE.LinearFilter;
+  texture.colorSpace = THREE.NoColorSpace;
+  texture.generateMipmaps = false;
+  texture.needsUpdate = true;
+  return texture;
+}
+
 /* The Three.js Water addon draws a reflective surface over a procedural sea horizon.
  * Its GPU height field adds ripples where the pointer meets the water plane. */
 const landmarks = [
@@ -232,11 +331,14 @@ function setupDomControls(stage, onTarget, focusField) {
 export function setupXLabWorld({ canvas, stage, onTarget = () => {}, onReady = () => {} }) {
   if (!canvas || !stage) return;
 
+  stage.dataset.worldInitializationState = "initializing";
+
   let hasReportedReady = false;
   const reportReady = () => {
     if (hasReportedReady) return;
     hasReportedReady = true;
     stage.classList.add("world-ready");
+    stage.dataset.worldInitializationState = "ready";
     onReady();
   };
 
@@ -298,9 +400,10 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {}, onReady = (
   let waterNormalMapState = "loading";
   let raycaster;
 
-  const setFallbackState = () => {
+  const setFallbackState = (reason = "webgl-unavailable") => {
     if (videoWaterReady) return;
     stage.classList.remove("is-video-water", "is-threejs-water");
+    stage.dataset.worldFallbackReason ||= reason;
     stage.dataset.worldRenderMode = "css-fallback";
     stage.dataset.worldShading = "water-css-fallback";
     stage.dataset.worldSurface = "css-water-fallback";
@@ -411,6 +514,17 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {}, onReady = (
     if (waterVideoElement.readyState >= 1) activateVideoWater();
     else waterVideoElement.load();
   }
+
+  const useProceduralWaterNormals = () => {
+    const failedTexture = waterNormals;
+    waterNormals = createProceduralWaterNormals();
+    waterNormalMapState = "procedural-fallback";
+    stage.dataset.worldWaterNormalMap = waterNormalMapState;
+    if (water?.material?.uniforms?.normalSampler) {
+      water.material.uniforms.normalSampler.value = waterNormals;
+    }
+    failedTexture?.dispose();
+  };
 
   const setSelectedTarget = (target) => {
     const landmark = landmarks.find((item) => item.id === target);
@@ -587,10 +701,16 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {}, onReady = (
       },
       undefined,
       () => {
-        waterNormalMapState = "unavailable";
-        stage.dataset.worldWaterNormalMap = waterNormalMapState;
-        if (!videoWaterReady) setFallbackState();
-        else if (reducedMotion && webglWaterAvailable) draw(window.performance.now());
+        try {
+          useProceduralWaterNormals();
+          if (reducedMotion && webglWaterAvailable) draw(window.performance.now());
+        } catch (error) {
+          console.warn(
+            "The procedural water normal map could not be created.",
+            error,
+          );
+          setFallbackState("water-normal-map-recovery-failed");
+        }
       },
     );
     waterNormals.wrapS = THREE.RepeatWrapping;
@@ -731,7 +851,7 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {}, onReady = (
         ? "ready"
         : "loading"
       : "not-used";
-  } catch {
+  } catch (error) {
     renderer?.dispose();
     water?.material?.uniforms?.mirrorSampler?.value?.dispose?.();
     water?.geometry?.dispose();
@@ -742,7 +862,11 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {}, onReady = (
     rippleField?.targets.forEach((target) => target.dispose());
     rippleField?.simulationMaterial.dispose();
     rippleField?.simulationScene.traverse((object) => object.geometry?.dispose());
-    setFallbackState();
+    console.warn(
+      "The XLab WebGL water scene could not be initialized.",
+      error,
+    );
+    setFallbackState("webgl-initialization-failed");
     return;
   }
 

@@ -2533,7 +2533,10 @@ function mountXLabWorld() {
       resolve();
     };
     fallbackTimer = window.setTimeout(() => {
-      elements.worldStage?.classList.add("world-fallback", "world-ready");
+      if (elements.worldStage) {
+        elements.worldStage.classList.add("world-ready");
+        elements.worldStage.dataset.worldInitializationState = "timed-out";
+      }
       markReady();
     }, 12000);
 
@@ -2547,8 +2550,17 @@ function mountXLabWorld() {
         });
       })
       .catch((error) => {
-        elements.worldStage?.classList.add("world-fallback", "world-ready");
-        console.error("The interactive water scene could not be loaded.", error);
+        if (elements.worldStage) {
+          elements.worldStage.classList.add("world-fallback", "world-ready");
+          elements.worldStage.dataset.worldInitializationState = "failed";
+          elements.worldStage.dataset.worldFallbackReason =
+            "world-module-load-failed";
+          elements.worldStage.dataset.worldRenderMode = "css-fallback";
+        }
+        console.error(
+          "The interactive water scene could not be loaded.",
+          error,
+        );
         markReady();
       });
   });
