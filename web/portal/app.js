@@ -2955,11 +2955,6 @@ function drawLusionPageCurtain(
   const markBounds = { left: -1.5, right: 1.5, top: -2, bottom: 2 };
   const { xWidth, aWidth, bWidth, glyphHeight, textGap, letterGap } =
     XLAB_LOCKUP;
-  const lockupLeft = markBounds.left - textGap - xWidth;
-  const lockupRight =
-    markBounds.right + textGap + aWidth + bWidth + letterGap;
-  const lockupCenter = (lockupLeft + lockupRight) * 0.5;
-  context.translate(-lockupCenter, 0);
   const xLeft = markBounds.left - textGap - xWidth;
   const aLeft = markBounds.right + textGap;
   const bLeft = aLeft + aWidth + letterGap;
@@ -3070,7 +3065,7 @@ function startPageCurtain(libraryReady) {
   const brandRevealDuration = 180;
   const brandHoldDuration = 1500;
   const brandHideDuration = 180;
-  const contentShowDelay = 1000;
+  const contentShowDelay = brandHoldDuration + brandHideDuration;
   const contentShowDuration = 1000;
   const startedAt = performance.now();
   let previousFrameAt = startedAt;
