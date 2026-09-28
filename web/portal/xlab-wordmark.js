@@ -62,6 +62,7 @@ function drawB(context, left, top) {
   const bowlX = left + stroke * 1.1;
   const upperRightX = left + bWidth - bowlStroke * 0.5 - stroke * 0.18;
   const lowerRightX = left + bWidth - bowlStroke * 0.5;
+  const chamfer = stroke * 0.24;
   const topY = top + bowlStroke * 0.5;
   const middleY = top + glyphHeight * 0.5;
   const bottomY = top + glyphHeight - bowlStroke * 0.5;
@@ -71,7 +72,7 @@ function drawB(context, left, top) {
   context.strokeStyle = "#fff";
   context.lineWidth = stroke;
   context.lineCap = "round";
-  context.lineJoin = "round";
+  context.lineJoin = "miter";
   context.beginPath();
   context.moveTo(stemX, bottomY);
   context.lineTo(stemX, topY);
@@ -81,28 +82,22 @@ function drawB(context, left, top) {
   context.beginPath();
   context.moveTo(stemX, topY);
   context.lineTo(bowlX, topY);
-  context.bezierCurveTo(
-    upperRightX,
-    topY,
-    upperRightX,
-    middleY,
-    bowlX,
-    middleY,
-  );
+  context.lineTo(upperRightX - chamfer, topY);
+  context.lineTo(upperRightX, topY + chamfer);
+  context.lineTo(upperRightX, middleY - chamfer);
+  context.lineTo(upperRightX - chamfer, middleY);
+  context.lineTo(bowlX, middleY);
   context.lineTo(stemX, middleY);
   context.stroke();
 
   context.beginPath();
   context.moveTo(stemX, middleY);
   context.lineTo(bowlX, middleY);
-  context.bezierCurveTo(
-    lowerRightX,
-    middleY,
-    lowerRightX,
-    bottomY,
-    bowlX,
-    bottomY,
-  );
+  context.lineTo(lowerRightX - chamfer, middleY);
+  context.lineTo(lowerRightX, middleY + chamfer);
+  context.lineTo(lowerRightX, bottomY - chamfer);
+  context.lineTo(lowerRightX - chamfer, bottomY);
+  context.lineTo(bowlX, bottomY);
   context.lineTo(stemX, bottomY);
   context.stroke();
   context.restore();
