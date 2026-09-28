@@ -2669,7 +2669,7 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
 }
 
 .app-shell:has(> main > .hero.hero-world) .world-copy {
-  top: clamp(46px, 7.2vh, 62px);
+  top: clamp(102px, calc(7.2vh + 56px), 118px);
   right: auto;
   left: clamp(92px, 27vw, 445px);
   width: min(930px, 58vw);
@@ -3039,26 +3039,29 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   }
 }
 
-/* Light XLab header above the visual-first home scene. */
+/* Floating XLab header over the visual-first home scene. */
 .portal-header {
-  position: relative;
+  position: absolute;
   z-index: 20;
+  top: 0;
+  right: 0;
+  left: 0;
   display: grid;
   grid-template-columns: 104px minmax(0, 1fr);
   align-items: center;
   column-gap: 20px;
   min-height: 116px;
   padding: 27px clamp(22px, 4.4vw, 56px) 13px;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
   color: #1c1d25;
-  background: linear-gradient(108deg, #f3f4fb 0%, #f0f1f8 82%, #d9dbe3 100%);
+  background: transparent;
+  pointer-events: none;
 }
 
 .portal-header-brand {
   display: block;
   width: 104px;
   line-height: 0;
+  pointer-events: auto;
 }
 
 .portal-header-brand img {
@@ -3072,6 +3075,7 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   align-items: center;
   justify-self: end;
   gap: clamp(14px, 3.8vw, 44px);
+  pointer-events: auto;
 }
 
 .portal-language-control {
@@ -3131,7 +3135,9 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   border-radius: 999px;
   padding: 0 20px 0 28px;
   color: #171820;
-  background: rgb(31 34 47 / 6%);
+  border: 1px solid rgb(255 255 255 / 42%);
+  background: rgb(242 243 249 / 78%);
+  backdrop-filter: blur(12px) saturate(125%);
   font-size: 16px;
   font-weight: 500;
   list-style: none;
