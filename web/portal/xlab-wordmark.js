@@ -55,42 +55,54 @@ function drawA(context, left, top) {
 
 function drawB(context, left, top) {
   const { bWidth, glyphHeight, stroke } = XLAB_LOCKUP;
-  const edgeWidth = stroke * 0.8;
-  const crossbarHeight = stroke * 0.7;
-  const upperWidth = bWidth - 0.2;
-  const counterHeight = (glyphHeight - stroke * 1.6 - crossbarHeight) * 0.5;
-  const upperCounterTop = top + stroke * 0.8;
-  const middleTop = upperCounterTop + counterHeight;
-  const lowerCounterTop = middleTop + crossbarHeight;
-  const bottomTop = top + glyphHeight - stroke * 0.8;
+  const bowlStroke = stroke * 0.75;
+  const stemX = left + stroke * 0.5;
+  const bowlX = left + stroke * 1.1;
+  const upperRightX = left + bWidth - bowlStroke * 0.5 - stroke * 0.18;
+  const lowerRightX = left + bWidth - bowlStroke * 0.5;
+  const topY = top + bowlStroke * 0.5;
+  const middleY = top + glyphHeight * 0.5;
+  const bottomY = top + glyphHeight - bowlStroke * 0.5;
 
-  context.fillStyle = "#fff";
-  context.fillRect(left, top, stroke, glyphHeight);
-  context.fillRect(left + stroke, top, upperWidth - stroke, stroke * 0.8);
-  context.fillRect(
-    left + upperWidth - edgeWidth,
-    upperCounterTop,
-    edgeWidth,
-    counterHeight,
+  context.save();
+  context.strokeStyle = "#fff";
+  context.lineWidth = stroke;
+  context.lineCap = "butt";
+  context.lineJoin = "round";
+  context.beginPath();
+  context.moveTo(stemX, bottomY);
+  context.lineTo(stemX, topY);
+  context.stroke();
+
+  context.lineWidth = bowlStroke;
+  context.beginPath();
+  context.moveTo(stemX, topY);
+  context.lineTo(bowlX, topY);
+  context.bezierCurveTo(
+    upperRightX,
+    topY,
+    upperRightX,
+    middleY,
+    bowlX,
+    middleY,
   );
-  context.fillRect(
-    left + stroke,
-    middleTop,
-    bWidth - stroke,
-    crossbarHeight,
+  context.lineTo(stemX, middleY);
+  context.stroke();
+
+  context.beginPath();
+  context.moveTo(stemX, middleY);
+  context.lineTo(bowlX, middleY);
+  context.bezierCurveTo(
+    lowerRightX,
+    middleY,
+    lowerRightX,
+    bottomY,
+    bowlX,
+    bottomY,
   );
-  context.fillRect(
-    left + bWidth - edgeWidth,
-    lowerCounterTop,
-    edgeWidth,
-    counterHeight,
-  );
-  context.fillRect(
-    left + stroke,
-    bottomTop,
-    bWidth - stroke,
-    stroke * 0.8,
-  );
+  context.lineTo(stemX, bottomY);
+  context.stroke();
+  context.restore();
 }
 
 export function drawXlabLetters(context, xLeft, aLeft, bLeft, top) {
