@@ -1,3 +1,5 @@
+import { XLAB_LOCKUP, drawXlabLetters } from "./xlab-wordmark.js";
+
 if ("scrollRestoration" in window.history) {
   window.history.scrollRestoration = "manual";
 }
@@ -2950,16 +2952,17 @@ function drawLusionPageCurtain(
   context.translate(barUnit * transform * diagonal, (-barUnit * 0.5) * transform * diagonal);
   context.scale(scale, scale);
 
-  context.font = "800 5.6px Oxanium, sans-serif";
-  const xMetrics = context.measureText("X");
-  const abMetrics = context.measureText("AB");
-  // Match the bounds of the custom canvas L so the type sits at even gaps.
-  const markBounds = { left: -1.5, right: 1.5 };
-  const textGap = 0.5;
-  const lockupLeft = markBounds.left - textGap - xMetrics.width;
-  const lockupRight = markBounds.right + textGap + abMetrics.width;
+  const markBounds = { left: -1.5, right: 1.5, top: -2, bottom: 2 };
+  const { glyphWidth, glyphHeight, textGap, letterGap } = XLAB_LOCKUP;
+  const lockupLeft = markBounds.left - textGap - glyphWidth;
+  const lockupRight =
+    markBounds.right + textGap + glyphWidth * 2 + letterGap;
   const lockupCenter = (lockupLeft + lockupRight) * 0.5;
   context.translate(-lockupCenter, 0);
+  const xLeft = markBounds.left - textGap - glyphWidth;
+  const aLeft = markBounds.right + textGap;
+  const bLeft = aLeft + glyphWidth + letterGap;
+  const glyphTop = markBounds.bottom - glyphHeight;
 
   const line = clampUnit(lineTransformRatio);
   if (line === 0) {
@@ -2993,18 +2996,10 @@ function drawLusionPageCurtain(
 
   if (brandRevealRatio > 0) {
     context.translate(line, -1.5 * line);
-    const markCenterY = -0.25;
-    const xBaseline = markCenterY
-      + (xMetrics.actualBoundingBoxAscent - xMetrics.actualBoundingBoxDescent) * 0.5;
     context.save();
     context.globalAlpha = clampUnit(brandRevealRatio) * (1 - transform);
     context.fillStyle = "#fff";
-    context.font = "800 5.6px Oxanium, sans-serif";
-    context.textBaseline = "alphabetic";
-    context.textAlign = "right";
-    context.fillText("X", markBounds.left - textGap, xBaseline);
-    context.textAlign = "left";
-    context.fillText("AB", markBounds.right + textGap, xBaseline);
+    drawXlabLetters(context, xLeft, aLeft, bLeft, glyphTop);
     context.restore();
   }
 
@@ -3044,8 +3039,8 @@ function startPageCurtain(libraryReady) {
       window.addEventListener("load", resolve, { once: true });
     }
   });
-  const fontsReady = document.fonts?.load
-    ? Promise.all([document.fonts.ready, document.fonts.load("800 5.6px Oxanium")])
+  const fontsReady = document.fonts?.ready
+    ? document.fonts.ready
     : Promise.resolve();
 
   if (!pageCurtain) {
