@@ -1445,6 +1445,13 @@ async function mountNativeLusionHeader(frame = lusionFrame()) {
 
   let disposed = false;
   let styleObserver = null;
+  let headerMeasure = null;
+  const syncHeaderMeasure = () => {
+    if (!headerMeasure?.isConnected) return;
+    const adopted = shadow.getElementById("header-container");
+    const height = adopted?.getBoundingClientRect().height ?? 0;
+    if (height > 0) headerMeasure.style.height = `${height}px`;
+  };
   const syncPageReadiness = () => {
     host.classList.toggle(
       "is-loading",
@@ -1463,6 +1470,7 @@ async function mountNativeLusionHeader(frame = lusionFrame()) {
     disposed = true;
     styleObserver?.disconnect();
     pageReadinessObserver.disconnect();
+    headerMeasure?.remove();
     removeStyleListeners();
     frameWindow.removeEventListener("pagehide", dispose);
     document.removeEventListener("click", onDocumentClick, true);
@@ -1526,6 +1534,7 @@ async function mountNativeLusionHeader(frame = lusionFrame()) {
       host.style.setProperty(name, value);
       appliedCustomProperties.add(name);
     }
+    syncHeaderMeasure();
   };
 
   function onDocumentClick(event) {
@@ -1593,7 +1602,19 @@ async function mountNativeLusionHeader(frame = lusionFrame()) {
   }
 
   syncFrameStyleState();
+  // HomeReelSection.resize measures #header-container in the frame document.
+  // The live header moves into this shadow root, so leave a fixed stand-in behind.
+  const liveHeaderContainer = frameDocument.getElementById("header-container");
+  const initialHeight = liveHeaderContainer?.getBoundingClientRect().height ?? 0;
+  headerMeasure = frameDocument.createElement("div");
+  headerMeasure.setAttribute("aria-hidden", "true");
+  headerMeasure.style.cssText =
+    "position:fixed;top:0;left:0;width:100%;visibility:hidden;pointer-events:none;";
+  if (initialHeight > 0) headerMeasure.style.height = `${initialHeight}px`;
+  sourceHeader.before(headerMeasure);
   shadow.appendChild(sourceHeader);
+  headerMeasure.id = "header-container";
+  syncHeaderMeasure();
   const menuTrigger = shadow.getElementById("header-right-menu-btn");
   const languageRoot = shadow.getElementById("lusion-language-switcher");
   const languageTrigger = shadow.getElementById("lusion-language-trigger");
