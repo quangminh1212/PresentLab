@@ -2662,6 +2662,7 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   min-height: 100svh;
   margin: 0;
   padding: 0;
+  background: #02070b;
 }
 
 .app-shell:has(> main > .hero.hero-world) .world-stage {
