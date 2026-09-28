@@ -289,6 +289,15 @@ if (lusionBundle.split(homeScrollBoundarySource).length - 1 !== 1) {
   );
 }
 lusionBundle = lusionBundle.replace(homeScrollBoundarySource, homeScrollBoundaryReplacement);
+const lusionScrollStateSource = "scrollManager.update(o),pagesManager.update(o)";
+const lusionScrollStateReplacement =
+  "scrollManager.update(o),window.__XLAB_LUSION_SCROLL_AT_TOP__=scrollManager.scrollPixel<=2,pagesManager.update(o)";
+if (lusionBundle.split(lusionScrollStateSource).length - 1 !== 1) {
+  throw new Error(
+    "The copied Lusion scroll manager no longer matches the virtual scroll state patch.",
+  );
+}
+lusionBundle = lusionBundle.replace(lusionScrollStateSource, lusionScrollStateReplacement);
 await writeFile(lusionBundlePath, lusionBundle);
 
 console.log(`Vercel static output prepared: ${output}`);

@@ -2999,14 +2999,9 @@ function deferLusionFrame() {
     }
     if (!frameWindow || !frameDocument || !elements.hero) return;
 
-    const frameIsAtTop = () => {
-      const scrollTop = Math.max(
-        frameWindow.scrollY || 0,
-        frameDocument.scrollingElement?.scrollTop || 0,
-        frameDocument.body?.scrollTop || 0,
-      );
-      return scrollTop <= 2;
-    };
+    // Lusion uses virtual scrolling, so the iframe's native scrollY stays at zero.
+    const frameIsAtTop = () =>
+      frameWindow.__XLAB_LUSION_SCROLL_AT_TOP__ === true;
     const returnToWater = (event, deltaY) => {
       if (!event.cancelable) return;
       if (deltaY > 0 && sectionScrollTarget === elements.hero) {
