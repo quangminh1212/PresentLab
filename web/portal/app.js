@@ -2983,22 +2983,11 @@ function startPageCurtain(libraryReady) {
     return;
   }
 
-  let isFinishing = false;
-  let completionFallbackId = 0;
-  const completeCurtain = () => {
-    if (isFinishing) return;
-    isFinishing = true;
-    window.clearTimeout(completionFallbackId);
-    pageCurtain.classList.add("is-complete");
-    root.classList.add("is-ready");
-  };
-  // Reveal the page if a drawing error stops the curtain's animation loop.
-  completionFallbackId = window.setTimeout(completeCurtain, 25_000);
-
   const hasCanvasContext = Boolean(elements.curtainCanvas?.getContext("2d"));
   if (isReducedMotion() || !hasCanvasContext) {
     Promise.allSettled([libraryReady, pageLoaded, fontsReady, worldReady]).then(() => {
-      completeCurtain();
+      pageCurtain.classList.add("is-complete");
+      root.classList.add("is-ready");
     });
     return;
   }
@@ -3009,6 +2998,7 @@ function startPageCurtain(libraryReady) {
   let previousFrameAt = startedAt;
   let progress = 0;
   let isReady = false;
+  let isFinishing = false;
   let markStartedAt = 0;
   let percentToStartAt = 0;
   let pageHasLoaded = document.readyState === "complete";
@@ -3052,7 +3042,6 @@ function startPageCurtain(libraryReady) {
   });
 
   function render(now) {
-    if (isFinishing) return;
     const elapsed = now - startedAt;
     // Lusion's 70/30 blend leaves an 86% bar when resource progress is at 80%.
     const stageProgress = libraryIsReady ? 80 : fontsAreReady ? 76 : pageHasLoaded ? 64 : 22;
@@ -3092,8 +3081,10 @@ function startPageCurtain(libraryReady) {
       contentShowRatio,
     );
 
-    if (contentShowRatio >= 1) {
-      completeCurtain();
+    if (contentShowRatio >= 1 && !isFinishing) {
+      isFinishing = true;
+      pageCurtain.classList.add("is-complete");
+      root.classList.add("is-ready");
       return;
     }
 
