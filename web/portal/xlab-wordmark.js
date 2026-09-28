@@ -81,7 +81,7 @@ function drawB(context, left, top) {
   clipLowerLeftNotch(context, left, top, bWidth, glyphHeight);
   context.strokeStyle = "#fff";
   context.lineWidth = stroke;
-  context.lineCap = "butt";
+  context.lineCap = "round";
   context.lineJoin = "round";
   context.beginPath();
   context.moveTo(stemX, bottomY);
