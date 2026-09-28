@@ -3052,7 +3052,7 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
 
 /* Floating XLab header over the visual-first home scene. */
 .portal-header {
-  position: absolute;
+  position: fixed;
   z-index: 20;
   top: 0;
   right: 0;
