@@ -8,27 +8,16 @@ export const XLAB_LOCKUP = Object.freeze({
   letterGap: 0.35,
 });
 
-function clipLowerLeftNotch(context, left, top, width, height) {
-  const cut = XLAB_LOCKUP.stroke;
-  const right = left + width;
-  const bottom = top + height;
-
+function clipGlyphBounds(context, left, top, width, height) {
   context.beginPath();
-  context.moveTo(left + cut, top);
-  context.lineTo(right, top);
-  context.lineTo(right, bottom);
-  context.lineTo(left + cut, bottom);
-  context.lineTo(left + cut, bottom - cut);
-  context.lineTo(left, bottom - cut);
-  context.lineTo(left, top);
-  context.closePath();
+  context.rect(left, top, width, height);
   context.clip();
 }
 
 function drawX(context, left, top) {
   const { xWidth, glyphHeight, stroke } = XLAB_LOCKUP;
   context.save();
-  clipLowerLeftNotch(context, left, top, xWidth, glyphHeight);
+  clipGlyphBounds(context, left, top, xWidth, glyphHeight);
   context.strokeStyle = "#fff";
   context.lineWidth = stroke;
   context.lineCap = "butt";
@@ -45,7 +34,7 @@ function drawX(context, left, top) {
 function drawA(context, left, top) {
   const { aWidth, glyphHeight, stroke } = XLAB_LOCKUP;
   context.save();
-  clipLowerLeftNotch(context, left, top, aWidth, glyphHeight);
+  clipGlyphBounds(context, left, top, aWidth, glyphHeight);
   context.strokeStyle = "#fff";
   context.lineWidth = stroke;
   context.lineCap = "butt";
@@ -78,7 +67,7 @@ function drawB(context, left, top) {
   const bottomY = top + glyphHeight - bowlStroke * 0.5;
 
   context.save();
-  clipLowerLeftNotch(context, left, top, bWidth, glyphHeight);
+  clipGlyphBounds(context, left, top, bWidth, glyphHeight);
   context.strokeStyle = "#fff";
   context.lineWidth = stroke;
   context.lineCap = "round";
