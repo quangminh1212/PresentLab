@@ -2903,13 +2903,7 @@ function easeLusionExpo(value) {
     : (2 - 2 ** (-20 * progress + 10)) / 2;
 }
 
-function drawLusionPageCurtain(
-  canvas,
-  progress,
-  lineTransformRatio,
-  contentShowRatio,
-  brandRevealRatio,
-) {
+function drawLusionPageCurtain(canvas, progress, lineTransformRatio, contentShowRatio) {
   if (!canvas) return;
 
   const width = window.innerWidth + 2;
@@ -2981,23 +2975,6 @@ function drawLusionPageCurtain(
   }
 
   context.restore();
-
-  const brandAlpha =
-    clampUnit(brandRevealRatio) * (1 - clampUnit(contentShowRatio));
-  if (brandAlpha > 0) {
-    context.save();
-    context.scale(pixelRatio, pixelRatio);
-    context.globalAlpha = brandAlpha;
-    context.fillStyle = "#000";
-    context.fillRect(0, 0, width, height);
-    context.fillStyle = "#fff";
-    const wordmarkSize = Math.min(72, Math.max(36, width * 0.045));
-    context.font = `500 ${wordmarkSize}px Aeonik, sans-serif`;
-    context.textAlign = "center";
-    context.textBaseline = "middle";
-    context.fillText("XLab", width * 0.5, height * 0.5);
-    context.restore();
-  }
 }
 
 function updateLusionPageCurtainDigits(digits, progress, deltaSeconds, startTime) {
@@ -3063,7 +3040,6 @@ function startPageCurtain(libraryReady) {
   let isReady = false;
   let isFinishing = false;
   let markStartedAt = 0;
-  let brandHoldStartedAt = null;
   let percentToStartAt = 0;
   let pageHasLoaded = document.readyState === "complete";
   let fontsAreReady = false;
@@ -3129,19 +3105,11 @@ function startPageCurtain(libraryReady) {
     const percent = Math.floor(loadRatio * 100);
     let lineTransformRatio = 0;
     let contentShowRatio = 0;
-    let brandRevealRatio = 0;
     if (loadRatio >= 1) {
       if (!markStartedAt) markStartedAt = now;
       const markElapsed = now - markStartedAt;
       lineTransformRatio = easeLusionExpo(markElapsed / 1000);
-      brandRevealRatio = clampUnit((markElapsed - 1000) / 180);
-      if (brandRevealRatio >= 1 && brandHoldStartedAt === null) {
-        brandHoldStartedAt = now;
-      }
-      contentShowRatio =
-        brandHoldStartedAt === null
-          ? 0
-          : clampUnit((now - brandHoldStartedAt - 1000) / 1000);
+      contentShowRatio = clampUnit((markElapsed - 1000) / 1000);
     }
 
     updateLusionPageCurtainDigits(
@@ -3156,7 +3124,6 @@ function startPageCurtain(libraryReady) {
       loadRatio,
       lineTransformRatio,
       contentShowRatio,
-      brandRevealRatio,
     );
 
     if (contentShowRatio >= 1 && !isFinishing) {
