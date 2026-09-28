@@ -3095,7 +3095,7 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   border-radius: 999px;
   padding: 0 28px 0 19px;
   color: #fff;
-  background: #292a35;
+  background: #000;
   font: inherit;
   font-size: 16px;
   font-weight: 650;
@@ -3136,9 +3136,9 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   border-radius: 999px;
   padding: 0 20px 0 28px;
   color: #171820;
-  border: 1px solid rgb(255 255 255 / 42%);
-  background: rgb(242 243 249 / 78%);
-  backdrop-filter: blur(12px) saturate(125%);
+  border: 1px solid rgb(0 0 0 / 16%);
+  background: #fff;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 18%);
   font-size: 16px;
   font-weight: 500;
   list-style: none;
