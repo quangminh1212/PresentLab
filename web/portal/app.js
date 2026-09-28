@@ -2886,6 +2886,33 @@ function bindWaterToLusionScroll() {
     scrollPageToSection(nextSection);
   };
 
+  window.addEventListener(
+    "wheel",
+    (event) => {
+      if (event.ctrlKey || !event.cancelable || event.deltaY >= 0) return;
+      if (document.querySelector(".portal-category-menu[open]")) return;
+      if (
+        event.target instanceof Element &&
+        event.target.closest("select, input, textarea, [contenteditable='true']")
+      ) {
+        return;
+      }
+
+      const nextSectionAtTop =
+        Math.abs(nextSection.getBoundingClientRect().top) <= 2;
+      if (
+        sectionScrollTarget !== nextSection &&
+        (!nextSectionAtTop || getScrollTop() <= 0)
+      ) {
+        return;
+      }
+
+      event.preventDefault();
+      scrollPageToSection(hero);
+    },
+    { passive: false, capture: true },
+  );
+
   hero.addEventListener(
     "wheel",
     (event) => {
