@@ -2953,15 +2953,16 @@ function drawLusionPageCurtain(
   context.scale(scale, scale);
 
   const markBounds = { left: -1.5, right: 1.5, top: -2, bottom: 2 };
-  const { glyphWidth, glyphHeight, textGap, letterGap } = XLAB_LOCKUP;
-  const lockupLeft = markBounds.left - textGap - glyphWidth;
+  const { xWidth, aWidth, bWidth, glyphHeight, textGap, letterGap } =
+    XLAB_LOCKUP;
+  const lockupLeft = markBounds.left - textGap - xWidth;
   const lockupRight =
-    markBounds.right + textGap + glyphWidth * 2 + letterGap;
+    markBounds.right + textGap + aWidth + bWidth + letterGap;
   const lockupCenter = (lockupLeft + lockupRight) * 0.5;
   context.translate(-lockupCenter, 0);
-  const xLeft = markBounds.left - textGap - glyphWidth;
+  const xLeft = markBounds.left - textGap - xWidth;
   const aLeft = markBounds.right + textGap;
-  const bLeft = aLeft + glyphWidth + letterGap;
+  const bLeft = aLeft + aWidth + letterGap;
   const glyphTop = markBounds.bottom - glyphHeight;
 
   const line = clampUnit(lineTransformRatio);

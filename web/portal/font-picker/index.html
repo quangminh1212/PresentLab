@@ -38,8 +38,8 @@
       </section>
       <section class="glyph-notes" aria-label="Cấu tạo chữ">
         <div class="glyph-note"><strong>X</strong><span>Hai nét chéo vuông, cùng độ dày với cạnh của L.</span></div>
-        <div class="glyph-note"><strong>A</strong><span>Đỉnh nhọn, chân phẳng và gạch ngang vuông.</span></div>
-        <div class="glyph-note"><strong>B</strong><span>Thân thẳng với hai khoang vuông.</span></div>
+        <div class="glyph-note"><strong>A</strong><span>Dáng gọn, thanh ngang ngắn và đặt thấp.</span></div>
+        <div class="glyph-note"><strong>B</strong><span>Hai khoang thoáng, thân dưới rộng hơn.</span></div>
       </section>
       <a class="back" href="/">← Quay lại trang chủ</a>
     </main>
@@ -56,24 +56,27 @@
         if (!context) return;
         context.scale(ratio, ratio);
         context.translate(bounds.width / 2, bounds.height / 2);
-        const barUnit = Math.min(42, (bounds.width - 28) / 15.2);
-        context.scale(barUnit, barUnit);
-
         const markLeft = -1.5;
         const markRight = 1.5;
         const markBottom = 2;
-        const { glyphWidth, glyphHeight, textGap, letterGap } = XLAB_LOCKUP;
-        const lockupLeft = markLeft - textGap - glyphWidth;
-        const lockupRight = markRight + textGap + glyphWidth * 2 + letterGap;
+        const { xWidth, aWidth, bWidth, glyphHeight, textGap, letterGap } =
+          XLAB_LOCKUP;
+        const lockupLeft = markLeft - textGap - xWidth;
+        const lockupRight = markRight + textGap + aWidth + bWidth + letterGap;
+        const barUnit = Math.min(
+          42,
+          (bounds.width - 28) / (lockupRight - lockupLeft),
+        );
+        context.scale(barUnit, barUnit);
         context.translate(-(lockupLeft + lockupRight) / 2, 0);
         context.fillStyle = "#fff";
         context.fillRect(-1.5, -2, 1, 3);
         context.fillRect(-0.5, 1, 2, 1);
         drawXlabLetters(
           context,
-          markLeft - textGap - glyphWidth,
+          markLeft - textGap - xWidth,
           markRight + textGap,
-          markRight + textGap + glyphWidth + letterGap,
+          markRight + textGap + aWidth + letterGap,
           markBottom - glyphHeight,
         );
       }
