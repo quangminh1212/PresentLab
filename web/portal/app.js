@@ -15,6 +15,16 @@ const LOCAL_REQUEST_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 const LOCALE_STORAGE_KEY = "presentlab.locale";
 const LUSION_LOCALE_STORAGE_KEY = "lusion-language";
 const NATIVE_LUSION_HEADER_ID = "portal-native-lusion-header";
+let resolveNativeLusionHeaderReady;
+let nativeLusionHeaderReadyFallback = 0;
+const nativeLusionHeaderReady = new Promise((resolve) => {
+  resolveNativeLusionHeaderReady = resolve;
+});
+function settleNativeLusionHeaderReady() {
+  window.clearTimeout(nativeLusionHeaderReadyFallback);
+  resolveNativeLusionHeaderReady?.();
+  resolveNativeLusionHeaderReady = null;
+}
 const THEME_STORAGE_KEY = "presentlab.theme";
 const DEFAULT_LOCALE = "vi";
 const DEFAULT_THEME = "dark";
@@ -3003,13 +3013,19 @@ function startPageCurtain(libraryReady) {
   const fontsReady = document.fonts?.ready ?? Promise.resolve();
 
   if (!pageCurtain) {
-    root.classList.add("is-ready");
+    nativeLusionHeaderReady.then(() => root.classList.add("is-ready"));
     return;
   }
 
   const hasCanvasContext = Boolean(elements.curtainCanvas?.getContext("2d"));
   if (isReducedMotion() || !hasCanvasContext) {
-    Promise.allSettled([libraryReady, pageLoaded, fontsReady, worldReady]).then(() => {
+    Promise.allSettled([
+      libraryReady,
+      pageLoaded,
+      fontsReady,
+      worldReady,
+      nativeLusionHeaderReady,
+    ]).then(() => {
       pageCurtain.classList.add("is-complete");
       root.classList.add("is-ready");
     });
@@ -3030,8 +3046,9 @@ function startPageCurtain(libraryReady) {
   let libraryIsReady = false;
   let pageResourcesAreReady = false;
   let waterIsReady = false;
+  let nativeHeaderIsReady = false;
   const updateReadiness = () => {
-    isReady = pageResourcesAreReady && waterIsReady;
+    isReady = pageResourcesAreReady && waterIsReady && nativeHeaderIsReady;
   };
   const readinessFallback = window.setTimeout(() => {
     pageHasLoaded = true;
@@ -3062,6 +3079,10 @@ function startPageCurtain(libraryReady) {
   });
   worldReady.then(() => {
     waterIsReady = true;
+    updateReadiness();
+  });
+  nativeLusionHeaderReady.then(() => {
+    nativeHeaderIsReady = true;
     updateReadiness();
   });
 
@@ -3311,7 +3332,15 @@ function bindWaterToLusionScroll() {
 
 function deferLusionFrame() {
   const frame = document.querySelector("iframe[data-lazy-src]");
-  if (!frame) return;
+  if (!frame) {
+    settleNativeLusionHeaderReady();
+    return;
+  }
+  nativeLusionHeaderReadyFallback = window.setTimeout(
+    settleNativeLusionHeaderReady,
+    35_000,
+  );
+  frame.addEventListener("error", settleNativeLusionHeaderReady, { once: true });
   window.addEventListener("message", (event) => {
     if (
       event.origin !== window.location.origin ||
@@ -3392,9 +3421,20 @@ function deferLusionFrame() {
   };
 
   frame.addEventListener("load", () => {
+    if (resolveNativeLusionHeaderReady) {
+      window.clearTimeout(nativeLusionHeaderReadyFallback);
+      nativeLusionHeaderReadyFallback = window.setTimeout(
+        settleNativeLusionHeaderReady,
+        35_000,
+      );
+    }
     frame.classList.add("is-ready");
     bridgeFrameScrollToWater();
     const nativeHeader = mountNativeLusionHeader(frame);
+    void nativeHeader.then(
+      settleNativeLusionHeaderReady,
+      settleNativeLusionHeaderReady,
+    );
     syncLocaleToLusion(state.locale, true);
     if (frame.dataset.pendingNativeLusionContact === "true") {
       void nativeHeader.then((shadow) => {
