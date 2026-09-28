@@ -1613,6 +1613,8 @@ async function mountNativeLusionHeader(frame = lusionFrame()) {
     "position:fixed;top:0;left:0;width:100%;visibility:hidden;pointer-events:none;";
   if (initialHeight > 0) headerMeasure.style.height = `${initialHeight}px`;
   sourceHeader.before(headerMeasure);
+  // Portal renders its own XLab mark; omit Lusion's duplicate.
+  sourceHeader.querySelector("#header-logo")?.remove();
   shadow.appendChild(sourceHeader);
   headerMeasure.id = "header-container";
   syncHeaderMeasure();
