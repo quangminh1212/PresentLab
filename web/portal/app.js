@@ -2903,7 +2903,13 @@ function easeLusionExpo(value) {
     : (2 - 2 ** (-20 * progress + 10)) / 2;
 }
 
-function drawLusionPageCurtain(canvas, progress, lineTransformRatio, contentShowRatio) {
+function drawLusionPageCurtain(
+  canvas,
+  progress,
+  lineTransformRatio,
+  brandRevealRatio,
+  contentShowRatio,
+) {
   if (!canvas) return;
 
   const width = window.innerWidth + 2;
@@ -2944,14 +2950,25 @@ function drawLusionPageCurtain(canvas, progress, lineTransformRatio, contentShow
   context.translate(barUnit * transform * diagonal, (-barUnit * 0.5) * transform * diagonal);
   context.scale(scale, scale);
 
-  if (lineTransformRatio === 0) {
+  context.font = "500 5px Aeonik, sans-serif";
+  const xMetrics = context.measureText("X");
+  const abMetrics = context.measureText("ab");
+  // Match the bounds of the custom canvas L so the type sits at even gaps.
+  const markBounds = { left: -1.5, right: 1.5 };
+  const textGap = 0.5;
+  const lockupLeft = markBounds.left - textGap - xMetrics.width;
+  const lockupRight = markBounds.right + textGap + abMetrics.width;
+  const lockupCenter = (lockupLeft + lockupRight) * 0.5;
+  context.translate(-lockupCenter, 0);
+
+  const line = clampUnit(lineTransformRatio);
+  if (line === 0) {
     context.fillStyle = "#333";
     context.fillRect(-2.5, -0.5, 5, 1);
     context.fillStyle = "#fff";
     context.fillRect(-2.5, -0.5, 5 * clampUnit(progress), 1);
   } else {
     context.fillStyle = "#fff";
-    const line = clampUnit(lineTransformRatio);
     context.translate(-line, 1.5 * line);
 
     context.save();
@@ -2971,6 +2988,23 @@ function drawLusionPageCurtain(canvas, progress, lineTransformRatio, contentShow
     context.globalCompositeOperation = "source-over";
     context.globalAlpha = 1 - transform;
     context.fillRect(0, 0, 2, 1);
+    context.restore();
+  }
+
+  if (brandRevealRatio > 0) {
+    context.translate(line, -1.5 * line);
+    const markCenterY = -0.25;
+    const xBaseline = markCenterY
+      + (xMetrics.actualBoundingBoxAscent - xMetrics.actualBoundingBoxDescent) * 0.5;
+    context.save();
+    context.globalAlpha = clampUnit(brandRevealRatio) * (1 - transform);
+    context.fillStyle = "#fff";
+    context.font = "500 5px Aeonik, sans-serif";
+    context.textBaseline = "alphabetic";
+    context.textAlign = "right";
+    context.fillText("X", markBounds.left - textGap, xBaseline);
+    context.textAlign = "left";
+    context.fillText("ab", markBounds.right + textGap, xBaseline);
     context.restore();
   }
 
@@ -3040,6 +3074,7 @@ function startPageCurtain(libraryReady) {
   let isReady = false;
   let isFinishing = false;
   let markStartedAt = 0;
+  let brandHoldStartedAt = 0;
   let percentToStartAt = 0;
   let pageHasLoaded = document.readyState === "complete";
   let fontsAreReady = false;
@@ -3104,12 +3139,19 @@ function startPageCurtain(libraryReady) {
     const loadRatio = percentToStart * 0.3 + (progress / 100) * 0.7;
     const percent = Math.floor(loadRatio * 100);
     let lineTransformRatio = 0;
+    let brandRevealRatio = 0;
     let contentShowRatio = 0;
     if (loadRatio >= 1) {
       if (!markStartedAt) markStartedAt = now;
       const markElapsed = now - markStartedAt;
       lineTransformRatio = easeLusionExpo(markElapsed / 1000);
-      contentShowRatio = clampUnit((markElapsed - 1000) / 1000);
+      brandRevealRatio = clampUnit((markElapsed - 1000) / 180);
+      if (brandRevealRatio >= 1 && !brandHoldStartedAt) {
+        brandHoldStartedAt = now;
+      }
+      if (brandHoldStartedAt) {
+        contentShowRatio = clampUnit((now - brandHoldStartedAt - 1000) / 1000);
+      }
     }
 
     updateLusionPageCurtainDigits(
@@ -3123,6 +3165,7 @@ function startPageCurtain(libraryReady) {
       elements.curtainCanvas,
       loadRatio,
       lineTransformRatio,
+      brandRevealRatio,
       contentShowRatio,
     );
 
