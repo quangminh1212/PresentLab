@@ -1041,8 +1041,32 @@
     } catch {
       // Keep the language switcher usable when browser storage is unavailable.
     }
+    if (window.parent !== window) {
+      window.parent.postMessage(
+        { type: "lusion:language-selected", locale: code },
+        window.location.origin,
+      );
+    }
     window.location.reload();
   };
+  window.addEventListener("message", (event) => {
+    if (
+      event.source !== window.parent ||
+      event.origin !== window.location.origin ||
+      event.data?.type !== "presentlab:set-lusion-language"
+    ) {
+      return;
+    }
+    const nextLanguage = event.data.locale;
+    if (!languages.includes(nextLanguage) || nextLanguage === activeLanguage)
+      return;
+    try {
+      window.localStorage.setItem(languageKey, nextLanguage);
+    } catch {
+      // The embedded page can still reload into the parent-selected language.
+    }
+    window.location.reload();
+  });
   function mountLanguageSwitcher() {
     const header = document.getElementById("header");
     if (!header) return;

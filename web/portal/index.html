@@ -46,32 +46,73 @@
           />
         </a>
         <div class="portal-header-actions">
-          <label class="portal-language-control">
-            <span class="sr-only" data-i18n="languageLabel">Ngôn ngữ</span>
-            <select data-locale aria-label="Ngôn ngữ">
-              <option value="vi">VI</option>
-              <option value="en">EN</option>
-              <option value="zh">中</option>
-            </select>
-            <span class="portal-language-chevron" aria-hidden="true"></span>
-          </label>
-          <details class="portal-category-menu">
-            <summary class="portal-category-trigger">
-              <span data-i18n="categoriesLabel">DANH MỤC</span>
+          <div class="portal-language-control" data-language-control>
+            <button
+              class="portal-language-trigger"
+              type="button"
+              data-locale-trigger
+              aria-label="Ngôn ngữ"
+              aria-haspopup="menu"
+              aria-controls="portal-language-menu"
+              aria-expanded="false"
+            >
+              <span data-locale-current>VI</span>
+              <span class="portal-language-chevron" aria-hidden="true"></span>
+            </button>
+            <div
+              class="portal-language-menu"
+              id="portal-language-menu"
+              data-locale-menu
+              role="menu"
+              aria-label="Ngôn ngữ"
+              hidden
+            >
+              <button type="button" class="portal-language-option" data-locale-option="en" lang="en" role="menuitemradio" aria-checked="false">English</button>
+              <button type="button" class="portal-language-option" data-locale-option="vi" lang="vi" role="menuitemradio" aria-checked="true">Tiếng Việt</button>
+              <button type="button" class="portal-language-option" data-locale-option="zh" lang="zh-CN" role="menuitemradio" aria-checked="false">简体中文</button>
+            </div>
+          </div>
+          <div class="portal-category-menu" data-lusion-navigation>
+            <button
+              class="portal-category-trigger"
+              type="button"
+              data-lusion-menu-trigger
+              aria-haspopup="menu"
+              aria-controls="portal-category-panel"
+              aria-expanded="false"
+              aria-label="Mở menu"
+            >
+              <span data-lusion-menu-label>DANH MỤC</span>
               <span class="portal-category-dots" aria-hidden="true">
                 <i></i><i></i>
               </span>
-            </summary>
+            </button>
             <nav
               class="portal-category-panel"
-              aria-label="Điều hướng các mục"
-              data-i18n-aria-label="navAria"
+              id="portal-category-panel"
+              data-lusion-menu
+              role="menu"
+              aria-label="Điều hướng Lusion"
+              hidden
             >
-              <a href="#templates" data-i18n="navTemplates">Mẫu slide</a>
-              <a href="#journey" data-i18n="navJourney">Hành trình</a>
-              <a href="#process" data-i18n="navProcess">Quy trình</a>
+              <button type="button" class="portal-category-link" data-lusion-menu-item data-page="home" role="menuitem">
+                <span>Trang chủ</span>
+                <span class="portal-category-arrow" aria-hidden="true">↗</span>
+              </button>
+              <button type="button" class="portal-category-link" data-lusion-menu-item data-page="about" role="menuitem">
+                <span>Về chúng tôi</span>
+                <span class="portal-category-arrow" aria-hidden="true">↗</span>
+              </button>
+              <button type="button" class="portal-category-link" data-lusion-menu-item data-page="projects" role="menuitem">
+                <span>Dự án</span>
+                <span class="portal-category-arrow" aria-hidden="true">↗</span>
+              </button>
+              <button type="button" class="portal-category-link" data-lusion-menu-item data-scroll-to="contact" role="menuitem">
+                <span>Liên hệ</span>
+                <span class="portal-category-arrow" aria-hidden="true">↗</span>
+              </button>
             </nav>
-          </details>
+          </div>
         </div>
     </header>
     <div class="app-shell">

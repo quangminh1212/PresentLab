@@ -3094,7 +3094,7 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   display: flex;
   align-items: center;
   justify-self: end;
-  gap: clamp(12px, 2vw, 24px);
+  gap: var(--portal-header-control-gap, clamp(12px, 2vw, 24px));
   pointer-events: auto;
 }
 
@@ -3106,10 +3106,12 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   flex: 0 0 auto;
 }
 
-.portal-language-control select {
+.portal-language-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   width: 100%;
   height: 100%;
-  appearance: none;
   border: 1px solid rgb(255 255 255 / 18%);
   border-radius: 999px;
   padding: 0 18px 0 13px;
@@ -3117,27 +3119,95 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   background: #2b2e3a;
   font: inherit;
   font-size: 12px;
-  font-weight: 650;
+  font-weight: 500;
+  text-transform: uppercase;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
 
-.portal-language-control select:focus-visible,
+.portal-language-trigger:hover,
+.portal-category-trigger:hover {
+  background: #071bdf;
+}
+
+.portal-language-trigger:focus-visible,
+.portal-language-option:focus-visible,
 .portal-category-trigger:focus-visible,
-.portal-category-panel a:focus-visible {
+.portal-category-link:focus-visible {
   outline: 2px solid #31a99f;
   outline-offset: 3px;
 }
 
-.portal-language-chevron {
+.portal-language-menu {
   position: absolute;
-  top: 19px;
-  right: 12px;
-  width: 4px;
-  height: 4px;
+  top: calc(100% + 10px);
+  left: 0;
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
+  width: 176px;
+  max-width: calc(100vw - 40px);
+  gap: 0;
+  padding: 8px 4px;
+  border-radius: 10px;
+  color: #080808;
+  background: #fff;
+  box-shadow: 0 12px 30px rgb(0 0 0 / 12%);
+}
+
+.portal-language-menu[hidden],
+.portal-category-panel[hidden] {
+  display: none !important;
+}
+
+.portal-language-option {
+  display: block;
+  position: relative;
+  width: 100%;
+  min-height: 44px;
+  box-sizing: border-box;
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 26px 10px 18px;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  font-size: 14px;
+  line-height: 1;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.portal-language-option:hover {
+  background: rgb(0 0 0 / 5%);
+}
+
+.portal-language-option[aria-checked="true"]::after {
+  content: "";
+  position: absolute;
+  top: calc(50% - 3px);
+  right: 16px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.portal-language-chevron {
+  width: 5px;
+  height: 5px;
+  margin-top: -3px;
   border-right: 1px solid currentColor;
   border-bottom: 1px solid currentColor;
   transform: rotate(45deg);
   pointer-events: none;
+  transition: transform 0.2s, margin 0.2s;
+}
+
+.portal-language-control.is-open .portal-language-chevron {
+  margin-top: 2px;
+  transform: rotate(225deg);
 }
 
 .portal-category-menu {
@@ -3153,29 +3223,28 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   height: 42px;
   box-sizing: border-box;
   border-radius: 999px;
+  border: 1px solid rgb(255 255 255 / 18%);
   padding: 0 12px 0 16px;
-  color: #000;
-  border: 0;
-  background: #e4e6ef;
+  color: #fff;
+  background: #2b2e3a;
+  font: inherit;
   font-size: 12px;
   font-weight: 500;
-  list-style: none;
+  text-transform: uppercase;
   cursor: pointer;
   user-select: none;
-}
-
-.portal-category-trigger::-webkit-details-marker {
-  display: none;
-}
-
-.portal-category-trigger::marker {
-  content: "";
+  transition: background-color 0.3s;
 }
 
 .portal-category-dots {
   display: inline-flex;
   align-items: center;
   gap: 2px;
+  transition: transform 0.2s;
+}
+
+.portal-category-trigger[aria-expanded="true"] .portal-category-dots {
+  transform: rotate(45deg);
 }
 
 .portal-category-dots i {
@@ -3190,33 +3259,59 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   position: absolute;
   top: calc(100% + 10px);
   right: 0;
-  z-index: 2;
+  z-index: 8;
   display: grid;
-  min-width: 220px;
-  gap: 3px;
-  padding: 9px;
-  border: 1px solid rgb(27 31 43 / 8%);
-  border-radius: 18px;
-  background: #f5f6fb;
-  box-shadow: 0 18px 44px rgb(14 18 31 / 20%);
+  width: 272px;
+  max-width: calc(100vw - 40px);
+  gap: 2px;
+  padding: 10px 4px;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 12px 30px rgb(0 0 0 / 12%);
 }
 
-.portal-category-menu:not([open]) > .portal-category-panel {
-  display: none;
+.portal-category-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  width: 100%;
+  min-height: 44px;
+  box-sizing: border-box;
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 22px;
+  color: #080808;
+  background: transparent;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1;
+  text-align: left;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
 }
 
-.portal-category-panel a {
-  display: block;
-  border-radius: 11px;
-  padding: 12px 14px;
-  color: #22242e;
-  font-size: 14px;
-  line-height: 1.2;
-  text-decoration: none;
+.portal-category-link:hover {
+  background: rgb(0 0 0 / 5%);
 }
 
-.portal-category-panel a:hover {
-  background: rgb(31 34 47 / 7%);
+.portal-category-arrow {
+  font-size: 16px;
+  transition: transform 0.2s;
+}
+
+.portal-category-arrow-icon {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  transition: transform 0.2s;
+}
+
+.portal-category-link:hover .portal-category-arrow,
+.portal-category-link:hover .portal-category-arrow-icon {
+  transform: translate(2px, -2px);
 }
 
 @media (max-width: 840px) {
@@ -3231,17 +3326,12 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   }
 
   .portal-header-actions {
-    gap: 10px;
+    gap: var(--portal-header-control-gap, 10px);
   }
 
   .portal-language-control {
     width: 58px;
     height: 44px;
-  }
-
-  .portal-language-chevron {
-    top: 20px;
-    right: 12px;
   }
 
   .portal-category-trigger {
@@ -3269,7 +3359,7 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
     grid-column: 2;
     grid-row: 1;
     justify-self: end;
-    gap: 8px;
+    gap: var(--portal-header-control-gap, 8px);
   }
 
   .portal-language-control {
@@ -3277,18 +3367,13 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
     height: 44px;
   }
 
-  .portal-language-control select {
-    padding-left: 13px;
+  .portal-language-trigger {
+    padding-inline: 12px;
     font-size: 12px;
   }
 
-  .portal-language-chevron {
-    top: 20px;
-    right: 11px;
-  }
-
   .portal-category-trigger {
-    min-width: 116px;
+    min-width: 114px;
     height: 44px;
     gap: 7px;
     padding-inline: 13px;

@@ -13,10 +13,45 @@ const MAX_TOTAL_ATTACHMENT_BYTES = 4 * 1024 * 1024;
 const REQUEST_TIMEOUT_MS = 15_000;
 const LOCAL_REQUEST_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 const LOCALE_STORAGE_KEY = "presentlab.locale";
+const LUSION_LOCALE_STORAGE_KEY = "lusion-language";
 const THEME_STORAGE_KEY = "presentlab.theme";
 const DEFAULT_LOCALE = "vi";
 const DEFAULT_THEME = "dark";
 const SUPPORTED_LOCALES = ["vi", "en", "zh"];
+const LUSION_LOCALE_CODES = { vi: "vi", en: "en", zh: "zh-CN" };
+const LUSION_LOCALE_LABELS = { vi: "VI", en: "EN", zh: "中文" };
+const LUSION_MENU_FALLBACK = {
+  vi: {
+    open: "DANH MỤC",
+    close: "ĐÓNG",
+    items: [
+      { page: "home", label: "Trang chủ" },
+      { page: "about", label: "Về chúng tôi" },
+      { page: "projects", label: "Dự án" },
+      { scrollTo: "contact", label: "Liên hệ" },
+    ],
+  },
+  en: {
+    open: "MENU",
+    close: "CLOSE",
+    items: [
+      { page: "home", label: "Home" },
+      { page: "about", label: "About us" },
+      { page: "projects", label: "Projects" },
+      { scrollTo: "contact", label: "Contact" },
+    ],
+  },
+  zh: {
+    open: "菜单",
+    close: "关闭",
+    items: [
+      { page: "home", label: "首页" },
+      { page: "about", label: "关于我们" },
+      { page: "projects", label: "项目" },
+      { scrollTo: "contact", label: "联系" },
+    ],
+  },
+};
 const SUPPORTED_THEMES = ["dark", "light"];
 const MOTION_SCENES = ["catalog", "templates", "journey", "process"];
 
@@ -1321,12 +1356,271 @@ function templateDescription(template) {
   );
 }
 
+function lusionFrame() {
+  return document.querySelector("iframe.lusion-home-frame");
+}
+
+function syncLocaleToLusion(locale = state.locale, force = false) {
+  const lusionLocale = LUSION_LOCALE_CODES[locale];
+  if (!lusionLocale) return;
+  let shouldNotify = force;
+  try {
+    if (localStorage.getItem(LUSION_LOCALE_STORAGE_KEY) !== lusionLocale) {
+      localStorage.setItem(LUSION_LOCALE_STORAGE_KEY, lusionLocale);
+      shouldNotify = true;
+    }
+  } catch {
+    shouldNotify = true;
+  }
+  const frame = lusionFrame();
+  if (shouldNotify && frame?.classList.contains("is-ready")) {
+    frame.contentWindow?.postMessage(
+      { type: "presentlab:set-lusion-language", locale: lusionLocale },
+      window.location.origin,
+    );
+  }
+}
+
+function createLusionMenuItem(item) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "portal-category-link";
+  button.dataset.lusionMenuItem = "";
+  button.setAttribute("role", "menuitem");
+  if (item.page) button.dataset.page = item.page;
+  if (item.scrollTo) button.dataset.scrollTo = item.scrollTo;
+
+  const label = document.createElement("span");
+  label.textContent = item.label;
+  button.appendChild(label);
+
+  if (item.icon) {
+    const icon = document.importNode(item.icon, true);
+    icon.removeAttribute("class");
+    icon.classList.add("portal-category-arrow-icon");
+    icon.setAttribute("aria-hidden", "true");
+    button.appendChild(icon);
+  } else {
+    const arrow = document.createElement("span");
+    arrow.className = "portal-category-arrow";
+    arrow.setAttribute("aria-hidden", "true");
+    arrow.textContent = "↗";
+    button.appendChild(arrow);
+  }
+  return button;
+}
+
+function renderLusionMenuItems(items) {
+  const menu = document.querySelector("[data-lusion-menu]");
+  if (!menu) return;
+  menu.replaceChildren(...items.map(createLusionMenuItem));
+}
+
+function setLusionMenuLabels(openLabel, closeLabel) {
+  const trigger = document.querySelector("[data-lusion-menu-trigger]");
+  const label = trigger?.querySelector("[data-lusion-menu-label]");
+  if (!trigger || !label) return;
+  trigger.dataset.menuOpenLabel = openLabel;
+  trigger.dataset.menuCloseLabel = closeLabel;
+  label.textContent =
+    trigger.getAttribute("aria-expanded") === "true" ? closeLabel : openLabel;
+  trigger.setAttribute(
+    "aria-label",
+    t(trigger.getAttribute("aria-expanded") === "true" ? "menuClose" : "menuOpen"),
+  );
+}
+
+function renderLusionMenuFallback(locale = state.locale) {
+  const copy = LUSION_MENU_FALLBACK[locale] || LUSION_MENU_FALLBACK.vi;
+  setLusionMenuLabels(copy.open, copy.close);
+  renderLusionMenuItems(copy.items);
+}
+
+function syncLusionMenuFromFrame(frame = lusionFrame()) {
+  let frameDocument;
+  try {
+    frameDocument = frame?.contentDocument;
+  } catch {
+    return;
+  }
+  if (!frameDocument) return;
+
+  const sourceTrigger = frameDocument.getElementById("header-right-menu-btn");
+  const openLabel =
+    sourceTrigger
+      ?.querySelector("#header-right-menu-btn-text")
+      ?.textContent.trim() || "";
+  const closeLabel =
+    sourceTrigger
+      ?.querySelector("#header-right-menu-btn-text-close")
+      ?.textContent.trim() || "";
+  if (openLabel && closeLabel) setLusionMenuLabels(openLabel, closeLabel);
+
+  const sourceLinks = frameDocument.querySelectorAll(
+    "#header-menu-links > .header-menu-link",
+  );
+  const items = [...sourceLinks]
+    .map((sourceLink) => {
+      const page = sourceLink.dataset.page;
+      const scrollTo = sourceLink.dataset.scrollTo;
+      if (!page && !scrollTo) return null;
+      const label =
+        sourceLink
+          .querySelector(".header-menu-link-text")
+          ?.textContent.trim() || sourceLink.textContent.trim();
+      if (!label) return null;
+      return {
+        page,
+        scrollTo,
+        label,
+        icon: sourceLink.querySelector(".header-menu-link-svg"),
+      };
+    })
+    .filter(Boolean);
+  if (items.length) renderLusionMenuItems(items);
+}
+
+function setLanguageMenuOpen(open, returnFocus = false) {
+  const control = document.querySelector("[data-language-control]");
+  const trigger = control?.querySelector("[data-locale-trigger]");
+  const menu = control?.querySelector("[data-locale-menu]");
+  if (!control || !trigger || !menu) return;
+  if (open) setLusionNavigationMenuOpen(false);
+  control.classList.toggle("is-open", open);
+  menu.hidden = !open;
+  trigger.setAttribute("aria-expanded", String(open));
+  if (!open && returnFocus) trigger.focus();
+}
+
+function setLusionNavigationMenuOpen(open, returnFocus = false) {
+  const trigger = document.querySelector("[data-lusion-menu-trigger]");
+  const menu = document.querySelector("[data-lusion-menu]");
+  if (!trigger || !menu) return;
+  if (open) setLanguageMenuOpen(false);
+  trigger.classList.toggle("is-open", open);
+  trigger.setAttribute("aria-expanded", String(open));
+  menu.hidden = !open;
+  setLusionMenuLabels(
+    trigger.dataset.menuOpenLabel || LUSION_MENU_FALLBACK[state.locale].open,
+    trigger.dataset.menuCloseLabel || LUSION_MENU_FALLBACK[state.locale].close,
+  );
+  if (open && returnFocus)
+    menu.querySelector("[data-lusion-menu-item]")?.focus();
+  if (!open && returnFocus) trigger.focus();
+}
+
+function handleHeaderMenuKeydown(event, menu, close) {
+  const items = [...menu.querySelectorAll('[role="menuitem"]')];
+  const currentIndex = items.indexOf(document.activeElement);
+  if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+    event.preventDefault();
+    const direction = event.key === "ArrowDown" ? 1 : -1;
+    const nextIndex =
+      currentIndex < 0
+        ? direction > 0
+          ? 0
+          : items.length - 1
+        : (currentIndex + direction + items.length) % items.length;
+    items[nextIndex]?.focus();
+  } else if (event.key === "Home" || event.key === "End") {
+    event.preventDefault();
+    items[event.key === "Home" ? 0 : items.length - 1]?.focus();
+  } else if (event.key === "Escape") {
+    event.preventDefault();
+    close(true);
+  } else if (event.key === "Tab") {
+    close();
+  }
+}
+
+function navigateLusionMenuItem(item) {
+  const frame = lusionFrame();
+  if (!frame) return;
+  const target = {
+    page: item.dataset.page,
+    scrollTo: item.dataset.scrollTo,
+  };
+  const scrollToEmbeddedPage = () => {
+    if (elements.catalogSection) scrollPageToSection(elements.catalogSection);
+  };
+  const activateSourceItem = () => {
+    let frameDocument;
+    try {
+      frameDocument = frame.contentDocument;
+    } catch {
+      return;
+    }
+    if (!frameDocument) return;
+    const sourceItems = [
+      ...frameDocument.querySelectorAll(
+        "#header-menu-links > .header-menu-link",
+      ),
+    ];
+    const sourceItem = sourceItems.find((candidate) =>
+      target.page
+        ? candidate.dataset.page === target.page
+        : candidate.dataset.scrollTo === target.scrollTo,
+    );
+    if (sourceItem) {
+      sourceItem.click();
+      return;
+    }
+
+    const route = {
+      home: "/lusion/",
+      about: "/about/",
+      projects: "/projects/",
+    }[target.page];
+    if (route) {
+      frame.contentWindow.location.assign(`${route}?water-page-embed=1`);
+    }
+  };
+
+  scrollToEmbeddedPage();
+  if (
+    frame.classList.contains("is-ready") &&
+    frame.contentDocument?.readyState === "complete"
+  ) {
+    activateSourceItem();
+    return;
+  }
+
+  frame.addEventListener("load", activateSourceItem, { once: true });
+  if (frame.dataset.lazySrc) {
+    frame.src = frame.dataset.lazySrc;
+    delete frame.dataset.lazySrc;
+  } else if (!frame.getAttribute("src")) {
+    frame.src = "/lusion/?water-page-embed=1";
+  }
+}
+
 function applyLocale() {
   const locale = state.locale;
   document.documentElement.lang = locale === "zh" ? "zh-CN" : locale;
   document.documentElement.dataset.locale = locale;
-  const localeSelect = document.querySelector("select[data-locale]");
-  if (localeSelect) localeSelect.value = locale;
+  document
+    .querySelector(".portal-header-actions")
+    ?.style.setProperty(
+      "--portal-header-control-gap",
+      locale === "vi" ? "36px" : "24px",
+    );
+  const localeTrigger = document.querySelector("[data-locale-trigger]");
+  const localeCurrent = localeTrigger?.querySelector("[data-locale-current]");
+  if (localeCurrent) localeCurrent.textContent = LUSION_LOCALE_LABELS[locale];
+  localeTrigger?.setAttribute("aria-label", t("languageLabel"));
+  const localeMenu = document.querySelector("[data-locale-menu]");
+  localeMenu?.setAttribute("aria-label", t("languageLabel"));
+  document
+    .querySelector("[data-lusion-menu]")
+    ?.setAttribute("aria-label", t("navAria"));
+  document.querySelectorAll("[data-locale-option]").forEach((option) => {
+    option.setAttribute(
+      "aria-checked",
+      String(option.dataset.localeOption === locale),
+    );
+  });
+  renderLusionMenuFallback(locale);
+  syncLocaleToLusion(locale);
   document.querySelectorAll("[data-i18n]").forEach((element) => {
     element.textContent = t(element.dataset.i18n);
   });
@@ -2098,6 +2392,13 @@ function handleFiles(input) {
 
 function bindEvents() {
   const menuButton = document.querySelector("[data-menu-toggle]");
+  const languageControl = document.querySelector("[data-language-control]");
+  const languageTrigger = languageControl?.querySelector("[data-locale-trigger]");
+  const languageMenu = languageControl?.querySelector("[data-locale-menu]");
+  const lusionMenuTrigger = document.querySelector(
+    "[data-lusion-menu-trigger]",
+  );
+  const lusionMenu = document.querySelector("[data-lusion-menu]");
   const setMenuOpen = (open) => {
     if (!elements.menu) return;
     elements.menu.classList.toggle("is-open", open);
@@ -2128,6 +2429,12 @@ function bindEvents() {
     if (event.key === "Escape") {
       closePreview();
       closeDrawer();
+      if (languageMenu && !languageMenu.hidden) {
+        setLanguageMenuOpen(false, true);
+      }
+      if (lusionMenu && !lusionMenu.hidden) {
+        setLusionNavigationMenuOpen(false, true);
+      }
       if (elements.menu?.classList.contains("is-open")) {
         setMenuOpen(false);
         menuButton?.focus();
@@ -2146,8 +2453,56 @@ function bindEvents() {
   menuButton?.addEventListener("click", () => {
     setMenuOpen(!elements.menu?.classList.contains("is-open"));
   });
-  document.querySelector("[data-locale]")?.addEventListener("change", (event) => {
-    setLocale(event.target.value);
+  languageTrigger?.addEventListener("click", () => {
+    setLanguageMenuOpen(Boolean(languageMenu?.hidden));
+  });
+  languageTrigger?.addEventListener("keydown", (event) => {
+    if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+    event.preventDefault();
+    setLanguageMenuOpen(true);
+    const options = [...(languageMenu?.querySelectorAll('[role="menuitemradio"]') || [])];
+    const selected = options.find(
+      (option) => option.getAttribute("aria-checked") === "true",
+    );
+    (event.key === "ArrowUp" ? options.at(-1) : selected || options[0])?.focus();
+  });
+  languageMenu?.addEventListener("click", (event) => {
+    const option = event.target.closest("[data-locale-option]");
+    if (!option || !languageMenu.contains(option)) return;
+    setLocale(option.dataset.localeOption);
+    setLanguageMenuOpen(false, true);
+  });
+  languageMenu?.addEventListener("keydown", (event) => {
+    handleHeaderMenuKeydown(event, languageMenu, (returnFocus) =>
+      setLanguageMenuOpen(false, returnFocus),
+    );
+  });
+  lusionMenuTrigger?.addEventListener("click", () => {
+    setLusionNavigationMenuOpen(Boolean(lusionMenu?.hidden));
+  });
+  lusionMenuTrigger?.addEventListener("keydown", (event) => {
+    if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+    event.preventDefault();
+    setLusionNavigationMenuOpen(true);
+    const items = [...(lusionMenu?.querySelectorAll('[role="menuitem"]') || [])];
+    (event.key === "ArrowUp" ? items.at(-1) : items[0])?.focus();
+  });
+  lusionMenu?.addEventListener("click", (event) => {
+    const item = event.target.closest("[data-lusion-menu-item]");
+    if (!item || !lusionMenu.contains(item)) return;
+    setLusionNavigationMenuOpen(false);
+    navigateLusionMenuItem(item);
+  });
+  lusionMenu?.addEventListener("keydown", (event) => {
+    handleHeaderMenuKeydown(event, lusionMenu, (returnFocus) =>
+      setLusionNavigationMenuOpen(false, returnFocus),
+    );
+  });
+  document.addEventListener("click", (event) => {
+    if (languageControl && !languageControl.contains(event.target))
+      setLanguageMenuOpen(false);
+    if (!event.target.closest("[data-lusion-navigation]"))
+      setLusionNavigationMenuOpen(false);
   });
   elements.themeToggle?.addEventListener("click", () => {
     setTheme(state.theme === "dark" ? "light" : "dark");
@@ -2902,7 +3257,12 @@ function bindWaterToLusionScroll() {
     "wheel",
     (event) => {
       if (event.ctrlKey || !event.cancelable || event.deltaY >= 0) return;
-      if (document.querySelector(".portal-category-menu[open]")) return;
+      if (
+        document.querySelector(
+          ".portal-category-trigger[aria-expanded='true']",
+        )
+      )
+        return;
       if (
         event.target instanceof Element &&
         event.target.closest("select, input, textarea, [contenteditable='true']")
@@ -2987,6 +3347,17 @@ function bindWaterToLusionScroll() {
 function deferLusionFrame() {
   const frame = document.querySelector("iframe[data-lazy-src]");
   if (!frame) return;
+  window.addEventListener("message", (event) => {
+    if (
+      event.origin !== window.location.origin ||
+      event.source !== frame.contentWindow ||
+      event.data?.type !== "lusion:language-selected"
+    ) {
+      return;
+    }
+    const locale = { en: "en", vi: "vi", "zh-CN": "zh" }[event.data.locale];
+    if (locale) setLocale(locale);
+  });
 
   const bridgeFrameScrollToWater = () => {
     let frameWindow;
@@ -3055,16 +3426,16 @@ function deferLusionFrame() {
     );
   };
 
+  frame.addEventListener("load", () => {
+    frame.classList.add("is-ready");
+    bridgeFrameScrollToWater();
+    syncLusionMenuFromFrame(frame);
+    syncLocaleToLusion(state.locale, true);
+  });
+
   const observeFrame = () => {
     const loadFrame = () => {
-      frame.addEventListener(
-        "load",
-        () => {
-          frame.classList.add("is-ready");
-          bridgeFrameScrollToWater();
-        },
-        { once: true },
-      );
+      if (!frame.dataset.lazySrc) return;
       frame.src = frame.dataset.lazySrc;
       delete frame.dataset.lazySrc;
     };
