@@ -3109,3 +3109,22 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
     opacity: 1;
   }
 }
+
+/* Slowly alternate the monochrome water between negative and positive tones. */
+.world-stage,
+.app-shell:has(> main > .hero.hero-world) .world-stage {
+  filter: grayscale(1) invert(0);
+  transition: filter 1800ms ease-in-out;
+}
+
+.world-stage.is-water-light,
+.app-shell:has(> main > .hero.hero-world) .world-stage.is-water-light {
+  filter: grayscale(1) invert(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-stage,
+  .app-shell:has(> main > .hero.hero-world) .world-stage {
+    transition-duration: 0s;
+  }
+}

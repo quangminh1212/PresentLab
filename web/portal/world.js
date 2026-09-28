@@ -1199,4 +1199,14 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {}, onReady = (
 
   resize();
   start();
+
+  stage.dataset.worldWaterTone = "dark";
+  if (!reducedMotion) {
+    window.setInterval(() => {
+      if (!isVisible || document.hidden) return;
+
+      const isLightWater = stage.classList.toggle("is-water-light");
+      stage.dataset.worldWaterTone = isLightWater ? "light" : "dark";
+    }, 10_000);
+  }
 }
