@@ -3057,7 +3057,7 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   right: 0;
   left: 0;
   display: grid;
-  grid-template-columns: 104px minmax(0, 1fr);
+  grid-template-columns: 80px minmax(0, 1fr);
   align-items: center;
   column-gap: 20px;
   min-height: 116px;
@@ -3068,31 +3068,38 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
 }
 
 .portal-header-brand {
+  position: relative;
   display: block;
-  width: 104px;
+  width: 80px;
+  aspect-ratio: 20 / 7;
+  overflow: hidden;
   line-height: 0;
   pointer-events: auto;
 }
 
 .portal-header-brand img {
+  position: absolute;
+  top: -31.8%;
+  left: 0;
   display: block;
   width: 100%;
   height: auto;
+  max-width: none;
 }
 
 .portal-header-actions {
   display: flex;
   align-items: center;
   justify-self: end;
-  gap: clamp(14px, 3.8vw, 36px);
+  gap: clamp(12px, 2vw, 24px);
   pointer-events: auto;
 }
 
 .portal-language-control {
   position: relative;
   display: block;
-  width: 60px;
-  height: 45px;
+  width: 56px;
+  height: 42px;
   flex: 0 0 auto;
 }
 
@@ -3102,11 +3109,11 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   appearance: none;
   border: 0;
   border-radius: 999px;
-  padding: 0 22px 0 16px;
+  padding: 0 18px 0 13px;
   color: #fff;
   background: #000;
   font: inherit;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 650;
   cursor: pointer;
 }
@@ -3120,10 +3127,10 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
 
 .portal-language-chevron {
   position: absolute;
-  top: 18px;
-  right: 14px;
-  width: 5px;
-  height: 5px;
+  top: 19px;
+  right: 12px;
+  width: 4px;
+  height: 4px;
   border-right: 1px solid #fff;
   border-bottom: 1px solid #fff;
   transform: rotate(45deg);
@@ -3138,17 +3145,17 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 11px;
-  min-width: 140px;
-  height: 45px;
+  gap: 8px;
+  min-width: 122px;
+  height: 42px;
   box-sizing: border-box;
   border-radius: 999px;
-  padding: 0 16px 0 22px;
+  padding: 0 12px 0 16px;
   color: #171820;
   border: 1px solid rgb(0 0 0 / 16%);
   background: #fff;
   box-shadow: 0 6px 18px rgb(0 0 0 / 16%);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   list-style: none;
   cursor: pointer;
@@ -3171,8 +3178,8 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
 
 .portal-category-dots i {
   display: block;
-  width: 4px;
-  height: 4px;
+  width: 3px;
+  height: 3px;
   border-radius: 50%;
   background: currentColor;
 }
@@ -3212,7 +3219,7 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
 
 @media (max-width: 840px) {
   .portal-header {
-    grid-template-columns: minmax(76px, 92px) minmax(0, 1fr);
+    grid-template-columns: minmax(68px, 80px) minmax(0, 1fr);
     min-height: 100px;
     padding-inline: clamp(20px, 4vw, 34px);
   }
@@ -3226,21 +3233,21 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   }
 
   .portal-language-control {
-    width: 66px;
-    height: 50px;
+    width: 58px;
+    height: 44px;
   }
 
   .portal-language-chevron {
     top: 20px;
-    right: 14px;
+    right: 12px;
   }
 
   .portal-category-trigger {
-    min-width: 144px;
-    height: 50px;
-    gap: 10px;
-    padding-inline: 18px;
-    font-size: 13px;
+    min-width: 122px;
+    height: 44px;
+    gap: 8px;
+    padding-inline: 15px;
+    font-size: 12px;
   }
 }
 
@@ -3253,7 +3260,7 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   }
 
   .portal-header-brand {
-    width: clamp(72px, 23vw, 88px);
+    width: clamp(68px, 21vw, 80px);
   }
 
   .portal-header-actions {
@@ -3264,31 +3271,31 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy {
   }
 
   .portal-language-control {
-    width: 58px;
-    height: 46px;
+    width: 54px;
+    height: 44px;
   }
 
   .portal-language-control select {
-    padding-left: 15px;
-    font-size: 14px;
+    padding-left: 13px;
+    font-size: 12px;
   }
 
   .portal-language-chevron {
-    top: 18px;
-    right: 12px;
+    top: 20px;
+    right: 11px;
   }
 
   .portal-category-trigger {
-    min-width: 128px;
-    height: 46px;
-    gap: 8px;
-    padding-inline: 15px;
+    min-width: 116px;
+    height: 44px;
+    gap: 7px;
+    padding-inline: 13px;
     font-size: 12px;
   }
 
   .portal-category-dots i {
-    width: 4px;
-    height: 4px;
+    width: 3px;
+    height: 3px;
   }
 }
 
