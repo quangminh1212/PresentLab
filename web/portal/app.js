@@ -2950,9 +2950,9 @@ function drawLusionPageCurtain(
   context.translate(barUnit * transform * diagonal, (-barUnit * 0.5) * transform * diagonal);
   context.scale(scale, scale);
 
-  context.font = "500 5px Aeonik, sans-serif";
+  context.font = "800 5.6px Oxanium, sans-serif";
   const xMetrics = context.measureText("X");
-  const abMetrics = context.measureText("ab");
+  const abMetrics = context.measureText("AB");
   // Match the bounds of the custom canvas L so the type sits at even gaps.
   const markBounds = { left: -1.5, right: 1.5 };
   const textGap = 0.5;
@@ -2999,12 +2999,12 @@ function drawLusionPageCurtain(
     context.save();
     context.globalAlpha = clampUnit(brandRevealRatio) * (1 - transform);
     context.fillStyle = "#fff";
-    context.font = "500 5px Aeonik, sans-serif";
+    context.font = "800 5.6px Oxanium, sans-serif";
     context.textBaseline = "alphabetic";
     context.textAlign = "right";
     context.fillText("X", markBounds.left - textGap, xBaseline);
     context.textAlign = "left";
-    context.fillText("ab", markBounds.right + textGap, xBaseline);
+    context.fillText("AB", markBounds.right + textGap, xBaseline);
     context.restore();
   }
 
@@ -3044,7 +3044,9 @@ function startPageCurtain(libraryReady) {
       window.addEventListener("load", resolve, { once: true });
     }
   });
-  const fontsReady = document.fonts?.ready ?? Promise.resolve();
+  const fontsReady = document.fonts?.load
+    ? Promise.all([document.fonts.ready, document.fonts.load("800 5.6px Oxanium")])
+    : Promise.resolve();
 
   if (!pageCurtain) {
     nativeLusionHeaderReady.then(() => root.classList.add("is-ready"));
