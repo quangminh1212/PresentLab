@@ -2477,7 +2477,8 @@ html:has(.app-shell > main > .hero.hero-world).is-section-transitioning {
 
 .app-shell:has(> main > .hero.hero-world) > .topbar,
 .app-shell:has(> main > .hero.hero-world) .world-copy,
-.app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
+.app-shell:has(> main > .hero.hero-world) .world-scroll-cue,
+.app-shell:has(> main > .hero.hero-world) .world-skip-button {
   font-family: Aeonik, "Be Vietnam Pro", ui-sans-serif, sans-serif;
   font-synthesis: none;
   -webkit-font-smoothing: antialiased;
@@ -2490,13 +2491,15 @@ body.menu-open {
 /* Aeonik has no Vietnamese horn letters, so the whole line stays one grotesque. */
 html[lang="vi"] .app-shell:has(> main > .hero.hero-world) > .topbar,
 html[lang="vi"] .app-shell:has(> main > .hero.hero-world) .world-copy,
-html[lang="vi"] .app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
+html[lang="vi"] .app-shell:has(> main > .hero.hero-world) .world-scroll-cue,
+html[lang="vi"] .app-shell:has(> main > .hero.hero-world) .world-skip-button {
   font-family: "Be Vietnam Pro", Aeonik, sans-serif;
 }
 
 html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) > .topbar,
 html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy,
-html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
+html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-scroll-cue,
+html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-skip-button {
   font-family: Aeonik, system-ui, "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", sans-serif;
 }
 
@@ -2829,8 +2832,52 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy h1 em {
   color: #fff;
 }
 
-.app-shell:has(> main > .hero.hero-world) .scroll-progress {
-  display: none;
+.world-skip-button {
+  position: absolute;
+  z-index: 7;
+  right: clamp(20px, 4vw, 56px);
+  bottom: clamp(82px, 10vh, 104px);
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75em;
+  padding: 0 16px;
+  border: 1px solid rgb(240 241 250 / 34%);
+  border-radius: 999px;
+  background: rgb(8 12 19 / 38%);
+  backdrop-filter: blur(12px);
+  color: rgb(240 241 250 / 88%);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.world-skip-button::after {
+  color: #72f3de;
+  content: "↘";
+  font-size: 15px;
+  letter-spacing: 0;
+}
+
+.world-skip-button:hover {
+  transform: translateY(-2px);
+  border-color: rgb(114 243 222 / 70%);
+  background: rgb(8 12 19 / 68%);
+  color: #fff;
+}
+
+.world-skip-button:focus-visible {
+  outline: 2px solid #72f3de;
+  outline-offset: 3px;
 }
 
 @keyframes lusion-intro-reveal {
