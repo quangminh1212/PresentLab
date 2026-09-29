@@ -3402,6 +3402,12 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy h1 em {
   max-width: none;
 }
 
+@media (max-width: 760px) {
+  .portal-header-brand {
+    transform: translateY(-7px);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .app-shell:has(> main > .hero.hero-world) .world-stage,
   .app-shell:has(> main > .hero.hero-world) .lusion-home-frame {
