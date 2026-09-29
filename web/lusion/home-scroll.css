@@ -202,3 +202,30 @@ html[lang="vi"] body #home-goal-tunnel-title {
 html[lang="vi"] body #home-goal-tunnel-title .home-goal-tunnel-title-line {
   white-space: nowrap;
 }
+
+/* Make the virtual scroll thumb discoverable and easy to drag. */
+#scroll-indicator {
+  pointer-events: auto;
+  touch-action: none;
+}
+
+#scroll-indicator::before {
+  position: absolute;
+  inset: 0 -10px;
+  content: "";
+}
+
+#scroll-indicator:hover,
+#scroll-indicator.is-dragging {
+  opacity: 1 !important;
+}
+
+#scroll-indicator-bar {
+  cursor: grab;
+  pointer-events: auto;
+  touch-action: none;
+}
+
+#scroll-indicator.is-dragging #scroll-indicator-bar {
+  cursor: grabbing;
+}
