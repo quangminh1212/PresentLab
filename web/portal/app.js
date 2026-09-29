@@ -1436,7 +1436,7 @@ async function mountNativeLusionHeader(frame = lusionFrame()) {
   const adapterStyle = document.createElement("style");
   adapterStyle.textContent =
     ":host{position:fixed;inset:0;z-index:52;pointer-events:none}" +
-    ":host(.is-loading){display:none}" +
+    ":host(.is-loading),:host(.is-lusion-preloading){display:none}" +
     ":host(.is-black-bg) #header,:host(.is-blue-bg) #header{color:var(--color-white)}" +
     ":host(.is-white-bg) #header{color:var(--color-black)}" +
     "#header-logo{visibility:hidden!important;pointer-events:none!important}" +
