@@ -180,3 +180,16 @@
     line-height: 1.05;
   }
 }
+
+/* Keep Vietnamese tone marks clear inside the animated desktop headline. */
+@media (min-width: 813px) {
+  html[lang="vi"] body #home-hero-title {
+    font-size: clamp(18px, 2vw, 38px) !important;
+    line-height: 1.2 !important;
+  }
+
+  html[lang="vi"] body #home-hero-title .line {
+    line-height: inherit !important;
+    overflow: visible !important;
+  }
+}
