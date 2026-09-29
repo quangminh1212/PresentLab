@@ -3813,4 +3813,8 @@ html.is-ready .app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark {
     left: 22px;
     top: clamp(120px, calc(50vh - 93px), 330px);
   }
+
+  html[lang="vi"] .app-shell:has(> main > .hero.hero-world) .world-lede > span:last-child {
+    max-width: 18em;
+  }
 }
