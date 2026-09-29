@@ -3743,3 +3743,127 @@ html.is-ready .app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark {
     animation: none;
   }
 }
+
+.app-shell:has(> main > .hero.hero-world) .world-copy {
+  left: clamp(42px, 11.1vw, 172px);
+}
+
+.world-form-orbit {
+  position: absolute;
+  z-index: 4;
+  top: 53%;
+  right: clamp(60px, 9vw, 150px);
+  width: clamp(210px, 20vw, 286px);
+  aspect-ratio: 1;
+  border: 1px solid rgb(228 240 240 / 20%);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(0, -50%, 0) rotate(-9deg) scale(0.94);
+  animation: world-form-orbit-in 1080ms cubic-bezier(0.2, 0.75, 0.25, 1) 420ms both;
+  animation-play-state: paused;
+}
+
+.world-form-orbit::before,
+.world-form-orbit::after {
+  position: absolute;
+  border: 1px solid rgb(211 235 234 / 15%);
+  border-radius: 50%;
+  content: "";
+}
+
+.world-form-orbit::before {
+  inset: 25% -18%;
+  transform: rotate(-36deg);
+}
+
+.world-form-orbit::after {
+  inset: 13%;
+  border-color: rgb(211 235 234 / 9%);
+}
+
+.world-form-orbit__core,
+.world-form-orbit__satellite {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+}
+
+.world-form-orbit__core {
+  top: 50%;
+  left: 50%;
+  width: 9px;
+  height: 9px;
+  background: #dff5ef;
+  box-shadow: 0 0 22px 7px rgb(189 239 228 / 28%);
+  transform: translate(-50%, -50%);
+}
+
+.world-form-orbit__satellite {
+  top: 24%;
+  right: 4%;
+  width: 7px;
+  height: 7px;
+  border: 1px solid rgb(241 248 246 / 80%);
+  background: rgb(154 206 202 / 82%);
+  box-shadow: 0 0 16px 4px rgb(181 232 225 / 22%);
+  animation: world-form-point-breathe 3.2s ease-in-out 1.4s infinite alternate;
+}
+
+html.is-ready .app-shell:has(> main > .hero.hero-world) .world-form-orbit {
+  animation-play-state: running;
+}
+
+@keyframes world-form-orbit-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -50%, 0) rotate(-9deg) scale(0.94);
+  }
+
+  to {
+    opacity: 0.72;
+    transform: translate3d(0, -50%, 0) rotate(0) scale(1);
+  }
+}
+
+@keyframes world-form-point-breathe {
+  from {
+    opacity: 0.68;
+    transform: scale(0.82);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1.16);
+  }
+}
+
+@media (max-width: 1200px) {
+  .world-form-orbit {
+    display: none;
+  }
+}
+
+@media (max-width: 980px) {
+  .app-shell:has(> main > .hero.hero-world) .world-copy {
+    left: 9.5vw;
+  }
+}
+
+@media (max-width: 760px) {
+  .app-shell:has(> main > .hero.hero-world) .world-copy {
+    left: 22px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell:has(> main > .hero.hero-world) .world-form-orbit {
+    animation: none;
+    opacity: 0.72;
+    transform: translate3d(0, -50%, 0);
+  }
+
+  .world-form-orbit__satellite {
+    animation: none;
+  }
+}
