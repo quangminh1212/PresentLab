@@ -3811,5 +3811,6 @@ html.is-ready .app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark {
 @media (max-width: 760px) {
   .app-shell:has(> main > .hero.hero-world) .world-copy {
     left: 22px;
+    top: clamp(120px, calc(50vh - 93px), 330px);
   }
 }
