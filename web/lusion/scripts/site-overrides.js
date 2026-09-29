@@ -945,6 +945,8 @@
 
   style.textContent +=
     '#lusion-mobile-language-controls{display:none;margin-top:.35em;padding:.8em .35em .25em;border-top:1px solid rgba(0,0,0,.14);color:#080808;text-transform:none}#lusion-mobile-language-controls .lusion-mobile-language-label{display:block;margin-bottom:.65em;font-size:.72em;font-weight:500;letter-spacing:.08em;text-transform:uppercase;opacity:.55}#lusion-mobile-language-controls .lusion-mobile-language-options{display:flex;gap:.4em}#lusion-mobile-language-controls .lusion-mobile-language-choice{flex:1;min-height:2.7em;padding:.5em .75em;border:1px solid #e4e6ef;border-radius:999px;background:#fff;color:#080808;font-family:inherit;font-size:.78em;font-weight:500;line-height:1;text-align:center;text-transform:uppercase;cursor:pointer}#lusion-mobile-language-controls .lusion-mobile-language-choice[aria-pressed="true"]{background:#080808;color:#fff;border-color:#080808}@media(max-width:812px){#lusion-language-switcher{display:block!important;right:calc(var(--base-padding-x) + 8.2em)}#lusion-language-menu{position:fixed;top:calc(var(--base-padding-y)*2 + 3*var(--header-size) + var(--lusion-menu-motion-y,0px));left:auto;right:var(--base-padding-x);width:12em;max-width:calc(100vw - var(--base-padding-x)*2);max-height:calc(100vh - var(--base-padding-y)*3 - var(--header-size));overflow-y:auto}#lusion-mobile-language-controls{display:none!important}}';
+  style.textContent +=
+    'html[lang="vi"] #projects-main-title{padding-bottom:.18em!important}';
   const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
   const translatedTextNodes = new WeakMap();
   const ignoredContentSelector = "script,style,noscript,svg,[data-lusion-no-translate]";
