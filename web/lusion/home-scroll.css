@@ -127,6 +127,14 @@
   transform: none !important;
 }
 
+/* Hide Lusion's header actions before its initial loading state is ready. */
+html:not(.is-ready) #header-right-menu-btn,
+html:not(.is-ready) #lusion-language-trigger {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 @media (max-width: 812px) {
   #page-container-inner #about-capability-cards {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -201,6 +209,26 @@ html[lang="vi"] body #home-goal-tunnel-title {
 
 html[lang="vi"] body #home-goal-tunnel-title .home-goal-tunnel-title-line {
   white-space: nowrap;
+}
+
+/* Keep tone marks visible in the animated Vietnamese mobile contact title. */
+@media (max-width: 560px) {
+  html[lang="vi"] body #end-section-title {
+    line-height: 1.1 !important;
+  }
+
+  html[lang="vi"] body #end-section-title .end-section-title-link-line {
+    height: 1.1em !important;
+  }
+
+  html[lang="vi"] body #end-section-title .end-section-title-link-word {
+    height: 1.1em !important;
+    overflow: hidden !important;
+  }
+
+  html[lang="vi"] body #end-section-title .end-section-title-link-word .char-wrapper {
+    top: 0 !important;
+  }
 }
 
 /* Make the virtual scroll thumb discoverable and easy to drag. */
