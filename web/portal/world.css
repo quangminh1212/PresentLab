@@ -2450,7 +2450,7 @@ html:has(.app-shell > main > .hero.hero-world).is-section-transitioning {
 
 /* Editorial water hero with a navigation that matches the Lusion page below. */
 .app-shell:has(> main > .hero.hero-world) {
-  --world-title-size: clamp(30px, 4.3vw, 60px);
+  --world-title-size: clamp(40px, 3.8vw, 56px);
   --world-body-size: clamp(16px, 1vw, 18px);
   --world-cue-size: clamp(12px, 0.82vw, 14px);
 }
@@ -2694,8 +2694,8 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
 .app-shell:has(> main > .hero.hero-world) .world-copy {
   top: clamp(102px, calc(7.2vh + 56px), 118px);
   right: auto;
-  left: clamp(92px, 27vw, 445px);
-  width: min(930px, 58vw);
+  left: clamp(72px, 25vw, 420px);
+  width: min(700px, 52vw);
   margin: 0;
   padding: 0;
   transform: none;
@@ -2726,6 +2726,12 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
   line-height: 1.06;
   text-shadow: 0 1px 16px rgb(0 0 0 / 28%);
   text-wrap: balance;
+}
+
+@media (min-width: 761px) {
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 br {
+    display: none;
+  }
 }
 
 .app-shell:has(> main > .hero.hero-world) .world-copy h1 em {
@@ -2833,8 +2839,8 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
 
 @media (max-width: 980px) {
   .app-shell:has(> main > .hero.hero-world) .world-copy {
-    left: clamp(72px, 21vw, 230px);
-    width: min(560px, 57vw);
+    left: clamp(72px, 25vw, 420px);
+    width: min(700px, 52vw);
   }
 }
 
@@ -2920,6 +2926,10 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
 @media (max-width: 360px) {
   .app-shell:has(> main > .hero.hero-world) {
     --world-title-size: 26px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy {
+    top: clamp(120px, 17vh, 136px);
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-copy h1 {
