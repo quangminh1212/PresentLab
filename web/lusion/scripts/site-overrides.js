@@ -29,6 +29,8 @@
     'html[lang="vi"] .project-item-line-2{height:calc(1em + 5px)!important}' +
     'html[lang="vi"] .project-item-line-2-inner{bottom:max(0px,calc(.2em - 5px))!important}' +
     'html[lang="vi"] .project-item-line-2-icon{top:calc(.1em + 5px)!important}' +
+    'html[lang="vi"] .header-menu-link{padding:.9em 1.625em!important;line-height:1.45!important}' +
+    'html[lang="vi"] .header-menu-link-text,html[lang="vi"] .header-menu-link-text-clone{font-size:1.25em!important;line-height:1.6!important}' +
     'html[lang="vi"] #lusion-language-trigger,html[lang="vi"] #lusion-language-menu .lusion-language-choice,html[lang="vi"] #lusion-mobile-language-controls .lusion-mobile-language-choice{font-family:"Be Vietnam Pro",sans-serif!important}' +
     '@media (min-width:813px){html[lang="vi"] #home-hero-title{grid-column:2/span 10!important;font-size:clamp(18px,2.1vw,40px)!important;line-height:1.08!important;text-wrap:balance!important}}' +
     '@media (min-width:813px){html[lang="vi"] #home-hero-title{margin-left:max(0px,calc(96px - 7.6vw))!important}}' +

@@ -1450,7 +1450,9 @@ async function mountNativeLusionHeader(frame = lusionFrame()) {
     ':host([data-lusion-language="vi"]) #header,' +
     ':host([data-lusion-language="vi"]) #header button,' +
     ':host([data-lusion-language="vi"]) #lusion-language-menu .lusion-language-choice{' +
-    'font-family:"Be Vietnam Pro",Aeonik,sans-serif!important}';
+    'font-family:"Be Vietnam Pro",Aeonik,sans-serif!important}' +
+    ':host([data-lusion-language="vi"]) .header-menu-link{padding:.9em 1.625em!important;line-height:1.45!important}' +
+    ':host([data-lusion-language="vi"]) .header-menu-link-text,:host([data-lusion-language="vi"]) .header-menu-link-text-clone{font-size:1.25em!important;line-height:1.6!important}';
   shadow.appendChild(adapterStyle);
 
   let disposed = false;
