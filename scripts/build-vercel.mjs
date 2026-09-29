@@ -268,6 +268,93 @@ if (lusionBundle.split(browserZoomGuard).length - 1 !== 1) {
   throw new Error("The copied Lusion zoom guard no longer matches the browser accessibility patch.");
 }
 lusionBundle = lusionBundle.replace(browserZoomGuard, browserZoomSupport);
+const scrollIndicatorInitSource =
+  'domScrollIndicatorBar:document.getElementById("scroll-indicator-bar")})}resize(e,t){';
+const scrollIndicatorInitReplacement = `domScrollIndicatorBar:document.getElementById("scroll-indicator-bar")}),
+this._initScrollIndicatorDrag()
+}
+_initScrollIndicatorDrag() {
+  const indicator = this.domScrollIndicator;
+  const bar = this.domScrollIndicatorBar;
+  this.scrollIndicatorDragOffset = 0;
+  const stopDragging = () => {
+    indicator.classList.remove("is-dragging");
+    bar.classList.remove("is-dragging");
+  };
+  indicator.addEventListener("pointerdown", (event) => {
+    if (event.button !== 0 || !this.isMoveable) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const trackBounds = indicator.getBoundingClientRect();
+    const barBounds = bar.getBoundingClientRect();
+    this.scrollIndicatorDragOffset = bar.contains(event.target)
+      ? event.clientY - barBounds.top
+      : barBounds.height / 2;
+    indicator.setPointerCapture(event.pointerId);
+    indicator.classList.add("is-dragging");
+    bar.classList.add("is-dragging");
+    const travel = Math.max(0, trackBounds.height - barBounds.height);
+    if (travel > 0) {
+      this.scrollToPixel(
+        (math.clamp(
+          event.clientY - trackBounds.top - this.scrollIndicatorDragOffset,
+          0,
+          travel,
+        ) /
+          travel) *
+          this.contentSizePixel,
+        !0,
+      );
+    }
+  });
+  indicator.addEventListener("pointermove", (event) => {
+    if (!indicator.hasPointerCapture(event.pointerId)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const trackBounds = indicator.getBoundingClientRect();
+    const barBounds = bar.getBoundingClientRect();
+    const travel = Math.max(0, trackBounds.height - barBounds.height);
+    if (travel > 0) {
+      this.scrollToPixel(
+        (math.clamp(
+          event.clientY - trackBounds.top - this.scrollIndicatorDragOffset,
+          0,
+          travel,
+        ) /
+          travel) *
+          this.contentSizePixel,
+        !0,
+      );
+    }
+  });
+  indicator.addEventListener("pointerup", (event) => {
+    event.stopPropagation();
+    if (indicator.hasPointerCapture(event.pointerId)) {
+      indicator.releasePointerCapture(event.pointerId);
+    }
+  });
+  indicator.addEventListener("pointercancel", stopDragging);
+  indicator.addEventListener("lostpointercapture", stopDragging);
+  indicator.addEventListener("mousedown", (event) => event.stopPropagation());
+  indicator.addEventListener(
+    "touchstart",
+    (event) => event.stopPropagation(),
+    { passive: !0 },
+  );
+  indicator.addEventListener(
+    "touchmove",
+    (event) => event.stopPropagation(),
+    { passive: !0 },
+  );
+}
+resize(e,t){`;
+if (lusionBundle.split(scrollIndicatorInitSource).length - 1 !== 1) {
+  throw new Error("The Lusion scroll indicator init anchor changed.");
+}
+lusionBundle = lusionBundle.replace(
+  scrollIndicatorInitSource,
+  scrollIndicatorInitReplacement,
+);
 const astronautRevealSource =
   "v.position.y-=(properties.useMobileLayout?0:.4)*ease.backInOut(p),v.updateMatrix();";
 // Pull the astronaut back into the viewport during the heading, then release it into the tunnel.
