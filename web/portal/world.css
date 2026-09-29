@@ -3360,58 +3360,92 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy h1 em {
   }
 }
 
-/* Three-beat display type and restrained studio metadata for the Portal hero. */
+/* Quiet, two-line display type and softened water for the Portal hero. */
+.app-shell:has(> main > .hero.hero-world) .world-space-image {
+  filter: grayscale(1) saturate(0.78) contrast(0.88) brightness(0.9) blur(0.45px);
+  opacity: 0.88;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-water-video {
+  filter: grayscale(1) contrast(0.88) brightness(0.84) blur(0.45px);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-canvas {
+  filter: grayscale(1) contrast(0.82) brightness(0.94) blur(1.4px);
+  opacity: 0.68;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-atmosphere {
+  filter: grayscale(1);
+  opacity: 0.68;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-scanlines {
+  filter: grayscale(1);
+  opacity: 0.08;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-stage::after {
+  background:
+    linear-gradient(90deg, rgb(8 11 16 / 14%) 0%, transparent 68%),
+    linear-gradient(180deg, rgb(242 244 248 / 11%) 0%, transparent 42%, rgb(0 0 0 / 30%) 100%),
+    radial-gradient(ellipse at 52% 42%, transparent 30%, rgb(24 28 35 / 14%) 100%);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy {
+  top: clamp(148px, 18.5vh, 184px);
+  left: clamp(28px, 9.4vw, 148px);
+  width: min(1230px, 82vw);
+  isolation: isolate;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy::after {
+  opacity: 0.16;
+  -webkit-text-stroke: 1px rgb(255 255 255 / 22%);
+}
+
 .app-shell:has(> main > .hero.hero-world) .world-copy h1 {
   display: grid;
   justify-items: start;
   margin: 0;
-  font-size: clamp(66px, 8.5vw, 122px);
-  letter-spacing: -0.045em;
-  line-height: 1.02;
+  font-size: clamp(72px, 8.8vw, 126px);
+  letter-spacing: -0.04em;
+  line-height: 1.04;
 }
 
 .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line {
   display: block;
-  animation: world-type-arrive 760ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+  animation: world-type-arrive 700ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
 }
 
 .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--lead {
-  margin: 0 0 0.09em 0.06em;
-  color: #f6f7fb;
-  font-size: clamp(35px, 4.45vw, 64px);
+  margin: 0 0 0.02em 0.05em;
+  color: #f2f3f5;
+  font-size: clamp(34px, 4vw, 58px);
   font-weight: 450;
-  letter-spacing: -0.055em;
-  line-height: 1.08;
+  letter-spacing: -0.025em;
+  line-height: 1.12;
   animation-delay: 80ms;
 }
 
-.app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--bridge {
-  color: #f6f7fb;
-  font-size: clamp(66px, 8.5vw, 122px);
-  font-weight: 590;
-  letter-spacing: -0.055em;
-  line-height: 1.04;
-  animation-delay: 180ms;
-}
-
 .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--final {
-  margin: 0.045em 0 0 0.025em;
-  background-image: linear-gradient(100deg, #65f4df 0%, #b2fff1 43%, #aebaff 100%);
+  margin: 0.035em 0 0 0.02em;
+  background-image: linear-gradient(100deg, #b3e8df 0%, #d4e9e6 54%, #c8d0eb 100%);
   background-clip: text;
   color: transparent;
-  font-size: clamp(64px, 9.55vw, 138px);
+  font-size: clamp(72px, 8.8vw, 126px);
   font-style: normal;
-  font-weight: 680;
-  letter-spacing: -0.05em;
-  line-height: 1.05;
-  text-shadow: 0 3px 30px rgb(0 0 0 / 38%);
-  animation-delay: 280ms;
+  font-weight: 620;
+  letter-spacing: -0.045em;
+  line-height: 1.08;
+  text-shadow: 0 2px 24px rgb(0 0 0 / 28%);
+  animation-delay: 180ms;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--final {
-  background-image: linear-gradient(100deg, #65f4df 0%, #b2fff1 43%, #aebaff 100%);
+  background-image: linear-gradient(100deg, #b3e8df 0%, #d4e9e6 54%, #c8d0eb 100%);
   background-clip: text;
   color: transparent;
   -webkit-background-clip: text;
@@ -3419,59 +3453,22 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .w
 }
 
 .app-shell:has(> main > .hero.hero-world) .world-lede {
-  max-width: 34em;
-  margin-top: 1.1em;
-  animation: world-type-arrive 760ms 380ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+  max-width: 32em;
+  margin: 1em 0 0 4px;
+  color: rgb(241 243 247 / 78%);
+  font-size: clamp(14px, 1vw, 16px);
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.5;
+  text-shadow: 0 2px 12px rgb(0 0 0 / 30%);
+  animation: world-type-arrive 700ms 280ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
 }
 
-.app-shell:has(> main > .hero.hero-world) .world-stats {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  width: min(520px, 100%);
-  margin: 26px 0 0 4px;
-  padding-top: 13px;
-  border-top: 1px solid rgb(235 244 255 / 24%);
-  animation: world-type-arrive 760ms 470ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
-}
-
-.app-shell:has(> main > .hero.hero-world) .world-stats > span {
-  position: relative;
-  display: grid;
-  flex: 1 1 0;
-  gap: 3px;
-  min-width: 0;
-}
-
-.app-shell:has(> main > .hero.hero-world) .world-stats > span + span {
-  padding-left: 18px;
-}
-
-.app-shell:has(> main > .hero.hero-world) .world-stats > span + span::before {
-  position: absolute;
-  top: 3px;
-  bottom: 2px;
-  left: 0;
-  width: 1px;
-  background: rgb(235 244 255 / 23%);
-  content: "";
-}
-
-.app-shell:has(> main > .hero.hero-world) .world-stats strong {
-  color: #f3f6fb;
-  font-size: 20px;
+.app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
+  gap: 10px;
+  font-size: 10px;
   font-weight: 500;
-  letter-spacing: -0.045em;
-  line-height: 1;
-}
-
-.app-shell:has(> main > .hero.hero-world) .world-stats small {
-  color: rgb(235 241 250 / 66%);
-  font-size: 9px;
-  font-weight: 550;
-  letter-spacing: 0.11em;
-  line-height: 1.35;
-  text-transform: uppercase;
+  letter-spacing: 0.12em;
 }
 
 .app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark {
@@ -3499,7 +3496,7 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .w
   from {
     opacity: 0;
     filter: blur(5px);
-    transform: translate3d(0, 0.16em, 0);
+    transform: translate3d(0, 0.12em, 0);
   }
 
   to {
@@ -3520,89 +3517,61 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .w
   }
 }
 
-@media (max-width: 760px) {
-  .app-shell:has(> main > .hero.hero-world) .world-copy h1 {
-    font-size: clamp(48px, 12.2vw, 58px);
-    line-height: 1.02;
-  }
-
-  .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--lead {
-    margin-bottom: 0.12em;
-    font-size: clamp(29px, 8.2vw, 36px);
-  }
-
-  .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--bridge {
-    font-size: clamp(48px, 12.2vw, 58px);
-    letter-spacing: -0.045em;
-    line-height: 1.04;
-  }
-
-  .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--final {
-    margin: 0.08em 0 0 0.015em;
-    font-size: clamp(46px, 14.2vw, 58px);
-    letter-spacing: -0.045em;
-    line-height: 1.05;
-  }
-
-  .app-shell:has(> main > .hero.hero-world) .world-lede {
-    margin-top: 0.9em;
-  }
-
-  .app-shell:has(> main > .hero.hero-world) .world-stats {
-    width: 100%;
-    margin-top: 19px;
-    padding-top: 11px;
-  }
-
-  .app-shell:has(> main > .hero.hero-world) .world-stats > span + span {
-    padding-left: 12px;
-  }
-
-  .app-shell:has(> main > .hero.hero-world) .world-stats strong {
-    font-size: 17px;
-  }
-
-  .app-shell:has(> main > .hero.hero-world) .world-stats small {
-    font-size: 9px;
-    letter-spacing: 0.08em;
+@media (max-width: 980px) {
+  .app-shell:has(> main > .hero.hero-world) .world-copy {
+    left: 7.5vw;
+    width: 87vw;
   }
 }
 
-@media (max-height: 620px) and (max-width: 760px) {
+@media (max-width: 760px) {
   .app-shell:has(> main > .hero.hero-world) .world-copy {
-    top: 132px;
+    top: clamp(132px, 17vh, 146px);
+    left: 22px;
+    right: 22px;
+    width: auto;
   }
 
-  .app-shell:has(> main > .hero.hero-world) .world-kicker {
-    margin-bottom: 10px;
+  .app-shell:has(> main > .hero.hero-world) .world-copy::after {
+    display: none;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 {
+    font-size: clamp(54px, 15vw, 68px);
+    line-height: 1.05;
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--lead {
-    font-size: 27px;
-  }
-
-  .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--bridge {
-    font-size: clamp(43px, 11vw, 48px);
+    font-size: clamp(30px, 8.5vw, 36px);
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--final {
-    font-size: clamp(43px, 11.8vw, 50px);
+    margin-top: 0.06em;
+    font-size: clamp(54px, 15vw, 68px);
+    line-height: 1.08;
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-lede {
-    margin-top: 11px;
-    font-size: 12px;
+    max-width: 28em;
+    margin-top: 0.9em;
+    font-size: 14px;
   }
 
-  .app-shell:has(> main > .hero.hero-world) .world-stats {
-    margin-top: 13px;
-    padding-top: 8px;
+  .app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
+    bottom: 26px;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark {
+    width: 29px;
+    height: 29px;
   }
 }
 
 @media (max-width: 360px) {
-  .app-shell:has(> main > .hero.hero-world) .world-copy {
-    top: 132px;
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--final {
+    font-size: clamp(46px, 14.2vw, 54px);
   }
 }
 
@@ -3614,21 +3583,32 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .w
   }
 }
 
+@media (max-height: 620px) and (max-width: 760px) {
+  .app-shell:has(> main > .hero.hero-world) .world-copy {
+    top: 132px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--lead {
+    font-size: 27px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--final {
+    font-size: 48px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-lede {
+    margin-top: 12px;
+    font-size: 12px;
+  }
+}
+
 @media (max-height: 620px) and (min-width: 761px) {
   .app-shell:has(> main > .hero.hero-world) .world-copy {
     top: 108px;
   }
 
-  .app-shell:has(> main > .hero.hero-world) .world-kicker {
-    margin-bottom: 11px;
-  }
-
   .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--lead {
     font-size: 40px;
-  }
-
-  .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--bridge {
-    font-size: clamp(58px, 7.2vw, 78px);
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--final {
@@ -3639,17 +3619,11 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .w
     margin-top: 14px;
     font-size: 14px;
   }
-
-  .app-shell:has(> main > .hero.hero-world) .world-stats {
-    margin-top: 17px;
-    padding-top: 9px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line,
   .app-shell:has(> main > .hero.hero-world) .world-lede,
-  .app-shell:has(> main > .hero.hero-world) .world-stats,
   .app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark {
     animation: none;
   }
