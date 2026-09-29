@@ -3404,7 +3404,7 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy h1 em {
 
 @media (max-width: 760px) {
   .portal-header-brand {
-    transform: translateY(-7px);
+    transform: translateY(-14px);
   }
 }
 
