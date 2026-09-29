@@ -3288,6 +3288,84 @@ function bindWaterToLusionScroll() {
   const nextSection = elements.catalogSection;
   if (!hero || !nextSection) return;
 
+  let automaticScrollTimer = 0;
+  let userHasTakenControl = false;
+  const cancelAutomaticScroll = () => {
+    userHasTakenControl = true;
+    if (!automaticScrollTimer) return;
+    window.clearTimeout(automaticScrollTimer);
+    automaticScrollTimer = 0;
+  };
+  const scheduleAutomaticScroll = () => {
+    if (
+      userHasTakenControl ||
+      automaticScrollTimer ||
+      document.visibilityState !== "visible" ||
+      getScrollTop() > 2
+    ) {
+      return;
+    }
+    automaticScrollTimer = window.setTimeout(() => {
+      automaticScrollTimer = 0;
+      if (
+        userHasTakenControl ||
+        document.visibilityState !== "visible" ||
+        getScrollTop() > 2 ||
+        sectionScrollTarget
+      ) {
+        return;
+      }
+      scrollPageToSection(nextSection);
+    }, 10_000);
+  };
+  const pageRoot = document.documentElement;
+  if (pageRoot.classList.contains("is-ready")) {
+    scheduleAutomaticScroll();
+  } else {
+    const readyObserver = new MutationObserver(() => {
+      if (!pageRoot.classList.contains("is-ready")) return;
+      readyObserver.disconnect();
+      scheduleAutomaticScroll();
+    });
+    readyObserver.observe(pageRoot, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+  }
+  document.addEventListener("pointerdown", cancelAutomaticScroll, {
+    capture: true,
+    passive: true,
+  });
+  document.addEventListener("keydown", cancelAutomaticScroll, {
+    capture: true,
+    passive: true,
+  });
+  document.addEventListener("touchmove", cancelAutomaticScroll, {
+    capture: true,
+    passive: true,
+  });
+  window.addEventListener("wheel", cancelAutomaticScroll, {
+    capture: true,
+    passive: true,
+  });
+  window.addEventListener(
+    "scroll",
+    () => {
+      if (getScrollTop() > 2) cancelAutomaticScroll();
+    },
+    { passive: true },
+  );
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") {
+      if (automaticScrollTimer) {
+        window.clearTimeout(automaticScrollTimer);
+        automaticScrollTimer = 0;
+      }
+      return;
+    }
+    scheduleAutomaticScroll();
+  });
+
   const scrollToLusion = () => {
     if (nextSection.getBoundingClientRect().top <= 2) return;
     scrollPageToSection(nextSection);
