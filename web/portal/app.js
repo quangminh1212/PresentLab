@@ -218,7 +218,6 @@ const COPY = {
     signalOutput: "SẴN SÀNG LÊN SÂN KHẤU",
     heroScrollCue: "Cuộn xuống",
     skipIntro: "Bỏ qua phần mở đầu",
-    scrollProgressLabel: "Điều hướng cuộn trang",
     scrollToProcess: "Lướt xuống xem quy trình",
     scrollToJourney: "Lướt xuống xem hành trình thiết kế",
     nextSceneKicker: "03 / FLIGHT JOURNAL",
@@ -447,7 +446,6 @@ const COPY = {
     signalOutput: "READY FOR THE ROOM",
     heroScrollCue: "Scroll down",
     skipIntro: "Skip intro",
-    scrollProgressLabel: "Page scroll control",
     scrollToProcess: "Scroll to the process",
     scrollToJourney: "Scroll through the design journey",
     nextSceneKicker: "03 / FLIGHT JOURNAL",
@@ -669,7 +667,6 @@ const COPY = {
     signalOutput: "为现场呈现准备",
     heroScrollCue: "向下",
     skipIntro: "跳过开场",
-    scrollProgressLabel: "页面滚动控制",
     scrollToProcess: "向下查看流程",
     scrollToJourney: "向下浏览设计旅程",
     nextSceneKicker: "03 / 飞行日志",
@@ -1290,8 +1287,6 @@ const elements = {
   themeToggle: document.querySelector("[data-theme-toggle]"),
   themeIcon: document.querySelector("[data-theme-icon]"),
   themeLabel: document.querySelector("[data-theme-label]"),
-  scrollProgress: document.querySelector("[data-scroll-progress-track]"),
-  scrollProgressThumb: document.querySelector("[data-scroll-progress]"),
   parallaxStage: document.querySelector("[data-parallax-stage]"),
   hero: document.querySelector(".hero"),
   heroCopy: document.querySelector('[data-reveal="hero-copy"]'),
@@ -2633,28 +2628,6 @@ function getScrollTop() {
   return Math.max(window.scrollY, document.documentElement.scrollTop, document.body.scrollTop, 0);
 }
 
-function updateScrollProgress() {
-  const pageHeight = Math.max(document.documentElement.scrollHeight, window.innerHeight);
-  const scrollable = Math.max(pageHeight - window.innerHeight, 0);
-  const progress = scrollable ? clampUnit(getScrollTop() / scrollable) : 0;
-  document.documentElement.style.setProperty("--scroll-progress", progress.toFixed(4));
-  const track = elements.scrollProgress;
-  const thumb = elements.scrollProgressThumb;
-  if (!track || !thumb) return;
-
-  const trackHeight = track.clientHeight;
-  const thumbHeight = Math.min(
-    trackHeight,
-    Math.max(34, (window.innerHeight / pageHeight) * trackHeight),
-  );
-  const thumbTravel = Math.max(trackHeight - thumbHeight, 0);
-  track.style.setProperty("--scroll-thumb-size", `${thumbHeight}px`);
-  track.style.setProperty("--scroll-thumb-offset", `${progress * thumbTravel}px`);
-  track.setAttribute("aria-valuenow", String(Math.round(progress * 100)));
-  track.setAttribute("aria-disabled", String(scrollable === 0));
-  track.hidden = scrollable === 0;
-}
-
 function clampUnit(value) {
   return Math.min(Math.max(value, 0), 1);
 }
@@ -2689,30 +2662,6 @@ function updateMotionChoreography() {
   const catalogProgress = sceneProgressFor(elements.catalogSection);
   const journeyProgress = journeyProgressFor(elements.journeySection);
   const processProgress = sceneProgressFor(elements.processSection);
-  const scrollable = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
-  const totalProgress = clampUnit(scrollTop / scrollable);
-
-  document.documentElement.style.setProperty("--scroll-progress", totalProgress.toFixed(4));
-  if (elements.scrollProgress && elements.scrollProgressThumb) {
-    const pageHeight = Math.max(document.documentElement.scrollHeight, window.innerHeight);
-    const trackHeight = elements.scrollProgress.clientHeight;
-    const thumbHeight = Math.min(
-      trackHeight,
-      Math.max(34, (window.innerHeight / pageHeight) * trackHeight),
-    );
-    const thumbTravel = Math.max(trackHeight - thumbHeight, 0);
-    elements.scrollProgress.style.setProperty("--scroll-thumb-size", `${thumbHeight}px`);
-    elements.scrollProgress.style.setProperty(
-      "--scroll-thumb-offset",
-      `${totalProgress * thumbTravel}px`,
-    );
-    elements.scrollProgress.setAttribute("aria-valuenow", String(Math.round(totalProgress * 100)));
-    elements.scrollProgress.setAttribute(
-      "aria-disabled",
-      String(pageHeight <= window.innerHeight),
-    );
-    elements.scrollProgress.hidden = pageHeight <= window.innerHeight;
-  }
   document.documentElement.style.setProperty(
     "--motion-velocity",
     String(state.motionVelocity.toFixed(2)) + "px",
@@ -2774,114 +2723,10 @@ function updateMotionChoreography() {
 
 let motionFrame = 0;
 
-let scrollProgressSnapTimer = 0;
-
-function scrollToPageProgress(progress, keepSnapDisabled = false) {
-  const maximumScroll = Math.max(
-    document.documentElement.scrollHeight - window.innerHeight,
-    0,
-  );
-  const root = document.documentElement;
-  root.dataset.scrollScrubbing = "true";
-  window.scrollTo({
-    top: clampUnit(progress) * maximumScroll,
-    behavior: "instant",
-  });
-  if (keepSnapDisabled) return;
-  window.clearTimeout(scrollProgressSnapTimer);
-  scrollProgressSnapTimer = window.setTimeout(() => {
-    if (!elements.scrollProgress?.hasAttribute("data-dragging"))
-      delete root.dataset.scrollScrubbing;
-  }, 180);
-}
-
-function bindScrollProgress() {
-  const track = elements.scrollProgress;
-  const thumb = elements.scrollProgressThumb;
-  if (!track || !thumb) return;
-
-  let activePointerId = null;
-  let pointerOffset = 0;
-  const moveThumbTo = (clientY) => {
-    const rect = track.getBoundingClientRect();
-    const thumbHeight = thumb.getBoundingClientRect().height;
-    const travel = Math.max(rect.height - thumbHeight, 0);
-    if (!travel) return;
-    const offset = Math.max(0, Math.min(travel, clientY - rect.top - pointerOffset));
-    scrollToPageProgress(offset / travel, true);
-  };
-
-  track.addEventListener("pointerdown", (event) => {
-    if (!event.isPrimary || event.button !== 0) return;
-    const thumbRect = thumb.getBoundingClientRect();
-    const isThumb = event.target === thumb || thumb.contains(event.target);
-    pointerOffset = isThumb ? event.clientY - thumbRect.top : thumbRect.height / 2;
-    activePointerId = event.pointerId;
-    track.dataset.dragging = "true";
-    track.focus({ preventScroll: true });
-    track.setPointerCapture(activePointerId);
-    event.preventDefault();
-    moveThumbTo(event.clientY);
-  });
-
-  track.addEventListener("pointermove", (event) => {
-    if (event.pointerId === activePointerId) moveThumbTo(event.clientY);
-  });
-
-  const finishPointer = (event) => {
-    if (event.pointerId !== activePointerId) return;
-    const pointerId = activePointerId;
-    activePointerId = null;
-    delete track.dataset.dragging;
-    delete document.documentElement.dataset.scrollScrubbing;
-    window.clearTimeout(scrollProgressSnapTimer);
-    if (track.hasPointerCapture(pointerId)) track.releasePointerCapture(pointerId);
-  };
-  track.addEventListener("pointerup", finishPointer);
-  track.addEventListener("pointercancel", finishPointer);
-  track.addEventListener("lostpointercapture", finishPointer);
-
-  track.addEventListener("keydown", (event) => {
-    const maximumScroll = Math.max(
-      document.documentElement.scrollHeight - window.innerHeight,
-      1,
-    );
-    const current = clampUnit(getScrollTop() / maximumScroll);
-    const arrowStep = Math.max((window.innerHeight * 0.04) / maximumScroll, 0.01);
-    const pageStep = Math.max((window.innerHeight * 0.85) / maximumScroll, arrowStep);
-    let next;
-    switch (event.key) {
-      case "ArrowDown":
-        next = current + arrowStep;
-        break;
-      case "ArrowUp":
-        next = current - arrowStep;
-        break;
-      case "PageDown":
-        next = current + pageStep;
-        break;
-      case "PageUp":
-        next = current - pageStep;
-        break;
-      case "Home":
-        next = 0;
-        break;
-      case "End":
-        next = 1;
-        break;
-      default:
-        return;
-    }
-    event.preventDefault();
-    scrollToPageProgress(next);
-  });
-}
-
 function requestMotionFrame() {
   if (motionFrame) return;
   motionFrame = requestAnimationFrame(() => {
     motionFrame = 0;
-    updateScrollProgress();
     updateMotionChoreography();
   });
 }
@@ -3659,7 +3504,6 @@ function deferLusionFrame() {
 function setupExperience(libraryReady) {
   bindRevealMotion();
   bindAnchorNavigation();
-  bindScrollProgress();
   bindSectionObserver();
   bindWaterLusionHandoff();
   bindWaterToLusionScroll();

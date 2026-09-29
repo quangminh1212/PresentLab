@@ -3368,97 +3368,6 @@ html.js:not(.is-ready) .app-shell {
   visibility: hidden;
 }
 
-html.js:not(.is-ready) .scroll-progress {
-  visibility: hidden;
-}
-
-.scroll-progress {
-  display: block;
-  position: fixed;
-  top: 50%;
-  right: max(14px, env(safe-area-inset-right));
-  left: auto;
-  z-index: 80;
-  width: 28px;
-  height: clamp(140px, 28vh, 260px);
-  overflow: visible;
-  border: 0;
-  padding: 0;
-  background: transparent;
-  cursor: pointer;
-  touch-action: none;
-  transform: translateY(-50%);
-}
-
-.scroll-progress[hidden] {
-  display: none;
-}
-
-.scroll-progress::before {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 12px;
-  width: 4px;
-  border: 1px solid rgb(240 241 250 / 18%);
-  border-radius: 999px;
-  background: rgb(10 14 24 / 26%);
-  content: "";
-  transition: left 160ms ease, width 160ms ease, background-color 160ms ease;
-}
-
-.scroll-progress span {
-  position: absolute;
-  top: 0;
-  left: 7px;
-  width: 14px;
-  height: var(--scroll-thumb-size, 44px);
-  border: 1px solid rgb(240 241 250 / 56%);
-  border-radius: 999px;
-  background: rgb(240 241 250 / 72%);
-  box-shadow: 0 0 12px rgb(140 232 216 / 24%);
-  cursor: grab;
-  transform: translateY(var(--scroll-thumb-offset, 0px));
-  transition: left 160ms ease, width 160ms ease, background-color 160ms ease;
-}
-
-.scroll-progress:hover::before,
-.scroll-progress:focus-visible::before,
-.scroll-progress[data-dragging="true"]::before {
-  left: 11px;
-  width: 6px;
-  background: rgb(10 14 24 / 52%);
-}
-
-.scroll-progress:hover span,
-.scroll-progress:focus-visible span,
-.scroll-progress[data-dragging="true"] span {
-  left: 5px;
-  width: 18px;
-  background: #fff;
-}
-
-.scroll-progress[data-dragging="true"] span {
-  transition: none;
-  cursor: grabbing;
-}
-
-.scroll-progress:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-body.menu-open .scroll-progress {
-  visibility: hidden;
-  pointer-events: none;
-}
-
-html[data-scroll-scrubbing="true"] {
-  scroll-snap-type: none !important;
-  scroll-behavior: auto !important;
-  user-select: none;
-}
-
 .signal-rail {
   position: relative;
   display: flex;
@@ -6413,9 +6322,6 @@ html[data-theme="light"] .brand:focus-visible .brand-logo-frame {
   animation: modal-atmosphere 8s ease-in-out infinite;
 }
 
-.scroll-progress span {
-  animation: none;
-}
 
 @keyframes page-grid-drift {
   from {
@@ -6693,15 +6599,6 @@ html[data-theme="light"] .brand:focus-visible .brand-logo-frame {
   }
 }
 
-@keyframes progress-glow {
-  0%,
-  100% {
-    box-shadow: 0 0 12px rgb(0 212 170 / 66%);
-  }
-  50% {
-    box-shadow: 0 0 22px rgb(55 200 143 / 88%);
-  }
-}
 
 @media (prefers-reduced-motion: reduce) {
   body::before,
@@ -6733,8 +6630,7 @@ html[data-theme="light"] .brand:focus-visible .brand-logo-frame {
   .selection-tray:not([hidden]),
   .tray-check,
   .request-drawer.is-open,
-  .preview-modal.is-open,
-  .scroll-progress span {
+  .preview-modal.is-open {
     animation: none !important;
   }
 
