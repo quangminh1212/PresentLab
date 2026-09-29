@@ -2483,7 +2483,7 @@ body.menu-open {
 html[lang="vi"] .app-shell:has(> main > .hero.hero-world) > .topbar,
 html[lang="vi"] .app-shell:has(> main > .hero.hero-world) .world-copy,
 html[lang="vi"] .app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
-  font-family: Aeonik, system-ui, sans-serif;
+  font-family: system-ui, sans-serif;
 }
 
 html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) > .topbar,
@@ -2714,8 +2714,8 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
   color: #f0f1fa;
   font-size: clamp(40px, 2.5vw, 48px);
   font-weight: 400;
-  letter-spacing: -0.02em;
-  line-height: 1.1;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
   text-shadow: 0 1px 16px rgb(0 0 0 / 28%);
   text-wrap: balance;
 }
@@ -2734,8 +2734,8 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
   color: rgb(240 241 250 / 70%);
   font-size: clamp(15px, 1vw, 18px);
   font-weight: 400;
-  letter-spacing: -0.01em;
-  line-height: 1.35;
+  letter-spacing: 0;
+  line-height: 1.45;
   text-shadow: 0 1px 12px rgb(0 0 0 / 28%);
 }
 
@@ -2750,7 +2750,7 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
   color: rgb(240 241 250 / 78%);
   font-size: clamp(12px, 0.875vw, 14px);
   font-weight: 500;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.08em;
   line-height: 1;
   text-decoration: none;
   text-transform: uppercase;
