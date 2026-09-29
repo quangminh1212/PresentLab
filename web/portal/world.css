@@ -3409,6 +3409,8 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy h1 em {
   justify-items: start;
   margin: 0;
   font-size: clamp(72px, 8.8vw, 126px);
+  font-family: "XLAB Form Display", "Be Vietnam Pro", Aeonik, sans-serif;
+  font-weight: 500;
   letter-spacing: -0.04em;
   line-height: 1.04;
 }
@@ -3422,7 +3424,7 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy h1 em {
   margin: 0 0 0.02em 0.05em;
   color: #f2f3f5;
   font-size: clamp(34px, 4vw, 58px);
-  font-weight: 450;
+  font-weight: 500;
   letter-spacing: -0.025em;
   line-height: 1.12;
   animation-delay: 80ms;
@@ -3435,7 +3437,7 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy h1 em {
   color: transparent;
   font-size: clamp(72px, 8.8vw, 126px);
   font-style: normal;
-  font-weight: 620;
+  font-weight: 500;
   letter-spacing: -0.045em;
   line-height: 1.08;
   text-shadow: 0 2px 24px rgb(0 0 0 / 28%);
@@ -3462,6 +3464,10 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .w
   line-height: 1.5;
   text-shadow: 0 2px 12px rgb(0 0 0 / 30%);
   animation: world-type-arrive 700ms 280ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-lede > span {
+  display: block;
 }
 
 .app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
