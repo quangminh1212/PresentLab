@@ -2735,10 +2735,28 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
 }
 
 .app-shell:has(> main > .hero.hero-world) .world-copy h1 em {
-  color: inherit;
   background: none;
   background-image: none;
+  background-clip: border-box;
+  color: #f4f2ef;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.08em;
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  text-shadow: 0 2px 20px rgb(0 0 0 / 48%);
+  -webkit-background-clip: border-box;
+  -webkit-text-fill-color: #f4f2ef;
+  -webkit-text-stroke: 0;
+}
+
+html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy h1 em {
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
   font-style: normal;
+  font-weight: 600;
+  letter-spacing: inherit;
   -webkit-text-fill-color: currentColor;
 }
 
