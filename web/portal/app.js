@@ -1441,6 +1441,7 @@ async function mountNativeLusionHeader(frame = lusionFrame()) {
     ":host(.is-white-bg) #header{color:var(--color-black)}" +
     "#header-logo{visibility:hidden!important;pointer-events:none!important}" +
     "#header-container{overflow:visible!important}" +
+    "#header-menu-talk{display:none!important}" +
     "#header-right-menu-btn,#header-menu,#lusion-language-switcher{pointer-events:auto!important}" +
     "#header-right-menu-btn,#lusion-language-trigger{transform:none!important}" +
     ":host(:not(.is-loading)) #header-right-menu-btn," +

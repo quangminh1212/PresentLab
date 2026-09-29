@@ -2,6 +2,7 @@
   const style = document.createElement("style");
   style.textContent =
     ":root{--header-color:#237478}" +
+    "#header-menu-talk{display:none!important}" +
     "#header-right-talk-btn.--is-contact-active:hover{background:var(--header-color)!important}" +
     "#video-overlay.is-offline-media #video-overlay__controls,#video-overlay.is-offline-media #video-overlay-cursor{display:none!important}" +
     "html.is-lusion-preloading #header-right-menu-btn,html.is-lusion-preloading #lusion-language-trigger{visibility:hidden!important;opacity:0!important;pointer-events:none!important}" +
