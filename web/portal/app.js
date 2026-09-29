@@ -51,7 +51,7 @@ const COPY = {
     menuOpen: "Mở menu",
     menuClose: "Đóng menu",
     heroTitleA: "Biến ý tưởng thành",
-    heroTitleB: "câu chuyện thị giác đáng nhớ.",
+    heroTitleB: "câu\u00a0chuyện thị\u00a0giác đáng nhớ.",
     heroLede: "Bài trình chiếu giàu hình ảnh, nhịp điệu và dấu ấn riêng.",
     heroExplore: "Khám phá thư viện",
     heroBrief: "Gửi brief",

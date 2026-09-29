@@ -2449,6 +2449,12 @@ html:has(.app-shell > main > .hero.hero-world).is-section-transitioning {
 }
 
 /* Editorial water hero with a navigation that matches the Lusion page below. */
+.app-shell:has(> main > .hero.hero-world) {
+  --world-title-size: clamp(30px, 4.3vw, 60px);
+  --world-body-size: clamp(16px, 1vw, 18px);
+  --world-cue-size: clamp(12px, 0.82vw, 14px);
+}
+
 .app-shell:has(> main > .hero.hero-world) > .topbar {
   position: absolute;
   z-index: 20;
@@ -2714,10 +2720,10 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
   max-width: none;
   margin: 0;
   color: #f0f1fa;
-  font-size: clamp(40px, 2.5vw, 48px);
-  font-weight: 400;
-  letter-spacing: -0.02em;
-  line-height: 1.1;
+  font-size: var(--world-title-size);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.06;
   text-shadow: 0 1px 16px rgb(0 0 0 / 28%);
   text-wrap: balance;
 }
@@ -2733,12 +2739,12 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
 .app-shell:has(> main > .hero.hero-world) .world-lede {
   max-width: 34em;
   margin: 0.85em 0 0;
-  color: rgb(240 241 250 / 70%);
-  font-size: clamp(15px, 1vw, 18px);
+  color: rgb(240 241 250 / 82%);
+  font-size: var(--world-body-size);
   font-weight: 400;
   letter-spacing: -0.01em;
-  line-height: 1.45;
-  text-shadow: 0 1px 12px rgb(0 0 0 / 28%);
+  line-height: 1.55;
+  text-shadow: 0 1px 12px rgb(0 0 0 / 32%);
 }
 
 .world-scroll-cue {
@@ -2749,11 +2755,11 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
   display: inline-flex;
   align-items: center;
   gap: 0.7em;
-  color: rgb(240 241 250 / 78%);
-  font-size: clamp(12px, 0.875vw, 14px);
+  color: rgb(240 241 250 / 84%);
+  font-size: var(--world-cue-size);
   font-weight: 500;
   letter-spacing: 0.02em;
-  line-height: 1;
+  line-height: 1.3;
   text-decoration: none;
   text-transform: uppercase;
   transform: translateX(-50%);
@@ -2830,13 +2836,13 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
     left: clamp(72px, 21vw, 230px);
     width: min(560px, 57vw);
   }
-
-  .app-shell:has(> main > .hero.hero-world) .world-copy h1 {
-    font-size: clamp(32px, 4vw, 40px);
-  }
 }
 
 @media (max-width: 760px) {
+  .app-shell:has(> main > .hero.hero-world) {
+    --world-body-size: 15px;
+  }
+
   .app-shell:has(> main > .hero.hero-world) > .topbar {
     top: 20px;
     right: 18px;
@@ -2865,8 +2871,6 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
 
   .app-shell:has(> main > .hero.hero-world) .world-copy h1 {
     max-width: 15em;
-    font-size: clamp(28px, 7.2vw, 36px);
-    line-height: 1.1;
   }
 
   .app-shell:has(> main > .hero.hero-world) > .topbar .brand-logo-frame {
@@ -2883,39 +2887,53 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
   .app-shell:has(> main > .hero.hero-world) .world-lede {
     max-width: 28em;
     margin-top: 0.7em;
-    font-size: 14px;
-    line-height: 1.35;
+    line-height: 1.55;
   }
 
   .world-scroll-cue {
     bottom: 24px;
-    font-size: 12px;
     letter-spacing: 0.02em;
   }
 }
 
 @media (max-width: 420px) {
+  .app-shell:has(> main > .hero.hero-world) {
+    --world-title-size: clamp(24px, 6vw, 26px);
+    --world-body-size: 14px;
+  }
+
   .app-shell:has(> main > .hero.hero-world) .world-copy {
     right: 20px;
     left: 20px;
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-copy h1 {
-    font-size: clamp(26px, 7.4vw, 32px);
+    letter-spacing: -0.04em;
+    text-wrap: wrap;
   }
 
-  .app-shell:has(> main > .hero.hero-world) .world-lede {
-    font-size: 13px;
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 br {
+    display: inline;
+  }
+}
+
+@media (max-width: 360px) {
+  .app-shell:has(> main > .hero.hero-world) {
+    --world-title-size: 26px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 {
+    text-wrap: wrap;
   }
 }
 
 @media (max-height: 540px) and (max-width: 760px) {
-  .app-shell:has(> main > .hero.hero-world) .world-copy {
-    top: 82px;
+  .app-shell:has(> main > .hero.hero-world) {
+    --world-title-size: clamp(24px, 6vw, 30px);
   }
 
-  .app-shell:has(> main > .hero.hero-world) .world-copy h1 {
-    font-size: clamp(22px, 5.6vw, 28px);
+  .app-shell:has(> main > .hero.hero-world) .world-copy {
+    top: 82px;
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-lede {
