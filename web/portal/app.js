@@ -3057,7 +3057,7 @@ function startPageCurtain(libraryReady) {
   const startProgressDuration = 250;
   const markTransformDuration = 1000;
   const brandRevealDuration = 180;
-  const brandHoldDuration = 1500;
+  const brandHoldDuration = 3000;
   const brandHideDuration = 180;
   const contentShowDelay = brandHoldDuration + brandHideDuration;
   const contentShowDuration = 1000;
