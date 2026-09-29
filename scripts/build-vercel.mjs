@@ -255,6 +255,21 @@ for (const [source, replacement] of [
   }
   lusionBundle = lusionBundle.replace(source, replacement);
 }
+for (const [source, replacement] of [
+  [
+    'color0:"#5a90ff",color1:"#2a38ee"',
+    'color0:"#57b5b4",color1:"#237478"',
+  ],
+  [
+    'color0:"#94fffb",color1:"#1285dc"',
+    'color0:"#57b5b4",color1:"#237478"',
+  ],
+]) {
+  if (lusionBundle.split(source).length - 1 !== 1) {
+    throw new Error("Expected one blue Lusion line palette to recolor.");
+  }
+  lusionBundle = lusionBundle.replace(source, replacement);
+}
 const browserZoomGuard = [
   "function preventZoom(o){o.preventDefault(),document.body.style.zoom=1}",
   'window.addEventListener("wheel",o=>o.preventDefault(),{passive:!1});',
