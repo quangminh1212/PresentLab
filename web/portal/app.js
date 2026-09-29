@@ -1448,7 +1448,7 @@ async function mountNativeLusionHeader(frame = lusionFrame()) {
     "#lusion-language-trigger:hover{background:#2b2e3a!important}" +
     "#lusion-language-trigger::after{content:none!important;display:none!important}" +
     "#lusion-language-trigger{width:44.8px!important;min-width:44.8px!important;max-width:44.8px!important;height:44.8px!important;min-height:44.8px!important;max-height:44.8px!important;padding:0!important;gap:0!important;border-radius:50%!important}" +
-    "#header-right-menu-btn,#lusion-language-trigger{transform:translateY(18px)!important}" +
+    "#header-right-menu-btn,#lusion-language-trigger{transform:translateY(27.6px)!important}" +
     ':host([data-lusion-language="vi"]) #header,' +
     ':host([data-lusion-language="vi"]) #header button,' +
     ':host([data-lusion-language="vi"]) #lusion-language-menu .lusion-language-choice{' +
