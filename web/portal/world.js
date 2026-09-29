@@ -722,7 +722,7 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {}, onReady = (
       waterNormals,
       sunDirection: new THREE.Vector3(-0.35, 0.65, 0.68).normalize(),
       sunColor: 0xe9edf3,
-      waterColor: 0x111317,
+      waterColor: 0x075b94,
       distortionScale: 2.2,
       alpha: 0.58,
       fog: false,

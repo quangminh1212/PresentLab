@@ -1793,20 +1793,20 @@ html[data-theme="light"] .world-stage::after {
   }
 }
 
-/* A monochrome horizon ties the moving water to the dark Lusion scene below. */
+/* An ocean-blue horizon ties the moving water to the dark Lusion scene below. */
 .world-stage {
-  border-color: rgb(220 225 234 / 24%);
+  border-color: rgb(140 194 236 / 26%);
   background:
-    radial-gradient(ellipse at 76% 38%, rgb(232 235 241 / 25%), transparent 26%),
+    radial-gradient(ellipse at 76% 38%, rgb(89 171 237 / 28%), transparent 26%),
     linear-gradient(
       180deg,
-      #090a0d 0%,
-      #191b20 25%,
-      #b3b8c1 38%,
-      #666b74 42%,
-      #17191e 49%,
-      #0b0c10 66%,
-      #050609 100%
+      #06172a 0%,
+      #0a3765 25%,
+      #3f89c7 38%,
+      #1767a2 42%,
+      #124a78 49%,
+      #082744 66%,
+      #020e1d 100%
     );
   box-shadow:
     0 36px 90px rgb(0 0 0 / 55%),
@@ -1819,18 +1819,18 @@ html[data-theme="light"] .world-stage::after {
 }
 
 html[data-theme="light"] .world-stage {
-  border-color: rgb(220 225 234 / 24%);
+  border-color: rgb(140 194 236 / 26%);
   background:
-    radial-gradient(ellipse at 76% 38%, rgb(232 235 241 / 25%), transparent 26%),
+    radial-gradient(ellipse at 76% 38%, rgb(89 171 237 / 28%), transparent 26%),
     linear-gradient(
       180deg,
-      #090a0d 0%,
-      #191b20 25%,
-      #b3b8c1 38%,
-      #666b74 42%,
-      #17191e 49%,
-      #0b0c10 66%,
-      #050609 100%
+      #06172a 0%,
+      #0a3765 25%,
+      #3f89c7 38%,
+      #1767a2 42%,
+      #124a78 49%,
+      #082744 66%,
+      #020e1d 100%
     );
   box-shadow:
     0 36px 90px rgb(0 0 0 / 55%),
@@ -2392,15 +2392,15 @@ html:has(.app-shell > main > .hero.hero-world).is-section-transitioning {
 
 .app-shell:has(> main > .hero.hero-world) .world-stage.world-fallback {
   background:
-    radial-gradient(ellipse at 52% 39%, rgb(224 229 236 / 22%), transparent 22%),
+    radial-gradient(ellipse at 52% 39%, rgb(116 193 244 / 26%), transparent 22%),
     linear-gradient(
       180deg,
-      #717680 0%,
-      #555a63 34%,
-      #a1a6ad 41%,
-      #50555e 53%,
-      #1d2128 68%,
-      #080b10 100%
+      #1a3e63 0%,
+      #0f3458 34%,
+      #3f89bd 41%,
+      #165789 53%,
+      #10365b 68%,
+      #07152a 100%
     );
 }
 
@@ -3425,18 +3425,18 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy h1 em {
   }
 }
 
-/* Quiet, two-line display type and softened water for the Portal hero. */
+/* Quiet, two-line display type and softly blurred blue water for the Portal hero. */
 .app-shell:has(> main > .hero.hero-world) .world-space-image {
   filter: grayscale(1) saturate(0.78) contrast(0.88) brightness(0.9) blur(0.45px);
   opacity: 0.88;
 }
 
 .app-shell:has(> main > .hero.hero-world) .world-water-video {
-  filter: grayscale(1) contrast(0.88) brightness(0.84) blur(0.45px);
+  filter: saturate(1.22) contrast(0.88) brightness(0.84) blur(0.45px);
 }
 
 .app-shell:has(> main > .hero.hero-world) .world-canvas {
-  filter: grayscale(1) contrast(0.82) brightness(0.94) blur(1.4px);
+  filter: saturate(1.22) contrast(0.82) brightness(0.94) blur(1.4px);
   opacity: 0.68;
 }
 
