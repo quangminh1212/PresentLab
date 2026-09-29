@@ -2319,6 +2319,11 @@ html[data-theme="light"] .world-stage {
   opacity: var(--lusion-handoff-opacity, 1);
 }
 
+/* The embedded Lusion page already includes the footer for this full-screen route. */
+.app-shell:has(> main > .hero.hero-world) > .site-footer {
+  display: none !important;
+}
+
 html:has(.app-shell > main > .hero.hero-world) {
   scroll-snap-type: y mandatory;
   scroll-padding-block: 0;
