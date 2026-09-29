@@ -11,7 +11,8 @@
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-src 'self'; img-src 'self' data:; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; form-action 'self'"
     />
-    <title>XLAB WEB / Visual systems for ideas</title>
+    <link rel="icon" type="image/png" href="/web/portal/favicon.png" />
+    <title>presentation lab</title>
     <link rel="stylesheet" href="/web/portal/styles.css" />
     <link rel="stylesheet" href="/web/portal/world.css" />
   </head>
@@ -30,7 +31,18 @@
         </span>
       </span>
     </div>
-    <div class="scroll-progress" aria-hidden="true"><span data-scroll-progress></span></div>
+    <div
+      class="scroll-progress"
+      role="slider"
+      aria-label="Điều hướng cuộn trang"
+      aria-orientation="vertical"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-valuenow="0"
+      data-i18n-aria-label="scrollProgressLabel"
+      data-scroll-progress-track
+      tabindex="0"
+    ><span data-scroll-progress></span></div>
     <noscript>
       <div class="noscript-banner" data-i18n="noscript">
         Trang này cần JavaScript để tải thư viện mẫu và gửi brief.
@@ -174,6 +186,13 @@
               <span class="world-scroll-cue-label" data-i18n="heroScrollCue">Cuộn để khám phá</span>
               <span class="world-scroll-cue-mark" aria-hidden="true"><i></i></span>
             </a>
+            <a
+              class="world-skip-button"
+              href="#templates"
+              data-skip-intro
+              data-i18n="skipIntro"
+              data-i18n-aria-label="skipIntro"
+            >Bỏ qua phần mở đầu</a>
 
           </div>
         </section>
