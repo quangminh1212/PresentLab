@@ -3300,7 +3300,6 @@ function bindWaterToLusionScroll() {
     if (
       userHasTakenControl ||
       automaticScrollTimer ||
-      document.visibilityState !== "visible" ||
       getScrollTop() > 2
     ) {
       return;
@@ -3309,7 +3308,6 @@ function bindWaterToLusionScroll() {
       automaticScrollTimer = 0;
       if (
         userHasTakenControl ||
-        document.visibilityState !== "visible" ||
         getScrollTop() > 2 ||
         sectionScrollTarget
       ) {
@@ -3355,16 +3353,6 @@ function bindWaterToLusionScroll() {
     },
     { passive: true },
   );
-  document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "hidden") {
-      if (automaticScrollTimer) {
-        window.clearTimeout(automaticScrollTimer);
-        automaticScrollTimer = 0;
-      }
-      return;
-    }
-    scheduleAutomaticScroll();
-  });
 
   const scrollToLusion = () => {
     if (nextSection.getBoundingClientRect().top <= 2) return;
