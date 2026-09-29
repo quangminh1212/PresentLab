@@ -1453,7 +1453,7 @@ async function mountNativeLusionHeader(frame = lusionFrame()) {
     ':host([data-lusion-language="vi"]) #header,' +
     ':host([data-lusion-language="vi"]) #header button,' +
     ':host([data-lusion-language="vi"]) #lusion-language-menu .lusion-language-choice{' +
-    "font-family:system-ui,sans-serif!important}";
+    'font-family:"Be Vietnam Pro",Aeonik,sans-serif!important}';
   shadow.appendChild(adapterStyle);
 
   let disposed = false;

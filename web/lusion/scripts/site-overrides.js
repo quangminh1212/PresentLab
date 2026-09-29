@@ -9,11 +9,21 @@
     "html.is-black-bg #header-logo .xlab-logo-crop img,html.is-blue-bg #header-logo .xlab-logo-crop img{filter:brightness(0) invert(1)}";
   document.head.appendChild(style);
 
-  // Aeonik is missing several extended Vietnamese glyphs; use one complete font for Vietnamese text.
+  // Aeonik is missing Vietnamese horn letters. Be Vietnam Pro is one grotesque for the whole line.
   const vietnameseFontStyle = document.createElement("style");
+  const beVietnamFace = (file, weight, range) =>
+    `@font-face{font-family:"Be Vietnam Pro";src:url("/assets/fonts/${file}") format("woff2");font-style:normal;font-weight:${weight};font-display:swap;unicode-range:${range}}`;
+  const beVietnamLatin =
+    "U+000D,U+0020-007E,U+00A0-00FF,U+0102,U+0131,U+0152-0153,U+02C6,U+02DA,U+02DC,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+2013-2014,U+2018-201A,U+201C-201E,U+2022,U+2026,U+2039-203A,U+2044,U+20AC,U+2122,U+2212,U+2215";
+  const beVietnamMarks =
+    "U+0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+1EA0-1EF9,U+20AB";
   vietnameseFontStyle.textContent =
-    'html[lang="vi"] body,html[lang="vi"] h1,html[lang="vi"] h2,html[lang="vi"] h3,html[lang="vi"] h4,html[lang="vi"] h5,html[lang="vi"] h6,html[lang="vi"] button,html[lang="vi"] input{font-family:system-ui,sans-serif!important}' +
-    'html[lang="vi"] #lusion-language-trigger,html[lang="vi"] #lusion-language-menu .lusion-language-choice,html[lang="vi"] #lusion-mobile-language-controls .lusion-mobile-language-choice{font-family:system-ui,sans-serif!important}' +
+    beVietnamFace("BeVietnamPro-Regular-latin.woff2", 400, beVietnamLatin) +
+    beVietnamFace("BeVietnamPro-Regular-vietnamese.woff2", 400, beVietnamMarks) +
+    beVietnamFace("BeVietnamPro-Medium-latin.woff2", 500, beVietnamLatin) +
+    beVietnamFace("BeVietnamPro-Medium-vietnamese.woff2", 500, beVietnamMarks) +
+    'html[lang="vi"] body,html[lang="vi"] h1,html[lang="vi"] h2,html[lang="vi"] h3,html[lang="vi"] h4,html[lang="vi"] h5,html[lang="vi"] h6,html[lang="vi"] button,html[lang="vi"] input{font-family:"Be Vietnam Pro",sans-serif!important}' +
+    'html[lang="vi"] #lusion-language-trigger,html[lang="vi"] #lusion-language-menu .lusion-language-choice,html[lang="vi"] #lusion-mobile-language-controls .lusion-mobile-language-choice{font-family:"Be Vietnam Pro",sans-serif!important}' +
     '@media (min-width:813px){html[lang="vi"] #home-hero-title{grid-column:2/span 10!important;font-size:clamp(18px,2.1vw,40px)!important;line-height:1.08!important;text-wrap:balance!important}}' +
     '@media (min-width:813px){html[lang="vi"] #home-hero-title{margin-left:max(0px,calc(96px - 7.6vw))!important}}' +
     /* FIX: Vietnamese mobile rules - reduced to match base styles */
