@@ -3686,14 +3686,14 @@ html.is-ready .app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark {
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--lead {
-    font-size: clamp(30px, 8.5vw, 36px);
+    font-size: clamp(33px, 9vw, 39px);
     animation-duration: 740ms;
     animation-delay: 70ms;
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--final {
     margin-top: 0.06em;
-    font-size: clamp(54px, 15vw, 68px);
+    font-size: clamp(62px, 17vw, 80px);
     line-height: 1.08;
     animation-duration: 840ms, 1180ms;
     animation-delay: 170ms, 250ms;
@@ -3731,7 +3731,7 @@ html.is-ready .app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark {
 
 @media (max-width: 360px) {
   .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--final {
-    font-size: clamp(46px, 14.2vw, 54px);
+    font-size: clamp(54px, 16vw, 64px);
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-lede {
@@ -3753,11 +3753,11 @@ html.is-ready .app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark {
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--lead {
-    font-size: 27px;
+    font-size: 30px;
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--final {
-    font-size: 48px;
+    font-size: clamp(54px, 16vw, 72px);
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-lede {
