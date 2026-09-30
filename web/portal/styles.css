@@ -9406,3 +9406,9 @@ html[data-theme="light"] .journey-float-card--brief strong {
     transform: scaleX(var(--journey-progress)) !important;
   }
 }
+
+html.is-astronaut-hero-visible .portal-header-brand {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}

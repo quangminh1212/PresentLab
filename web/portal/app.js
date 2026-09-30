@@ -1456,12 +1456,35 @@ async function mountNativeLusionHeader(frame = lusionFrame()) {
     ':host([data-lusion-language="vi"]) #lusion-language-menu .lusion-language-choice{' +
     'font-family:"Be Vietnam Pro",Aeonik,sans-serif!important}' +
     ':host([data-lusion-language="vi"]) .header-menu-link{padding:.9em 1.625em!important;line-height:1.45!important}' +
-    ':host([data-lusion-language="vi"]) .header-menu-link-text,:host([data-lusion-language="vi"]) .header-menu-link-text-clone{font-size:1.25em!important;line-height:1.6!important}';
+    ':host([data-lusion-language="vi"]) .header-menu-link-text,:host([data-lusion-language="vi"]) .header-menu-link-text-clone{font-size:1.25em!important;line-height:1.6!important}' +
+    ':host([data-astronaut-hero-visible="true"]) #header-right-menu-btn,' +
+    ':host([data-astronaut-hero-visible="true"]) #lusion-language-trigger,' +
+    ':host([data-astronaut-hero-visible="true"]) #header-menu{' +
+    "visibility:hidden!important;opacity:0!important;pointer-events:none!important}";
   shadow.appendChild(adapterStyle);
 
   let disposed = false;
   let styleObserver = null;
   let headerMeasure = null;
+  let astronautTitleObserver = null;
+  let frameVisibilityObserver = null;
+  let astronautTitleStyleObserver = null;
+  let astronautTitleContainer = null;
+  let astronautTitleContainerIsVisible = false;
+  const astronautTitleVisibility = new Map();
+  let frameIsVisible = false;
+  const syncAstronautHeroVisibility = () => {
+    const astronautTitleIsVisible =
+      astronautTitleContainerIsVisible &&
+      [...astronautTitleVisibility.values()].some(Boolean);
+    const isAstronautHeroVisible = astronautTitleIsVisible && frameIsVisible;
+    host.dataset.astronautHeroVisible = String(isAstronautHeroVisible);
+    document.documentElement.classList.toggle(
+      "is-astronaut-hero-visible",
+      isAstronautHeroVisible,
+    );
+    if (!isAstronautHeroVisible) return;
+  };
   const syncHeaderMeasure = () => {
     if (!headerMeasure?.isConnected) return;
     const adopted = shadow.getElementById("header-container");
@@ -1485,8 +1508,13 @@ async function mountNativeLusionHeader(frame = lusionFrame()) {
     if (disposed) return;
     disposed = true;
     styleObserver?.disconnect();
+    astronautTitleObserver?.disconnect();
+    astronautTitleStyleObserver?.disconnect();
+    frameVisibilityObserver?.disconnect();
     pageReadinessObserver.disconnect();
     headerMeasure?.remove();
+    document.documentElement.classList.remove("is-astronaut-hero-visible");
+    delete host.dataset.astronautHeroVisible;
     removeStyleListeners();
     frameWindow.removeEventListener("pagehide", dispose);
     document.removeEventListener("click", onDocumentClick, true);
@@ -1648,6 +1676,63 @@ async function mountNativeLusionHeader(frame = lusionFrame()) {
   const languageTrigger = shadow.getElementById("lusion-language-trigger");
   const languageMenu = shadow.getElementById("lusion-language-menu");
   const menuPanel = shadow.getElementById("header-menu");
+  astronautTitleContainer = frameDocument.getElementById(
+    "home-goal-tunnel-title",
+  );
+  const astronautTitleLines = [
+    ...frameDocument.querySelectorAll(
+      "#home-goal-tunnel-title .home-goal-tunnel-title-line",
+    ),
+  ];
+
+  if (
+    astronautTitleLines.length > 0 &&
+    typeof frameWindow.IntersectionObserver === "function" &&
+    typeof IntersectionObserver === "function"
+  ) {
+    astronautTitleLines.forEach((line) =>
+      astronautTitleVisibility.set(line, false),
+    );
+    const syncAstronautTitleContainerVisibility = () => {
+      const inlineVisibility = astronautTitleContainer.style.visibility;
+      const isVisible = inlineVisibility
+        ? inlineVisibility !== "hidden"
+        : frameWindow.getComputedStyle(astronautTitleContainer).visibility !==
+          "hidden";
+      if (isVisible === astronautTitleContainerIsVisible) return;
+      astronautTitleContainerIsVisible = isVisible;
+      syncAstronautHeroVisibility();
+    };
+    syncAstronautTitleContainerVisibility();
+    astronautTitleStyleObserver = new frameWindow.MutationObserver(
+      syncAstronautTitleContainerVisibility,
+    );
+    astronautTitleStyleObserver.observe(astronautTitleContainer, {
+      attributes: true,
+      attributeFilter: ["class", "style"],
+    });
+    astronautTitleObserver = new frameWindow.IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        astronautTitleVisibility.set(
+          entry.target,
+          entry.isIntersecting && entry.intersectionRatio >= 0.5,
+        );
+      });
+      syncAstronautHeroVisibility();
+    }, { threshold: 0.5 });
+    astronautTitleLines.forEach((line) =>
+      astronautTitleObserver.observe(line),
+    );
+
+    frameVisibilityObserver = new IntersectionObserver((entries) => {
+      const frameEntry = entries.find((entry) => entry.target === frame);
+      if (!frameEntry) return;
+      frameIsVisible =
+        frameEntry.isIntersecting && frameEntry.intersectionRatio >= 0.5;
+      syncAstronautHeroVisibility();
+    }, { threshold: 0.5 });
+    frameVisibilityObserver.observe(frame);
+  }
 
   styleObserver = new frameWindow.MutationObserver(syncFrameStyleState);
   for (const source of styleSources) {
