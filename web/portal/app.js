@@ -1510,15 +1510,13 @@ async function mountNativeLusionHeader(frame = lusionFrame()) {
   const measureAstronautSceneRange = () => {
     const pageContainer = frameDocument.getElementById("page-container");
     const homeGoal = frameDocument.getElementById("home-goal");
-    const imageIn = frameDocument.getElementById("home-goal-image-in");
-    const imageOut = frameDocument.getElementById("home-goal-image-out");
+    const aboutDescription = frameDocument.getElementById("about-who-desc-top");
     const translateY = getPageContainerTranslateY();
     const viewportHeight = frameWindow.innerHeight;
     if (
       !pageContainer ||
       !homeGoal ||
-      !imageIn ||
-      !imageOut ||
+      !aboutDescription ||
       translateY === null ||
       viewportHeight <= 0
     ) {
@@ -1528,24 +1526,17 @@ async function mountNativeLusionHeader(frame = lusionFrame()) {
     }
 
     const homeGoalRect = homeGoal.getBoundingClientRect();
-    const imageInRect = imageIn.getBoundingClientRect();
-    const imageOutRect = imageOut.getBoundingClientRect();
-    const baseY = imageInRect.top - translateY - viewportHeight;
-    const tunnelPixels =
-      homeGoalRect.bottom -
-      translateY -
-      baseY -
-      (viewportHeight + imageInRect.height) * 0.5 -
-      (viewportHeight + imageOutRect.height) * 0.5;
-    const pixelPerWeight = tunnelPixels / (1 + 5 + 12 + 2 + 1 + 1.5);
+    const aboutDescriptionRect = aboutDescription.getBoundingClientRect();
 
-    // Mirror GoalSectionRanges: enter after blackFrameIn + blackTitle, then
-    // stay hidden through blackTunnel, whiteTunnel, and whiteFrameOut.
-    const start =
-      baseY +
-      (viewportHeight + imageInRect.height) * 0.5 +
-      (1 + 5) * pixelPerWeight;
-    const end = start + (12 + 2 + 1) * pixelPerWeight;
+    // Enter with the astronaut zoom and keep the adopted header hidden until
+    // the About copy reaches its clear position below the header.
+    const start = homeGoalRect.top - translateY;
+    const headerClearance = Math.min(
+      132,
+      Math.max(88, viewportHeight * 0.175),
+    );
+    const end =
+      aboutDescriptionRect.top - translateY - headerClearance;
     astronautSceneRange =
       Number.isFinite(start) && Number.isFinite(end) && end > start
         ? { start, end }

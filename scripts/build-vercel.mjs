@@ -224,7 +224,73 @@ const localizedSiteOverrides =
   siteOverrides.slice(0, initializer.getStart(siteOverridesAst)) +
   escapedLanguagePack +
   siteOverrides.slice(initializer.end);
-await writeFile(siteOverridesPath, localizedSiteOverrides);
+const astronautHeaderStateRuntime = `
+(() => {
+  const style = document.createElement("style");
+  style.textContent =
+    "html.is-xlab-astronaut-scene #header-logo," +
+    "html.is-xlab-astronaut-scene #header-right-menu-btn," +
+    "html.is-xlab-astronaut-scene #lusion-language-trigger," +
+    "html.is-xlab-astronaut-scene #header-menu{" +
+    "visibility:hidden!important;opacity:0!important;pointer-events:none!important}" +
+    "html:not(.is-lusion-preloading):not(.is-xlab-astronaut-scene) #lusion-language-trigger{" +
+    "visibility:visible!important;opacity:1!important;clip-path:none!important}";
+  document.head.appendChild(style);
+
+  const attach = () => {
+    const pageContainer = document.getElementById("page-container");
+    const homeGoal = document.getElementById("home-goal");
+    const aboutDescription = document.getElementById("about-who-desc-top");
+    if (
+      !pageContainer ||
+      !homeGoal ||
+      !aboutDescription
+    ) {
+      return false;
+    }
+
+    const syncVisibility = () => {
+      const transform = getComputedStyle(pageContainer).transform;
+      const matrix = /^matrix(3d)?\\((.+)\\)$/.exec(transform);
+      const values = matrix ? matrix[2].split(",").map(Number) : [];
+      const translateY = matrix ? values[matrix[1] ? 13 : 5] : 0;
+      if (!Number.isFinite(translateY)) return;
+
+      const viewportHeight = window.innerHeight;
+      const homeGoalRect = homeGoal.getBoundingClientRect();
+      const aboutDescriptionRect = aboutDescription.getBoundingClientRect();
+      const start = homeGoalRect.top - translateY;
+      const headerClearance = Math.min(
+        132,
+        Math.max(88, viewportHeight * 0.175),
+      );
+      const end = aboutDescriptionRect.top - translateY - headerClearance;
+      const scrollPixel = -translateY;
+      document.documentElement.classList.toggle(
+        "is-xlab-astronaut-scene",
+        scrollPixel >= start && scrollPixel < end,
+      );
+    };
+
+    const observer = new MutationObserver(syncVisibility);
+    observer.observe(pageContainer, {
+      attributes: true,
+      attributeFilter: ["style"],
+    });
+    window.addEventListener("resize", syncVisibility, { passive: true });
+    syncVisibility();
+    return true;
+  };
+
+  if (!attach()) {
+    document.addEventListener("DOMContentLoaded", attach, { once: true });
+  }
+})();
+`;
+await writeFile(
+  siteOverridesPath,
+  localizedSiteOverrides + astronautHeaderStateRuntime,
+);
 
 const lusionBundlePath = join(output, "_astro", "hoisted.CUO_IjfL.js");
 let lusionBundle = await readFile(lusionBundlePath, "utf8");
@@ -384,13 +450,71 @@ lusionBundle = lusionBundle.replace(astronautRevealSource, astronautRevealReplac
 const homeScrollBoundarySource =
   "window.__AUTO_SCROLL__&&(scrollManager.autoScrollSpeed=window.__AUTO_SCROLL__),taskManager.update()";
 const homeScrollBoundaryReplacement =
-  'window.__AUTO_SCROLL__&&(scrollManager.autoScrollSpeed=window.__AUTO_SCROLL__),routeManager.currRoute.target===homePage&&(window.__XLAB_HOME_SCROLL_STOPPED__||document.getElementById("about-who-subsection-details")&&scrollManager.scrollPixel>=scrollManager.getDomRange(document.getElementById("about-who-subsection-details")).top)&&(window.__XLAB_HOME_SCROLL_STOPPED__=!0,scrollManager.autoScrollSpeed=0),taskManager.update()';
+  'window.__AUTO_SCROLL__&&(scrollManager.autoScrollSpeed=window.__AUTO_SCROLL__),routeManager.currRoute.target===homePage&&(window.__XLAB_HOME_SCROLL_STOPPED__||document.getElementById("about-who-desc-top")&&scrollManager.scrollPixel>=scrollManager.getDomRange(document.getElementById("about-who-desc-top")).top-Math.min(132,Math.max(88,window.innerHeight*.175)))&&(window.__XLAB_HOME_SCROLL_STOPPED__=!0,scrollManager.autoScrollSpeed=0),taskManager.update()';
 if (lusionBundle.split(homeScrollBoundarySource).length - 1 !== 1) {
   throw new Error(
     "The copied Lusion scroll manager no longer matches the Home intro boundary patch.",
   );
 }
 lusionBundle = lusionBundle.replace(homeScrollBoundarySource, homeScrollBoundaryReplacement);
+const aboutScrollPauseSource =
+  "this.scrollPixel=this._clampScrollPixel(this.scrollPixel+a),this.scrollView=this.scrollPixel/this.viewSizePixel";
+const aboutScrollPauseReplacement =
+  `(this===scrollManager&&routeManager.currRoute.target===homePage&&!window.__XLAB_ABOUT_SCROLL_PAUSE_DONE__&&(()=>{
+    const description=document.getElementById("about-who-desc-top");
+    if(!description)return!1;
+    const clearance=Math.min(132,Math.max(88,window.innerHeight*.175));
+    const boundary=this.getDomRange(description).top-clearance;
+    const now=performance.now();
+    const pauseUntil=window.__XLAB_ABOUT_SCROLL_PAUSE_UNTIL__||0;
+    if(pauseUntil&&now<pauseUntil){
+      if(a<0){
+        window.__XLAB_ABOUT_SCROLL_PAUSE_DONE__=!0;
+        window.__XLAB_ABOUT_SCROLL_PAUSE_UNTIL__=0;
+        return!1
+      }
+      this.targetScrollPixel=boundary;
+      this.scrollPixel=boundary;
+      this.velocityPixel=0;
+      this.dragHistory.length=0;
+      this.isWheelScrolling=!1;
+      input.deltaScrollY=0;
+      input.deltaScrollX=0;
+      input.isWheelScrolling=!1;
+      input.deltaPixelXY&&(input.deltaPixelXY.x=0,input.deltaPixelXY.y=0);
+      a=0;
+      return!0
+    }
+    if(pauseUntil){
+      window.__XLAB_ABOUT_SCROLL_PAUSE_DONE__=!0;
+      window.__XLAB_ABOUT_SCROLL_PAUSE_UNTIL__=0;
+      return!1
+    }
+    if(this.scrollPixel<boundary+32&&this.scrollPixel+a>=boundary&&a>=0){
+      window.__XLAB_ABOUT_SCROLL_PAUSE_UNTIL__=now+1000;
+      this.targetScrollPixel=boundary;
+      this.scrollPixel=boundary;
+      this.velocityPixel=0;
+      this.dragHistory.length=0;
+      this.isWheelScrolling=!1;
+      input.deltaScrollY=0;
+      input.deltaScrollX=0;
+      input.isWheelScrolling=!1;
+      input.deltaPixelXY&&(input.deltaPixelXY.x=0,input.deltaPixelXY.y=0);
+      a=0;
+      return!0
+    }
+    return!1
+  })()),this.scrollPixel=this._clampScrollPixel(this.scrollPixel+a),this.scrollView=this.scrollPixel/this.viewSizePixel`;
+if (lusionBundle.split(aboutScrollPauseSource).length - 1 !== 1) {
+  throw new Error(
+    "The copied Lusion scroll pane no longer matches the About pause patch.",
+  );
+}
+lusionBundle = lusionBundle.replace(
+  aboutScrollPauseSource,
+  aboutScrollPauseReplacement,
+);
 const lusionScrollStateSource = "scrollManager.update(o),pagesManager.update(o)";
 const lusionScrollStateReplacement =
   "scrollManager.update(o),window.__XLAB_LUSION_SCROLL_AT_TOP__=scrollManager.scrollPixel<=2,pagesManager.update(o)";
