@@ -1513,15 +1513,25 @@ async function mountNativeLusionHeader(frame = lusionFrame()) {
     return null;
   }
 
+  const preloader = frameDocument.getElementById("preloader");
   const styleSources = [
     frameDocument.documentElement,
     frameDocument.body,
     frameDocument.getElementById("ui"),
+    preloader,
     sourceHeader,
   ].filter(Boolean);
   const appliedCustomProperties = new Set();
   const syncFrameStyleState = () => {
     host.className = [...frameDocument.documentElement.classList].join(" ");
+    host.classList.toggle(
+      "is-lusion-preloading",
+      preloader
+        ? frameWindow.getComputedStyle(preloader).display !== "none"
+        : frameDocument.documentElement.classList.contains(
+            "is-lusion-preloading",
+          ),
+    );
     syncPageReadiness();
     host.dataset.lusionLanguage =
       frameDocument.documentElement.dataset.lusionLanguage ||
