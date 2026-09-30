@@ -20,6 +20,11 @@
   display: none !important;
 }
 
+/* Remove the newsletter signup from the Home footer. */
+#footer-middle-newsletter {
+  display: none !important;
+}
+
 /* Keep only the XLab contact link in the footer. */
 #footer-contact-address,
 #footer-contact-socials,
