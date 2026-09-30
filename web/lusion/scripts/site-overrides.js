@@ -1,4 +1,9 @@
 (() => {
+  const xlabFaviconHref = "/assets/meta/xlab-favicon.png";
+  document.querySelectorAll('link[rel~="icon"]').forEach((iconLink) => {
+    iconLink.href = xlabFaviconHref;
+  });
+
   const style = document.createElement("style");
   style.textContent =
     ":root{--header-color:#237478}" +
