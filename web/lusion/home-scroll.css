@@ -311,6 +311,17 @@ html[lang="vi"] body #home-goal-tunnel-title .home-goal-tunnel-title-line {
   }
 }
 
+/* Lower the mobile contact copy and scroll control below the fixed header. */
+@media (max-width: 560px) {
+  #end-section-content {
+    top: 43%;
+  }
+
+  #end-bottom {
+    bottom: calc(var(--vh, 1vh) * 5);
+  }
+}
+
 /* Make the virtual scroll thumb discoverable and easy to drag. */
 #scroll-indicator {
   pointer-events: auto;
