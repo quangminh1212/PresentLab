@@ -4,8 +4,11 @@
     ":root{--header-color:#237478}" +
     "#header-menu-talk{display:none!important}" +
     "#xlab-footer-contact-methods{display:grid;justify-items:start;gap:.35rem;margin-top:.65rem}" +
-    "#xlab-footer-contact-methods a{width:max-content;max-width:100%;font-size:clamp(.875rem,1.3vw,1rem);line-height:1.5;color:inherit;text-decoration:none}" +
-    "#xlab-footer-contact-methods a:hover{text-decoration:underline}" +
+    "#xlab-footer-contact-methods a{position:relative;display:inline-block;width:max-content;max-width:100%;padding-bottom:.2em;font-size:clamp(.875rem,1.3vw,1rem);line-height:1.5;color:inherit;text-decoration:none}" +
+    "#xlab-footer-contact-methods a:before{content:\"\";position:absolute;left:0;bottom:0;width:100%;height:.1em;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .3s cubic-bezier(.35,0,0,1);pointer-events:none}" +
+    "@media(hover:hover){#xlab-footer-contact-methods a:hover:before{transform:scaleX(1)}}" +
+    "#xlab-footer-contact-methods a[target=_blank]:after{content:\"↗\";display:inline-block;margin-left:.35em;font-size:.82em;opacity:.65;transition:transform .3s cubic-bezier(.35,0,0,1),opacity .3s cubic-bezier(.35,0,0,1)}" +
+    "@media(hover:hover){#xlab-footer-contact-methods a[target=_blank]:hover:after{transform:translate(.08em,-.08em);opacity:1}}" +
     "#xlab-footer-contact-methods a:focus-visible{outline:2px solid currentColor;outline-offset:3px}" +
     "#header-right-talk-btn.--is-contact-active:hover{background:var(--header-color)!important}" +
     "#video-overlay.is-offline-media #video-overlay__controls,#video-overlay.is-offline-media #video-overlay-cursor{display:none!important}" +
