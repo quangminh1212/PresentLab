@@ -3,6 +3,10 @@
   style.textContent =
     ":root{--header-color:#237478}" +
     "#header-menu-talk{display:none!important}" +
+    "#xlab-footer-contact-methods{display:grid;justify-items:start;gap:.35rem;margin-top:.65rem}" +
+    "#xlab-footer-contact-methods a{width:max-content;max-width:100%;font-size:clamp(.875rem,1.3vw,1rem);line-height:1.5;color:inherit;text-decoration:none}" +
+    "#xlab-footer-contact-methods a:hover{text-decoration:underline}" +
+    "#xlab-footer-contact-methods a:focus-visible{outline:2px solid currentColor;outline-offset:3px}" +
     "#header-right-talk-btn.--is-contact-active:hover{background:var(--header-color)!important}" +
     "#video-overlay.is-offline-media #video-overlay__controls,#video-overlay.is-offline-media #video-overlay-cursor{display:none!important}" +
     "html.is-lusion-preloading #header-right-menu-btn,html.is-lusion-preloading #lusion-language-trigger{visibility:hidden!important;opacity:0!important;pointer-events:none!important}" +
@@ -1352,10 +1356,55 @@
     group.append(label, choices);
     menuLinks.appendChild(group);
   }
+  function mountXlabContactMethods() {
+    const footer = document.getElementById("footer-contact-enquires");
+    if (!footer || footer.querySelector("#xlab-footer-contact-methods")) return;
+
+    const emailHref = "mailto:xlab.rnd@gmail.com";
+    document
+      .querySelectorAll(
+        "#header-right-talk-btn > a,#footer-enquires-link,#footer-business-link",
+      )
+      .forEach((link) => link.setAttribute("href", emailHref));
+
+    const methods = [
+      ["Zalo: 0866528014", "https://zalo.me/0866528014"],
+      ["Email: xlab.rnd@gmail.com", emailHref],
+      ["Facebook: XLab", "https://www.facebook.com/xlab.rnd"],
+    ];
+    const links = document.createElement("nav");
+    links.id = "xlab-footer-contact-methods";
+    links.setAttribute("aria-label", "Kênh liên hệ XLab");
+
+    for (const [label, href] of methods) {
+      const link = document.createElement("a");
+      link.href = href;
+      link.textContent = label;
+      if (href.startsWith("https://")) {
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+      }
+      links.appendChild(link);
+    }
+    footer.appendChild(links);
+    const placeAfterContactLabel = () => {
+      const label = footer.querySelector(".footer-enquires-link-wrapper");
+      if (!label) return false;
+      if (links.previousElementSibling !== label) label.after(links);
+      return true;
+    };
+    if (!placeAfterContactLabel()) {
+      const observer = new MutationObserver(() => {
+        if (placeAfterContactLabel()) observer.disconnect();
+      });
+      observer.observe(footer, { childList: true, subtree: true });
+    }
+  }
   document.addEventListener(
     "DOMContentLoaded",
     () => {
       translateTree(document.documentElement);
+      mountXlabContactMethods();
       mountLanguageSwitcher();
     },
     { once: true },
