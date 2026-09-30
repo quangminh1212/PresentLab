@@ -49,7 +49,8 @@
     '@media (min-width:521px) and (max-width:879px){html[lang] #home-hero-title{position:absolute!important;grid-column:1/-1!important;top:var(--base-padding-y)!important;left:6rem!important;right:9rem!important;width:auto!important;max-width:100%!important;margin:0!important;padding:.35em .55em!important;border-radius:8px!important;background:#f0f1fa!important;color:#101116!important;font-size:clamp(11px,1.8vw,13px)!important;line-height:1.08!important;z-index:54!important}}' +
     '@media (min-width:521px) and (max-width:879px){html[lang] #home-hero{grid-template-rows:calc(var(--header-size)*3 + 1rem) minmax(0,1fr)!important}html[lang] #home-hero-visual-container{grid-row:2!important}}' +
     '@media (min-width:813px) and (max-width:879px){html[lang] #home-hero-title{top:calc(var(--base-padding-y) + 8px)!important}}' +
-    '@media (min-width:521px) and (max-width:879px){html[lang] #home-hero-title .line{overflow:visible!important}html[lang] #home-hero-title .word{transform:none!important}}';
+    '@media (min-width:521px) and (max-width:879px){html[lang] #home-hero-title .line{overflow:visible!important}html[lang] #home-hero-title .word{transform:none!important}}' +
+    '@media (min-width:813px) and (max-width:919px){html[lang="vi"] body #home-hero-title{font-size:clamp(14px,1.8vw,16px)!important}}';
   document.head.appendChild(vietnameseFontStyle);
 
   if (new URLSearchParams(window.location.search).has("water-page-embed")) {
