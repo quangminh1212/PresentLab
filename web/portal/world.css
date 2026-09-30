@@ -3407,6 +3407,12 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy h1 em {
   max-width: none;
 }
 
+@media (min-width: 880px) {
+  body:has(> #portal-native-lusion-header.is-ready) > .portal-header .portal-header-brand {
+    transform: translateY(22.95px);
+  }
+}
+
 body:has(> #portal-native-lusion-header.is-loading) > .portal-header,
 body:has(> #portal-native-lusion-header.is-lusion-preloading) > .portal-header {
   visibility: hidden;

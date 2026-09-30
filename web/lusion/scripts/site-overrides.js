@@ -956,6 +956,8 @@
     '@media(max-width:812px){#lusion-language-switcher{translate:14px 0!important}}';
   style.textContent +=
     'html[lang="vi"] #projects-main-title{padding-bottom:.18em!important}';
+  style.textContent +=
+    '@media(min-width:880px){html.water-page-embed-root #home-hero-title{translate:0 27.6px!important}}';
   const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
   const translatedTextNodes = new WeakMap();
   const ignoredContentSelector = "script,style,noscript,svg,[data-lusion-no-translate]";
