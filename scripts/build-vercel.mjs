@@ -462,9 +462,14 @@ const aboutScrollPauseSource =
 const aboutScrollPauseReplacement =
   `(this===scrollManager&&routeManager.currRoute.target===homePage&&!window.__XLAB_ABOUT_SCROLL_PAUSE_DONE__&&(()=>{
     const description=document.getElementById("about-who-desc-top");
-    if(!description)return!1;
+    const homeGoal=document.getElementById("home-goal");
+    if(!description||!homeGoal)return!1;
     const clearance=Math.min(132,Math.max(88,window.innerHeight*.175));
-    const boundary=this.getDomRange(description).top-clearance;
+    const homeGoalRange=this.getDomRange(homeGoal);
+    const boundary=Math.max(
+      this.getDomRange(description).top-clearance,
+      homeGoalRange.top+homeGoalRange.height
+    );
     const now=performance.now();
     const pauseUntil=window.__XLAB_ABOUT_SCROLL_PAUSE_UNTIL__||0;
     if(pauseUntil&&now<pauseUntil){
