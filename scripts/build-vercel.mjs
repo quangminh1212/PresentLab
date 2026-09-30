@@ -25,6 +25,8 @@ const assets = [
   ["web/lusion/scripts/site-overrides.js", "_astro/local-only.js"],
   ["web/lusion/about", "about"],
   ["web/lusion/projects", "projects"],
+  ["web/lusion/about", "lusion/about"],
+  ["web/lusion/projects", "lusion/projects"],
   ["web/lusion/home-scroll.css", "home-scroll.css"],
   ["web/lusion/index.html", "lusion/index.html"],
 ];
