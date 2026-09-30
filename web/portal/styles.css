@@ -9407,7 +9407,7 @@ html[data-theme="light"] .journey-float-card--brief strong {
   }
 }
 
-html.is-lusion-home-visible .portal-header-brand {
+html.is-astronaut-scene-visible .portal-header-brand {
   visibility: hidden;
   opacity: 0;
   pointer-events: none;

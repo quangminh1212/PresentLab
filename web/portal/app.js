@@ -1457,9 +1457,9 @@ async function mountNativeLusionHeader(frame = lusionFrame()) {
     'font-family:"Be Vietnam Pro",Aeonik,sans-serif!important}' +
     ':host([data-lusion-language="vi"]) .header-menu-link{padding:.9em 1.625em!important;line-height:1.45!important}' +
     ':host([data-lusion-language="vi"]) .header-menu-link-text,:host([data-lusion-language="vi"]) .header-menu-link-text-clone{font-size:1.25em!important;line-height:1.6!important}' +
-    ':host([data-lusion-home-visible="true"]) #header-right-menu-btn,' +
-    ':host([data-lusion-home-visible="true"]) #lusion-language-trigger,' +
-    ':host([data-lusion-home-visible="true"]) #header-menu{' +
+    ':host([data-astronaut-scene-visible="true"]) #header-right-menu-btn,' +
+    ':host([data-astronaut-scene-visible="true"]) #lusion-language-trigger,' +
+    ':host([data-astronaut-scene-visible="true"]) #header-menu{' +
     "visibility:hidden!important;opacity:0!important;pointer-events:none!important}";
   shadow.appendChild(adapterStyle);
 
@@ -1467,13 +1467,90 @@ async function mountNativeLusionHeader(frame = lusionFrame()) {
   let styleObserver = null;
   let headerMeasure = null;
   let frameVisibilityObserver = null;
+  let astronautSceneObserver = null;
   let frameIsVisible = false;
-  const syncLusionHomeVisibility = () => {
-    host.dataset.lusionHomeVisible = String(frameIsVisible);
-    document.documentElement.classList.toggle(
-      "is-lusion-home-visible",
-      frameIsVisible,
+  let astronautSceneRange = null;
+  let astronautSceneIsVisible = false;
+  const getPageContainerTranslateY = () => {
+    const pageContainer = frameDocument.getElementById("page-container");
+    if (!pageContainer) return null;
+    const transform = frameWindow.getComputedStyle(pageContainer).transform;
+    if (transform === "none") return 0;
+    const matrix = /^matrix(3d)?\((.+)\)$/.exec(transform);
+    if (!matrix) return null;
+    const values = matrix[2].split(",").map(Number);
+    const translateY = values[matrix[1] ? 13 : 5];
+    return Number.isFinite(translateY) ? translateY : null;
+  };
+  const syncAstronautSceneVisibility = () => {
+    const translateY = getPageContainerTranslateY();
+    const scrollPixel = translateY === null ? null : -translateY;
+    const isHomePage =
+      frameWindow.location.pathname.replace(/\/+$/, "") === "/lusion";
+    const isVisible = Boolean(
+      frameIsVisible &&
+        isHomePage &&
+        astronautSceneRange &&
+        scrollPixel >= astronautSceneRange.start &&
+        scrollPixel < astronautSceneRange.end,
     );
+    if (
+      isVisible === astronautSceneIsVisible &&
+      host.dataset.astronautSceneVisible === String(isVisible)
+    ) {
+      return;
+    }
+    astronautSceneIsVisible = isVisible;
+    host.dataset.astronautSceneVisible = String(isVisible);
+    document.documentElement.classList.toggle(
+      "is-astronaut-scene-visible",
+      isVisible,
+    );
+  };
+  const measureAstronautSceneRange = () => {
+    const pageContainer = frameDocument.getElementById("page-container");
+    const homeGoal = frameDocument.getElementById("home-goal");
+    const imageIn = frameDocument.getElementById("home-goal-image-in");
+    const imageOut = frameDocument.getElementById("home-goal-image-out");
+    const translateY = getPageContainerTranslateY();
+    const viewportHeight = frameWindow.innerHeight;
+    if (
+      !pageContainer ||
+      !homeGoal ||
+      !imageIn ||
+      !imageOut ||
+      translateY === null ||
+      viewportHeight <= 0
+    ) {
+      astronautSceneRange = null;
+      syncAstronautSceneVisibility();
+      return;
+    }
+
+    const homeGoalRect = homeGoal.getBoundingClientRect();
+    const imageInRect = imageIn.getBoundingClientRect();
+    const imageOutRect = imageOut.getBoundingClientRect();
+    const baseY = imageInRect.top - translateY - viewportHeight;
+    const tunnelPixels =
+      homeGoalRect.bottom -
+      translateY -
+      baseY -
+      (viewportHeight + imageInRect.height) * 0.5 -
+      (viewportHeight + imageOutRect.height) * 0.5;
+    const pixelPerWeight = tunnelPixels / (1 + 5 + 12 + 2 + 1 + 1.5);
+
+    // Mirror GoalSectionRanges: enter after blackFrameIn + blackTitle, then
+    // stay hidden through blackTunnel, whiteTunnel, and whiteFrameOut.
+    const start =
+      baseY +
+      (viewportHeight + imageInRect.height) * 0.5 +
+      (1 + 5) * pixelPerWeight;
+    const end = start + (12 + 2 + 1) * pixelPerWeight;
+    astronautSceneRange =
+      Number.isFinite(start) && Number.isFinite(end) && end > start
+        ? { start, end }
+        : null;
+    syncAstronautSceneVisibility();
   };
   const syncHeaderMeasure = () => {
     if (!headerMeasure?.isConnected) return;
@@ -1499,10 +1576,11 @@ async function mountNativeLusionHeader(frame = lusionFrame()) {
     disposed = true;
     styleObserver?.disconnect();
     frameVisibilityObserver?.disconnect();
+    astronautSceneObserver?.disconnect();
     pageReadinessObserver.disconnect();
     headerMeasure?.remove();
-    document.documentElement.classList.remove("is-lusion-home-visible");
-    delete host.dataset.lusionHomeVisible;
+    document.documentElement.classList.remove("is-astronaut-scene-visible");
+    delete host.dataset.astronautSceneVisible;
     removeStyleListeners();
     frameWindow.removeEventListener("pagehide", dispose);
     document.removeEventListener("click", onDocumentClick, true);
@@ -1577,6 +1655,7 @@ async function mountNativeLusionHeader(frame = lusionFrame()) {
       appliedCustomProperties.add(name);
     }
     syncHeaderMeasure();
+    measureAstronautSceneRange();
   };
 
   function onDocumentClick(event) {
@@ -1664,13 +1743,26 @@ async function mountNativeLusionHeader(frame = lusionFrame()) {
   const languageTrigger = shadow.getElementById("lusion-language-trigger");
   const languageMenu = shadow.getElementById("lusion-language-menu");
   const menuPanel = shadow.getElementById("header-menu");
+  const pageContainer = frameDocument.getElementById("page-container");
+  if (
+    pageContainer &&
+    typeof frameWindow.MutationObserver === "function"
+  ) {
+    astronautSceneObserver = new frameWindow.MutationObserver(
+      syncAstronautSceneVisibility,
+    );
+    astronautSceneObserver.observe(pageContainer, {
+      attributes: true,
+      attributeFilter: ["style"],
+    });
+  }
   if (typeof IntersectionObserver === "function") {
     frameVisibilityObserver = new IntersectionObserver((entries) => {
       const frameEntry = entries.find((entry) => entry.target === frame);
       if (!frameEntry) return;
       frameIsVisible =
         frameEntry.isIntersecting && frameEntry.intersectionRatio >= 0.5;
-      syncLusionHomeVisibility();
+      syncAstronautSceneVisibility();
     }, { threshold: 0.5 });
     frameVisibilityObserver.observe(frame);
   }
