@@ -3834,3 +3834,24 @@ html.is-ready .app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark {
     max-width: 18em;
   }
 }
+
+/* Bring the water light forward while keeping the hero copy readable. */
+.app-shell:has(> main > .hero.hero-world) .world-space-image {
+  filter: grayscale(1) saturate(0.78) contrast(0.88) brightness(1.04) blur(0.45px);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-water-video {
+  filter: saturate(1.22) contrast(0.88) brightness(1) blur(0.45px);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-canvas {
+  filter: saturate(1.22) contrast(0.82) brightness(1.08) blur(1.4px);
+  opacity: 0.72;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-stage::after {
+  background:
+    linear-gradient(90deg, rgb(8 11 16 / 10%) 0%, transparent 68%),
+    linear-gradient(180deg, rgb(242 244 248 / 14%) 0%, transparent 42%, rgb(0 0 0 / 22%) 100%),
+    radial-gradient(ellipse at 52% 42%, transparent 30%, rgb(24 28 35 / 10%) 100%);
+}
