@@ -41,6 +41,7 @@
     'html[lang="vi"] #home-featured-title{padding-bottom:.22em!important;line-height:1.12!important;max-width:4.3em!important}' +
     'html[lang="vi"] #home-goal-title .goal-title-line-wrapper{padding:9px 0 12px!important}' +
     'html[lang="vi"] #home-goal-title .line{bottom:0!important}' +
+    '@media (min-width:813px){html[lang="vi"] #home-goal-title{grid-column:1/span 7!important;width:100%!important;font-size:clamp(50px,6vw,96px)!important}}' +
     'html[lang="vi"] .project-item-line-2{height:calc(1em + 5px)!important}' +
     'html[lang="vi"] .project-item-line-2-inner{bottom:max(0px,calc(.2em - 5px))!important}' +
     'html[lang="vi"] .project-item-line-2-icon{top:calc(.1em + 5px)!important}' +
