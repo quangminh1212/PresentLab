@@ -1,40 +1,38 @@
-# Tích hợp Lusion trực tiếp vào trang gốc
+# Đưa Lusion thành trang gốc
 
 ## Mục tiêu
 
-Giữ Portal làm trang `/`, nhưng thay Lusion iframe hiện được tải tại khu vực thư viện bằng DOM, CSS, JavaScript và asset được phục vụ trực tiếp từ cùng trang. Trang `/lusion/` không còn được tạo hoặc dùng làm trang kiểm tra.
+Trang `/` mở trực tiếp trang Lusion và tải CSS, JavaScript cùng asset Lusion theo URL gốc. Trang Portal không còn được hiển thị tại `/`. Route `/lusion/` bị bỏ hẳn; không dùng iframe hay tài liệu nhúng.
 
 ## Hiện trạng
 
-- `web/portal/index.html` đặt iframe Lusion trong khu vực `#templates` và tải `/lusion/?water-page-embed=1`.
-- `scripts/build-vercel.mjs` sao chép trang Lusion sang `public/lusion/index.html` và sửa bundle để dùng `/lusion/` làm route mặc định.
-- Lusion dựa vào CSS toàn cục, DOM ID, điều hướng History API và cuộn ảo; iframe hiện cô lập các trạng thái đó khỏi Portal.
+- `web/portal/index.html` là trang gốc hiện tại; khu vực `#templates` tải Lusion qua iframe tại `/lusion/?water-page-embed=1`.
+- `scripts/build-vercel.mjs` sao chép Portal thành `index.html`, tạo thêm `public/lusion/index.html` và sửa bundle để dùng `/lusion/` làm route mặc định.
+- Lusion có sẵn tài liệu trang chủ, CSS, JavaScript và asset; các tài nguyên đó có thể được phục vụ trực tiếp từ cùng origin mà không cần iframe.
 
 ## Thiết kế
 
-1. Portal tiếp tục là trang chủ và giữ các phần hiện có. Nội dung trang Lusion được đưa vào DOM Portal tại vị trí iframe hiện tại; không dùng iframe, `srcdoc` hoặc nạp một tài liệu HTML con lúc chạy.
-2. Bộ build lấy markup trang chủ Lusion từ mã nguồn hiện có và tạo trang gốc đã hợp nhất. CSS và JavaScript Lusion được nạp như tài nguyên của tài liệu gốc. Ảnh, font, model và các asset khác tiếp tục được phục vụ qua URL gốc hiện có.
-3. CSS Lusion được giới hạn trong vùng Lusion. Các quy tắc hiện tác động lên `html`, `body` hoặc `:root` được chuyển thành trạng thái của vùng Lusion hoặc được thay bằng quy tắc tương đương không làm thay đổi Portal.
-4. Runtime Lusion khởi tạo trong vùng DOM của nó. Route trang chủ là `/`; không có fallback, liên kết hoặc URL kiểm tra `/lusion/`. Luồng cuộn và điều hướng được điều chỉnh để hoạt động trong tài liệu Portal chung, không khóa hoặc dịch chuyển toàn bộ Portal như khi chạy trong iframe.
-5. Build không xuất `public/lusion/index.html`. Các trang nội dung Lusion đang nằm ở `/about` và `/projects` tiếp tục được giữ để những liên kết hiện tại còn hoạt động; phạm vi kiểm tra trình duyệt của thay đổi này chỉ là `/`.
-6. Bộ kiểm tra asset xác nhận trang gốc có markup và tham chiếu trực tiếp tới tài nguyên Lusion, không có iframe Lusion, không có tham chiếu `/lusion/`, và không xuất trang chủ Lusion riêng.
+1. Build phục vụ trang chủ Lusion làm `public/index.html`; tài liệu gốc của Lusion là nguồn markup. CSS và JavaScript được nạp bằng tham chiếu tài nguyên trong trang này; ảnh, font, model và asset khác tiếp tục dùng URL gốc hiện có.
+2. Trang `/` hiển thị Lusion trực tiếp, không hiển thị Portal, iframe, `srcdoc` hoặc tài liệu HTML con được nạp lúc chạy. Không cần giới hạn CSS Lusion vào một vùng con vì trang gốc chỉ khởi tạo Lusion.
+3. Route trang chủ và các liên kết quay về trang chủ dùng `/`. Bundle không có fallback hoặc route prefix `/lusion/`.
+4. Build không xuất `public/lusion/index.html`. Các trang nội dung Lusion tại `/about` và `/projects` tiếp tục được giữ để liên kết nội bộ hoạt động. Portal có thể tiếp tục được phục vụ riêng tại `/portal/`; không phải nội dung của trang gốc và không nằm trong phạm vi kiểm tra.
+5. Bộ kiểm tra asset xác nhận `public/index.html` là trang Lusion, các tài nguyên Lusion được tham chiếu trực tiếp, không có iframe hoặc URL `/lusion/`, và không xuất trang Lusion trùng lặp tại `/lusion/`.
 
 ## Phạm vi thay đổi dự kiến
 
-- `web/portal/index.html` và `web/portal/app.js`: thay iframe và cầu nối iframe bằng khởi tạo Lusion trực tiếp trong tài liệu Portal.
-- `web/portal/styles.css`, CSS Lusion và `web/lusion/scripts/site-overrides.js`: giới hạn kiểu dáng và hành vi vào vùng Lusion.
-- `scripts/build-vercel.mjs`: ghép markup/tài nguyên vào trang gốc, bỏ đầu ra `/lusion/` và route prefix tương ứng.
-- `scripts/verify-portal-assets.mjs` cùng rewrite liên quan: xác nhận hợp đồng mới cho trang gốc.
+- `scripts/build-vercel.mjs`: xuất tài liệu Lusion thành `public/index.html`, giữ Portal riêng tại `/portal/`, bỏ đầu ra `public/lusion/index.html` và bỏ các route prefix `/lusion/`.
+- `vercel.json` và cấu hình phục vụ local liên quan: để `/` trỏ tới tài liệu Lusion, `/portal/` trỏ riêng tới Portal, và không có route cho `/lusion/`.
+- `scripts/verify-portal-assets.mjs`: xác nhận hợp đồng trang gốc Lusion cùng các tài nguyên trực tiếp.
 
 Các thay đổi đang có sẵn trong working tree được giữ nguyên; chúng không thuộc commit triển khai này trừ khi một hunk cụ thể cần thiết để hoàn thành thiết kế và được rà soát riêng.
 
 ## Chấp nhận
 
-- `http://127.0.0.1:4173/` tải Portal và nội dung Lusion trực tiếp trong một tài liệu, không tạo iframe.
-- CSS, script và asset Lusion được tải thành công từ `/` và không ghi đè layout hoặc cuộn của Portal.
-- Điều hướng trang chủ Lusion quay về `/`; không có request hoặc điều hướng tới `/lusion/`.
+- `http://127.0.0.1:4173/` mở trang Lusion trực tiếp và tải các CSS, script, font, ảnh cùng asset cần thiết.
+- Trang gốc không hiển thị Portal và không tạo iframe.
+- Điều hướng về trang chủ Lusion dùng `/`; địa chỉ `/lusion/` không được tạo hoặc dùng.
 - Chỉ xác nhận trên `/`; không mở hoặc kiểm tra trang `/lusion/`.
 
 ## Rủi ro cần xử lý khi triển khai
 
-Runtime Lusion hiện giả định có một `document` riêng và dùng cuộn ảo. Khi nhập vào tài liệu Portal, các truy vấn DOM, CSS toàn cục, xử lý wheel/touch và History API phải được rà soát cùng nhau. Nếu không thể giữ các tương tác Lusion hiện tại trong cuộn Portal, dừng trước khi thay đổi trải nghiệm và báo rõ điểm không tương thích.
+Runtime và CSS Lusion đã chạy trong một tài liệu riêng; chuyển trang Lusion thành trang gốc tránh xung đột DOM/CSS với Portal. Khi triển khai vẫn cần rà soát bundle và History API để mọi điều hướng trang chủ đi về `/` và không tạo URL `/lusion/`.
