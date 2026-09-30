@@ -6,6 +6,7 @@ coverage/
 .template-gallery-build-lock/
 .vercel/
 .playwright/
+.playwright-mcp/
 .env.local
 .env.*.local
 *.log
