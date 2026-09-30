@@ -12,13 +12,10 @@ await rm(output, { recursive: true, force: true });
 await mkdir(output, { recursive: true });
 
 const assets = [
-  ["web/portal", "web/portal"],
-  ["web/vendor/three", "web/vendor/three"],
-  ["web/portal/index.html", "index.html"],
-  ["web/portal/index.html", "portal/index.html"],
   ["resources/templates/index.json", "resources/templates/index.json"],
   ["resources/palettes/index.json", "resources/palettes/index.json"],
   ["resources/palettes/catalog.html", "resources/palettes/catalog.html"],
+  ["web/portal/xlab-logo.webp", "web/portal/xlab-logo.webp"],
   ["web/lusion/assets", "assets"],
   ["web/lusion/_astro", "_astro"],
   // Keep the current deployed URL while keeping first-party code outside generated bundles.
@@ -26,7 +23,7 @@ const assets = [
   ["web/lusion/about", "about"],
   ["web/lusion/projects", "projects"],
   ["web/lusion/home-scroll.css", "home-scroll.css"],
-  ["web/lusion/index.html", "lusion/index.html"],
+  ["web/lusion/index.html", "index.html"],
 ];
 
 for (const [source, destination] of assets) {
@@ -35,7 +32,7 @@ for (const [source, destination] of assets) {
   await cp(join(root, source), target, { recursive: true, force: true });
 }
 
-const lusionPageRoots = [join(output, "lusion"), join(output, "about"), join(output, "projects")];
+const lusionPageRoots = [join(output, "about"), join(output, "projects")];
 const findHtmlFiles = async (directory) => {
   const entries = await readdir(directory, { withFileTypes: true });
   const files = [];
@@ -46,6 +43,10 @@ const findHtmlFiles = async (directory) => {
   }
   return files;
 };
+const lusionPageFiles = [
+  join(output, "index.html"),
+  ...(await Promise.all(lusionPageRoots.map(findHtmlFiles))).flat(),
+];
 const replaceBrandText = (text) =>
   text
     .replace(/hello@lusion\.co/gi, "Contact XLab")
@@ -63,7 +64,7 @@ const headerLogo =
 const projectCardLinkPattern =
   /<a\b(?=[^>]*\bclass="[^"]*\bproject-item\b[^"]*")([^>]*)>([\s\S]*?)<\/a>/gi;
 const labsMenuLinkPattern = /<a\b(?=[^>]*\bid="header-menu-labs")[^>]*>[\s\S]*?<\/a>/i;
-for (const pagePath of (await Promise.all(lusionPageRoots.map(findHtmlFiles))).flat()) {
+for (const pagePath of lusionPageFiles) {
   let html = await readFile(pagePath, "utf8");
   const logos = html.match(headerLogoPattern);
   if (!logos || logos.length !== 1) {
@@ -303,21 +304,9 @@ for (const [source, replacement] of [
     'this.containers.forEach((e,t)=>{e.style.setProperty("--open-delay",t/50+"s"),e.style.setProperty("--close-delay",Math.abs(t-this.containers.length)/50+"s")})',
     'this.containers.filter(Boolean).forEach((e,t)=>{e.style.setProperty("--open-delay",t/50+"s"),e.style.setProperty("--close-delay",Math.abs(t-this.containers.length)/50+"s")})',
   ],
-  [
-    'parsePath(e){return e=e.replace(/^\\/|\\/$/g,""),e}',
-    'parsePath(e){return e=e.replace(/^\\/|\\/$/g,""),e==="lusion"?"":e.startsWith("lusion/")?e.slice(7):e}',
-  ],
-  [
-    'history.pushState(null,null,(e||"/")+(this.queryStr?"?"+this.queryStr:""))',
-    'history.pushState(null,null,(e||"/lusion/")+(this.queryStr?"?"+this.queryStr:""))',
-  ],
-  [
-    'properties.loader.load("/"+e,{type:"text",onLoad:this._initDom.bind(this,this._createRoute(e))})',
-    'properties.loader.load(e?"/"+e:"/lusion/",{type:"text",onLoad:this._initDom.bind(this,this._createRoute(e))})',
-  ],
 ]) {
   if (!lusionBundle.includes(source)) {
-    throw new Error("The copied Lusion bundle no longer matches the subpath routing patch.");
+    throw new Error("The copied Lusion bundle no longer matches the runtime patch.");
   }
   lusionBundle = lusionBundle.replace(source, replacement);
 }

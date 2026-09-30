@@ -4,9 +4,7 @@
   "outputDirectory": "public",
   "cleanUrls": true,
   "rewrites": [
-    { "source": "/", "destination": "/index.html" },
-    { "source": "/portal", "destination": "/index.html" },
-    { "source": "/portal/:path*", "destination": "/web/portal/:path*" }
+    { "source": "/", "destination": "/index.html" }
   ],
   "headers": [
     {
