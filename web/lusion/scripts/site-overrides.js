@@ -21,7 +21,13 @@
     "#header-logo .xlab-logo-crop{display:block;position:relative;flex:0 0 80px;width:80px;height:28px;overflow:hidden}" +
     "#header-logo .xlab-logo-crop img{position:absolute;top:-8.9px;left:0;display:block;width:80px;height:auto;max-width:none}" +
     "html:not(.is-black-bg):not(.is-blue-bg) #header-logo .xlab-logo-crop img{filter:none!important}" +
-    "html.is-black-bg #header-logo .xlab-logo-crop img,html.is-blue-bg #header-logo .xlab-logo-crop img{filter:brightness(0) invert(1)}";
+    "html.is-black-bg #header-logo .xlab-logo-crop img,html.is-blue-bg #header-logo .xlab-logo-crop img{filter:brightness(0) invert(1)}" +
+    "#xlab-preloader-reveal{position:fixed;inset:0;z-index:201;display:grid;place-items:center;background:#000;opacity:1;transition:opacity .22s ease;pointer-events:auto}" +
+    "#xlab-preloader-reveal.is-exiting{opacity:0}" +
+    "#xlab-preloader-mark{position:relative;display:block;width:min(280px,72vw);aspect-ratio:20/7;overflow:hidden}" +
+    "#xlab-preloader-mark img{position:absolute;top:-31.8%;left:0;display:block;width:100%;height:auto;max-width:none;filter:brightness(0) invert(1);transform:scale(1);transition:transform .22s cubic-bezier(.16,1,.3,1)}" +
+    "#xlab-preloader-reveal.is-exiting #xlab-preloader-mark img{transform:scale(.96)}" +
+    "@media(prefers-reduced-motion:reduce){#xlab-preloader-reveal,#xlab-preloader-mark img{transition:none}}";
   document.head.appendChild(style);
 
   // Aeonik is missing Vietnamese horn letters. Be Vietnam Pro is one grotesque for the whole line.
@@ -1414,11 +1420,85 @@
       observer.observe(footer, { childList: true, subtree: true });
     }
   }
+
+  function mountXlabPreloaderReveal() {
+    const preloader = document.getElementById("preloader");
+    const digits = document.getElementById("preloader-percent-digits");
+    if (!preloader || !digits || document.getElementById("xlab-preloader-reveal")) {
+      return;
+    }
+
+    const holdDuration = 2000;
+    const fadeDuration = 220;
+    let reveal = null;
+    let revealAt = 0;
+    let exitTimer = 0;
+    let preloaderIsHidden = getComputedStyle(preloader).display === "none";
+    let completionObserver;
+    let preloaderObserver;
+
+    const scheduleExit = () => {
+      if (!reveal || !preloaderIsHidden || exitTimer) return;
+      const remaining = Math.max(0, holdDuration - (performance.now() - revealAt));
+      exitTimer = window.setTimeout(() => {
+        if (!reveal) return;
+        reveal.classList.add("is-exiting");
+        window.setTimeout(() => {
+          reveal?.remove();
+          preloaderObserver.disconnect();
+        }, fadeDuration);
+      }, remaining);
+    };
+
+    const showXlab = () => {
+      if (reveal) return;
+      reveal = document.createElement("div");
+      reveal.id = "xlab-preloader-reveal";
+      reveal.setAttribute("aria-hidden", "true");
+
+      const logoCrop = document.createElement("span");
+      logoCrop.id = "xlab-preloader-mark";
+      const logo = document.createElement("img");
+      logo.src = "/web/portal/xlab-logo.webp";
+      logo.alt = "";
+      logo.decoding = "async";
+      logoCrop.appendChild(logo);
+      reveal.appendChild(logoCrop);
+      document.body.appendChild(reveal);
+      revealAt = performance.now();
+      scheduleExit();
+    };
+
+    const syncCompletion = () => {
+      if (getComputedStyle(digits).display !== "none") return;
+      completionObserver.disconnect();
+      showXlab();
+    };
+
+    completionObserver = new MutationObserver(syncCompletion);
+    preloaderObserver = new MutationObserver(() => {
+      if (getComputedStyle(preloader).display !== "none") return;
+      preloaderIsHidden = true;
+      preloaderObserver.disconnect();
+      scheduleExit();
+    });
+    completionObserver.observe(digits, {
+      attributes: true,
+      attributeFilter: ["style"],
+    });
+    preloaderObserver.observe(preloader, {
+      attributes: true,
+      attributeFilter: ["style"],
+    });
+    syncCompletion();
+  }
+
   document.addEventListener(
     "DOMContentLoaded",
     () => {
       translateTree(document.documentElement);
       mountXlabContactMethods();
+      mountXlabPreloaderReveal();
       mountLanguageSwitcher();
     },
     { once: true },
