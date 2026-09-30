@@ -190,30 +190,66 @@ html:not(.is-ready) #lusion-language-trigger {
   }
 
   /* Give the contact details and footer credits a clear, compact rhythm. */
+  #footer-section {
+    box-sizing: border-box;
+    padding: 1.25rem 1.125rem 1.125rem;
+    background-color: #fff;
+  }
+
   #footer-contact-enquires .footer-enquires-link-wrapper {
     height: auto;
     margin-top: 0;
   }
 
   #footer-contact-enquires #footer-enquires-link {
+    display: flex;
+    align-items: center;
+    gap: 0.45em;
     font-size: 1em;
-    font-weight: 500;
-    line-height: 1.25;
+    font-weight: 600;
+    line-height: 1.3;
     padding-bottom: 0;
   }
 
+  #footer-contact-enquires #footer-enquires-link::before {
+    width: 0.38em;
+    height: 0.38em;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background-color: #0aa88f;
+    content: "";
+  }
+
   #footer-section #xlab-footer-contact-methods {
-    gap: 0.25rem;
-    margin-top: 0.5rem;
+    gap: 0.3rem;
+    margin-top: 0.55rem;
   }
 
   #footer-section #xlab-footer-contact-methods a {
-    font-size: 0.9em;
-    line-height: 1.4;
+    color: #34373b;
+    font-size: 0.875em;
+    line-height: 1.5;
+    letter-spacing: 0.005em;
   }
 
   #footer-section #footer-bottom {
-    row-gap: 0.5rem;
+    margin-top: 0.9rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid rgb(0 0 0 / 12%);
+    row-gap: 0.375rem;
+  }
+
+  #footer-section #footer-bottom-labs {
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  #footer-section #footer-bottom-tagline,
+  #footer-section #footer-bottom-copyright {
+    color: #62666b;
+    font-size: 0.72rem;
+    line-height: 1.4;
   }
 
   #page-container-inner #about-capability-cards {
@@ -223,7 +259,9 @@ html:not(.is-ready) #lusion-language-trigger {
   /* Show the next-page control as soon as the footer-to-navigation transition
      enters view instead of making users scroll past the large heading first. */
   #scroll-nav-section {
-    padding-top: 0.75rem;
+    box-sizing: border-box;
+    padding: 1rem 1.125rem 1.1rem;
+    border-top: 1px solid rgb(255 255 255 / 12%);
   }
 
   #scroll-nav-content {
@@ -238,11 +276,13 @@ html:not(.is-ready) #lusion-language-trigger {
   #scroll-nav-subtitle {
     order: 1;
     padding-top: 0;
-    margin-top: 0.75rem;
-    font-size: 0.92em;
+    margin-top: 1rem;
+    color: rgb(255 255 255 / 68%);
+    font-size: 0.78em;
+    font-weight: 500;
     line-height: 1.35;
-    letter-spacing: 0.025em;
-    opacity: 0.78;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
 
   #scroll-nav-next {
@@ -253,11 +293,11 @@ html:not(.is-ready) #lusion-language-trigger {
 
   #scroll-nav-text {
     order: 2;
-    margin-top: 0.65rem;
-    padding: 0 0 0.15em;
-    font-size: clamp(2.25rem, 11.2vw, 2.75rem);
-    line-height: 1;
-    letter-spacing: -0.025em;
+    margin-top: 0.5rem;
+    padding: 0 0 0.1em;
+    font-size: clamp(2rem, 10vw, 2.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.04em;
   }
 }
 
