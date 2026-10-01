@@ -2985,8 +2985,6 @@ function bindWaterToLusionScroll() {
   const content = document.querySelector("[data-lusion-home-content]");
   if (!hero || !nextSection || !content) return;
 
-  let automaticScrollTimer = 0;
-  let userHasTakenControl = false;
   let lastTouchY = null;
   const pageRoot = document.documentElement;
   const sectionIsAtTop = () => Math.abs(nextSection.getBoundingClientRect().top) <= 2;
@@ -2996,51 +2994,7 @@ function bindWaterToLusionScroll() {
     const active = Math.abs(bounds.top) <= 2 && bounds.bottom >= window.innerHeight - 2;
     pageRoot.classList.toggle("is-lusion-section-active", active);
   };
-  const cancelAutomaticScroll = () => {
-    userHasTakenControl = true;
-    if (!automaticScrollTimer) return;
-    window.clearTimeout(automaticScrollTimer);
-    automaticScrollTimer = 0;
-  };
-  const scheduleAutomaticScroll = () => {
-    if (userHasTakenControl || automaticScrollTimer || getScrollTop() > 2) return;
-    automaticScrollTimer = window.setTimeout(() => {
-      automaticScrollTimer = 0;
-      if (userHasTakenControl || getScrollTop() > 2 || sectionScrollTarget) return;
-      scrollPageToSection(nextSection);
-    }, 10_000);
-  };
-  if (pageRoot.classList.contains("is-ready")) {
-    scheduleAutomaticScroll();
-  } else {
-    const readyObserver = new MutationObserver(() => {
-      if (!pageRoot.classList.contains("is-ready")) return;
-      readyObserver.disconnect();
-      scheduleAutomaticScroll();
-    });
-    readyObserver.observe(pageRoot, { attributes: true, attributeFilter: ["class"] });
-  }
-
-  document.addEventListener("pointerdown", cancelAutomaticScroll, {
-    capture: true,
-    passive: true,
-  });
-  document.addEventListener("keydown", cancelAutomaticScroll, {
-    capture: true,
-    passive: true,
-  });
-  document.addEventListener("touchmove", cancelAutomaticScroll, {
-    capture: true,
-    passive: true,
-  });
-  window.addEventListener("wheel", cancelAutomaticScroll, {
-    capture: true,
-    passive: true,
-  });
-  window.addEventListener("scroll", () => {
-    updateSectionState();
-    if (getScrollTop() > 2) cancelAutomaticScroll();
-  }, { passive: true });
+  window.addEventListener("scroll", updateSectionState, { passive: true });
   window.addEventListener("resize", updateSectionState, { passive: true });
   updateSectionState();
 
