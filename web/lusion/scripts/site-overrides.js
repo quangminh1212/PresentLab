@@ -972,7 +972,7 @@
   style.textContent +=
     'html[lang="vi"] #projects-main-title{padding-bottom:.18em!important}';
   style.textContent +=
-    '@media(min-width:880px){html.water-page-embed-root #home-hero-title{translate:0 27.6px!important}}';
+    '@media(min-width:880px){html.water-page-embed-root #home-hero-title{translate:0 var(--home-hero-header-shift,27.6px)!important}}';
   const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
   const translatedTextNodes = new WeakMap();
   const ignoredContentSelector = "script,style,noscript,svg,[data-lusion-no-translate]";
@@ -1494,6 +1494,86 @@
     });
     syncCompletion();
   }
+
+  function mountEmbeddedHeroTitleAlignment() {
+    if (!new URLSearchParams(window.location.search).has("water-page-embed")) return;
+
+    let title = document.getElementById("home-hero-title");
+    let header = document.getElementById("header-container");
+    let frameId = 0;
+    let resizeObserver;
+    const schedule = () => {
+      if (frameId) return;
+      frameId = window.requestAnimationFrame(update);
+    };
+    const update = () => {
+      frameId = 0;
+      syncObservedElements();
+      if (!title) return;
+      if (window.innerWidth < 880) {
+        title.style.removeProperty("--home-hero-header-shift");
+        return;
+      }
+      if (!header) return;
+
+      const titleHeight = title.getBoundingClientRect().height;
+      const headerHeight = header.getBoundingClientRect().height;
+      if (titleHeight <= 0 || headerHeight <= 0) return;
+
+      // The Portal header controls sit 27.6px below the iframe header row.
+      const shift = (headerHeight - titleHeight) / 2 + 27.6;
+      const current = Number.parseFloat(
+        title.style.getPropertyValue("--home-hero-header-shift"),
+      );
+      if (!Number.isFinite(current) || Math.abs(current - shift) > 0.05) {
+        title.style.setProperty("--home-hero-header-shift", `${shift.toFixed(3)}px`);
+      }
+    };
+    const syncObservedElements = () => {
+      const nextTitle = document.getElementById("home-hero-title");
+      if (nextTitle !== title) {
+        if (title) resizeObserver.unobserve(title);
+        title = nextTitle;
+        if (title) resizeObserver.observe(title);
+      }
+
+      const nextHeader = document.getElementById("header-container");
+      if (nextHeader !== header) {
+        if (header) resizeObserver.unobserve(header);
+        header = nextHeader;
+        if (header) resizeObserver.observe(header);
+      }
+    };
+
+    resizeObserver = new ResizeObserver(schedule);
+    if (title) resizeObserver.observe(title);
+    if (header) resizeObserver.observe(header);
+    const hasAlignmentTarget = (node) =>
+      node.nodeType === Node.ELEMENT_NODE &&
+      (node.id === "home-hero-title" ||
+        node.id === "header-container" ||
+        node.querySelector("#home-hero-title, #header-container"));
+    const mutationObserver = new MutationObserver((records) => {
+      const hasRelevantMutation = records.some((record) =>
+        record.type === "attributes"
+          ? record.target.id === "home-hero-title" ||
+            record.target.id === "header-container"
+          : [...record.addedNodes, ...record.removedNodes].some(hasAlignmentTarget),
+      );
+      if (!hasRelevantMutation) return;
+      syncObservedElements();
+      schedule();
+    });
+    mutationObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["id"],
+      childList: true,
+      subtree: true,
+    });
+    window.addEventListener("resize", schedule, { passive: true });
+    schedule();
+  }
+  mountEmbeddedHeroTitleAlignment();
 
   document.addEventListener(
     "DOMContentLoaded",
