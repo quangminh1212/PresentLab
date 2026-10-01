@@ -31,6 +31,13 @@ names and stable public contracts.
 | `temp/`               | Local inspection screenshots and development probes                           | Keep out of Git; prune after work completes           |
 | `.artifacts/`         | Generated deck, catalog, and local QA outputs                                 | Keep generated output out of source directories       |
 
+## Local generated files
+
+- `.playwright-mcp/` stores local Orca browser snapshots, console logs, and
+  metadata. It is ignored by Git and can be pruned after review.
+- `/log.txt` stores local development server output. It is ignored by Git and
+  should be kept only while a local run is active.
+
 ## Ownership boundaries
 
 The dependency direction is intentionally one-way:
