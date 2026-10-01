@@ -214,7 +214,6 @@ const COPY = {
     signalBrief: "BRIEF / DỰNG / DUYỆT",
     signalOutput: "SẴN SÀNG LÊN SÂN KHẤU",
     heroScrollCue: "Cuộn xuống",
-    skipIntro: "Bỏ qua phần mở đầu",
     scrollToProcess: "Lướt xuống xem quy trình",
     scrollToJourney: "Lướt xuống xem hành trình thiết kế",
     nextSceneKicker: "03 / FLIGHT JOURNAL",
@@ -442,7 +441,6 @@ const COPY = {
     signalBrief: "BRIEF / BUILD / REVIEW",
     signalOutput: "READY FOR THE ROOM",
     heroScrollCue: "Scroll down",
-    skipIntro: "Skip intro",
     scrollToProcess: "Scroll to the process",
     scrollToJourney: "Scroll through the design journey",
     nextSceneKicker: "03 / FLIGHT JOURNAL",
@@ -663,7 +661,6 @@ const COPY = {
     signalBrief: "简报 / 制作 / 评审",
     signalOutput: "为现场呈现准备",
     heroScrollCue: "向下",
-    skipIntro: "跳过开场",
     scrollToProcess: "向下查看流程",
     scrollToJourney: "向下浏览设计旅程",
     nextSceneKicker: "03 / 飞行日志",
@@ -2960,6 +2957,10 @@ function bindWaterLusionHandoff() {
       `${(1 - progress * 0.42).toFixed(3)}`,
     );
     nextSection.style.setProperty(
+      "--lusion-scene-offset",
+      `${(heroHeight * (1 - progress)).toFixed(2)}px`,
+    );
+    nextSection.style.setProperty(
       "--lusion-handoff-offset",
       `${(6 * (1 - progress)).toFixed(2)}vh`,
     );
@@ -3127,6 +3128,55 @@ function deferLusionFrame() {
     settleNativeLusionHeaderReady();
     return;
   }
+  const isLusionHeaderPreloading = () =>
+    document.documentElement.classList.contains("is-lusion-preloading") &&
+    !document.documentElement.classList.contains("is-lusion-section-active");
+  const setLusionMenuOpen = (open) => {
+    const header = document.getElementById("header");
+    const menu = document.getElementById("header-menu");
+    const background = document.getElementById("header-background");
+    const button = document.getElementById("header-right-menu-btn");
+    if (!header || !menu || !button) return;
+    header.classList.toggle("--menu-opened", open);
+    menu.classList.toggle("--opened", open);
+    background?.classList.toggle("--opened", open);
+    button.classList.toggle("--opened", open);
+    if (background) {
+      background.style.opacity = open
+        ? window.innerWidth >= 1000
+          ? "0.2"
+          : "1"
+        : "0";
+    }
+    menu.style.pointerEvents = open ? "auto" : "none";
+  };
+  document.addEventListener(
+    "click",
+    (event) => {
+      if (!isLusionHeaderPreloading() || !(event.target instanceof Element)) return;
+      const button = event.target.closest("#header-right-menu-btn");
+      const isOpen = document
+        .getElementById("header-right-menu-btn")
+        ?.classList.contains("--opened");
+      if (button) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        setLusionMenuOpen(!isOpen);
+      } else if (isOpen && !event.target.closest("#header-menu")) {
+        setLusionMenuOpen(false);
+      }
+    },
+    true,
+  );
+  document.addEventListener("keydown", (event) => {
+    if (
+      isLusionHeaderPreloading() &&
+      event.key === "Escape" &&
+      document.getElementById("header-right-menu-btn")?.classList.contains("--opened")
+    ) {
+      setLusionMenuOpen(false);
+    }
+  });
   window.addEventListener("lusion:language-selected", (event) => {
     const locale = { en: "en", vi: "vi", "zh-CN": "zh" }[event.detail?.locale];
     if (locale) setLocale(locale);

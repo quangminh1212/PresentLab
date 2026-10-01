@@ -2317,6 +2317,44 @@ html[data-theme="light"] .world-stage {
   transform: translate3d(0, var(--lusion-handoff-offset, 6vh), 0);
 }
 
+html:has(.app-shell > main > .hero.hero-world):not(.is-lusion-section-active)
+  .app-shell:has(> main > .hero.hero-world) > main > .lusion-home-section {
+  overflow: visible;
+}
+
+html:has(.app-shell > main > .hero.hero-world):not(.is-lusion-section-active)
+  .app-shell:has(> main > .hero.hero-world) .lusion-home-content {
+  overflow: visible;
+  background: transparent;
+  opacity: 1;
+}
+
+html:has(.app-shell > main > .hero.hero-world):not(.is-lusion-section-active)
+  .app-shell:has(> main > .hero.hero-world) .lusion-home-content > :not(#ui) {
+  opacity: var(--lusion-handoff-opacity, 0) !important;
+}
+
+html:has(.app-shell > main > .hero.hero-world):not(.is-lusion-section-active)
+  .app-shell:has(> main > .hero.hero-world) .lusion-home-content > #ui > :not(#header) {
+  opacity: var(--lusion-handoff-opacity, 0) !important;
+}
+
+html:has(.app-shell > main > .hero.hero-world):not(.is-lusion-section-active)
+  .app-shell:has(> main > .hero.hero-world) .lusion-home-content #header {
+  position: fixed !important;
+  top: calc(0px - var(--lusion-scene-offset, 100svh) - var(--lusion-handoff-offset, 6vh)) !important;
+}
+
+html:has(.app-shell > main > .hero.hero-world):not(.is-lusion-section-active)
+  .app-shell:has(> main > .hero.hero-world) .lusion-home-content #header-right-menu-btn,
+html:has(.app-shell > main > .hero.hero-world):not(.is-lusion-section-active)
+  .app-shell:has(> main > .hero.hero-world) .lusion-home-content #lusion-language-trigger {
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  transform: none !important;
+}
+
 .app-shell:has(> main > .hero.hero-world) .lusion-home-content > #canvas,
 .app-shell:has(> main > .hero.hero-world) .lusion-home-content > #ui,
 .app-shell:has(> main > .hero.hero-world) .lusion-home-content > #input-blocker,
@@ -2495,8 +2533,7 @@ html:has(.app-shell > main > .hero.hero-world).is-section-transitioning {
 
 .app-shell:has(> main > .hero.hero-world) > .topbar,
 .app-shell:has(> main > .hero.hero-world) .world-copy,
-.app-shell:has(> main > .hero.hero-world) .world-scroll-cue,
-.app-shell:has(> main > .hero.hero-world) .world-skip-button {
+.app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
   font-family: Aeonik, "Be Vietnam Pro", ui-sans-serif, sans-serif;
   font-synthesis: none;
   -webkit-font-smoothing: antialiased;
@@ -2509,15 +2546,13 @@ body.menu-open {
 /* Aeonik has no Vietnamese horn letters, so the whole line stays one grotesque. */
 html[lang="vi"] .app-shell:has(> main > .hero.hero-world) > .topbar,
 html[lang="vi"] .app-shell:has(> main > .hero.hero-world) .world-copy,
-html[lang="vi"] .app-shell:has(> main > .hero.hero-world) .world-scroll-cue,
-html[lang="vi"] .app-shell:has(> main > .hero.hero-world) .world-skip-button {
+html[lang="vi"] .app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
   font-family: "Be Vietnam Pro", Aeonik, sans-serif;
 }
 
 html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) > .topbar,
 html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy,
-html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-scroll-cue,
-html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-skip-button {
+html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
   font-family: Aeonik, system-ui, "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", sans-serif;
 }
 
@@ -2848,57 +2883,6 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy h1 em {
 
 .world-scroll-cue:hover {
   color: #fff;
-}
-
-.world-skip-button {
-  position: absolute;
-  z-index: 7;
-  right: clamp(20px, 4vw, 56px);
-  bottom: clamp(82px, 10vh, 104px);
-  display: inline-flex;
-  min-height: 32px;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 0 10px 0 12px;
-  border: 1px solid rgb(240 241 250 / 34%);
-  border-radius: 999px;
-  background: rgb(8 12 19 / 38%);
-  backdrop-filter: blur(12px);
-  color: rgb(240 241 250 / 88%);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  line-height: 1;
-  text-decoration: none;
-  text-transform: uppercase;
-  transition:
-    border-color 160ms ease,
-    background-color 160ms ease,
-    color 160ms ease,
-    transform 160ms ease;
-}
-
-.world-skip-button::after {
-  content: "";
-  width: 6px;
-  height: 6px;
-  margin-top: -3px;
-  border-right: 1.5px solid currentColor;
-  border-bottom: 1.5px solid currentColor;
-  transform: rotate(45deg);
-}
-
-.world-skip-button:hover {
-  transform: translateY(-2px);
-  border-color: rgb(114 243 222 / 70%);
-  background: rgb(8 12 19 / 68%);
-  color: #fff;
-}
-
-.world-skip-button:focus-visible {
-  outline: 2px solid #72f3de;
-  outline-offset: 3px;
 }
 
 .app-shell:has(> main > .hero.hero-world) .scroll-progress {
@@ -3376,57 +3360,6 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy h1 em {
     top: 15px;
     right: 15px;
     left: 15px;
-  }
-}
-
-/* Floating XLab header over the visual-first home scene. */
-.portal-header {
-  position: fixed;
-  z-index: 20;
-  top: 0;
-  right: 0;
-  left: 0;
-  display: grid;
-  grid-template-columns: 80px minmax(0, 1fr);
-  align-items: center;
-  column-gap: 20px;
-  min-height: 116px;
-  padding: 27px clamp(22px, 4.4vw, 56px) 13px;
-  color: #1c1d25;
-  background: transparent;
-  pointer-events: none;
-}
-
-.portal-header-brand {
-  position: relative;
-  display: block;
-  width: 80px;
-  aspect-ratio: 20 / 7;
-  overflow: hidden;
-  line-height: 0;
-  pointer-events: auto;
-  filter:
-    drop-shadow(0 0 1px rgb(255 255 255 / 96%))
-    drop-shadow(0 0 4px rgb(255 255 255 / 70%));
-}
-
-.portal-header-brand img {
-  position: absolute;
-  top: -31.8%;
-  left: 0;
-  display: block;
-  width: 100%;
-  height: auto;
-  max-width: none;
-}
-
-html.is-lusion-section-active .portal-header {
-  visibility: hidden;
-}
-
-@media (max-width: 760px) {
-  .portal-header-brand {
-    transform: translateY(-14px);
   }
 }
 
