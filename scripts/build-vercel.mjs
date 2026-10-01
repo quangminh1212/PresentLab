@@ -34,10 +34,7 @@ for (const [source, destination] of assets) {
   await cp(join(root, source), target, { recursive: true, force: true });
 }
 
-const xlabPageRoots = [
-  join(output, "about"),
-  join(output, "projects"),
-];
+const xlabPageRoots = [join(output, "about"), join(output, "projects")];
 const findHtmlFiles = async (directory) => {
   const entries = await readdir(directory, { withFileTypes: true });
   const files = [];
@@ -48,8 +45,7 @@ const findHtmlFiles = async (directory) => {
   }
   return files;
 };
-const xlabPageFiles =
-  (await Promise.all(xlabPageRoots.map(findHtmlFiles))).flat();
+const xlabPageFiles = (await Promise.all(xlabPageRoots.map(findHtmlFiles))).flat();
 const replaceBrandText = (text) =>
   text
     .replace(/hello@lusion\.co/gi, "Contact XLab")
@@ -60,8 +56,7 @@ const replaceBrandText = (text) =>
       "We create bold presentation slides and visual stories that help ideas stand out",
     )
     .replace(/\bLusion\b/gi, "XLab");
-const headerLogoPattern =
-  /(<a\b[^>]*id="header-logo"[^>]*>)[\s\S]*?(<\/a>)/gi;
+const headerLogoPattern = /(<a\b[^>]*id="header-logo"[^>]*>)[\s\S]*?(<\/a>)/gi;
 const headerLogo =
   '$1<span class="xlab-logo-crop" aria-hidden="true"><img src="/web/portal/xlab-logo.webp" alt="" decoding="async"></span>$2';
 const projectCardLinkPattern =
@@ -149,10 +144,7 @@ if (blockingFontFaceCount !== 6) {
 lusionStyles = lusionStyles.replaceAll("font-display:block", "font-display:swap");
 await writeFile(lusionStylesPath, lusionStyles);
 
-for (const portalPagePath of [
-  join(output, "index.html"),
-  join(output, "portal", "index.html"),
-]) {
+for (const portalPagePath of [join(output, "index.html"), join(output, "portal", "index.html")]) {
   let portalHtml = await readFile(portalPagePath, "utf8");
   const placeholder = '<div class="lusion-home-content" data-lusion-home-content></div>';
   if (portalHtml.split(placeholder).length - 1 !== 1) {
@@ -382,14 +374,8 @@ for (const [source, replacement] of [
   lusionBundle = lusionBundle.replace(source, replacement);
 }
 for (const [source, replacement] of [
-  [
-    'color0:"#5a90ff",color1:"#2a38ee"',
-    'color0:"#57b5b4",color1:"#237478"',
-  ],
-  [
-    'color0:"#94fffb",color1:"#1285dc"',
-    'color0:"#57b5b4",color1:"#237478"',
-  ],
+  ['color0:"#5a90ff",color1:"#2a38ee"', 'color0:"#57b5b4",color1:"#237478"'],
+  ['color0:"#94fffb",color1:"#1285dc"', 'color0:"#57b5b4",color1:"#237478"'],
 ]) {
   if (lusionBundle.split(source).length - 1 !== 1) {
     throw new Error("Expected one blue Lusion line palette to recolor.");
@@ -406,7 +392,9 @@ const browserZoomGuard = [
 const browserZoomSupport =
   'window.addEventListener("wheel",o=>{o.ctrlKey||o.preventDefault()},{passive:!1});';
 if (lusionBundle.split(browserZoomGuard).length - 1 !== 1) {
-  throw new Error("The copied Lusion zoom guard no longer matches the browser accessibility patch.");
+  throw new Error(
+    "The copied Lusion zoom guard no longer matches the browser accessibility patch.",
+  );
 }
 lusionBundle = lusionBundle.replace(browserZoomGuard, browserZoomSupport);
 const scrollIndicatorInitSource =
@@ -492,10 +480,7 @@ resize(e,t){`;
 if (lusionBundle.split(scrollIndicatorInitSource).length - 1 !== 1) {
   throw new Error("The Lusion scroll indicator init anchor changed.");
 }
-lusionBundle = lusionBundle.replace(
-  scrollIndicatorInitSource,
-  scrollIndicatorInitReplacement,
-);
+lusionBundle = lusionBundle.replace(scrollIndicatorInitSource, scrollIndicatorInitReplacement);
 const astronautRevealSource =
   "v.position.y-=(properties.useMobileLayout?0:.4)*ease.backInOut(p),v.updateMatrix();";
 // Pull the astronaut back into the viewport during the heading, then release it into the tunnel.
@@ -519,8 +504,7 @@ if (lusionBundle.split(homeScrollBoundarySource).length - 1 !== 1) {
 lusionBundle = lusionBundle.replace(homeScrollBoundarySource, homeScrollBoundaryReplacement);
 const aboutScrollPauseSource =
   "this.scrollPixel=this._clampScrollPixel(this.scrollPixel+a),this.scrollView=this.scrollPixel/this.viewSizePixel";
-const aboutScrollPauseReplacement =
-  `(this===scrollManager&&routeManager.currRoute.target===homePage&&!window.__XLAB_ABOUT_SCROLL_PAUSE_DONE__&&(()=>{
+const aboutScrollPauseReplacement = `(this===scrollManager&&routeManager.currRoute.target===homePage&&!window.__XLAB_ABOUT_SCROLL_PAUSE_DONE__&&(()=>{
     const description=document.getElementById("about-who-desc-top");
     const homeGoal=document.getElementById("home-goal");
     if(!description||!homeGoal)return!1;
@@ -572,14 +556,9 @@ const aboutScrollPauseReplacement =
     return!1
   })()),this.scrollPixel=this._clampScrollPixel(this.scrollPixel+a),this.scrollView=this.scrollPixel/this.viewSizePixel`;
 if (lusionBundle.split(aboutScrollPauseSource).length - 1 !== 1) {
-  throw new Error(
-    "The copied Lusion scroll pane no longer matches the About pause patch.",
-  );
+  throw new Error("The copied Lusion scroll pane no longer matches the About pause patch.");
 }
-lusionBundle = lusionBundle.replace(
-  aboutScrollPauseSource,
-  aboutScrollPauseReplacement,
-);
+lusionBundle = lusionBundle.replace(aboutScrollPauseSource, aboutScrollPauseReplacement);
 const lusionScrollStateSource = "scrollManager.update(o),pagesManager.update(o)";
 const lusionScrollStateReplacement =
   "scrollManager.update(o),window.__XLAB_LUSION_SCROLL_AT_TOP__=scrollManager.scrollPixel<=2,window.__XLAB_LUSION_SCROLL_AT_BOTTOM__=scrollManager.scrollPixel>=scrollManager.contentSizePixel-2,pagesManager.update(o)";
@@ -595,21 +574,17 @@ const lusionLocalHomeRouteReplacement =
 if (lusionBundle.split(lusionLocalHomeRouteSource).length - 1 !== 1) {
   throw new Error("The copied Lusion route matcher no longer matches the local home route patch.");
 }
-lusionBundle = lusionBundle.replace(
-  lusionLocalHomeRouteSource,
-  lusionLocalHomeRouteReplacement,
-);
+lusionBundle = lusionBundle.replace(lusionLocalHomeRouteSource, lusionLocalHomeRouteReplacement);
 const lusionAbsoluteRouteSource =
   'history.pushState(null,null,(e||"/")+(this.queryStr?"?"+this.queryStr:"")),this._onStatePop()';
 const lusionAbsoluteRouteReplacement =
   'history.pushState(null,null,(e?"/"+e:"/")+(this.queryStr?"?"+this.queryStr:"")),this._onStatePop()';
 if (lusionBundle.split(lusionAbsoluteRouteSource).length - 1 !== 1) {
-  throw new Error("The copied Lusion route writer no longer matches the absolute local route patch.");
+  throw new Error(
+    "The copied Lusion route writer no longer matches the absolute local route patch.",
+  );
 }
-lusionBundle = lusionBundle.replace(
-  lusionAbsoluteRouteSource,
-  lusionAbsoluteRouteReplacement,
-);
+lusionBundle = lusionBundle.replace(lusionAbsoluteRouteSource, lusionAbsoluteRouteReplacement);
 await writeFile(lusionBundlePath, lusionBundle);
 
 console.log(`Vercel static output prepared: ${output}`);
