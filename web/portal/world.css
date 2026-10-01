@@ -3780,6 +3780,20 @@ html.is-ready .app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark {
   }
 }
 
+@media (min-width: 521px) and (max-width: 760px) {
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--lead {
+    font-size: clamp(42px, 6.8vw, 48px);
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--final {
+    font-size: clamp(84px, 13.6vw, 96px);
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-lede {
+    font-size: clamp(16px, 2.5vw, 18px);
+  }
+}
+
 /* Bring the water light forward while keeping the hero copy readable. */
 .app-shell:has(> main > .hero.hero-world) .world-space-image {
   filter: grayscale(1) saturate(0.78) contrast(0.88) brightness(1.04) blur(0.45px);
