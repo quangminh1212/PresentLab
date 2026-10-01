@@ -3484,7 +3484,7 @@ body:has(> #portal-native-lusion-header.is-lusion-preloading) > .portal-header {
   display: grid;
   justify-items: start;
   margin: 0;
-  font-size: clamp(72px, 8.8vw, 126px);
+  font-size: clamp(76px, 9.3vw, 136px);
   font-family: "XLAB Form Display", "Be Vietnam Pro", Aeonik, sans-serif;
   font-weight: 500;
   letter-spacing: -0.04em;
@@ -3502,7 +3502,7 @@ body:has(> #portal-native-lusion-header.is-lusion-preloading) > .portal-header {
 .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--lead {
   margin: 0 0 0.02em 0.05em;
   color: #f2f3f5;
-  font-size: clamp(34px, 4vw, 58px);
+  font-size: clamp(36px, 4.3vw, 62px);
   font-weight: 500;
   letter-spacing: -0.025em;
   line-height: 1.12;
@@ -3516,7 +3516,7 @@ body:has(> #portal-native-lusion-header.is-lusion-preloading) > .portal-header {
   background-size: 185% 100%;
   background-clip: text;
   color: transparent;
-  font-size: clamp(72px, 8.8vw, 126px);
+  font-size: clamp(76px, 9.3vw, 136px);
   font-style: normal;
   font-weight: 500;
   letter-spacing: -0.045em;
@@ -3543,7 +3543,7 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .w
   max-width: min(52ch, 100%);
   margin: 1em 0 0 4px;
   color: rgb(241 243 247 / 78%);
-  font-size: clamp(14px, 1vw, 16px);
+  font-size: clamp(15px, 1.1vw, 18px);
   font-weight: 400;
   letter-spacing: 0;
   line-height: 1.5;
@@ -3703,19 +3703,19 @@ html.is-ready .app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark {
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-copy h1 {
-    font-size: clamp(54px, 15vw, 68px);
+    font-size: clamp(58px, 16vw, 74px);
     line-height: 1.05;
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--lead {
-    font-size: clamp(33px, 9vw, 39px);
+    font-size: clamp(35px, 9.5vw, 42px);
     animation-duration: 740ms;
     animation-delay: 70ms;
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--final {
     margin-top: 0.06em;
-    font-size: clamp(62px, 17vw, 80px);
+    font-size: clamp(66px, 18vw, 86px);
     line-height: 1.08;
     animation-duration: 840ms, 1180ms;
     animation-delay: 170ms, 250ms;
@@ -3724,7 +3724,7 @@ html.is-ready .app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark {
   .app-shell:has(> main > .hero.hero-world) .world-lede {
     max-width: 28em;
     margin-top: 0.9em;
-    font-size: clamp(13px, 3.7vw, 14px);
+    font-size: clamp(14px, 3.9vw, 15px);
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-lede > span {
@@ -3753,7 +3753,7 @@ html.is-ready .app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark {
 
 @media (max-width: 360px) {
   .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--final {
-    font-size: clamp(54px, 16vw, 64px);
+    font-size: clamp(58px, 17vw, 68px);
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-lede {
