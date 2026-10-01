@@ -28,7 +28,8 @@ names and stable public contracts.
 | `web/lusion/_astro/`  | Generated, versioned frontend bundles                                         | Treat as build output                                 |
 | `web/vendor/`         | Vendored browser libraries                                                    | Preserve upstream licenses and versions               |
 | `dist/`, `public/`    | Generated package and Vercel deployment output                                | Rebuild; do not edit by hand                          |
-| `.artifacts/`         | Generated deck and catalog deliverables                                       | Keep generated output out of source directories       |
+| `temp/`               | Local inspection screenshots and development probes                           | Keep out of Git; prune after work completes           |
+| `.artifacts/`         | Generated deck, catalog, and local QA outputs                                 | Keep generated output out of source directories       |
 
 ## Ownership boundaries
 
