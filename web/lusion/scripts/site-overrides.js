@@ -17,11 +17,11 @@
     "#xlab-footer-contact-methods a:focus-visible{outline:2px solid currentColor;outline-offset:3px}" +
     "#header-right-talk-btn.--is-contact-active:hover{background:var(--header-color)!important}" +
     "#video-overlay.is-offline-media #video-overlay__controls,#video-overlay.is-offline-media #video-overlay-cursor{display:none!important}" +
-    "html.is-lusion-preloading #ui{z-index:201!important}" +
+    "html:not(.is-ready) #ui,html.is-lusion-preloading #ui{z-index:202!important}" +
     "html.is-lusion-preloading #ui>#page-container{visibility:hidden!important}" +
-    "html.is-lusion-preloading #header,html.is-lusion-preloading #header *{pointer-events:none!important}" +
-    "html.is-lusion-preloading #header #header-logo .xlab-logo-crop img{filter:brightness(0) invert(1)!important}" +
-    "html.is-lusion-preloading #header-right-menu-btn,html.is-lusion-preloading #lusion-language-trigger{visibility:visible!important;opacity:1!important;transform:none!important;clip-path:none!important}" +
+    "html:not(.is-ready) #header,html:not(.is-ready) #header *,html.is-lusion-preloading #header,html.is-lusion-preloading #header *{pointer-events:none!important}" +
+    "html:not(.is-ready) #header #header-logo .xlab-logo-crop img,html.is-lusion-preloading #header #header-logo .xlab-logo-crop img{filter:brightness(0) invert(1)!important}" +
+    "html:not(.is-ready) #header-right-menu-btn,html.is-lusion-preloading #header-right-menu-btn,html:not(.is-ready) #lusion-language-trigger,html.is-lusion-preloading #lusion-language-trigger{visibility:visible!important;opacity:1!important;transform:none!important;clip-path:none!important}" +
     "#header-logo .xlab-logo-crop{display:block;position:relative;flex:0 0 80px;width:80px;height:28px;overflow:hidden}" +
     "#header-logo .xlab-logo-crop img{position:absolute;top:-8.9px;left:0;display:block;width:80px;height:auto;max-width:none}" +
     "html:not(.is-black-bg):not(.is-blue-bg) #header-logo .xlab-logo-crop img{filter:none!important}" +
