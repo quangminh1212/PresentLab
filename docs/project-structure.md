@@ -38,6 +38,21 @@ names and stable public contracts.
 - `/log.txt` stores local development server output. It is ignored by Git and
   should be kept only while a local run is active.
 
+## Output lifecycle
+
+| Output                         | Source or owner                                            | Refresh or cleanup                                                                                 |
+| ------------------------------ | ---------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `dist/`                        | TypeScript sources in `src/`                               | `npm run build` creates it; `npm run clean` removes it.                                            |
+| `public/`                      | Portal, Lusion, resources, and vendored browser assets     | `npm run vercel:build` replaces the deployment output.                                             |
+| `resources/`                   | Template and palette catalog in the `templates/` submodule | `npm run gallery:build` updates the generated indexes and theme files.                             |
+| `.artifacts/template-gallery/` | Registered templates in `templates/`                       | `npm run gallery:build` updates registered renders and prunes stale gallery entries.               |
+| Other `.artifacts/` entries    | Local visual audits and QA probes                          | Keep evidence until its review is complete; there is no single command that recreates every probe. |
+| `temp/`, `.playwright-mcp/`    | Local screenshots and Orca browser sessions                | Review first, then prune local captures when they are no longer needed.                            |
+| `web/lusion/_astro/`           | Imported Lusion frontend bundles                           | Keep versioned: existing HTML and deployment routes refer to these paths.                          |
+
+`npm run clean` is intentionally limited to `dist/`. Do not use it as a general
+cleanup command for deployment files, imported assets, or QA evidence.
+
 ## Ownership boundaries
 
 The dependency direction is intentionally one-way:
