@@ -44,8 +44,6 @@ async function startPortalServer() {
       const requestPath = decodeURIComponent(requestUrl.pathname);
       const normalizedPath = requestPath.replace(/^\/+|\/+$/g, "");
       const lusionAssetRoute =
-        normalizedPath === "lusion" ||
-        normalizedPath.startsWith("lusion/") ||
         normalizedPath === "home-scroll.css" ||
         normalizedPath.startsWith("_astro/") ||
         normalizedPath.startsWith("assets/") ||
@@ -115,7 +113,7 @@ describe("client request portal browser flow", () => {
     });
 
     try {
-      await page.goto(`${portalServer.baseUrl}/web/portal/`, { waitUntil: "domcontentloaded" });
+      await page.goto(`${portalServer.baseUrl}/`, { waitUntil: "domcontentloaded" });
       await page.waitForFunction(
         () => {
           const stage = document.querySelector<HTMLElement>(".world-stage");
@@ -196,7 +194,7 @@ describe("client request portal browser flow", () => {
     page.on("pageerror", (error) => pageErrors.push(error.message));
 
     try {
-      await page.goto(`${portalServer.baseUrl}/web/portal/`, {
+      await page.goto(`${portalServer.baseUrl}/`, {
         waitUntil: "domcontentloaded",
       });
       await page.waitForFunction(
@@ -212,41 +210,28 @@ describe("client request portal browser flow", () => {
         undefined,
         { timeout: 5_000 },
       );
-      const lusionFrame = page.frameLocator(".lusion-home-frame");
-      await lusionFrame.locator("#home-hero").waitFor({ timeout: 20_000 });
-      const embeddedHome = await lusionFrame.locator("body").evaluate((body) => ({
-        title: body.ownerDocument.title,
-        href: body.ownerDocument.location.href,
-        logo: body.ownerDocument.querySelector("#header-logo")?.textContent?.trim(),
-        logoFontSize: body.ownerDocument
-          .querySelector("#header-logo svg text")
-          ?.getAttribute("font-size"),
-        heroTitle: body.ownerDocument.querySelector("#home-hero-title")?.textContent,
-        projectsTop: body.ownerDocument.querySelector("#projects-main")?.getBoundingClientRect()
-          .top,
-        footer: Boolean(body.ownerDocument.querySelector("#footer-section")),
-        homeReelDisplay: getComputedStyle(body.ownerDocument.querySelector("#home-reel")!).display,
-        talksDisplay: getComputedStyle(body.ownerDocument.querySelector(".award-category-talks")!)
-          .display,
+      await page.locator(".lusion-home-content #home-hero").waitFor({ timeout: 20_000 });
+      const nativeHome = await page.locator(".lusion-home-content").evaluate((content) => ({
+        pathname: content.ownerDocument.location.pathname,
+        logo: content.querySelector("#header-logo img")?.getAttribute("src"),
+        heroTitle: content.querySelector("#home-hero-title")?.textContent,
+        projectsTop: content.querySelector("#projects-main")?.getBoundingClientRect().top,
+        footer: Boolean(content.querySelector("#footer-section")),
+        homeReelDisplay: getComputedStyle(content.querySelector("#home-reel")!).display,
+        talksDisplay: getComputedStyle(content.querySelector(".award-category-talks")!).display,
         projectCardsAreNonNavigable: (() => {
-          const cards = [...body.ownerDocument.querySelectorAll(".project-item")];
-          const currentUrl = body.ownerDocument.location.href;
+          const cards = [...content.querySelectorAll(".project-item")];
+          const currentUrl = content.ownerDocument.location.href;
           cards[0]?.click();
-          return (
-            cards.length > 0 &&
+          return cards.length > 0 &&
             cards.every((item) => item.tagName === "DIV" && !item.hasAttribute("href")) &&
-            body.ownerDocument.location.href === currentUrl
-          );
+            content.ownerDocument.location.href === currentUrl;
         })(),
-        copyright: body.ownerDocument.querySelector("#footer-bottom-copyright")?.textContent,
-        tagline: body.ownerDocument.querySelector("#footer-bottom-tagline")?.textContent,
-        hasOldBrand: /\bLusion\b/i.test(body.innerText),
+        copyright: content.querySelector("#footer-bottom-copyright")?.textContent,
+        tagline: content.querySelector("#footer-bottom-tagline")?.textContent,
+        hasOldBrand: /\bLusion\b/i.test(content.textContent ?? ""),
+        hasNestedDocument: Boolean(content.querySelector("iframe, frame, object, embed")),
       }));
-      const homeRouteFetch = await lusionFrame.locator("body").evaluate(async () => {
-        const response = await fetch("/lusion/", { cache: "no-store" });
-        const html = await response.text();
-        return { status: response.status, isLusionHome: html.includes('id="home-hero"') };
-      });
 
       const pageState = await page.evaluate(() => ({
         heroHeight: document.querySelector(".hero-world")?.getBoundingClientRect().height ?? 0,
@@ -262,20 +247,18 @@ describe("client request portal browser flow", () => {
       expect(pageState.scrollCueDisplay).not.toBe("none");
       expect(pageState.pageHeight).toBeGreaterThan(pageState.viewportHeight);
       expect(pageState.scrollY).toBeGreaterThan(0);
-      expect(embeddedHome.title).toContain("XLab");
-      expect(new URL(embeddedHome.href).pathname).toBe("/lusion/");
-      expect(embeddedHome.logo).toBe("XLab");
-      expect(embeddedHome.logoFontSize).toBe("30");
-      expect(embeddedHome.heroTitle).toContain("presentation slides");
-      expect(embeddedHome.projectsTop).toBeDefined();
-      expect(embeddedHome.homeReelDisplay).toBe("none");
-      expect(embeddedHome.talksDisplay).toBe("none");
-      expect(embeddedHome.projectCardsAreNonNavigable).toBe(true);
-      expect(embeddedHome.footer).toBe(true);
-      expect(embeddedHome.copyright).toContain("XLab Creative Studio");
-      expect(embeddedHome.tagline).toContain("Built by XLab");
-      expect(embeddedHome.hasOldBrand).toBe(false);
-      expect(homeRouteFetch).toEqual({ status: 200, isLusionHome: true });
+      expect(nativeHome.pathname).toBe("/");
+      expect(nativeHome.logo).toBe("/web/portal/xlab-logo.webp");
+      expect(nativeHome.heroTitle).toBeTruthy();
+      expect(nativeHome.projectsTop).toBeDefined();
+      expect(nativeHome.homeReelDisplay).toBe("none");
+      expect(nativeHome.talksDisplay).toBe("none");
+      expect(nativeHome.projectCardsAreNonNavigable).toBe(true);
+      expect(nativeHome.footer).toBe(true);
+      expect(nativeHome.copyright).toContain("XLab Creative Studio");
+      expect(nativeHome.tagline).toContain("Built by XLab");
+      expect(nativeHome.hasOldBrand).toBe(false);
+      expect(nativeHome.hasNestedDocument).toBe(false);
 
       expect(pageState.templatesTop).toBeCloseTo(0, 0);
       expect(pageErrors).toEqual([]);
@@ -305,7 +288,7 @@ describe("client request portal browser flow", () => {
     });
 
     try {
-      await page.goto(`${portalServer.baseUrl}/web/portal/#templates`, {
+      await page.goto(`${portalServer.baseUrl}/#templates`, {
         waitUntil: "domcontentloaded",
       });
       await page.locator("[data-results-count]").waitFor();
@@ -386,7 +369,7 @@ describe("client request portal browser flow", () => {
     const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
 
     try {
-      await page.goto(`${portalServer.baseUrl}/web/portal/#templates`, {
+      await page.goto(`${portalServer.baseUrl}/#templates`, {
         waitUntil: "domcontentloaded",
       });
       const viewportOverflow = await page.evaluate(
@@ -431,7 +414,7 @@ describe("client request portal browser flow", () => {
     });
 
     try {
-      await page.goto(`${portalServer.baseUrl}/web/portal/`, { waitUntil: "domcontentloaded" });
+      await page.goto(`${portalServer.baseUrl}/`, { waitUntil: "domcontentloaded" });
       await page.locator("[data-results-count]").waitFor();
       expect(await page.locator(".brand-logo").first().getAttribute("src")).toBe(
         "/web/portal/xlab-logo.png",

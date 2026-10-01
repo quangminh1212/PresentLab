@@ -2285,6 +2285,55 @@ html[data-theme="light"] .world-stage {
 .app-shell:has(> main > .hero.hero-world) > main > .signal-rail,
 .app-shell:has(> main > .hero.hero-world) > main > .journey-section,
 .app-shell:has(> main > .hero.hero-world) > main > .process-section {
+  display: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) > main > .lusion-home-section {
+  width: 100%;
+  height: 100svh;
+  min-height: 100svh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  background: #000;
+}
+
+.app-shell:has(> main > .hero.hero-world) > main > .lusion-home-section > :not(.lusion-home-content) {
+  display: none !important;
+}
+
+.lusion-home-content {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 100svh;
+  overflow: hidden;
+  background: #02070b;
+  opacity: var(--lusion-handoff-opacity, 0);
+  transform: translate3d(0, var(--lusion-handoff-offset, 6vh), 0);
+}
+
+.app-shell:has(> main > .hero.hero-world) .lusion-home-content > #canvas,
+.app-shell:has(> main > .hero.hero-world) .lusion-home-content > #ui,
+.app-shell:has(> main > .hero.hero-world) .lusion-home-content > #input-blocker,
+.app-shell:has(> main > .hero.hero-world) .lusion-home-content > #transition-overlay,
+.app-shell:has(> main > .hero.hero-world) .lusion-home-content > #preloader,
+.app-shell:has(> main > .hero.hero-world) .lusion-home-content > #scroll-indicator,
+.app-shell:has(> main > .hero.hero-world) .lusion-home-content > #video-overlay {
+  position: absolute;
+}
+
+.app-shell:has(> main > .hero.hero-world) .lusion-home-content > #ui {
+  inset: 0;
+  height: 100%;
+}
+
+/* The embedded Lusion page already includes the footer for this full-screen route. */
+.app-shell:has(> main > .hero.hero-world) > .site-footer {
   display: none !important;
 }
 
@@ -2298,7 +2347,8 @@ html:has(.app-shell > main > .hero.hero-world).is-section-transitioning {
   scroll-behavior: auto !important;
 }
 
-.app-shell:has(> main > .hero.hero-world) > main > .hero.hero-world {
+.app-shell:has(> main > .hero.hero-world) > main > .hero.hero-world,
+.app-shell:has(> main > .hero.hero-world) > main > .lusion-home-section {
   scroll-snap-align: start;
   scroll-snap-stop: always;
 }
@@ -2309,7 +2359,7 @@ html:has(.app-shell > main > .hero.hero-world).is-section-transitioning {
   }
 }
 
-/* Let the water hero fade into the dark catalog through a shared silver horizon. */
+/* Let the water fall into the dark Lusion scene through a shared silver horizon. */
 .app-shell:has(> main > .hero.hero-world) .world-stage::after {
   display: block;
   background:
@@ -2327,6 +2377,12 @@ html:has(.app-shell > main > .hero.hero-world).is-section-transitioning {
       rgb(0 0 0 / 35%) 100%
     );
   pointer-events: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) > main > .lusion-home-section {
+  position: relative;
+  isolation: isolate;
+  background: #02070b;
 }
 
 @media (max-width: 760px) {
@@ -2439,7 +2495,8 @@ html:has(.app-shell > main > .hero.hero-world).is-section-transitioning {
 
 .app-shell:has(> main > .hero.hero-world) > .topbar,
 .app-shell:has(> main > .hero.hero-world) .world-copy,
-.app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
+.app-shell:has(> main > .hero.hero-world) .world-scroll-cue,
+.app-shell:has(> main > .hero.hero-world) .world-skip-button {
   font-family: Aeonik, "Be Vietnam Pro", ui-sans-serif, sans-serif;
   font-synthesis: none;
   -webkit-font-smoothing: antialiased;
@@ -2452,13 +2509,15 @@ body.menu-open {
 /* Aeonik has no Vietnamese horn letters, so the whole line stays one grotesque. */
 html[lang="vi"] .app-shell:has(> main > .hero.hero-world) > .topbar,
 html[lang="vi"] .app-shell:has(> main > .hero.hero-world) .world-copy,
-html[lang="vi"] .app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
+html[lang="vi"] .app-shell:has(> main > .hero.hero-world) .world-scroll-cue,
+html[lang="vi"] .app-shell:has(> main > .hero.hero-world) .world-skip-button {
   font-family: "Be Vietnam Pro", Aeonik, sans-serif;
 }
 
 html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) > .topbar,
 html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy,
-html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
+html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-scroll-cue,
+html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-skip-button {
   font-family: Aeonik, system-ui, "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", sans-serif;
 }
 
@@ -2789,6 +2848,57 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy h1 em {
 
 .world-scroll-cue:hover {
   color: #fff;
+}
+
+.world-skip-button {
+  position: absolute;
+  z-index: 7;
+  right: clamp(20px, 4vw, 56px);
+  bottom: clamp(82px, 10vh, 104px);
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 10px 0 12px;
+  border: 1px solid rgb(240 241 250 / 34%);
+  border-radius: 999px;
+  background: rgb(8 12 19 / 38%);
+  backdrop-filter: blur(12px);
+  color: rgb(240 241 250 / 88%);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.world-skip-button::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  margin-top: -3px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+}
+
+.world-skip-button:hover {
+  transform: translateY(-2px);
+  border-color: rgb(114 243 222 / 70%);
+  background: rgb(8 12 19 / 68%);
+  color: #fff;
+}
+
+.world-skip-button:focus-visible {
+  outline: 2px solid #72f3de;
+  outline-offset: 3px;
 }
 
 .app-shell:has(> main > .hero.hero-world) .scroll-progress {
@@ -3310,6 +3420,10 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy h1 em {
   max-width: none;
 }
 
+html.is-lusion-section-active .portal-header {
+  visibility: hidden;
+}
+
 @media (max-width: 760px) {
   .portal-header-brand {
     transform: translateY(-14px);
@@ -3317,11 +3431,13 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy h1 em {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .app-shell:has(> main > .hero.hero-world) .world-stage {
+  .app-shell:has(> main > .hero.hero-world) .world-stage,
+  .app-shell:has(> main > .hero.hero-world) .lusion-home-content {
     transform: none;
   }
 
-  .app-shell:has(> main > .hero.hero-world) .world-stage {
+  .app-shell:has(> main > .hero.hero-world) .world-stage,
+  .app-shell:has(> main > .hero.hero-world) .lusion-home-content {
     opacity: 1;
   }
 }
@@ -3374,7 +3490,7 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy h1 em {
   display: grid;
   justify-items: start;
   margin: 0;
-  font-size: clamp(76px, 9.3vw, 136px);
+  font-size: clamp(72px, 8.8vw, 126px);
   font-family: "XLAB Form Display", "Be Vietnam Pro", Aeonik, sans-serif;
   font-weight: 500;
   letter-spacing: -0.04em;
@@ -3392,7 +3508,7 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy h1 em {
 .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--lead {
   margin: 0 0 0.02em 0.05em;
   color: #f2f3f5;
-  font-size: clamp(36px, 4.3vw, 62px);
+  font-size: clamp(34px, 4vw, 58px);
   font-weight: 500;
   letter-spacing: -0.025em;
   line-height: 1.12;
@@ -3406,7 +3522,7 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy h1 em {
   background-size: 185% 100%;
   background-clip: text;
   color: transparent;
-  font-size: clamp(76px, 9.3vw, 136px);
+  font-size: clamp(72px, 8.8vw, 126px);
   font-style: normal;
   font-weight: 500;
   letter-spacing: -0.045em;
@@ -3433,7 +3549,7 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .w
   max-width: min(52ch, 100%);
   margin: 1em 0 0 4px;
   color: rgb(241 243 247 / 78%);
-  font-size: clamp(15px, 1.1vw, 18px);
+  font-size: clamp(14px, 1vw, 16px);
   font-weight: 400;
   letter-spacing: 0;
   line-height: 1.5;
@@ -3593,19 +3709,19 @@ html.is-ready .app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark {
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-copy h1 {
-    font-size: clamp(58px, 16vw, 74px);
+    font-size: clamp(54px, 15vw, 68px);
     line-height: 1.05;
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--lead {
-    font-size: clamp(35px, 9.5vw, 42px);
+    font-size: clamp(33px, 9vw, 39px);
     animation-duration: 740ms;
     animation-delay: 70ms;
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--final {
     margin-top: 0.06em;
-    font-size: clamp(66px, 18vw, 86px);
+    font-size: clamp(62px, 17vw, 80px);
     line-height: 1.08;
     animation-duration: 840ms, 1180ms;
     animation-delay: 170ms, 250ms;
@@ -3614,7 +3730,7 @@ html.is-ready .app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark {
   .app-shell:has(> main > .hero.hero-world) .world-lede {
     max-width: 28em;
     margin-top: 0.9em;
-    font-size: clamp(14px, 3.9vw, 15px);
+    font-size: clamp(13px, 3.7vw, 14px);
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-lede > span {
@@ -3643,7 +3759,7 @@ html.is-ready .app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark {
 
 @media (max-width: 360px) {
   .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--final {
-    font-size: clamp(58px, 17vw, 68px);
+    font-size: clamp(54px, 16vw, 64px);
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-lede {

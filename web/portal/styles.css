@@ -6333,6 +6333,10 @@ html[data-theme="light"] .brand:focus-visible .brand-logo-frame {
   animation: live-pulse 2.3s ease-in-out infinite;
 }
 
+.scroll-progress span {
+  animation: progress-glow 3.5s ease-in-out infinite;
+}
+
 .selection-tray:not([hidden]) {
   animation: tray-arrive 650ms var(--ease-expo) both;
 }
@@ -6349,9 +6353,6 @@ html[data-theme="light"] .brand:focus-visible .brand-logo-frame {
   animation: modal-atmosphere 8s ease-in-out infinite;
 }
 
-.scroll-progress span {
-  animation: progress-glow 3.5s ease-in-out infinite;
-}
 
 @keyframes page-grid-drift {
   from {
@@ -6638,6 +6639,7 @@ html[data-theme="light"] .brand:focus-visible .brand-logo-frame {
     box-shadow: 0 0 22px rgb(55 200 143 / 88%);
   }
 }
+
 
 @media (prefers-reduced-motion: reduce) {
   body::before,

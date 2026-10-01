@@ -15,10 +15,20 @@ const MAX_TOTAL_ATTACHMENT_BYTES = 4 * 1024 * 1024;
 const REQUEST_TIMEOUT_MS = 15_000;
 const LOCAL_REQUEST_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 const LOCALE_STORAGE_KEY = "presentlab.locale";
+const LUSION_LOCALE_STORAGE_KEY = "lusion-language";
+let resolveNativeLusionHeaderReady;
+const nativeLusionHeaderReady = new Promise((resolve) => {
+  resolveNativeLusionHeaderReady = resolve;
+});
+function settleNativeLusionHeaderReady() {
+  resolveNativeLusionHeaderReady?.();
+  resolveNativeLusionHeaderReady = null;
+}
 const THEME_STORAGE_KEY = "presentlab.theme";
 const DEFAULT_LOCALE = "vi";
 const DEFAULT_THEME = "dark";
 const SUPPORTED_LOCALES = ["vi", "en", "zh"];
+const LUSION_LOCALE_CODES = { vi: "vi", en: "en", zh: "zh-CN" };
 const SUPPORTED_THEMES = ["dark", "light"];
 const MOTION_SCENES = ["catalog", "templates", "journey", "process"];
 
@@ -204,6 +214,7 @@ const COPY = {
     signalBrief: "BRIEF / DỰNG / DUYỆT",
     signalOutput: "SẴN SÀNG LÊN SÂN KHẤU",
     heroScrollCue: "Cuộn xuống",
+    skipIntro: "Bỏ qua phần mở đầu",
     scrollToProcess: "Lướt xuống xem quy trình",
     scrollToJourney: "Lướt xuống xem hành trình thiết kế",
     nextSceneKicker: "03 / FLIGHT JOURNAL",
@@ -431,6 +442,7 @@ const COPY = {
     signalBrief: "BRIEF / BUILD / REVIEW",
     signalOutput: "READY FOR THE ROOM",
     heroScrollCue: "Scroll down",
+    skipIntro: "Skip intro",
     scrollToProcess: "Scroll to the process",
     scrollToJourney: "Scroll through the design journey",
     nextSceneKicker: "03 / FLIGHT JOURNAL",
@@ -651,6 +663,7 @@ const COPY = {
     signalBrief: "简报 / 制作 / 评审",
     signalOutput: "为现场呈现准备",
     heroScrollCue: "向下",
+    skipIntro: "跳过开场",
     scrollToProcess: "向下查看流程",
     scrollToJourney: "向下浏览设计旅程",
     nextSceneKicker: "03 / 飞行日志",
@@ -1271,6 +1284,7 @@ const elements = {
   themeToggle: document.querySelector("[data-theme-toggle]"),
   themeIcon: document.querySelector("[data-theme-icon]"),
   themeLabel: document.querySelector("[data-theme-label]"),
+  scrollProgress: document.querySelector("[data-scroll-progress]"),
   parallaxStage: document.querySelector("[data-parallax-stage]"),
   hero: document.querySelector(".hero"),
   heroCopy: document.querySelector('[data-reveal="hero-copy"]'),
@@ -1316,10 +1330,34 @@ function templateDescription(template) {
   );
 }
 
+function syncLocaleToLusion(locale = state.locale, force = false) {
+  const lusionLocale = LUSION_LOCALE_CODES[locale];
+  if (!lusionLocale) return;
+  let changed = force;
+  try {
+    if (localStorage.getItem(LUSION_LOCALE_STORAGE_KEY) !== lusionLocale) {
+      localStorage.setItem(LUSION_LOCALE_STORAGE_KEY, lusionLocale);
+      changed = true;
+    }
+  } catch {
+    changed = true;
+  }
+  const content = document.querySelector("[data-lusion-home-content]");
+  if (!content || (!changed && content.dataset.lusionLanguage === lusionLocale))
+    return;
+  content.dataset.lusionLanguage = lusionLocale;
+  window.dispatchEvent(
+    new CustomEvent("presentlab:set-lusion-language", {
+      detail: { locale: lusionLocale },
+    }),
+  );
+}
+
 function applyLocale() {
   const locale = state.locale;
   document.documentElement.lang = locale === "zh" ? "zh-CN" : locale;
   document.documentElement.dataset.locale = locale;
+  syncLocaleToLusion(locale);
   document.querySelectorAll("[data-i18n]").forEach((element) => {
     element.textContent = t(element.dataset.i18n);
   });
@@ -2291,6 +2329,12 @@ function getScrollTop() {
   return Math.max(window.scrollY, document.documentElement.scrollTop, document.body.scrollTop, 0);
 }
 
+function updateScrollProgress() {
+  const scrollable = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
+  const progress = Math.min(Math.max(getScrollTop() / scrollable, 0), 1);
+  elements.scrollProgress.style.transform = `scaleX(${progress})`;
+}
+
 function clampUnit(value) {
   return Math.min(Math.max(value, 0), 1);
 }
@@ -2325,6 +2369,10 @@ function updateMotionChoreography() {
   const catalogProgress = sceneProgressFor(elements.catalogSection);
   const journeyProgress = journeyProgressFor(elements.journeySection);
   const processProgress = sceneProgressFor(elements.processSection);
+  const scrollable = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
+  const totalProgress = clampUnit(scrollTop / scrollable);
+
+  document.documentElement.style.setProperty("--scroll-progress", totalProgress.toFixed(4));
   document.documentElement.style.setProperty(
     "--motion-velocity",
     String(state.motionVelocity.toFixed(2)) + "px",
@@ -2390,6 +2438,7 @@ function requestMotionFrame() {
   if (motionFrame) return;
   motionFrame = requestAnimationFrame(() => {
     motionFrame = 0;
+    updateScrollProgress();
     updateMotionChoreography();
   });
 }
@@ -2403,7 +2452,7 @@ function bindMotionScroll() {
 
 function scrollToMotionTarget(target, href, smooth = true) {
   target.scrollIntoView({
-    behavior: smooth && !isReducedMotion() ? "smooth" : "instant",
+    behavior: smooth && !isReducedMotion() ? "smooth" : "auto",
     block: "start",
   });
   window.history.replaceState(null, "", href);
@@ -2415,7 +2464,7 @@ function bindAnchorNavigation() {
       const target = document.querySelector(link.getAttribute("href"));
       if (!target) return;
       event.preventDefault();
-      elements.menu?.classList.remove("is-open");
+      elements.menu.classList.remove("is-open");
       scrollToMotionTarget(target, link.getAttribute("href"));
     });
   });
@@ -2688,12 +2737,7 @@ function startPageCurtain(libraryReady) {
     : Promise.resolve();
 
   if (!pageCurtain) {
-    Promise.allSettled([
-      libraryReady,
-      pageLoaded,
-      fontsReady,
-      worldReady,
-    ]).then(() => root.classList.add("is-ready"));
+    nativeLusionHeaderReady.then(() => root.classList.add("is-ready"));
     return;
   }
 
@@ -2704,6 +2748,7 @@ function startPageCurtain(libraryReady) {
       pageLoaded,
       fontsReady,
       worldReady,
+      nativeLusionHeaderReady,
     ]).then(() => {
       pageCurtain.classList.add("is-complete");
       root.classList.add("is-ready");
@@ -2732,8 +2777,9 @@ function startPageCurtain(libraryReady) {
   let libraryIsReady = false;
   let pageResourcesAreReady = false;
   let waterIsReady = false;
+  let nativeHeaderIsReady = false;
   const updateReadiness = () => {
-    isReady = pageResourcesAreReady && waterIsReady;
+    isReady = pageResourcesAreReady && waterIsReady && nativeHeaderIsReady;
   };
   const readinessFallback = window.setTimeout(() => {
     pageHasLoaded = true;
@@ -2766,10 +2812,14 @@ function startPageCurtain(libraryReady) {
     waterIsReady = true;
     updateReadiness();
   });
+  nativeLusionHeaderReady.then(() => {
+    nativeHeaderIsReady = true;
+    updateReadiness();
+  });
 
   function render(now) {
     const elapsed = now - startedAt;
-    // The 70/30 blend leaves an 86% bar when resource progress is at 80%.
+    // Lusion's 70/30 blend leaves an 86% bar when resource progress is at 80%.
     const stageProgress = libraryIsReady ? 80 : fontsAreReady ? 76 : pageHasLoaded ? 64 : 22;
     const targetProgress = isReady && elapsed >= minimumDuration ? 100 : stageProgress;
     const deltaMilliseconds = Math.max(0, now - previousFrameAt);
@@ -2889,7 +2939,7 @@ function scrollPageToSection(target) {
   sectionScrollFrame = window.requestAnimationFrame(render);
 }
 
-function bindWaterHeroHandoff() {
+function bindWaterLusionHandoff() {
   const hero = elements.hero;
   const nextSection = elements.catalogSection;
   if (!hero || !nextSection) return;
@@ -2909,6 +2959,14 @@ function bindWaterHeroHandoff() {
       "--water-handoff-opacity",
       `${(1 - progress * 0.42).toFixed(3)}`,
     );
+    nextSection.style.setProperty(
+      "--lusion-handoff-offset",
+      `${(6 * (1 - progress)).toFixed(2)}vh`,
+    );
+    nextSection.style.setProperty(
+      "--lusion-handoff-opacity",
+      `${progress.toFixed(3)}`,
+    );
   };
   const scheduleUpdate = () => {
     if (updateFrame) return;
@@ -2920,19 +2978,23 @@ function bindWaterHeroHandoff() {
   update();
 }
 
-function bindWaterToCatalogScroll() {
+function bindWaterToLusionScroll() {
   const hero = elements.hero;
   const nextSection = elements.catalogSection;
-  if (
-    !hero ||
-    !nextSection ||
-    getComputedStyle(nextSection).display === "none"
-  ) {
-    return;
-  }
+  const content = document.querySelector("[data-lusion-home-content]");
+  if (!hero || !nextSection || !content) return;
 
   let automaticScrollTimer = 0;
   let userHasTakenControl = false;
+  let lastTouchY = null;
+  const pageRoot = document.documentElement;
+  const sectionIsAtTop = () => Math.abs(nextSection.getBoundingClientRect().top) <= 2;
+  const lusionIsAtTop = () => window.__XLAB_LUSION_SCROLL_AT_TOP__ === true;
+  const updateSectionState = () => {
+    const bounds = nextSection.getBoundingClientRect();
+    const active = Math.abs(bounds.top) <= 2 && bounds.bottom >= window.innerHeight - 2;
+    pageRoot.classList.toggle("is-lusion-section-active", active);
+  };
   const cancelAutomaticScroll = () => {
     userHasTakenControl = true;
     if (!automaticScrollTimer) return;
@@ -2940,26 +3002,13 @@ function bindWaterToCatalogScroll() {
     automaticScrollTimer = 0;
   };
   const scheduleAutomaticScroll = () => {
-    if (
-      userHasTakenControl ||
-      automaticScrollTimer ||
-      getScrollTop() > 2
-    ) {
-      return;
-    }
+    if (userHasTakenControl || automaticScrollTimer || getScrollTop() > 2) return;
     automaticScrollTimer = window.setTimeout(() => {
       automaticScrollTimer = 0;
-      if (
-        userHasTakenControl ||
-        getScrollTop() > 2 ||
-        sectionScrollTarget
-      ) {
-        return;
-      }
+      if (userHasTakenControl || getScrollTop() > 2 || sectionScrollTarget) return;
       scrollPageToSection(nextSection);
     }, 10_000);
   };
-  const pageRoot = document.documentElement;
   if (pageRoot.classList.contains("is-ready")) {
     scheduleAutomaticScroll();
   } else {
@@ -2968,11 +3017,9 @@ function bindWaterToCatalogScroll() {
       readyObserver.disconnect();
       scheduleAutomaticScroll();
     });
-    readyObserver.observe(pageRoot, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
+    readyObserver.observe(pageRoot, { attributes: true, attributeFilter: ["class"] });
   }
+
   document.addEventListener("pointerdown", cancelAutomaticScroll, {
     capture: true,
     passive: true,
@@ -2989,115 +3036,116 @@ function bindWaterToCatalogScroll() {
     capture: true,
     passive: true,
   });
-  window.addEventListener(
-    "scroll",
-    () => {
-      if (getScrollTop() > 2) cancelAutomaticScroll();
-    },
-    { passive: true },
-  );
+  window.addEventListener("scroll", () => {
+    updateSectionState();
+    if (getScrollTop() > 2) cancelAutomaticScroll();
+  }, { passive: true });
+  window.addEventListener("resize", updateSectionState, { passive: true });
+  updateSectionState();
 
-  const scrollToCatalog = () => {
-    if (nextSection.getBoundingClientRect().top <= 2) return;
+  const inputIsActive = (target) =>
+    target instanceof Element &&
+    Boolean(target.closest("select, input, textarea, [contenteditable='true']"));
+  const menuIsOpen = () =>
+    document.getElementById("header-right-menu-btn")?.classList.contains("--opened");
+  const scrollToLusion = (event) => {
+    event.preventDefault();
+    event.stopImmediatePropagation();
     scrollPageToSection(nextSection);
   };
+  const returnToWater = (event) => {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    scrollPageToSection(hero);
+  };
 
-  window.addEventListener(
-    "wheel",
-    (event) => {
-      if (event.ctrlKey || !event.cancelable || event.deltaY >= 0) return;
-      if (elements.menu?.classList.contains("is-open")) return;
-      if (
-        event.target instanceof Element &&
-        event.target.closest("select, input, textarea, [contenteditable='true']")
-      ) {
-        return;
-      }
+  window.addEventListener("wheel", (event) => {
+    if (event.ctrlKey || !event.cancelable || inputIsActive(event.target)) return;
+    const insideLusion = nextSection.contains(event.target);
+    if (
+      event.deltaY > 0 &&
+      !insideLusion &&
+      getScrollTop() <= 2 &&
+      nextSection.getBoundingClientRect().top > 2
+    ) {
+      scrollToLusion(event);
+      return;
+    }
+    if (
+      event.deltaY < 0 &&
+      insideLusion &&
+      sectionIsAtTop() &&
+      lusionIsAtTop() &&
+      getScrollTop() > 0 &&
+      !menuIsOpen()
+    ) {
+      returnToWater(event);
+      return;
+    }
+    if (event.deltaY > 0 && sectionScrollTarget === hero) scrollToLusion(event);
+  }, { passive: false, capture: true });
 
-      const nextSectionAtTop =
-        Math.abs(nextSection.getBoundingClientRect().top) <= 2;
-      if (
-        sectionScrollTarget !== nextSection &&
-        (!nextSectionAtTop || getScrollTop() <= 0)
-      ) {
-        return;
-      }
+  document.addEventListener("touchstart", (event) => {
+    lastTouchY = event.touches[0]?.clientY ?? null;
+  }, { passive: true, capture: true });
+  document.addEventListener("touchmove", (event) => {
+    const touch = event.touches[0];
+    if (!touch || lastTouchY === null || !event.cancelable) return;
+    const deltaY = lastTouchY - touch.clientY;
+    lastTouchY = touch.clientY;
+    if (inputIsActive(event.target)) return;
+    const insideLusion = nextSection.contains(event.target);
+    if (
+      deltaY > 2 &&
+      !insideLusion &&
+      getScrollTop() <= 2 &&
+      nextSection.getBoundingClientRect().top > 2
+    ) {
+      scrollToLusion(event);
+      return;
+    }
+    if (
+      deltaY < -2 &&
+      insideLusion &&
+      sectionIsAtTop() &&
+      lusionIsAtTop() &&
+      getScrollTop() > 0 &&
+      !menuIsOpen()
+    ) {
+      returnToWater(event);
+      return;
+    }
+    if (deltaY > 2 && sectionScrollTarget === hero) scrollToLusion(event);
+  }, { passive: false, capture: true });
+  document.addEventListener("touchend", () => { lastTouchY = null; }, { passive: true, capture: true });
+  document.addEventListener("touchcancel", () => { lastTouchY = null; }, { passive: true, capture: true });
+}
 
-      event.preventDefault();
-      scrollPageToSection(hero);
-    },
-    { passive: false, capture: true },
-  );
-
-  hero.addEventListener(
-    "wheel",
-    (event) => {
-      if (event.ctrlKey || !event.cancelable) return;
-      if (event.deltaY < 0 && sectionScrollTarget === nextSection) {
-        event.preventDefault();
-        scrollPageToSection(hero);
-        return;
-      }
-      if (event.deltaY <= 0) return;
-      event.preventDefault();
-      scrollToCatalog();
-    },
-    { passive: false },
-  );
-
-  let lastTouchY = null;
-  hero.addEventListener(
-    "touchstart",
-    (event) => {
-      lastTouchY = event.touches[0]?.clientY ?? null;
-    },
-    { passive: true },
-  );
-  hero.addEventListener(
-    "touchmove",
-    (event) => {
-      const touch = event.touches[0];
-      if (!touch || lastTouchY === null) return;
-      const scrollDelta = lastTouchY - touch.clientY;
-      lastTouchY = touch.clientY;
-      if (!event.cancelable) return;
-      if (scrollDelta < -2 && sectionScrollTarget === nextSection) {
-        event.preventDefault();
-        scrollPageToSection(hero);
-        return;
-      }
-      if (scrollDelta <= 2) return;
-      event.preventDefault();
-      scrollToCatalog();
-    },
-    { passive: false },
-  );
-  hero.addEventListener(
-    "touchend",
-    () => {
-      lastTouchY = null;
-    },
-    { passive: true },
-  );
-  hero.addEventListener(
-    "touchcancel",
-    () => {
-      lastTouchY = null;
-    },
-    { passive: true },
-  );
+function deferLusionFrame() {
+  const content = document.querySelector("[data-lusion-home-content]");
+  if (!content) {
+    settleNativeLusionHeaderReady();
+    return;
+  }
+  window.addEventListener("lusion:language-selected", (event) => {
+    const locale = { en: "en", vi: "vi", "zh-CN": "zh" }[event.detail?.locale];
+    if (locale) setLocale(locale);
+  });
+  syncLocaleToLusion(state.locale, true);
+  settleNativeLusionHeaderReady();
 }
 
 function setupExperience(libraryReady) {
   bindRevealMotion();
   bindAnchorNavigation();
   bindSectionObserver();
-  bindWaterHeroHandoff();
-  bindWaterToCatalogScroll();
+  bindWaterLusionHandoff();
+  bindWaterToLusionScroll();
   bindStageParallax();
   bindAmbientSurfaceMotion();
   bindMagneticMotion();
   bindMotionScroll();
+  deferLusionFrame();
   startPageCurtain(libraryReady);
 }
 

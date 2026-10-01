@@ -6,7 +6,7 @@
 
   const style = document.createElement("style");
   style.textContent =
-    ":root{--header-color:#237478}" +
+    ".lusion-home-content{--header-color:#237478}" +
     "#header-menu-talk{display:none!important}" +
     "#xlab-footer-contact-methods{display:grid;justify-items:start;gap:.35rem;margin-top:.65rem}" +
     "#xlab-footer-contact-methods a{position:relative;display:inline-block;width:max-content;max-width:100%;padding-bottom:.2em;font-size:clamp(.875rem,1.3vw,1rem);line-height:1.5;color:inherit;text-decoration:none}" +
@@ -22,12 +22,12 @@
     "#header-logo .xlab-logo-crop img{position:absolute;top:-8.9px;left:0;display:block;width:80px;height:auto;max-width:none}" +
     "html:not(.is-black-bg):not(.is-blue-bg) #header-logo .xlab-logo-crop img{filter:none!important}" +
     "html.is-black-bg #header-logo .xlab-logo-crop img,html.is-blue-bg #header-logo .xlab-logo-crop img{filter:brightness(0) invert(1)}" +
-    "#xlab-preloader-reveal{position:fixed;inset:0;z-index:201;display:grid;place-items:center;background:#000;opacity:1;transition:opacity .22s ease;pointer-events:auto}" +
-    "#xlab-preloader-reveal.is-exiting{opacity:0}" +
-    "#xlab-preloader-mark{position:relative;display:block;width:min(280px,72vw);aspect-ratio:20/7;overflow:hidden}" +
-    "#xlab-preloader-mark img{position:absolute;top:-31.8%;left:0;display:block;width:100%;height:auto;max-width:none;filter:brightness(0) invert(1);transform:scale(1);transition:transform .22s cubic-bezier(.16,1,.3,1)}" +
-    "#xlab-preloader-reveal.is-exiting #xlab-preloader-mark img{transform:scale(.96)}" +
-    "@media(prefers-reduced-motion:reduce){#xlab-preloader-reveal,#xlab-preloader-mark img{transition:none}}";
+    ".lusion-home-content #xlab-preloader-reveal{position:absolute;inset:0;z-index:201;display:grid;place-items:center;background:#000;opacity:1;transition:opacity .22s ease;pointer-events:auto}" +
+    ".lusion-home-content #xlab-preloader-reveal.is-exiting{opacity:0}" +
+    ".lusion-home-content #xlab-preloader-mark{position:relative;display:block;width:min(280px,72vw);aspect-ratio:20/7;overflow:hidden}" +
+    ".lusion-home-content #xlab-preloader-mark img{position:absolute;top:-31.8%;left:0;display:block;width:100%;height:auto;max-width:none;filter:brightness(0) invert(1);transform:scale(1);transition:transform .22s cubic-bezier(.16,1,.3,1)}" +
+    ".lusion-home-content #xlab-preloader-reveal.is-exiting #xlab-preloader-mark img{transform:scale(.96)}" +
+    "@media(prefers-reduced-motion:reduce){.lusion-home-content #xlab-preloader-reveal,.lusion-home-content #xlab-preloader-mark img{transition:none}}";
   document.head.appendChild(style);
 
   // Aeonik is missing Vietnamese horn letters. Be Vietnam Pro is one grotesque for the whole line.
@@ -43,7 +43,7 @@
     beVietnamFace("BeVietnamPro-Regular-vietnamese.woff2", 400, beVietnamMarks) +
     beVietnamFace("BeVietnamPro-Medium-latin.woff2", 500, beVietnamLatin) +
     beVietnamFace("BeVietnamPro-Medium-vietnamese.woff2", 500, beVietnamMarks) +
-    'html[lang="vi"] body,html[lang="vi"] h1,html[lang="vi"] h2,html[lang="vi"] h3,html[lang="vi"] h4,html[lang="vi"] h5,html[lang="vi"] h6,html[lang="vi"] button,html[lang="vi"] input{font-family:"Be Vietnam Pro",sans-serif!important}' +
+    'html[lang="vi"] .lusion-home-content,html[lang="vi"] .lusion-home-content h1,html[lang="vi"] .lusion-home-content h2,html[lang="vi"] .lusion-home-content h3,html[lang="vi"] .lusion-home-content h4,html[lang="vi"] .lusion-home-content h5,html[lang="vi"] .lusion-home-content h6,html[lang="vi"] .lusion-home-content button,html[lang="vi"] .lusion-home-content input{font-family:"Be Vietnam Pro",sans-serif!important}' +
     'html[lang="vi"] #home-featured-title{padding-bottom:.22em!important;line-height:1.12!important;max-width:4.3em!important}' +
     'html[lang="vi"] #home-goal-title .goal-title-line-wrapper{padding:9px 0 12px!important}' +
     'html[lang="vi"] #home-goal-title .line{bottom:0!important}' +
@@ -62,22 +62,8 @@
     '@media (min-width:521px) and (max-width:879px){html[lang] #home-hero{grid-template-rows:calc(var(--header-size)*3 + 1rem) minmax(0,1fr)!important}html[lang] #home-hero-visual-container{grid-row:2!important}}' +
     '@media (min-width:813px) and (max-width:879px){html[lang] #home-hero-title{top:calc(var(--base-padding-y) + 8px)!important}}' +
     '@media (min-width:521px) and (max-width:879px){html[lang] #home-hero-title .line{overflow:visible!important}html[lang] #home-hero-title .word{transform:none!important}}' +
-    '@media (min-width:813px) and (max-width:919px){html[lang="vi"] body #home-hero-title{font-size:clamp(14px,1.8vw,16px)!important}}';
+    '@media (min-width:813px) and (max-width:919px){html[lang="vi"] .lusion-home-content #home-hero-title{font-size:clamp(14px,1.8vw,16px)!important}}';
   document.head.appendChild(vietnameseFontStyle);
-
-  if (new URLSearchParams(window.location.search).has("water-page-embed")) {
-    const embeddedLoaderStyle = document.createElement("style");
-    embeddedLoaderStyle.textContent =
-      "html:not(.is-white-bg) #header-logo{color:#2eb7ad!important}html:not(.is-white-bg) #header-logo svg text{fill:#2eb7ad!important}html.water-page-embed-root #header-logo{color:#2eb7ad!important}html.water-page-embed-root #header-logo svg text{fill:#2eb7ad!important}" +
-      "@media (min-width:813px) and (max-width:879px){html[lang] #home-hero-title{grid-column:1/span 12!important;left:27%!important;right:36.5%!important;font-size:clamp(17px,2.1vw,18px)!important;line-height:1.08!important}html[lang] #home-hero{grid-template-rows:clamp(90px,calc(7vw + 33px),95px) minmax(0,1fr)!important}}" +
-      "@media (min-width:641px) and (max-width:812px){html[lang] #home-hero-title{grid-column:1/span 12!important;left:calc(50% - 22px)!important;right:auto!important;width:min(calc(100% - 272px),33rem)!important;max-width:100%!important;box-sizing:border-box!important;transform:translateX(-50%)!important;font-size:clamp(16px,2.2vw,18px)!important;line-height:1.08!important}html[lang] #home-hero{grid-template-rows:clamp(83px,calc(63px + 3.2vw),90px) minmax(0,1fr)!important}html[lang] #home-hero-visual-container{grid-row:2!important}html[lang] #home-hero-title .line{overflow:visible!important}html[lang] #home-hero-title .word{transform:none!important}}" +
-      /* FIX: Embedded loader - reduce mobile font size to prevent overlap */
-      "@media (max-width:640px){html[lang] #home-hero{grid-template-rows:auto minmax(0,1fr)!important}html[lang] #home-hero-visual-container{grid-row:2!important}html[lang] #home-hero-title{position:relative!important;grid-column:1/span6!important;left:auto!important;right:auto!important;top:auto!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;margin-top:clamp(98px,15.5vw,110px)!important;padding:.48em .58em .5em!important;border:0!important;border-left:3px solid #2eb7ad!important;border-radius:14px!important;background:rgba(240,241,250,.96)!important;box-shadow:0 14px 40px rgba(0,0,0,.2)!important;color:#101116!important;font-size:clamp(20px,6.2vw,32px)!important;line-height:1.04!important;letter-spacing:-.035em!important;text-wrap:balance!important;z-index:54!important}html[lang] #home-hero-title .line{overflow:visible!important}html[lang] #home-hero-title .word{transform:none!important}}" +
-      "@media (min-width:521px) and (max-width:640px) and (max-height:500px){html[lang] #home-hero{grid-template-rows:clamp(92px,calc(84px + 2vw),100px) minmax(0,1fr)!important}html[lang] #home-hero-visual-container{grid-row:2!important}html[lang] #home-hero-title{position:absolute!important;grid-column:1/span12!important;left:calc(50% - 22px)!important;right:auto!important;top:var(--base-padding-y)!important;width:min(calc(100% - 272px),33rem)!important;max-width:100%!important;box-sizing:border-box!important;transform:translateX(-50%)!important;margin:0!important;padding:.35em .55em!important;border-left:3px solid #2eb7ad!important;border-radius:14px!important;background:rgba(240,241,250,.96)!important;box-shadow:0 14px 40px rgba(0,0,0,.2)!important;color:#101116!important;font-size:clamp(16px,2.2vw,18px)!important;line-height:1.08!important;letter-spacing:-.02em!important;text-wrap:balance!important;z-index:54!important}html[lang] #home-hero-title .line{overflow:visible!important}html[lang] #home-hero-title .word{transform:none!important}}";
-    embeddedLoaderStyle.textContent +=
-      "@media(max-width:760px){#lusion-language-switcher{top:15px!important}}";
-    document.head.appendChild(embeddedLoaderStyle);
-  }
 
   const offlineMessage = (detail) =>
     detail && detail.project
@@ -973,9 +959,7 @@
     '@media(max-width:812px){#lusion-language-menu{position:absolute;top:calc(100% + .55em + var(--lusion-menu-motion-y,0px));left:auto;right:0;max-height:calc(100vh - var(--base-padding-y)*2 - var(--header-size));overflow-y:auto}}';
   style.textContent +=
     'html[lang="vi"] #projects-main-title{padding-bottom:.18em!important}';
-  style.textContent +=
-    '@media(min-width:880px){html.water-page-embed-root #home-hero-title{translate:0 27.6px!important}}';
-  const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
+const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
   const translatedTextNodes = new WeakMap();
   const ignoredContentSelector = "script,style,noscript,svg,[data-lusion-no-translate]";
   const translateTextNode = (node) => {
@@ -1072,14 +1056,15 @@
       }
     }
   });
-  languageObserver.observe(document.documentElement, {
+  const translationRoot = document.querySelector("[data-lusion-home-content]") || document.documentElement;
+  languageObserver.observe(translationRoot, {
     subtree: true,
     childList: true,
     attributes: true,
     attributeFilter: ["aria-label", "placeholder", "title", "alt", "value", "content"],
     characterData: true,
   });
-  translateTree(document.documentElement);
+  translateTree(translationRoot);
 
   const languageOptions = [
     { code: "en", label: "EN", name: "English", htmlLang: "en" },
@@ -1093,23 +1078,13 @@
     } catch {
       // Keep the language switcher usable when browser storage is unavailable.
     }
-    if (window.parent !== window) {
-      window.parent.postMessage(
-        { type: "lusion:language-selected", locale: code },
-        window.location.origin,
-      );
-    }
+    window.dispatchEvent(
+      new CustomEvent("lusion:language-selected", { detail: { locale: code } }),
+    );
     window.location.reload();
   };
-  window.addEventListener("message", (event) => {
-    if (
-      event.source !== window.parent ||
-      event.origin !== window.location.origin ||
-      event.data?.type !== "presentlab:set-lusion-language"
-    ) {
-      return;
-    }
-    const nextLanguage = event.data.locale;
+  window.addEventListener("presentlab:set-lusion-language", (event) => {
+    const nextLanguage = event.detail?.locale;
     if (!languages.includes(nextLanguage) || nextLanguage === activeLanguage)
       return;
     try {
@@ -1468,7 +1443,7 @@
       logo.decoding = "async";
       logoCrop.appendChild(logo);
       reveal.appendChild(logoCrop);
-      document.body.appendChild(reveal);
+      (document.querySelector("[data-lusion-home-content]") || document.body).appendChild(reveal);
       revealAt = performance.now();
       scheduleExit();
     };
@@ -1500,7 +1475,7 @@
   document.addEventListener(
     "DOMContentLoaded",
     () => {
-      translateTree(document.documentElement);
+      translateTree(translationRoot);
       mountXlabContactMethods();
       mountXlabPreloaderReveal();
       mountLanguageSwitcher();

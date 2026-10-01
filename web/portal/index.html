@@ -31,6 +31,18 @@
         </span>
       </span>
     </div>
+    <div
+      class="scroll-progress"
+      role="slider"
+      aria-label="Điều hướng cuộn trang"
+      aria-orientation="vertical"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-valuenow="0"
+      data-i18n-aria-label="scrollProgressLabel"
+      data-scroll-progress-track
+      tabindex="0"
+    ><span data-scroll-progress></span></div>
     <noscript>
       <div class="noscript-banner" data-i18n="noscript">
         Trang này cần JavaScript để tải thư viện mẫu và gửi brief.
@@ -170,6 +182,14 @@
               </button>
             </nav>
 
+            <a
+              class="world-skip-button"
+              href="#templates"
+              data-skip-intro
+              data-i18n="skipIntro"
+              data-i18n-aria-label="skipIntro"
+            >Bỏ qua phần mở đầu</a>
+
           </div>
         </section>
 
@@ -189,12 +209,13 @@
         </div>
 
         <section
-          class="catalog-section"
+          class="catalog-section lusion-home-section"
           id="templates"
           aria-labelledby="catalog-title"
           data-reveal-section
           data-motion-scene="templates"
         >
+          <div class="lusion-home-content" data-lusion-home-content></div>
           <div class="section-heading" data-reveal="section-heading">
             <div>
               <p class="eyebrow" data-i18n="catalogEyebrow">01 / TEMPLATE LIBRARY</p>
@@ -643,6 +664,21 @@
         </section>
       </main>
 
+      <footer class="site-footer" data-reveal="footer">
+        <div class="footer-brand">
+          <span class="brand-logo-frame">
+            <picture>
+              <source srcset="/web/portal/xlab-logo.webp" type="image/webp" />
+              <img class="brand-logo" src="/web/portal/xlab-logo.png" alt="" />
+            </picture>
+          </span>
+          <strong>XLAB WEB</strong>
+        </div>
+        <p data-i18n="footerCopy">Chọn đúng nền tảng để ý tưởng được nhìn thấy.</p>
+        <span class="footer-status"
+          ><span></span> <span data-i18n="footerStatus">Production desk online</span></span
+        >
+      </footer>
     </div>
 
     <aside

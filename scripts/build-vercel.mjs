@@ -1,6 +1,7 @@
 import { cp, mkdir, readFile, readdir, rm, unlink, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import postcss from "postcss";
 import ts from "typescript";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -100,6 +101,37 @@ for (const pagePath of xlabPageFiles) {
   await writeFile(pagePath, html);
 }
 
+let lusionHomeSource = await readFile(join(root, "web/lusion/index.html"), "utf8");
+const homeLogos = lusionHomeSource.match(headerLogoPattern);
+if (!homeLogos || homeLogos.length !== 1) {
+  throw new Error("Expected one Lusion header logo in the Portal section source.");
+}
+if (!labsMenuLinkPattern.test(lusionHomeSource)) {
+  throw new Error("Expected one Labs menu link in the Portal section source.");
+}
+lusionHomeSource = lusionHomeSource.replace(labsMenuLinkPattern, "");
+lusionHomeSource = lusionHomeSource.replace(headerLogoPattern, headerLogo);
+lusionHomeSource = lusionHomeSource.replace(
+  projectCardLinkPattern,
+  (_match, attributes, content) => {
+    const nonLinkAttributes = attributes.replace(/\s+href=(?:"[^"]*"|'[^']*')/i, "");
+    return `<div${nonLinkAttributes}>${content}</div>`;
+  },
+);
+lusionHomeSource = lusionHomeSource.replace(
+  /\b(aria-label|alt|title)=("|')(.*?)\2/gi,
+  (_match, name, quote, value) => `${name}=${quote}${replaceBrandText(value)}${quote}`,
+);
+lusionHomeSource = lusionHomeSource.replace(
+  />([^<>]*)</g,
+  (_match, text) => `>${replaceBrandText(text)}<`,
+);
+const lusionBody = lusionHomeSource.match(/<body\b[^>]*>([\s\S]*?)<\/body>/i)?.[1];
+if (!lusionBody || /\/lusion\//i.test(lusionBody)) {
+  throw new Error("The Lusion home markup is missing or still references /lusion/.");
+}
+const lusionHomeMarkup = lusionBody.trim();
+
 const retiredShareImage = join(output, "assets", "meta", "social_sharing.jpg");
 await unlink(retiredShareImage);
 const siteOverridesPath = join(output, "_astro", "local-only.js");
@@ -117,6 +149,108 @@ if (blockingFontFaceCount !== 6) {
 }
 lusionStyles = lusionStyles.replaceAll("font-display:block", "font-display:swap");
 await writeFile(lusionStylesPath, lusionStyles);
+
+const lusionSectionStyles = postcss.parse(lusionStyles, {
+  from: "web/lusion/_astro/about.CNa9RfUh.css",
+});
+const lusionHomeScrollStyles = postcss.parse(
+  await readFile(join(root, "web/lusion/home-scroll.css"), "utf8"),
+  { from: "web/lusion/home-scroll.css" },
+);
+const lusionSectionRoot = ".lusion-home-content";
+const scopeLusionSelector = (rawSelector) => {
+  const selector = rawSelector.trim();
+  if (/^html(?=$|[.#:[\s>+~])/i.test(selector)) {
+    const boundary = selector.search(/[\s>+~]/);
+    const rootSelector = boundary < 0 ? selector : selector.slice(0, boundary);
+    let rest = boundary < 0 ? "" : selector.slice(boundary);
+    rest = rest.replace(/^\s*>\s*body\b/i, "");
+    rest = rest.replace(/^\s+body\b/i, "");
+    const scopedRoot = rootSelector === "html"
+      ? lusionSectionRoot
+      : `${rootSelector} ${lusionSectionRoot}`;
+    return `${scopedRoot}${rest}`;
+  }
+  if (/^body(?=$|[.#:[\s>+~])/i.test(selector)) {
+    return selector.replace(/^body/i, lusionSectionRoot);
+  }
+  if (/^:root(?=$|[.#:[\s>+~])/.test(selector)) {
+    return selector.replace(/^:root/, lusionSectionRoot);
+  }
+  if (/^\.is-(?:ready|project-details-active)(?=$|[.#:[\s>+~])/.test(selector)) {
+    const boundary = selector.search(/[\s>+~]/);
+    const stateSelector = boundary < 0 ? selector : selector.slice(0, boundary);
+    const rest = boundary < 0 ? "" : selector.slice(boundary);
+    return `html${stateSelector} ${lusionSectionRoot}${rest}`;
+  }
+  return `${lusionSectionRoot} ${selector}`;
+};
+const viewportLayerSelector =
+  /(?:#canvas\b|#ui\b|#input-blocker\b|#transition-overlay\b|#preloader\b|#header\b|#scroll-indicator\b|#video-overlay\b|#video-overlay__vimeo-video\b|\.template--fixed-full-screen\b)/;
+for (const stylesheet of [lusionSectionStyles, lusionHomeScrollStyles]) {
+  stylesheet.walkRules((rule) => {
+    const originalSelectors = rule.selectors;
+    const containsViewportLayer = originalSelectors.some((selector) =>
+      viewportLayerSelector.test(selector),
+    );
+    rule.selectors = originalSelectors.map(scopeLusionSelector);
+    if (containsViewportLayer) {
+      rule.walkDecls("position", (declaration) => {
+        if (declaration.value === "fixed") declaration.value = "absolute";
+      });
+    }
+  });
+  lusionSectionStyles.append(stylesheet.nodes);
+}
+lusionSectionStyles.append(
+  postcss.parse(`
+${lusionSectionRoot}{position:relative;width:100%;height:100%;min-height:100svh;overflow:hidden;isolation:isolate;background:#02070b}
+${lusionSectionRoot} > #canvas,${lusionSectionRoot} > #ui,${lusionSectionRoot} > #input-blocker,${lusionSectionRoot} > #transition-overlay,${lusionSectionRoot} > #preloader,${lusionSectionRoot} > #scroll-indicator,${lusionSectionRoot} > #video-overlay{position:absolute!important}
+${lusionSectionRoot} > #canvas,${lusionSectionRoot} > #transition-overlay,${lusionSectionRoot} > #input-blocker,${lusionSectionRoot} > #preloader,${lusionSectionRoot} > #video-overlay{inset:0;width:100%;height:100%}
+${lusionSectionRoot} > #ui{inset:0;width:100%;height:100%}
+${lusionSectionRoot} #header{position:absolute!important;top:0;left:0}
+${lusionSectionRoot} #scroll-indicator{top:40vh}
+${lusionSectionRoot} #xlab-preloader-reveal{position:absolute!important}
+`).nodes,
+);
+await writeFile(
+  join(output, "_astro", "lusion-section.css"),
+  lusionSectionStyles.toString(),
+);
+
+for (const portalPagePath of [
+  join(output, "index.html"),
+  join(output, "portal", "index.html"),
+]) {
+  let portalHtml = await readFile(portalPagePath, "utf8");
+  const placeholder = '<div class="lusion-home-content" data-lusion-home-content></div>';
+  if (portalHtml.split(placeholder).length - 1 !== 1) {
+    throw new Error(`Expected one direct Lusion section placeholder in ${portalPagePath}.`);
+  }
+  portalHtml = portalHtml.replace(
+    placeholder,
+    `<div class="lusion-home-content" data-lusion-home-content>${lusionHomeMarkup}</div>`,
+  );
+  if (portalHtml.includes("/lusion/") || /<iframe\b[^>]*class="lusion-home-frame"/i.test(portalHtml)) {
+    throw new Error(`The Portal page still references a Lusion embed route: ${portalPagePath}.`);
+  }
+  portalHtml = portalHtml.replace(
+    /<\/head>/i,
+    '    <link rel="stylesheet" href="/_astro/lusion-section.css" />\n  </head>',
+  );
+  const portalAppScript = '<script type="module" src="/web/portal/app.js"></script>';
+  if (portalHtml.split(portalAppScript).length - 1 !== 1) {
+    throw new Error(`Expected one Portal app entry in ${portalPagePath}.`);
+  }
+  portalHtml = portalHtml.replace(
+    portalAppScript,
+    '<script defer src="/_astro/local-only.js"></script>\n' +
+      '<script type="module" src="/_astro/hoisted.CUO_IjfL.js"></script>\n' +
+      portalAppScript,
+  );
+  await writeFile(portalPagePath, portalHtml);
+}
+
 const siteOverridesAst = ts.createSourceFile(
   "site-overrides.js",
   siteOverrides,
@@ -307,21 +441,9 @@ for (const [source, replacement] of [
     'this.containers.forEach((e,t)=>{e.style.setProperty("--open-delay",t/50+"s"),e.style.setProperty("--close-delay",Math.abs(t-this.containers.length)/50+"s")})',
     'this.containers.filter(Boolean).forEach((e,t)=>{e.style.setProperty("--open-delay",t/50+"s"),e.style.setProperty("--close-delay",Math.abs(t-this.containers.length)/50+"s")})',
   ],
-  [
-    'parsePath(e){return e=e.replace(/^\\/|\\/$/g,""),e}',
-    'parsePath(e){return e=e.replace(/^\\/|\\/$/g,""),e==="lusion"?"":e.startsWith("lusion/")?e.slice(7):e}',
-  ],
-  [
-    'history.pushState(null,null,(e||"/")+(this.queryStr?"?"+this.queryStr:""))',
-    'history.pushState(null,null,(e||"/lusion/")+(this.queryStr?"?"+this.queryStr:""))',
-  ],
-  [
-    'properties.loader.load("/"+e,{type:"text",onLoad:this._initDom.bind(this,this._createRoute(e))})',
-    'properties.loader.load(e?"/"+e:"/lusion/",{type:"text",onLoad:this._initDom.bind(this,this._createRoute(e))})',
-  ],
 ]) {
   if (!lusionBundle.includes(source)) {
-    throw new Error("The copied Lusion bundle no longer matches the runtime or subpath patch.");
+    throw new Error("The copied Lusion bundle no longer matches the runtime patch.");
   }
   lusionBundle = lusionBundle.replace(source, replacement);
 }
