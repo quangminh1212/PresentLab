@@ -968,6 +968,8 @@
   style.textContent +=
     '@media(max-width:812px){#lusion-language-switcher{translate:14px 0!important}}';
   style.textContent +=
+    '@media(max-width:812px){#lusion-language-menu{position:absolute;top:calc(100% + .55em + var(--lusion-menu-motion-y,0px));left:auto;right:0;max-height:calc(100vh - var(--base-padding-y)*2 - var(--header-size));overflow-y:auto}}';
+  style.textContent +=
     'html[lang="vi"] #projects-main-title{padding-bottom:.18em!important}';
   style.textContent +=
     '@media(min-width:880px){html.water-page-embed-root #home-hero-title{translate:0 27.6px!important}}';
