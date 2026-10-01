@@ -3846,6 +3846,15 @@ html.is-ready .app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark {
   background: linear-gradient(108deg, #f3f4fb 0%, #f0f1f8 82%, #d9dbe3 100%);
 }
 
+html.js:not(.is-ready) .portal-header {
+  z-index: 102;
+}
+
+html.js:not(.is-ready) .portal-header,
+html.js:not(.is-ready) .portal-header * {
+  pointer-events: none;
+}
+
 .portal-header-brand {
   display: block;
   width: 104px;
