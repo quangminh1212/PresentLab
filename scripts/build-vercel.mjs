@@ -1,7 +1,6 @@
 import { cp, mkdir, readFile, readdir, rm, unlink, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import postcss from "postcss";
 import ts from "typescript";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -149,74 +148,6 @@ if (blockingFontFaceCount !== 6) {
 }
 lusionStyles = lusionStyles.replaceAll("font-display:block", "font-display:swap");
 await writeFile(lusionStylesPath, lusionStyles);
-
-const lusionSectionStyles = postcss.parse(lusionStyles, {
-  from: "web/lusion/_astro/about.CNa9RfUh.css",
-});
-const lusionHomeScrollStyles = postcss.parse(
-  await readFile(join(root, "web/lusion/home-scroll.css"), "utf8"),
-  { from: "web/lusion/home-scroll.css" },
-);
-const lusionSectionRoot = ".lusion-home-content";
-const scopeLusionSelector = (rawSelector) => {
-  const selector = rawSelector.trim();
-  if (/^html(?=$|[.#:[\s>+~])/i.test(selector)) {
-    const boundary = selector.search(/[\s>+~]/);
-    const rootSelector = boundary < 0 ? selector : selector.slice(0, boundary);
-    let rest = boundary < 0 ? "" : selector.slice(boundary);
-    rest = rest.replace(/^\s*>\s*body\b/i, "");
-    rest = rest.replace(/^\s+body\b/i, "");
-    const scopedRoot = rootSelector === "html"
-      ? lusionSectionRoot
-      : `${rootSelector} ${lusionSectionRoot}`;
-    return `${scopedRoot}${rest}`;
-  }
-  if (/^body(?=$|[.#:[\s>+~])/i.test(selector)) {
-    return selector.replace(/^body/i, lusionSectionRoot);
-  }
-  if (/^:root(?=$|[.#:[\s>+~])/.test(selector)) {
-    return selector.replace(/^:root/, lusionSectionRoot);
-  }
-  if (/^\.is-(?:ready|project-details-active)(?=$|[.#:[\s>+~])/.test(selector)) {
-    const boundary = selector.search(/[\s>+~]/);
-    const stateSelector = boundary < 0 ? selector : selector.slice(0, boundary);
-    const rest = boundary < 0 ? "" : selector.slice(boundary);
-    return `html${stateSelector} ${lusionSectionRoot}${rest}`;
-  }
-  return `${lusionSectionRoot} ${selector}`;
-};
-const viewportLayerSelector =
-  /(?:#canvas\b|#ui\b|#input-blocker\b|#transition-overlay\b|#preloader\b|#header\b|#scroll-indicator\b|#video-overlay\b|#video-overlay__vimeo-video\b|\.template--fixed-full-screen\b)/;
-for (const stylesheet of [lusionSectionStyles, lusionHomeScrollStyles]) {
-  stylesheet.walkRules((rule) => {
-    const originalSelectors = rule.selectors;
-    const containsViewportLayer = originalSelectors.some((selector) =>
-      viewportLayerSelector.test(selector),
-    );
-    rule.selectors = originalSelectors.map(scopeLusionSelector);
-    if (containsViewportLayer) {
-      rule.walkDecls("position", (declaration) => {
-        if (declaration.value === "fixed") declaration.value = "absolute";
-      });
-    }
-  });
-  lusionSectionStyles.append(stylesheet.nodes);
-}
-lusionSectionStyles.append(
-  postcss.parse(`
-${lusionSectionRoot}{position:relative;width:100%;height:100%;min-height:100svh;overflow:hidden;isolation:isolate;background:#02070b}
-${lusionSectionRoot} > #canvas,${lusionSectionRoot} > #ui,${lusionSectionRoot} > #input-blocker,${lusionSectionRoot} > #transition-overlay,${lusionSectionRoot} > #preloader,${lusionSectionRoot} > #scroll-indicator,${lusionSectionRoot} > #video-overlay{position:absolute!important}
-${lusionSectionRoot} > #canvas,${lusionSectionRoot} > #transition-overlay,${lusionSectionRoot} > #input-blocker,${lusionSectionRoot} > #preloader,${lusionSectionRoot} > #video-overlay{inset:0;width:100%;height:100%}
-${lusionSectionRoot} > #ui{inset:0;width:100%;height:100%}
-${lusionSectionRoot} #header{position:absolute!important;top:0;left:0}
-${lusionSectionRoot} #scroll-indicator{top:40vh}
-${lusionSectionRoot} #xlab-preloader-reveal{position:absolute!important}
-`).nodes,
-);
-await writeFile(
-  join(output, "_astro", "lusion-section.css"),
-  lusionSectionStyles.toString(),
-);
 
 for (const portalPagePath of [
   join(output, "index.html"),

@@ -8,16 +8,17 @@ const requiredAssets = [
   "public/portal/index.html",
   "public/web/portal/index.html",
   "public/web/portal/app.js",
+  "public/web/portal/styles.css",
   "public/web/portal/world.css",
   "public/web/portal/world.js",
   "public/web/portal/xlab-logo.webp",
   "public/web/vendor/three/three.module.js",
   "public/web/vendor/three/addons/objects/Water.js",
-  "public/_astro/lusion-section.css",
   "public/_astro/hoisted.CUO_IjfL.js",
   "public/_astro/about.CNa9RfUh.css",
   "public/_astro/local-only.js",
   "public/home-scroll.css",
+  "public/lusion/index.html",
   "public/assets/meta/favicon.ico",
   "public/assets/meta/social_sharing_xlab.png",
   "public/assets/fonts/Aeonik-Regular.woff2",
@@ -35,91 +36,117 @@ for (const relativePath of requiredAssets) {
   }
 }
 
-const portalHtml = await readFile(resolve(root, "public/index.html"), "utf8");
-const portalAliasHtml = await readFile(
-  resolve(root, "public/portal/index.html"),
-  "utf8",
-);
-const portalApp = await readFile(resolve(root, "public/web/portal/app.js"), "utf8");
-const lusionBundle = await readFile(
-  resolve(root, "public/_astro/hoisted.CUO_IjfL.js"),
-  "utf8",
-);
-const lusionStyles = await readFile(
-  resolve(root, "public/_astro/lusion-section.css"),
-  "utf8",
-);
-const { document } = parseHTML(portalHtml);
-const lusionSection = document.querySelector(
-  "section#templates .lusion-home-content[data-lusion-home-content]",
-);
-if (!lusionSection) {
-  throw new Error("The root Portal page has no native Lusion content in #templates.");
-}
+const [portalHtml, portalAliasHtml, lusionHtml, portalStyles, portalWorldStyles, lusionOverrides] =
+  await Promise.all([
+    readFile(resolve(root, "public/index.html"), "utf8"),
+    readFile(resolve(root, "public/portal/index.html"), "utf8"),
+    readFile(resolve(root, "public/lusion/index.html"), "utf8"),
+    readFile(resolve(root, "public/web/portal/styles.css"), "utf8"),
+    readFile(resolve(root, "public/web/portal/world.css"), "utf8"),
+    readFile(resolve(root, "public/_astro/local-only.js"), "utf8"),
+  ]);
+
+const portalDocument = parseHTML(portalHtml).document;
+const portalAliasDocument = parseHTML(portalAliasHtml).document;
+const lusionDocument = parseHTML(lusionHtml).document;
+
+const verifyPortalRoute = (document, routeLabel) => {
+  if (
+    !document.querySelector(
+      '.portal-header .portal-header-brand img[src="/web/portal/xlab-logo.webp"]',
+    )
+  ) {
+    throw new Error(`${routeLabel} is missing the XLab header logo.`);
+  }
+  if (!document.querySelector(".portal-header select[data-locale]")) {
+    throw new Error(`${routeLabel} is missing the header language control.`);
+  }
+  if (
+    !document.querySelector(".portal-header details.portal-category-menu .portal-category-trigger")
+  ) {
+    throw new Error(`${routeLabel} is missing the category menu control.`);
+  }
+
+  const lusionSection = document.querySelector(
+    "section#templates .lusion-home-content[data-lusion-home-content]",
+  );
+  if (!lusionSection) {
+    throw new Error(`${routeLabel} is missing the embedded Lusion home section.`);
+  }
+  const frame = lusionSection.querySelector("iframe.lusion-home-frame[data-lusion-home-frame]");
+  if (!frame || frame.getAttribute("src") !== "/lusion/?water-page-embed") {
+    throw new Error(`${routeLabel} has an invalid embedded Lusion frame.`);
+  }
+};
+
+verifyPortalRoute(portalDocument, "The root Portal page");
+verifyPortalRoute(portalAliasDocument, "The /portal alias");
+
 for (const selector of [
-  "#home-hero",
+  "#canvas",
   "#page-container",
+  "#preloader",
+  "#home-hero",
   "#projects-main",
   "#footer-section",
-  "#canvas",
-  "#preloader",
+  "#header-logo",
+  "#header-right-menu-btn",
 ]) {
-  if (!lusionSection.querySelector(selector)) {
-    throw new Error(`The native Lusion section is missing ${selector}.`);
+  if (!lusionDocument.querySelector(selector)) {
+    throw new Error(`The standalone Lusion page is missing ${selector}.`);
   }
 }
-if (lusionSection.querySelector("iframe, frame, object, embed")) {
-  throw new Error("The Lusion section still contains an embedded document.");
-}
-if (
-  !portalAliasHtml.includes('id="home-hero"') ||
-  !portalAliasHtml.includes('class="lusion-home-content"')
-) {
-  throw new Error("The /portal alias does not use the same native Portal page.");
-}
-if (!portalHtml.includes('href="/_astro/lusion-section.css"')) {
-  throw new Error("The root Portal page is missing its scoped Lusion styles.");
-}
-for (const reference of [
-  ".lusion-home-content #canvas",
-  "html.is-ready .lusion-home-content #canvas",
-  ".lusion-home-content #page-container",
-]) {
-  if (!lusionStyles.includes(reference)) {
-    throw new Error(`Scoped Lusion styles are missing ${reference}.`);
-  }
-}
-if (/<iframe\b[^>]*class="lusion-home-frame"|water-page-embed|\/lusion\//i.test(
-  `${portalHtml}\n${portalApp}\n${lusionBundle}`,
-)) {
-  throw new Error("The Portal output still creates or references a /lusion/ embed route.");
+if (!lusionOverrides.includes('trigger.id = "lusion-language-trigger"')) {
+  throw new Error("The standalone Lusion page does not create its language control.");
 }
 
-try {
-  await stat(resolve(root, "public/lusion"));
-  throw new Error("The legacy /lusion/ output still exists.");
-} catch (error) {
-  if (error.code !== "ENOENT") throw error;
+if (!/\.page-curtain\s*\{[^}]*z-index:\s*101;/s.test(portalStyles)) {
+  throw new Error("The Portal loading curtain layer is missing or changed.");
+}
+if (!/html:not\(\.is-ready\)\s*\.portal-header\s*\{\s*z-index:\s*102;/s.test(portalWorldStyles)) {
+  throw new Error("The Portal header is not raised above the initial loading curtain.");
+}
+if (
+  !lusionOverrides.includes(
+    "html:not(.is-ready) #ui,html.is-lusion-preloading #ui{z-index:202!important}",
+  ) ||
+  !lusionOverrides.includes("html:not(.is-ready) #header #header-logo .xlab-logo-crop img") ||
+  !lusionOverrides.includes("html:not(.is-ready) #header-right-menu-btn") ||
+  !lusionOverrides.includes("html:not(.is-ready) #lusion-language-trigger")
+) {
+  throw new Error("Lusion loading styles do not keep its logo and header controls visible.");
 }
 
 const routeConfig = JSON.parse(await readFile(resolve(root, "vercel.json"), "utf8"));
-const rootRewrite = routeConfig.rewrites.some(
-  ({ source, destination }) => source === "/" && destination === "/index.html",
-);
-if (!rootRewrite) throw new Error("Vercel does not route / to the Portal page.");
-const lusionRoute = routeConfig.rewrites.some(({ source }) =>
-  source === "/lusion" || source.startsWith("/lusion/"),
-);
-if (lusionRoute) throw new Error("Vercel still declares a /lusion route.");
+const hasRewrite = (source, destination) =>
+  routeConfig.rewrites.some(
+    (rewrite) => rewrite.source === source && rewrite.destination === destination,
+  );
+if (!hasRewrite("/", "/index.html")) {
+  throw new Error("Vercel does not route / to the Portal page.");
+}
+if (!hasRewrite("/portal", "/index.html")) {
+  throw new Error("Vercel does not route /portal to the Portal page.");
+}
+if (!hasRewrite("/portal/:path*", "/web/portal/:path*")) {
+  throw new Error("Vercel does not preserve the /portal asset route.");
+}
+if (
+  routeConfig.rewrites.some(({ source }) => source === "/lusion" || source.startsWith("/lusion/"))
+) {
+  throw new Error("Vercel should serve /lusion/ from its static output directory.");
+}
 
 const listFiles = async (directory, baseDirectory = directory) => {
   const entries = await readdir(directory, { withFileTypes: true });
   const files = [];
   for (const entry of entries) {
     const entryPath = resolve(directory, entry.name);
-    if (entry.isDirectory()) files.push(...(await listFiles(entryPath, baseDirectory)));
-    else if (entry.isFile())
+    if (entry.isDirectory()) {
+      files.push(...(await listFiles(entryPath, baseDirectory)));
+    } else if (entry.isFile()) {
       files.push(entryPath.slice(baseDirectory.length + 1).replaceAll("\\", "/"));
+    }
   }
   return files.sort();
 };
@@ -127,7 +154,7 @@ const listFiles = async (directory, baseDirectory = directory) => {
 const projectFiles = await listFiles(resolve(root, "public", "projects"));
 for (const relativePath of projectFiles.filter((file) => file.endsWith(".html"))) {
   const html = await readFile(resolve(root, "public", "projects", relativePath), "utf8");
-  if (/<a\b[^>]*\bclass="[^\"]*\bproject-item\b[^\"]*"/i.test(html)) {
+  if (/<a\b[^>]*\bclass="[^"]*\bproject-item\b[^"]*"/i.test(html)) {
     throw new Error(`A project card still links to a detail page: ${relativePath}`);
   }
   const visibleMarkup = html.replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi, "");
@@ -141,5 +168,5 @@ for (const relativePath of projectFiles.filter((file) => file.endsWith(".html"))
 }
 
 console.log(
-  `Portal and native Lusion section verified: ${requiredAssets.length} required assets.`,
+  `Portal routes, loading headers, and ${projectFiles.length} project assets verified: ${requiredAssets.length} required assets.`,
 );

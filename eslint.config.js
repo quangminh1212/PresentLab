@@ -4,6 +4,7 @@ import tseslint from "typescript-eslint";
 export default tseslint.config(
   {
     ignores: [
+      ".superpowers/**",
       "dist/**",
       "public/**",
       "node_modules/**",
@@ -26,8 +27,13 @@ export default tseslint.config(
     files: ["scripts/**/*.mjs"],
     languageOptions: {
       globals: {
+        Buffer: "readonly",
+        URL: "readonly",
+        clearInterval: "readonly",
+        clearTimeout: "readonly",
         console: "readonly",
         process: "readonly",
+        setInterval: "readonly",
         setTimeout: "readonly",
       },
     },
@@ -44,6 +50,7 @@ export default tseslint.config(
         console: "readonly",
         document: "readonly",
         DOMMatrixReadOnly: "readonly",
+        Element: "readonly",
         Event: "readonly",
         fetch: "readonly",
         getComputedStyle: "readonly",
@@ -56,11 +63,13 @@ export default tseslint.config(
         navigator: "readonly",
         Node: "readonly",
         NodeFilter: "readonly",
+        performance: "readonly",
         requestAnimationFrame: "readonly",
         ResizeObserver: "readonly",
         setTimeout: "readonly",
         window: "readonly",
         CustomEvent: "readonly",
+        location: "readonly",
       },
     },
   },
