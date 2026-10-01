@@ -1,6 +1,7 @@
 # Page-Curtain Lifecycle Analysis
 
 ## 1. HTML Definition (Creation Point)
+
 **File:** `web/portal/index.html`  
 **Lines:** 19-20
 
@@ -19,6 +20,7 @@
 ## 2. CSS Styling & Lifecycle States
 
 ### A. Base Curtain Styles
+
 **File:** `web/portal/styles.css`  
 **Lines:** 3220-3242
 
@@ -26,13 +28,13 @@
 .page-curtain {
   position: fixed;
   inset: 0;
-  z-index: 90;                    /* sits above everything except overlays */
+  z-index: 90; /* sits above everything except overlays */
   display: grid;
   place-items: center;
-  pointer-events: none;            /* allows clicking through when hidden */
+  pointer-events: none; /* allows clicking through when hidden */
   background: radial-gradient(circle at 50% 44%, rgb(140 232 216 / 9%), transparent 22rem), #050a12;
   transform-origin: top;
-  transition: transform 900ms var(--ease-expo);  /* curtain drop animation */
+  transition: transform 900ms var(--ease-expo); /* curtain drop animation */
 }
 ```
 
@@ -41,12 +43,19 @@
 
 ```css
 @keyframes curtain-pulse {
-  from { opacity: 0.35; transform: scaleX(0.65); }
-  to   { opacity: 1;   transform: scaleX(1); }
+  from {
+    opacity: 0.35;
+    transform: scaleX(0.65);
+  }
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
 }
 ```
 
 ### B. Active State (Curain Visible)
+
 **Lines:** 3232-3237
 
 ```css
@@ -55,20 +64,22 @@
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--accent), transparent);
   box-shadow: 0 0 28px rgb(140 232 216 / 55%);
-  animation: curtain-pulse 1000ms ease-in-out infinite alternate;  /* loading indicator */
+  animation: curtain-pulse 1000ms ease-in-out infinite alternate; /* loading indicator */
 }
 ```
 
 ### C. Ready State (Curtain Hidden)
+
 **Line:** 3240-3242
 
 ```css
 html.is-ready .page-curtain {
-  transform: scaleY(0);    /* collapses vertically, effectively hidden */
+  transform: scaleY(0); /* collapses vertically, effectively hidden */
 }
 ```
 
 ### D. Light Theme Variation
+
 **File:** `styles.css` Lines: 4108-4110
 
 ```css
@@ -78,6 +89,7 @@ html[data-theme="light"] .page-curtain {
 ```
 
 ### E. Progressive Enhancement Fallback
+
 **File:** `styles.css` Lines: 3883-3885
 
 ```css
@@ -106,15 +118,16 @@ function setupExperience() {
   bindAmbientSurfaceMotion();
   bindMagneticMotion();
   bindMotionScroll();
-  deferLusionFrame();           // Lazy-load lusion iframe
+  deferLusionFrame(); // Lazy-load lusion iframe
   requestAnimationFrame(() => {
-    document.documentElement.classList.add("is-ready");  /* CURTAIN REMOVAL TRIGGER */
-    window.setTimeout(mountXLabWorld, 500);              // Start interactive world scene
+    document.documentElement.classList.add("is-ready"); /* CURTAIN REMOVAL TRIGGER */
+    window.setTimeout(mountXLabWorld, 500); // Start interactive world scene
   });
 }
 ```
 
 ### Execution Flow (Script Entry Points)
+
 **Lines:** 2583-2589
 
 ```javascript
@@ -122,11 +135,12 @@ document.documentElement.classList.add("js");
 resetInitialFragmentToWater();
 bindEvents();
 applyLocale();
-setupExperience();     /* Adds is-ready after ~0-500ms */
-loadLibrary();         /* Loads template/palette JSON data */
+setupExperience(); /* Adds is-ready after ~0-500ms */
+loadLibrary(); /* Loads template/palette JSON data */
 ```
 
 ### Timing Dependencies
+
 **Lines:** 2526-2557 (`deferLusionFrame`)
 
 ```javascript
@@ -149,7 +163,7 @@ function deferLusionFrame() {
       ([entry]) => {
         if (!entry.isIntersecting) return;
         observer.disconnect();
-        loadFrame();          /* Lusion loads when catalog section scrolls into view */
+        loadFrame(); /* Lusion loads when catalog section scrolls into view */
       },
       { rootMargin: "300px 0px" },
     );
@@ -168,14 +182,14 @@ function deferLusionFrame() {
 
 ## 4. Timeline Summary
 
-| Time Event | What Happens | Curtain State |
-|------------|--------------|---------------|
-| **t=0ms** | DOM parses, `.page-curtain` created from HTML | **Visible** (static HTML) |
-| **t=0-50ms** | `app.js` executes, calls `setupExperience()` | **Visible** |
-| **t=50-100ms** | `requestAnimationFrame` fires | |
-| **t=50-100ms** | `document.documentElement.classList.add("is-ready")` | **Curtain begins fade out** (`transform: scaleY(0)` over 900ms) |
-| **t=550ms** | `mountXLabWorld()` starts water canvas | Full interactivity available |
-| **~scroll time** | Lusion iframe lazy-loads when catalog section visible | Unrelated to curtain timing |
+| Time Event       | What Happens                                          | Curtain State                                                   |
+| ---------------- | ----------------------------------------------------- | --------------------------------------------------------------- |
+| **t=0ms**        | DOM parses, `.page-curtain` created from HTML         | **Visible** (static HTML)                                       |
+| **t=0-50ms**     | `app.js` executes, calls `setupExperience()`          | **Visible**                                                     |
+| **t=50-100ms**   | `requestAnimationFrame` fires                         |                                                                 |
+| **t=50-100ms**   | `document.documentElement.classList.add("is-ready")`  | **Curtain begins fade out** (`transform: scaleY(0)` over 900ms) |
+| **t=550ms**      | `mountXLabWorld()` starts water canvas                | Full interactivity available                                    |
+| **~scroll time** | Lusion iframe lazy-loads when catalog section visible | Unrelated to curtain timing                                     |
 
 ---
 
@@ -184,6 +198,7 @@ function deferLusionFrame() {
 ### Target Line: **index.html lines 19-20**
 
 **Current Code:**
+
 ```html
 <div class="page-curtain" data-page-curtain aria-hidden="true">
   <span class="page-curtain-line"></span>
@@ -225,16 +240,16 @@ html.is-ready .lusion-loader {
 
 ## 6. File References Summary
 
-| File | Line(s) | Role |
-|------|---------|------|
-| `web/portal/index.html` | 19-20 | **CURTAIN DEFINITION** — static creation point |
-| `web/portal/styles.css` | 3220-3242 | Base styling, active state |
-| `web/portal/styles.css` | 3240-3242 | `is-ready` trigger (curtain removal) |
-| `web/portal/styles.css` | 3750-3758 | Pulse animation keyframes |
-| `web/portal/styles.css` | 4108-4110 | Light theme override |
-| `web/portal/styles.css` | 3883-3885 | IE fallback (hide by default) |
-| `web/portal/app.js` | 2568-2571 | **CURTAIN REMOVAL TRIGGER** |
-| `web/portal/app.js` | 2526-2557 | Lusion lazy-loading logic |
+| File                    | Line(s)   | Role                                           |
+| ----------------------- | --------- | ---------------------------------------------- |
+| `web/portal/index.html` | 19-20     | **CURTAIN DEFINITION** — static creation point |
+| `web/portal/styles.css` | 3220-3242 | Base styling, active state                     |
+| `web/portal/styles.css` | 3240-3242 | `is-ready` trigger (curtain removal)           |
+| `web/portal/styles.css` | 3750-3758 | Pulse animation keyframes                      |
+| `web/portal/styles.css` | 4108-4110 | Light theme override                           |
+| `web/portal/styles.css` | 3883-3885 | IE fallback (hide by default)                  |
+| `web/portal/app.js`     | 2568-2571 | **CURTAIN REMOVAL TRIGGER**                    |
+| `web/portal/app.js`     | 2526-2557 | Lusion lazy-loading logic                      |
 
 ---
 
