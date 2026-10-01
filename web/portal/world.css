@@ -3830,355 +3830,259 @@ html.is-ready .app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark {
     radial-gradient(ellipse at 52% 42%, transparent 30%, rgb(24 28 35 / 10%) 100%);
 }
 
-.portal-water-header {
-  --portal-water-header-top: 25px;
-  --portal-water-header-side: 25px;
-  position: fixed;
-  z-index: 120;
-  top: var(--portal-water-header-top);
-  right: var(--portal-water-header-side);
-  left: var(--portal-water-header-side);
-  color: #101116;
-  font-family: "Be Vietnam Pro", Arial, sans-serif;
-  opacity: var(--portal-water-header-opacity, 1);
-  pointer-events: none;
-  transition: opacity 180ms ease;
-}
-
-.portal-water-header,
-.portal-water-header * {
-  box-sizing: border-box;
-}
-
-.portal-water-header.is-hidden {
-  visibility: hidden;
-  pointer-events: none;
-}
-
-.portal-water-header__bar {
+/* Light XLab header above the visual-first home scene. */
+.portal-header {
   position: relative;
-  z-index: 2;
-  display: flex;
-  height: 45px;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: 104px minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
-  pointer-events: none;
+  column-gap: 20px;
+  min-height: 116px;
+  padding: 27px clamp(22px, 4.4vw, 56px) 13px;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  color: #1c1d25;
+  background: linear-gradient(108deg, #f3f4fb 0%, #f0f1f8 82%, #d9dbe3 100%);
 }
 
-.portal-water-header__logo,
-.portal-water-header__actions,
-.portal-water-header button {
-  pointer-events: auto;
-}
-
-.portal-water-header__logo {
-  display: flex;
-  width: 80px;
-  height: 45px;
-  align-items: center;
-  color: inherit;
-  text-decoration: none;
-}
-
-.portal-water-header__logo-crop {
-  position: relative;
+.portal-header-brand {
   display: block;
-  width: 80px;
-  height: 28px;
-  overflow: hidden;
+  width: 104px;
+  line-height: 0;
 }
 
-.portal-water-header__logo-crop img {
-  position: absolute;
-  top: -8.9px;
-  left: 0;
+.portal-header-brand img {
   display: block;
-  width: 80px;
+  width: 100%;
   height: auto;
-  max-width: none;
 }
 
-.portal-water-header__actions {
+.portal-header-copy {
+  max-width: 620px;
+  margin: 0;
+  font-size: clamp(17px, 1.92vw, 22px);
+  font-weight: 400;
+  line-height: 1.22;
+  letter-spacing: -0.025em;
+}
+
+.portal-header-actions {
   display: flex;
   align-items: center;
-  gap: 22px;
+  gap: clamp(14px, 3.8vw, 44px);
 }
 
-.portal-water-header__language {
+.portal-language-control {
+  position: relative;
+  display: block;
+  width: 74px;
+  height: 56px;
+  flex: 0 0 auto;
+}
+
+.portal-language-control select {
+  width: 100%;
+  height: 100%;
+  appearance: none;
+  border: 0;
+  border-radius: 999px;
+  padding: 0 28px 0 19px;
+  color: #fff;
+  background: #292a35;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.portal-language-control select:focus-visible,
+.portal-category-trigger:focus-visible,
+.portal-category-panel a:focus-visible {
+  outline: 2px solid #31a99f;
+  outline-offset: 3px;
+}
+
+.portal-language-chevron {
+  position: absolute;
+  top: 23px;
+  right: 17px;
+  width: 6px;
+  height: 6px;
+  border-right: 1px solid #fff;
+  border-bottom: 1px solid #fff;
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+
+.portal-category-menu {
   position: relative;
 }
 
-.portal-water-header__language-toggle,
-.portal-water-header__menu-toggle {
+.portal-category-trigger {
   display: inline-flex;
-  height: 45px;
   align-items: center;
   justify-content: center;
-  border: 0;
+  gap: 14px;
+  min-width: 174px;
+  height: 56px;
+  box-sizing: border-box;
+  border-radius: 999px;
+  padding: 0 20px 0 28px;
+  color: #171820;
+  background: rgb(31 34 47 / 6%);
+  font-size: 16px;
+  font-weight: 500;
+  list-style: none;
   cursor: pointer;
-  font: 600 14px/1 "Be Vietnam Pro", Arial, sans-serif;
-  transition: background-color 180ms ease, color 180ms ease;
+  user-select: none;
 }
 
-.portal-water-header__language-toggle {
-  min-width: 49px;
-  padding: 0 12px;
-  border-radius: 999px;
-  background: #2b2e3a;
-  color: #fff;
-}
-
-.portal-water-header.is-language-open .portal-water-header__language-toggle {
-  background: #237478;
-}
-
-.portal-water-header__menu-toggle {
-  position: relative;
-  width: 45px;
-  padding: 0;
-  border-radius: 999px;
-  background: #e4e6ef;
-  color: #101116;
-}
-
-.portal-water-header__menu-label {
+.portal-category-trigger::-webkit-details-marker {
   display: none;
 }
 
-.portal-water-header__menu-dots {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
+.portal-category-trigger::marker {
+  content: "";
 }
 
-.portal-water-header__menu-dots i {
+.portal-category-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.portal-category-dots i {
   display: block;
-  width: 4px;
-  height: 4px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: currentColor;
 }
 
-.portal-water-header__language-menu {
+.portal-category-panel {
   position: absolute;
-  z-index: 3;
   top: calc(100% + 10px);
   right: 0;
-  display: flex;
-  width: 192px;
-  flex-direction: column;
-  padding: 8px 5px;
-  border-radius: 10px;
-  background: #fff;
-  box-shadow: 0 12px 28px rgb(12 18 30 / 14%);
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(-5px);
-  transition: opacity 160ms ease, transform 160ms ease, visibility 160ms ease;
-  visibility: hidden;
+  z-index: 2;
+  display: grid;
+  min-width: 220px;
+  gap: 3px;
+  padding: 9px;
+  border: 1px solid rgb(27 31 43 / 8%);
+  border-radius: 18px;
+  background: #f5f6fb;
+  box-shadow: 0 18px 44px rgb(14 18 31 / 20%);
 }
 
-.portal-water-header.is-language-open .portal-water-header__language-menu {
-  opacity: 1;
-  pointer-events: auto;
-  transform: none;
-  visibility: visible;
-}
-
-.portal-water-header__language-menu button {
-  position: relative;
-  display: flex;
-  min-height: 44px;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 22px;
-  border: 0;
-  border-radius: 6px;
-  background: transparent;
-  color: #101116;
-  cursor: pointer;
-  font: 400 16px/1.2 "Be Vietnam Pro", Arial, sans-serif;
-  text-align: left;
-}
-
-.portal-water-header__language-menu button:hover,
-.portal-water-header__language-menu button:focus-visible {
-  background: #f0f1f7;
-}
-
-.portal-water-header__language-menu button[data-portal-water-locale="vi"] span::after,
-.portal-water-header__language-menu button[data-portal-water-locale="en"] span::after,
-.portal-water-header__language-menu button[data-portal-water-locale="zh"] span::after {
-  content: "";
+.portal-category-menu:not([open]) > .portal-category-panel {
   display: none;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #101116;
 }
 
-html[data-locale="vi"] .portal-water-header__language-menu button[data-portal-water-locale="vi"] span::after,
-html[data-locale="en"] .portal-water-header__language-menu button[data-portal-water-locale="en"] span::after,
-html[data-locale="zh"] .portal-water-header__language-menu button[data-portal-water-locale="zh"] span::after {
+.portal-category-panel a {
   display: block;
-}
-
-.portal-water-header__backdrop {
-  position: fixed;
-  z-index: -1;
-  inset: 0;
-  display: block;
-  border: 0;
-  background: #237478;
-  cursor: default;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 180ms ease, visibility 180ms ease;
-  visibility: hidden;
-}
-
-.portal-water-header.is-menu-open .portal-water-header__backdrop {
-  opacity: 1;
-  pointer-events: auto;
-  visibility: visible;
-}
-
-.portal-water-header__menu {
-  position: fixed;
-  z-index: 1;
-  top: calc(var(--portal-water-header-top) + 73px);
-  right: var(--portal-water-header-side);
-  left: var(--portal-water-header-side);
-  display: flex;
-  flex-direction: column;
-  padding: 14px 5px;
-  overflow: hidden;
-  border-radius: 10px;
-  background: #fff;
-  box-shadow: 0 12px 28px rgb(12 18 30 / 12%);
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(-7px);
-  transition: opacity 180ms ease, transform 180ms ease, visibility 180ms ease;
-  visibility: hidden;
-}
-
-.portal-water-header.is-menu-open .portal-water-header__menu {
-  opacity: 1;
-  pointer-events: auto;
-  transform: none;
-  visibility: visible;
-}
-
-.portal-water-header__menu a,
-.portal-water-header__menu button {
-  display: flex;
-  min-height: 61px;
-  align-items: center;
-  padding: 0 26px;
-  border: 0;
-  border-radius: 6px;
-  background: transparent;
-  color: #101116;
-  cursor: pointer;
-  font: 400 18px/1.35 "Be Vietnam Pro", Arial, sans-serif;
-  text-align: left;
+  border-radius: 11px;
+  padding: 12px 14px;
+  color: #22242e;
+  font-size: 14px;
+  line-height: 1.2;
   text-decoration: none;
-  transition: background-color 140ms ease;
 }
 
-.portal-water-header__menu a:hover,
-.portal-water-header__menu a:focus-visible,
-.portal-water-header__menu button:hover,
-.portal-water-header__menu button:focus-visible {
-  background: #f0f1f7;
+.portal-category-panel a:hover {
+  background: rgb(31 34 47 / 7%);
 }
 
-.portal-water-header button:focus-visible,
-.portal-water-header a:focus-visible {
-  outline: 2px solid #8ad1d1;
-  outline-offset: 3px;
-}
-
-html.portal-water-menu-open,
-html.portal-water-menu-open body {
-  overflow: hidden !important;
-}
-
-@media (max-width: 812px) {
-  .portal-water-header__language-toggle {
-    min-width: 49px;
+@media (max-width: 840px) {
+  .portal-header {
+    grid-template-columns: minmax(76px, 92px) minmax(0, 1fr) auto;
+    min-height: 100px;
+    padding-inline: clamp(20px, 4vw, 34px);
   }
 
-  .portal-water-header__menu-toggle {
-    width: 45px;
+  .portal-header-brand {
+    width: 100%;
   }
 
-  .portal-water-header__menu-label {
-    display: none;
-  }
-}
-
-@media (max-width: 400px) {
-  .portal-water-header {
-    --portal-water-header-top: 15px;
-    --portal-water-header-side: 15px;
+  .portal-header-copy {
+    font-size: clamp(15px, 2vw, 18px);
   }
 
-  .portal-water-header__actions {
-    gap: 18px;
+  .portal-header-actions {
+    gap: 10px;
   }
 
-  .portal-water-header__language-toggle {
-    min-width: 44px;
-    height: 44px;
+  .portal-language-control {
+    width: 66px;
+    height: 50px;
   }
 
-  .portal-water-header__menu-toggle {
-    width: 44px;
-    height: 44px;
+  .portal-language-chevron {
+    top: 20px;
+    right: 14px;
   }
 
-  .portal-water-header__menu {
-    top: calc(var(--portal-water-header-top) + 73px);
-  }
-
-  .portal-water-header__menu a,
-  .portal-water-header__menu button {
-    min-height: 56px;
-    padding-inline: 20px;
-    font-size: 16px;
+  .portal-category-trigger {
+    min-width: 144px;
+    height: 50px;
+    gap: 10px;
+    padding-inline: 18px;
+    font-size: 13px;
   }
 }
 
-@media (min-width: 813px) {
-  .portal-water-header {
-    --portal-water-header-top: clamp(32px, 3.5vw, 50px);
-    --portal-water-header-side: clamp(25px, 5vw, 72px);
+@media (max-width: 640px) {
+  .portal-header {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px 16px;
+    min-height: 0;
+    padding: 16px 20px 18px;
   }
 
-  .portal-water-header__actions {
-    gap: 36px;
+  .portal-header-brand {
+    width: clamp(72px, 23vw, 88px);
   }
 
-  .portal-water-header__language-toggle {
-    min-width: 59px;
-    height: 45px;
+  .portal-header-copy {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    max-width: 36em;
+    font-size: 14px;
+    line-height: 1.35;
   }
 
-  .portal-water-header__menu-toggle {
-    width: 141px;
-    height: 45px;
-    justify-content: space-between;
-    padding: 0 17px;
+  .portal-header-actions {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    gap: 8px;
   }
 
-  .portal-water-header__menu-label {
-    display: inline;
+  .portal-language-control {
+    width: 58px;
+    height: 46px;
   }
 
-  .portal-water-header__menu {
-    top: calc(var(--portal-water-header-top) + 73px);
+  .portal-language-control select {
+    padding-left: 15px;
+    font-size: 14px;
+  }
+
+  .portal-language-chevron {
+    top: 18px;
+    right: 12px;
+  }
+
+  .portal-category-trigger {
+    min-width: 128px;
+    height: 46px;
+    gap: 8px;
+    padding-inline: 15px;
+    font-size: 12px;
+  }
+
+  .portal-category-dots i {
+    width: 4px;
+    height: 4px;
   }
 }

@@ -43,6 +43,8 @@ const COPY = {
     navPalette: "Bảng màu",
     navRequest: "Yêu cầu của tôi",
     languageLabel: "Ngôn ngữ",
+    brandDescriptionA: "Chúng tôi tạo nên những bản trình chiếu ấn tượng và",
+    brandDescriptionB: "kể chuyện bằng hình ảnh, giúp ý tưởng trở nên nổi bật.",
     categoriesLabel: "DANH MỤC",
     navJourney: "Hành trình",
     menuOpen: "Mở menu",
@@ -269,6 +271,8 @@ const COPY = {
     navPalette: "Palettes",
     navRequest: "My request",
     languageLabel: "Language",
+    brandDescriptionA: "We create striking presentations and tell stories",
+    brandDescriptionB: "through imagery, helping ideas stand out.",
     categoriesLabel: "SECTIONS",
     navJourney: "Journey",
     menuOpen: "Open menu",
@@ -498,6 +502,8 @@ const COPY = {
     navPalette: "配色",
     navRequest: "我的需求",
     languageLabel: "语言",
+    brandDescriptionA: "我们打造令人印象深刻的演示，",
+    brandDescriptionB: "用影像讲述故事，让创意脱颖而出。",
     categoriesLabel: "目录",
     navJourney: "旅程",
     menuOpen: "打开菜单",
@@ -1352,138 +1358,13 @@ function syncLocaleToLusion(locale = state.locale, force = false) {
   );
 }
 
-const PORTAL_WATER_HEADER_LABELS = {
-  vi: {
-    language: "Ngôn ngữ",
-    menuOpen: "Mở menu",
-    menuClose: "Đóng menu",
-    home: "TRANG CHỦ",
-    about: "VỀ CHÚNG TÔI",
-    projects: "DỰ ÁN",
-    contact: "LIÊN HỆ",
-  },
-  en: {
-    language: "Language",
-    menuOpen: "Open menu",
-    menuClose: "Close menu",
-    home: "HOME",
-    about: "ABOUT US",
-    projects: "PROJECTS",
-    contact: "CONTACT",
-  },
-  zh: {
-    language: "语言",
-    menuOpen: "打开菜单",
-    menuClose: "关闭菜单",
-    home: "首页",
-    about: "关于我们",
-    projects: "项目",
-    contact: "联系",
-  },
-};
-
-function updatePortalWaterHeaderLocale(locale = state.locale) {
-  const header = document.querySelector("[data-portal-water-header]");
-  if (!header) return;
-  const labels = PORTAL_WATER_HEADER_LABELS[locale] || PORTAL_WATER_HEADER_LABELS.vi;
-  const languageTrigger = header.querySelector("[data-portal-water-language-toggle]");
-  const menuToggle = header.querySelector("[data-portal-water-menu-toggle]");
-
-  if (languageTrigger) {
-    languageTrigger.textContent = { en: "EN", vi: "VI", zh: "中" }[locale] || "VI";
-    languageTrigger.setAttribute("aria-label", labels.language);
-  }
-  if (menuToggle) {
-    const isOpen = header.classList.contains("is-menu-open");
-    menuToggle.setAttribute("aria-label", labels[isOpen ? "menuClose" : "menuOpen"]);
-  }
-  header.querySelectorAll("[data-portal-water-page]").forEach((link) => {
-    const label = labels[link.dataset.portalWaterPage];
-    if (label) link.textContent = label;
-  });
-  const contact = header.querySelector("[data-portal-water-contact]");
-  if (contact) contact.textContent = labels.contact;
-}
-
-function mountPortalWaterHeader() {
-  if (!elements.hero) return null;
-  const header = document.querySelector("[data-portal-water-header]");
-  if (!header) return null;
-
-  const menuToggle = header.querySelector("[data-portal-water-menu-toggle]");
-  const languageToggle = header.querySelector("[data-portal-water-language-toggle]");
-  const menu = header.querySelector("#portal-water-menu");
-  const languageMenu = header.querySelector("#portal-water-language-menu");
-  const setMenuOpen = (open) => {
-    header.classList.toggle("is-menu-open", open);
-    menuToggle?.setAttribute("aria-expanded", String(open));
-    menu?.setAttribute("aria-hidden", String(!open));
-    if (open) setLanguageOpen(false);
-    updatePortalWaterHeaderLocale();
-  };
-  const setLanguageOpen = (open) => {
-    header.classList.toggle("is-language-open", open);
-    languageToggle?.setAttribute("aria-expanded", String(open));
-    languageMenu?.setAttribute("aria-hidden", String(!open));
-    if (open) setMenuOpen(false);
-  };
-  const closeMenus = () => {
-    setMenuOpen(false);
-    setLanguageOpen(false);
-  };
-
-  header.addEventListener("click", (event) => {
-    const target = event.target instanceof Element
-      ? event.target.closest("[data-portal-water-dismiss], [data-portal-water-menu-toggle], [data-portal-water-language-toggle], [data-portal-water-locale], [data-portal-water-contact]")
-      : null;
-    if (!target) return;
-    if (target.hasAttribute("data-portal-water-dismiss")) {
-      closeMenus();
-    } else if (target.hasAttribute("data-portal-water-menu-toggle")) {
-      setMenuOpen(!header.classList.contains("is-menu-open"));
-    } else if (target.hasAttribute("data-portal-water-language-toggle")) {
-      setLanguageOpen(!header.classList.contains("is-language-open"));
-    } else if (target.hasAttribute("data-portal-water-locale")) {
-      setLocale(target.dataset.portalWaterLocale);
-      setLanguageOpen(false);
-    } else if (target.hasAttribute("data-portal-water-contact")) {
-      event.preventDefault();
-      closeMenus();
-      const frame = document.querySelector("[data-lusion-home-frame]");
-      const section = elements.catalogSection;
-      if (!frame || !section) return;
-      window.scrollTo({
-        top: section.offsetTop,
-        behavior: isReducedMotion() ? "instant" : "smooth",
-      });
-      let attempts = 0;
-      const openLusionContact = () => {
-        if (document.documentElement.classList.contains("is-lusion-section-active")) {
-          frame.contentDocument?.querySelector('[data-scroll-to="contact"]')?.click();
-          return;
-        }
-        if (attempts++ < 120) window.requestAnimationFrame(openLusionContact);
-      };
-      window.requestAnimationFrame(openLusionContact);
-    }
-  });
-  document.addEventListener("click", (event) => {
-    if (!header.contains(event.target)) closeMenus();
-  }, true);
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") closeMenus();
-  });
-
-  updatePortalWaterHeaderLocale();
-  return { element: header, closeMenus };
-}
-
 function applyLocale() {
   const locale = state.locale;
   document.documentElement.lang = locale === "zh" ? "zh-CN" : locale;
   document.documentElement.dataset.locale = locale;
+  const localeSelect = document.querySelector("select[data-locale]");
+  if (localeSelect) localeSelect.value = locale;
   syncLocaleToLusion(locale);
-  updatePortalWaterHeaderLocale(locale);
   document.querySelectorAll("[data-i18n]").forEach((element) => {
     element.textContent = t(element.dataset.i18n);
   });
@@ -2303,6 +2184,9 @@ function bindEvents() {
   menuButton?.addEventListener("click", () => {
     setMenuOpen(!elements.menu?.classList.contains("is-open"));
   });
+  document.querySelector("select[data-locale]")?.addEventListener("change", (event) => {
+    setLocale(event.target.value);
+  });
   elements.themeToggle?.addEventListener("click", () => {
     setTheme(state.theme === "dark" ? "light" : "dark");
   });
@@ -3065,7 +2949,7 @@ function scrollPageToSection(target) {
   sectionScrollFrame = window.requestAnimationFrame(render);
 }
 
-function bindWaterLusionHandoff(portalHeader = null) {
+function bindWaterLusionHandoff() {
   const hero = elements.hero;
   const nextSection = elements.catalogSection;
   if (!hero || !nextSection) return;
@@ -3097,22 +2981,6 @@ function bindWaterLusionHandoff(portalHeader = null) {
       "--lusion-handoff-opacity",
       `${progress.toFixed(3)}`,
     );
-    if (portalHeader) {
-      portalHeader.element.style.setProperty(
-        "--portal-water-header-opacity",
-        `${(1 - progress).toFixed(3)}`,
-      );
-      const fullyInLusion = progress >= 0.98;
-      portalHeader.element.classList.toggle("is-hidden", fullyInLusion);
-      portalHeader.element.setAttribute("aria-hidden", String(fullyInLusion));
-      if (
-        progress > 0.001 &&
-        (portalHeader.element.classList.contains("is-menu-open") ||
-          portalHeader.element.classList.contains("is-language-open"))
-      ) {
-        portalHeader.closeMenus();
-      }
-    }
   };
   const scheduleUpdate = () => {
     if (updateFrame) return;
@@ -3469,11 +3337,10 @@ function deferLusionFrame() {
 }
 
 function setupExperience(libraryReady) {
-  const portalHeader = mountPortalWaterHeader();
   bindRevealMotion();
   bindAnchorNavigation();
   bindSectionObserver();
-  bindWaterLusionHandoff(portalHeader);
+  bindWaterLusionHandoff();
   bindWaterToLusionScroll();
   bindStageParallax();
   bindAmbientSurfaceMotion();
