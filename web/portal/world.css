@@ -3856,6 +3856,7 @@ html.is-ready .app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark {
   display: block;
   width: 100%;
   height: auto;
+  filter: drop-shadow(0 0 2px #fff176) drop-shadow(0 0 7px rgb(255 196 0 / 90%)) drop-shadow(0 0 15px rgb(255 183 0 / 55%));
 }
 
 .portal-header-copy {
