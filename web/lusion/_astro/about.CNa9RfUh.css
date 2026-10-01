@@ -3,3 +3,6 @@
 .about-award-category.award-category-talks{display:none!important}
 
 .project-item{cursor:default}
+
+/* Hide the about intro's decorative crosses and oversized wordmark. */
+#about #about-crosses{display:none!important}#about #about-who-title-main-logo{visibility:hidden!important}
