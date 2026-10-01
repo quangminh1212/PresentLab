@@ -1406,40 +1406,9 @@ function updatePortalWaterHeaderLocale(locale = state.locale) {
 }
 
 function mountPortalWaterHeader() {
-  if (!elements.hero || !document.querySelector("[data-lusion-home-frame]"))
-    return null;
-  const header = document.createElement("header");
-  header.className = "portal-water-header";
-  header.dataset.portalWaterHeader = "";
-  header.setAttribute("aria-label", "XLab");
-  header.innerHTML = `
-    <button class="portal-water-header__backdrop" type="button" data-portal-water-dismiss aria-label="Close menu"></button>
-    <div class="portal-water-header__bar">
-      <a class="portal-water-header__logo" href="/" aria-label="XLab home">
-        <span class="portal-water-header__logo-crop"><img src="/web/portal/xlab-logo.webp" alt="" decoding="async"></span>
-      </a>
-      <div class="portal-water-header__actions">
-        <div class="portal-water-header__language">
-          <button class="portal-water-header__language-toggle" type="button" data-portal-water-language-toggle aria-expanded="false" aria-controls="portal-water-language-menu">VI</button>
-          <div class="portal-water-header__language-menu" id="portal-water-language-menu" aria-hidden="true">
-            <button type="button" data-portal-water-locale="en">English<span></span></button>
-            <button type="button" data-portal-water-locale="vi">Tiếng Việt<span></span></button>
-            <button type="button" data-portal-water-locale="zh">简体中文<span></span></button>
-          </div>
-        </div>
-        <button class="portal-water-header__menu-toggle" type="button" data-portal-water-menu-toggle aria-expanded="false" aria-controls="portal-water-menu">
-          <span class="portal-water-header__menu-label">Menu</span>
-          <span class="portal-water-header__menu-dots" aria-hidden="true"><i></i><i></i></span>
-        </button>
-      </div>
-    </div>
-    <nav class="portal-water-header__menu" id="portal-water-menu" aria-hidden="true">
-      <a href="/" data-portal-water-page="home">TRANG CHỦ</a>
-      <a href="/about" data-portal-water-page="about">VỀ CHÚNG TÔI</a>
-      <a href="/projects" data-portal-water-page="projects">DỰ ÁN</a>
-      <button type="button" data-portal-water-contact>LIÊN HỆ</button>
-    </nav>`;
-  document.body.append(header);
+  if (!elements.hero) return null;
+  const header = document.querySelector("[data-portal-water-header]");
+  if (!header) return null;
 
   const menuToggle = header.querySelector("[data-portal-water-menu-toggle]");
   const languageToggle = header.querySelector("[data-portal-water-language-toggle]");
