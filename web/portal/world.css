@@ -2284,8 +2284,7 @@ html[data-theme="light"] .world-stage {
 
 .app-shell:has(> main > .hero.hero-world) > main > .signal-rail,
 .app-shell:has(> main > .hero.hero-world) > main > .journey-section,
-.app-shell:has(> main > .hero.hero-world) > main > .process-section,
-.app-shell:has(> main > .hero.hero-world) > main > .catalog-section {
+.app-shell:has(> main > .hero.hero-world) > main > .process-section {
   display: none !important;
 }
 

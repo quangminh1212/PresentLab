@@ -25,10 +25,7 @@ const assets = [
   ["web/lusion/scripts/site-overrides.js", "_astro/local-only.js"],
   ["web/lusion/about", "about"],
   ["web/lusion/projects", "projects"],
-  ["web/lusion/about", "lusion/about"],
-  ["web/lusion/projects", "lusion/projects"],
   ["web/lusion/home-scroll.css", "home-scroll.css"],
-  ["web/lusion/index.html", "lusion/index.html"],
 ];
 
 for (const [source, destination] of assets) {
@@ -37,8 +34,7 @@ for (const [source, destination] of assets) {
   await cp(join(root, source), target, { recursive: true, force: true });
 }
 
-const lusionPageRoots = [
-  join(output, "lusion"),
+const xlabPageRoots = [
   join(output, "about"),
   join(output, "projects"),
 ];
@@ -52,8 +48,8 @@ const findHtmlFiles = async (directory) => {
   }
   return files;
 };
-const lusionPageFiles =
-  (await Promise.all(lusionPageRoots.map(findHtmlFiles))).flat();
+const xlabPageFiles =
+  (await Promise.all(xlabPageRoots.map(findHtmlFiles))).flat();
 const replaceBrandText = (text) =>
   text
     .replace(/hello@lusion\.co/gi, "Contact XLab")
@@ -71,7 +67,7 @@ const headerLogo =
 const projectCardLinkPattern =
   /<a\b(?=[^>]*\bclass="[^"]*\bproject-item\b[^"]*")([^>]*)>([\s\S]*?)<\/a>/gi;
 const labsMenuLinkPattern = /<a\b(?=[^>]*\bid="header-menu-labs")[^>]*>[\s\S]*?<\/a>/i;
-for (const pagePath of lusionPageFiles) {
+for (const pagePath of xlabPageFiles) {
   let html = await readFile(pagePath, "utf8");
   const logos = html.match(headerLogoPattern);
   if (!logos || logos.length !== 1) {
