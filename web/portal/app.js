@@ -1352,11 +1352,169 @@ function syncLocaleToLusion(locale = state.locale, force = false) {
   );
 }
 
+const PORTAL_WATER_HEADER_LABELS = {
+  vi: {
+    language: "Ngôn ngữ",
+    menuOpen: "Mở menu",
+    menuClose: "Đóng menu",
+    home: "TRANG CHỦ",
+    about: "VỀ CHÚNG TÔI",
+    projects: "DỰ ÁN",
+    contact: "LIÊN HỆ",
+  },
+  en: {
+    language: "Language",
+    menuOpen: "Open menu",
+    menuClose: "Close menu",
+    home: "HOME",
+    about: "ABOUT US",
+    projects: "PROJECTS",
+    contact: "CONTACT",
+  },
+  zh: {
+    language: "语言",
+    menuOpen: "打开菜单",
+    menuClose: "关闭菜单",
+    home: "首页",
+    about: "关于我们",
+    projects: "项目",
+    contact: "联系",
+  },
+};
+
+function updatePortalWaterHeaderLocale(locale = state.locale) {
+  const header = document.querySelector("[data-portal-water-header]");
+  if (!header) return;
+  const labels = PORTAL_WATER_HEADER_LABELS[locale] || PORTAL_WATER_HEADER_LABELS.vi;
+  const languageTrigger = header.querySelector("[data-portal-water-language-toggle]");
+  const menuToggle = header.querySelector("[data-portal-water-menu-toggle]");
+
+  if (languageTrigger) {
+    languageTrigger.textContent = { en: "EN", vi: "VI", zh: "中" }[locale] || "VI";
+    languageTrigger.setAttribute("aria-label", labels.language);
+  }
+  if (menuToggle) {
+    const isOpen = header.classList.contains("is-menu-open");
+    menuToggle.setAttribute("aria-label", labels[isOpen ? "menuClose" : "menuOpen"]);
+  }
+  header.querySelectorAll("[data-portal-water-page]").forEach((link) => {
+    const label = labels[link.dataset.portalWaterPage];
+    if (label) link.textContent = label;
+  });
+  const contact = header.querySelector("[data-portal-water-contact]");
+  if (contact) contact.textContent = labels.contact;
+}
+
+function mountPortalWaterHeader() {
+  if (!elements.hero || !document.querySelector("[data-lusion-home-frame]"))
+    return null;
+  const header = document.createElement("header");
+  header.className = "portal-water-header";
+  header.dataset.portalWaterHeader = "";
+  header.setAttribute("aria-label", "XLab");
+  header.innerHTML = `
+    <button class="portal-water-header__backdrop" type="button" data-portal-water-dismiss aria-label="Close menu"></button>
+    <div class="portal-water-header__bar">
+      <a class="portal-water-header__logo" href="/" aria-label="XLab home">
+        <span class="portal-water-header__logo-crop"><img src="/web/portal/xlab-logo.webp" alt="" decoding="async"></span>
+      </a>
+      <div class="portal-water-header__actions">
+        <div class="portal-water-header__language">
+          <button class="portal-water-header__language-toggle" type="button" data-portal-water-language-toggle aria-expanded="false" aria-controls="portal-water-language-menu">VI</button>
+          <div class="portal-water-header__language-menu" id="portal-water-language-menu" aria-hidden="true">
+            <button type="button" data-portal-water-locale="en">English<span></span></button>
+            <button type="button" data-portal-water-locale="vi">Tiếng Việt<span></span></button>
+            <button type="button" data-portal-water-locale="zh">简体中文<span></span></button>
+          </div>
+        </div>
+        <button class="portal-water-header__menu-toggle" type="button" data-portal-water-menu-toggle aria-expanded="false" aria-controls="portal-water-menu">
+          <span class="portal-water-header__menu-label">Menu</span>
+          <span class="portal-water-header__menu-dots" aria-hidden="true"><i></i><i></i></span>
+        </button>
+      </div>
+    </div>
+    <nav class="portal-water-header__menu" id="portal-water-menu" aria-hidden="true">
+      <a href="/" data-portal-water-page="home">TRANG CHỦ</a>
+      <a href="/about" data-portal-water-page="about">VỀ CHÚNG TÔI</a>
+      <a href="/projects" data-portal-water-page="projects">DỰ ÁN</a>
+      <button type="button" data-portal-water-contact>LIÊN HỆ</button>
+    </nav>`;
+  document.body.append(header);
+
+  const menuToggle = header.querySelector("[data-portal-water-menu-toggle]");
+  const languageToggle = header.querySelector("[data-portal-water-language-toggle]");
+  const menu = header.querySelector("#portal-water-menu");
+  const languageMenu = header.querySelector("#portal-water-language-menu");
+  const setMenuOpen = (open) => {
+    header.classList.toggle("is-menu-open", open);
+    menuToggle?.setAttribute("aria-expanded", String(open));
+    menu?.setAttribute("aria-hidden", String(!open));
+    if (open) setLanguageOpen(false);
+    updatePortalWaterHeaderLocale();
+  };
+  const setLanguageOpen = (open) => {
+    header.classList.toggle("is-language-open", open);
+    languageToggle?.setAttribute("aria-expanded", String(open));
+    languageMenu?.setAttribute("aria-hidden", String(!open));
+    if (open) setMenuOpen(false);
+  };
+  const closeMenus = () => {
+    setMenuOpen(false);
+    setLanguageOpen(false);
+  };
+
+  header.addEventListener("click", (event) => {
+    const target = event.target instanceof Element
+      ? event.target.closest("[data-portal-water-dismiss], [data-portal-water-menu-toggle], [data-portal-water-language-toggle], [data-portal-water-locale], [data-portal-water-contact]")
+      : null;
+    if (!target) return;
+    if (target.hasAttribute("data-portal-water-dismiss")) {
+      closeMenus();
+    } else if (target.hasAttribute("data-portal-water-menu-toggle")) {
+      setMenuOpen(!header.classList.contains("is-menu-open"));
+    } else if (target.hasAttribute("data-portal-water-language-toggle")) {
+      setLanguageOpen(!header.classList.contains("is-language-open"));
+    } else if (target.hasAttribute("data-portal-water-locale")) {
+      setLocale(target.dataset.portalWaterLocale);
+      setLanguageOpen(false);
+    } else if (target.hasAttribute("data-portal-water-contact")) {
+      event.preventDefault();
+      closeMenus();
+      const frame = document.querySelector("[data-lusion-home-frame]");
+      const section = elements.catalogSection;
+      if (!frame || !section) return;
+      window.scrollTo({
+        top: section.offsetTop,
+        behavior: isReducedMotion() ? "instant" : "smooth",
+      });
+      let attempts = 0;
+      const openLusionContact = () => {
+        if (document.documentElement.classList.contains("is-lusion-section-active")) {
+          frame.contentDocument?.querySelector('[data-scroll-to="contact"]')?.click();
+          return;
+        }
+        if (attempts++ < 120) window.requestAnimationFrame(openLusionContact);
+      };
+      window.requestAnimationFrame(openLusionContact);
+    }
+  });
+  document.addEventListener("click", (event) => {
+    if (!header.contains(event.target)) closeMenus();
+  }, true);
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeMenus();
+  });
+
+  updatePortalWaterHeaderLocale();
+  return { element: header, closeMenus };
+}
+
 function applyLocale() {
   const locale = state.locale;
   document.documentElement.lang = locale === "zh" ? "zh-CN" : locale;
   document.documentElement.dataset.locale = locale;
   syncLocaleToLusion(locale);
+  updatePortalWaterHeaderLocale(locale);
   document.querySelectorAll("[data-i18n]").forEach((element) => {
     element.textContent = t(element.dataset.i18n);
   });
@@ -2938,7 +3096,7 @@ function scrollPageToSection(target) {
   sectionScrollFrame = window.requestAnimationFrame(render);
 }
 
-function bindWaterLusionHandoff() {
+function bindWaterLusionHandoff(portalHeader = null) {
   const hero = elements.hero;
   const nextSection = elements.catalogSection;
   if (!hero || !nextSection) return;
@@ -2970,6 +3128,22 @@ function bindWaterLusionHandoff() {
       "--lusion-handoff-opacity",
       `${progress.toFixed(3)}`,
     );
+    if (portalHeader) {
+      portalHeader.element.style.setProperty(
+        "--portal-water-header-opacity",
+        `${(1 - progress).toFixed(3)}`,
+      );
+      const fullyInLusion = progress >= 0.98;
+      portalHeader.element.classList.toggle("is-hidden", fullyInLusion);
+      portalHeader.element.setAttribute("aria-hidden", String(fullyInLusion));
+      if (
+        progress > 0.001 &&
+        (portalHeader.element.classList.contains("is-menu-open") ||
+          portalHeader.element.classList.contains("is-language-open"))
+      ) {
+        portalHeader.closeMenus();
+      }
+    }
   };
   const scheduleUpdate = () => {
     if (updateFrame) return;
@@ -3252,6 +3426,18 @@ function deferLusionFrame() {
     if (!doc || !view || doc === wiredDocument) return;
     wiredDocument = doc;
 
+    if (
+      doc.documentElement.classList.contains("water-page-embed-root") &&
+      !doc.getElementById("portal-water-frame-header-guard")
+    ) {
+      const headerGuard = doc.createElement("style");
+      headerGuard.id = "portal-water-frame-header-guard";
+      headerGuard.textContent =
+        "html.water-page-embed-root:not(.is-lusion-section-active) #header{" +
+        "visibility:hidden!important;opacity:0!important;pointer-events:none!important}";
+      doc.head.appendChild(headerGuard);
+    }
+
     const isLusionHeaderPreloading = () =>
       doc.documentElement.classList.contains("is-lusion-preloading") &&
       !doc.documentElement.classList.contains("is-lusion-section-active");
@@ -3314,10 +3500,11 @@ function deferLusionFrame() {
 }
 
 function setupExperience(libraryReady) {
+  const portalHeader = mountPortalWaterHeader();
   bindRevealMotion();
   bindAnchorNavigation();
   bindSectionObserver();
-  bindWaterLusionHandoff();
+  bindWaterLusionHandoff(portalHeader);
   bindWaterToLusionScroll();
   bindStageParallax();
   bindAmbientSurfaceMotion();
