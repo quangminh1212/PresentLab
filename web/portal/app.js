@@ -15,23 +15,10 @@ const MAX_TOTAL_ATTACHMENT_BYTES = 4 * 1024 * 1024;
 const REQUEST_TIMEOUT_MS = 15_000;
 const LOCAL_REQUEST_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 const LOCALE_STORAGE_KEY = "presentlab.locale";
-const LUSION_LOCALE_STORAGE_KEY = "lusion-language";
-const NATIVE_LUSION_HEADER_ID = "portal-native-lusion-header";
-let resolveNativeLusionHeaderReady;
-let nativeLusionHeaderReadyFallback = 0;
-const nativeLusionHeaderReady = new Promise((resolve) => {
-  resolveNativeLusionHeaderReady = resolve;
-});
-function settleNativeLusionHeaderReady() {
-  window.clearTimeout(nativeLusionHeaderReadyFallback);
-  resolveNativeLusionHeaderReady?.();
-  resolveNativeLusionHeaderReady = null;
-}
 const THEME_STORAGE_KEY = "presentlab.theme";
 const DEFAULT_LOCALE = "vi";
 const DEFAULT_THEME = "dark";
 const SUPPORTED_LOCALES = ["vi", "en", "zh"];
-const LUSION_LOCALE_CODES = { vi: "vi", en: "en", zh: "zh-CN" };
 const SUPPORTED_THEMES = ["dark", "light"];
 const MOTION_SCENES = ["catalog", "templates", "journey", "process"];
 
@@ -217,7 +204,6 @@ const COPY = {
     signalBrief: "BRIEF / DỰNG / DUYỆT",
     signalOutput: "SẴN SÀNG LÊN SÂN KHẤU",
     heroScrollCue: "Cuộn xuống",
-    skipIntro: "Bỏ qua phần mở đầu",
     scrollToProcess: "Lướt xuống xem quy trình",
     scrollToJourney: "Lướt xuống xem hành trình thiết kế",
     nextSceneKicker: "03 / FLIGHT JOURNAL",
@@ -445,7 +431,6 @@ const COPY = {
     signalBrief: "BRIEF / BUILD / REVIEW",
     signalOutput: "READY FOR THE ROOM",
     heroScrollCue: "Scroll down",
-    skipIntro: "Skip intro",
     scrollToProcess: "Scroll to the process",
     scrollToJourney: "Scroll through the design journey",
     nextSceneKicker: "03 / FLIGHT JOURNAL",
@@ -666,7 +651,6 @@ const COPY = {
     signalBrief: "简报 / 制作 / 评审",
     signalOutput: "为现场呈现准备",
     heroScrollCue: "向下",
-    skipIntro: "跳过开场",
     scrollToProcess: "向下查看流程",
     scrollToJourney: "向下浏览设计旅程",
     nextSceneKicker: "03 / 飞行日志",
@@ -1287,7 +1271,6 @@ const elements = {
   themeToggle: document.querySelector("[data-theme-toggle]"),
   themeIcon: document.querySelector("[data-theme-icon]"),
   themeLabel: document.querySelector("[data-theme-label]"),
-  scrollProgress: document.querySelector("[data-scroll-progress]"),
   parallaxStage: document.querySelector("[data-parallax-stage]"),
   hero: document.querySelector(".hero"),
   heroCopy: document.querySelector('[data-reveal="hero-copy"]'),
@@ -1333,461 +1316,10 @@ function templateDescription(template) {
   );
 }
 
-function lusionFrame() {
-  return document.querySelector("iframe.lusion-home-frame");
-}
-
-function syncLocaleToLusion(locale = state.locale, force = false) {
-  const lusionLocale = LUSION_LOCALE_CODES[locale];
-  if (!lusionLocale) return;
-  let shouldNotify = force;
-  try {
-    if (localStorage.getItem(LUSION_LOCALE_STORAGE_KEY) !== lusionLocale) {
-      localStorage.setItem(LUSION_LOCALE_STORAGE_KEY, lusionLocale);
-      shouldNotify = true;
-    }
-  } catch {
-    shouldNotify = true;
-  }
-  const frame = lusionFrame();
-  if (shouldNotify && frame?.classList.contains("is-ready")) {
-    frame.contentWindow?.postMessage(
-      { type: "presentlab:set-lusion-language", locale: lusionLocale },
-      window.location.origin,
-    );
-  }
-}
-
-async function mountNativeLusionHeader(frame = lusionFrame()) {
-  let frameDocument;
-  let frameWindow;
-  try {
-    frameDocument = frame?.contentDocument;
-    frameWindow = frame?.contentWindow;
-  } catch {
-    return null;
-  }
-  const sourceHeader = frameDocument?.getElementById("header");
-  if (!frame || !frameWindow || !sourceHeader || !document.body) return null;
-
-  // Wait for Lusion's own menu handler before adopting its header DOM.
-  const readyDeadline = window.performance.now() + 30000;
-  while (frame.contentDocument === frameDocument && sourceHeader.isConnected) {
-    const menuTrigger = frameDocument.getElementById("header-right-menu-btn");
-    if (
-      menuTrigger &&
-      frameDocument.getElementById("lusion-language-trigger")
-    ) {
-      const wasOpen = menuTrigger.classList.contains("--opened");
-      menuTrigger.click();
-      const handlerReady = menuTrigger.classList.contains("--opened") !== wasOpen;
-      if (handlerReady) menuTrigger.click();
-      if (
-        handlerReady &&
-        menuTrigger.classList.contains("--opened") === wasOpen
-      ) {
-        break;
-      }
-    }
-    if (window.performance.now() >= readyDeadline) return null;
-    await new Promise((resolve) => window.setTimeout(resolve, 100));
-  }
-  if (frame.contentDocument !== frameDocument || !sourceHeader.isConnected)
-    return null;
-
-  document
-    .getElementById(NATIVE_LUSION_HEADER_ID)
-    ?._disposeNativeLusionHeader?.();
-
-  const host = document.createElement("div");
-  host.id = NATIVE_LUSION_HEADER_ID;
-  host.style.cssText =
-    "position:fixed;inset:0;z-index:52;pointer-events:none;";
-  const shadow = host.attachShadow({ mode: "open" });
-  document.body.appendChild(host);
-
-  const stylesheetLoads = [];
-  for (const sourceStyle of frameDocument.head.children) {
-    if (sourceStyle.localName === "link" && sourceStyle.rel === "stylesheet") {
-      const stylesheet = document.createElement("link");
-      for (const attribute of sourceStyle.attributes) {
-        stylesheet.setAttribute(attribute.name, attribute.value);
-      }
-      const loaded = new Promise((resolve) => {
-        let settled = false;
-        let timeoutId;
-        const finish = () => {
-          if (settled) return;
-          settled = true;
-          window.clearTimeout(timeoutId);
-          resolve();
-        };
-        stylesheet.addEventListener("load", finish, { once: true });
-        stylesheet.addEventListener("error", finish, { once: true });
-        timeoutId = window.setTimeout(finish, 2500);
-      });
-      stylesheetLoads.push(loaded);
-      shadow.appendChild(stylesheet);
-    } else if (sourceStyle.localName === "style") {
-      shadow.appendChild(document.importNode(sourceStyle, true));
-    }
-  }
-
-  const adapterStyle = document.createElement("style");
-  adapterStyle.textContent =
-    ":host{--header-color:#237478;position:fixed;inset:0;z-index:52;pointer-events:none}" +
-    ":host(.is-loading),:host(.is-lusion-preloading){display:none}" +
-    ":host(.is-black-bg) #header,:host(.is-blue-bg) #header{color:var(--color-white)}" +
-    ":host(.is-white-bg) #header{color:var(--color-black)}" +
-    "#header-logo{visibility:hidden!important;pointer-events:none!important}" +
-    "#header-container{overflow:visible!important}" +
-    "#header-menu-talk{display:none!important}" +
-    "#header-right-menu-btn,#header-menu,#lusion-language-switcher{pointer-events:auto!important}" +
-    "#header-right-menu-btn,#lusion-language-trigger{transform:none!important}" +
-    ":host(:not(.is-loading)) #header-right-menu-btn," +
-    ":host(:not(.is-loading)) #lusion-language-trigger{visibility:visible!important;opacity:1!important;clip-path:none!important}" +
-    "#lusion-language-trigger:hover{background:#2b2e3a!important}" +
-    "#lusion-language-trigger::after{content:none!important;display:none!important}" +
-    "#lusion-language-trigger{width:44.8px!important;min-width:44.8px!important;max-width:44.8px!important;height:44.8px!important;min-height:44.8px!important;max-height:44.8px!important;padding:0!important;gap:0!important;border-radius:50%!important}" +
-    "#lusion-language-switcher{--lusion-menu-motion-y:27.6px!important}" +
-    "#lusion-language-menu{transform-origin:top left!important}" +
-    "@media(max-width:812px){#lusion-language-menu{transform-origin:top right!important}}" +
-    "#lusion-language-menu:not([hidden]){animation:portal-language-menu-enter-right 170ms cubic-bezier(.2,.8,.2,1) both}" +
-    "@keyframes portal-language-menu-enter-right{from{opacity:0;transform:translate3d(-8px,0,0) scale(.98)}to{opacity:1;transform:translate3d(0,0,0) scale(1)}}" +
-    "#header-right-menu-btn,#lusion-language-trigger{transform:translateY(27.6px)!important}" +
-    "@media(max-width:760px){#header{padding-top:15px!important}#header-right-menu-btn,#lusion-language-trigger{transform:translateY(13.6px)!important}#lusion-language-switcher{translate:14px 0!important;--lusion-menu-motion-y:13.6px!important}}" +
-    ':host([data-lusion-language="vi"]) #header,' +
-    ':host([data-lusion-language="vi"]) #header button,' +
-    ':host([data-lusion-language="vi"]) #lusion-language-menu .lusion-language-choice{' +
-    'font-family:"Be Vietnam Pro",Aeonik,sans-serif!important}' +
-    ':host([data-lusion-language="vi"]) .header-menu-link{padding:.9em 1.625em!important;line-height:1.45!important}' +
-    ':host([data-lusion-language="vi"]) .header-menu-link-text,:host([data-lusion-language="vi"]) .header-menu-link-text-clone{font-size:1.25em!important;line-height:1.6!important}' +
-    ':host([data-astronaut-scene-visible="true"]) #header-right-menu-btn,' +
-    ':host([data-astronaut-scene-visible="true"]) #lusion-language-trigger,' +
-    ':host([data-astronaut-scene-visible="true"]) #header-menu{' +
-    "visibility:hidden!important;opacity:0!important;pointer-events:none!important}";
-  shadow.appendChild(adapterStyle);
-
-  let disposed = false;
-  let styleObserver = null;
-  let headerMeasure = null;
-  let frameVisibilityObserver = null;
-  let astronautSceneObserver = null;
-  let frameIsVisible = false;
-  let astronautSceneRange = null;
-  let astronautSceneIsVisible = false;
-  const getPageContainerTranslateY = () => {
-    const pageContainer = frameDocument.getElementById("page-container");
-    if (!pageContainer) return null;
-    const transform = frameWindow.getComputedStyle(pageContainer).transform;
-    if (transform === "none") return 0;
-    const matrix = /^matrix(3d)?\((.+)\)$/.exec(transform);
-    if (!matrix) return null;
-    const values = matrix[2].split(",").map(Number);
-    const translateY = values[matrix[1] ? 13 : 5];
-    return Number.isFinite(translateY) ? translateY : null;
-  };
-  const syncAstronautSceneVisibility = () => {
-    const translateY = getPageContainerTranslateY();
-    const scrollPixel = translateY === null ? null : -translateY;
-    const isHomePage =
-      frameWindow.location.pathname.replace(/\/+$/, "") === "/lusion";
-    const isVisible = Boolean(
-      frameIsVisible &&
-        isHomePage &&
-        astronautSceneRange &&
-        scrollPixel >= astronautSceneRange.start &&
-        scrollPixel < astronautSceneRange.end,
-    );
-    if (
-      isVisible === astronautSceneIsVisible &&
-      host.dataset.astronautSceneVisible === String(isVisible)
-    ) {
-      return;
-    }
-    astronautSceneIsVisible = isVisible;
-    host.dataset.astronautSceneVisible = String(isVisible);
-    document.documentElement.classList.toggle(
-      "is-astronaut-scene-visible",
-      isVisible,
-    );
-  };
-  const measureAstronautSceneRange = () => {
-    const pageContainer = frameDocument.getElementById("page-container");
-    const homeGoal = frameDocument.getElementById("home-goal");
-    const aboutDescription = frameDocument.getElementById("about-who-desc-top");
-    const translateY = getPageContainerTranslateY();
-    const viewportHeight = frameWindow.innerHeight;
-    if (
-      !pageContainer ||
-      !homeGoal ||
-      !aboutDescription ||
-      translateY === null ||
-      viewportHeight <= 0
-    ) {
-      astronautSceneRange = null;
-      syncAstronautSceneVisibility();
-      return;
-    }
-
-    const homeGoalRect = homeGoal.getBoundingClientRect();
-    const aboutDescriptionRect = aboutDescription.getBoundingClientRect();
-
-    // Enter with the astronaut zoom and keep the adopted header hidden until
-    // the About copy reaches its clear position below the header.
-    const start = homeGoalRect.top - translateY;
-    const headerClearance = Math.min(
-      132,
-      Math.max(88, viewportHeight * 0.175),
-    );
-    const end =
-      aboutDescriptionRect.top - translateY - headerClearance;
-    astronautSceneRange =
-      Number.isFinite(start) && Number.isFinite(end) && end > start
-        ? { start, end }
-        : null;
-    syncAstronautSceneVisibility();
-  };
-  const syncHeaderMeasure = () => {
-    if (!headerMeasure?.isConnected) return;
-    const adopted = shadow.getElementById("header-container");
-    const height = adopted?.getBoundingClientRect().height ?? 0;
-    if (height > 0) headerMeasure.style.height = `${height}px`;
-  };
-  const syncPageReadiness = () => {
-    host.classList.toggle(
-      "is-loading",
-      !document.documentElement.classList.contains("is-ready"),
-    );
-  };
-  syncPageReadiness();
-  const pageReadinessObserver = new MutationObserver(syncPageReadiness);
-  pageReadinessObserver.observe(document.documentElement, {
-    attributes: true,
-    attributeFilter: ["class"],
-  });
-  let removeStyleListeners = () => {};
-  const dispose = () => {
-    if (disposed) return;
-    disposed = true;
-    styleObserver?.disconnect();
-    frameVisibilityObserver?.disconnect();
-    astronautSceneObserver?.disconnect();
-    pageReadinessObserver.disconnect();
-    headerMeasure?.remove();
-    document.documentElement.classList.remove("is-astronaut-scene-visible");
-    delete host.dataset.astronautSceneVisible;
-    removeStyleListeners();
-    frameWindow.removeEventListener("pagehide", dispose);
-    document.removeEventListener("click", onDocumentClick, true);
-    document.removeEventListener("keydown", onDocumentKeydown, true);
-    host.remove();
-  };
-  host._disposeNativeLusionHeader = dispose;
-  frameWindow.addEventListener("pagehide", dispose, { once: true });
-
-  let stylesheetTimeout;
-  await Promise.race([
-    Promise.all(stylesheetLoads),
-    new Promise((resolve) => {
-      stylesheetTimeout = window.setTimeout(resolve, 2500);
-    }),
-  ]);
-  window.clearTimeout(stylesheetTimeout);
-  if (
-    disposed ||
-    frame.contentDocument !== frameDocument ||
-    !sourceHeader.isConnected
-  ) {
-    dispose();
-    return null;
-  }
-
-  const preloader = frameDocument.getElementById("preloader");
-  const styleSources = [
-    frameDocument.documentElement,
-    frameDocument.body,
-    frameDocument.getElementById("ui"),
-    preloader,
-    sourceHeader,
-  ].filter(Boolean);
-  const appliedCustomProperties = new Set();
-  const syncFrameStyleState = () => {
-    host.className = [...frameDocument.documentElement.classList].join(" ");
-    host.classList.toggle(
-      "is-lusion-preloading",
-      preloader
-        ? frameWindow.getComputedStyle(preloader).display !== "none"
-        : frameDocument.documentElement.classList.contains(
-            "is-lusion-preloading",
-          ),
-    );
-    syncPageReadiness();
-    host.dataset.lusionLanguage =
-      frameDocument.documentElement.dataset.lusionLanguage ||
-      frameDocument.documentElement.lang ||
-      "en";
-    host.lang = host.dataset.lusionLanguage;
-    host.style.fontFamily = frameWindow.getComputedStyle(
-      frameDocument.body,
-    ).fontFamily;
-
-    const customProperties = new Map();
-    for (const source of styleSources) {
-      const computed = frameWindow.getComputedStyle(source);
-      for (let index = 0; index < computed.length; index += 1) {
-        const name = computed[index];
-        if (!name.startsWith("--")) continue;
-        const value = computed.getPropertyValue(name);
-        if (value) customProperties.set(name, value);
-      }
-    }
-    for (const name of appliedCustomProperties) {
-      if (!customProperties.has(name)) host.style.removeProperty(name);
-    }
-    appliedCustomProperties.clear();
-    for (const [name, value] of customProperties) {
-      host.style.setProperty(name, value);
-      appliedCustomProperties.add(name);
-    }
-    syncHeaderMeasure();
-    measureAstronautSceneRange();
-  };
-
-  function onDocumentClick(event) {
-    const path = event.composedPath();
-    const insideMenu = path.includes(menuTrigger) || path.includes(menuPanel);
-    const insideLanguage =
-      path.includes(languageRoot) ||
-      path.includes(languageTrigger) ||
-      path.includes(languageMenu);
-
-    if (insideMenu && languageMenu && !languageMenu.hidden && !insideLanguage) {
-      languageTrigger?.click();
-    }
-    if (insideLanguage && menuTrigger?.classList.contains("--opened")) {
-      menuTrigger.click();
-    }
-    if (!insideMenu && menuTrigger?.classList.contains("--opened")) {
-      menuTrigger.click();
-    }
-    if (!insideLanguage && languageMenu && !languageMenu.hidden) {
-      languageTrigger?.click();
-    }
-
-    const menuItem = path.find(
-      (node) =>
-        node?.nodeType === 1 &&
-        node.matches("#header-menu-links > .header-menu-link"),
-    );
-    if (!menuItem) return;
-    if (menuTrigger?.classList.contains("--opened")) menuTrigger.click();
-
-    const isProjectDetail = /(?:^|\/)projects\/[^/]+\/?$/.test(
-      frameWindow.location.pathname,
-    );
-    if (menuItem.dataset.scrollTo === "contact" && isProjectDetail) {
-      event.preventDefault();
-      event.stopPropagation();
-      frame.dataset.pendingNativeLusionContact = "true";
-      if (elements.catalogSection)
-        scrollPageToSection(elements.catalogSection);
-      frameWindow.location.assign("/lusion/?water-page-embed=1");
-      return;
-    }
-
-    if (
-      (menuItem.dataset.page || menuItem.dataset.scrollTo === "contact") &&
-      elements.catalogSection
-    ) {
-      scrollPageToSection(elements.catalogSection);
-    }
-  }
-
-  function onDocumentKeydown(event) {
-    if (event.key !== "Escape") return;
-    let closedMenu = false;
-    if (menuTrigger?.classList.contains("--opened")) {
-      menuTrigger.click();
-      closedMenu = true;
-    }
-    if (languageMenu && !languageMenu.hidden) {
-      languageTrigger?.click();
-      closedMenu = true;
-    }
-    if (closedMenu) event.preventDefault();
-  }
-
-  syncFrameStyleState();
-  // HomeReelSection.resize measures #header-container in the frame document.
-  // The live header moves into this shadow root, so leave a fixed stand-in behind.
-  const liveHeaderContainer = frameDocument.getElementById("header-container");
-  const initialHeight = liveHeaderContainer?.getBoundingClientRect().height ?? 0;
-  headerMeasure = frameDocument.createElement("div");
-  headerMeasure.setAttribute("aria-hidden", "true");
-  headerMeasure.style.cssText =
-    "position:fixed;top:0;left:0;width:100%;visibility:hidden;pointer-events:none;";
-  if (initialHeight > 0) headerMeasure.style.height = `${initialHeight}px`;
-  sourceHeader.before(headerMeasure);
-  // Portal renders its own XLab mark; omit Lusion's duplicate.
-  sourceHeader.querySelector("#header-logo")?.remove();
-  shadow.appendChild(sourceHeader);
-  headerMeasure.id = "header-container";
-  syncHeaderMeasure();
-  const menuTrigger = shadow.getElementById("header-right-menu-btn");
-  const languageRoot = shadow.getElementById("lusion-language-switcher");
-  const languageTrigger = shadow.getElementById("lusion-language-trigger");
-  const languageMenu = shadow.getElementById("lusion-language-menu");
-  const menuPanel = shadow.getElementById("header-menu");
-  const pageContainer = frameDocument.getElementById("page-container");
-  if (
-    pageContainer &&
-    typeof frameWindow.MutationObserver === "function"
-  ) {
-    astronautSceneObserver = new frameWindow.MutationObserver(
-      syncAstronautSceneVisibility,
-    );
-    astronautSceneObserver.observe(pageContainer, {
-      attributes: true,
-      attributeFilter: ["style"],
-    });
-  }
-  if (typeof IntersectionObserver === "function") {
-    frameVisibilityObserver = new IntersectionObserver((entries) => {
-      const frameEntry = entries.find((entry) => entry.target === frame);
-      if (!frameEntry) return;
-      frameIsVisible =
-        frameEntry.isIntersecting && frameEntry.intersectionRatio >= 0.5;
-      syncAstronautSceneVisibility();
-    }, { threshold: 0.5 });
-    frameVisibilityObserver.observe(frame);
-  }
-
-  styleObserver = new frameWindow.MutationObserver(syncFrameStyleState);
-  for (const source of styleSources) {
-    styleObserver.observe(source, {
-      attributes: true,
-      attributeFilter: ["class", "lang", "style", "data-lusion-language"],
-    });
-  }
-  removeStyleListeners = () => {
-    frameWindow.removeEventListener("resize", syncFrameStyleState);
-    window.removeEventListener("resize", syncFrameStyleState);
-  };
-  frameWindow.addEventListener("resize", syncFrameStyleState, {
-    passive: true,
-  });
-  window.addEventListener("resize", syncFrameStyleState, { passive: true });
-  document.addEventListener("click", onDocumentClick, true);
-  document.addEventListener("keydown", onDocumentKeydown, true);
-  return shadow;
-}
-
 function applyLocale() {
   const locale = state.locale;
   document.documentElement.lang = locale === "zh" ? "zh-CN" : locale;
   document.documentElement.dataset.locale = locale;
-  syncLocaleToLusion(locale);
   document.querySelectorAll("[data-i18n]").forEach((element) => {
     element.textContent = t(element.dataset.i18n);
   });
@@ -2759,12 +2291,6 @@ function getScrollTop() {
   return Math.max(window.scrollY, document.documentElement.scrollTop, document.body.scrollTop, 0);
 }
 
-function updateScrollProgress() {
-  const scrollable = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
-  const progress = Math.min(Math.max(getScrollTop() / scrollable, 0), 1);
-  elements.scrollProgress.style.transform = `scaleX(${progress})`;
-}
-
 function clampUnit(value) {
   return Math.min(Math.max(value, 0), 1);
 }
@@ -2799,10 +2325,6 @@ function updateMotionChoreography() {
   const catalogProgress = sceneProgressFor(elements.catalogSection);
   const journeyProgress = journeyProgressFor(elements.journeySection);
   const processProgress = sceneProgressFor(elements.processSection);
-  const scrollable = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
-  const totalProgress = clampUnit(scrollTop / scrollable);
-
-  document.documentElement.style.setProperty("--scroll-progress", totalProgress.toFixed(4));
   document.documentElement.style.setProperty(
     "--motion-velocity",
     String(state.motionVelocity.toFixed(2)) + "px",
@@ -2868,7 +2390,6 @@ function requestMotionFrame() {
   if (motionFrame) return;
   motionFrame = requestAnimationFrame(() => {
     motionFrame = 0;
-    updateScrollProgress();
     updateMotionChoreography();
   });
 }
@@ -2882,7 +2403,7 @@ function bindMotionScroll() {
 
 function scrollToMotionTarget(target, href, smooth = true) {
   target.scrollIntoView({
-    behavior: smooth && !isReducedMotion() ? "smooth" : "auto",
+    behavior: smooth && !isReducedMotion() ? "smooth" : "instant",
     block: "start",
   });
   window.history.replaceState(null, "", href);
@@ -2894,7 +2415,7 @@ function bindAnchorNavigation() {
       const target = document.querySelector(link.getAttribute("href"));
       if (!target) return;
       event.preventDefault();
-      elements.menu.classList.remove("is-open");
+      elements.menu?.classList.remove("is-open");
       scrollToMotionTarget(target, link.getAttribute("href"));
     });
   });
@@ -3167,7 +2688,12 @@ function startPageCurtain(libraryReady) {
     : Promise.resolve();
 
   if (!pageCurtain) {
-    nativeLusionHeaderReady.then(() => root.classList.add("is-ready"));
+    Promise.allSettled([
+      libraryReady,
+      pageLoaded,
+      fontsReady,
+      worldReady,
+    ]).then(() => root.classList.add("is-ready"));
     return;
   }
 
@@ -3178,7 +2704,6 @@ function startPageCurtain(libraryReady) {
       pageLoaded,
       fontsReady,
       worldReady,
-      nativeLusionHeaderReady,
     ]).then(() => {
       pageCurtain.classList.add("is-complete");
       root.classList.add("is-ready");
@@ -3207,9 +2732,8 @@ function startPageCurtain(libraryReady) {
   let libraryIsReady = false;
   let pageResourcesAreReady = false;
   let waterIsReady = false;
-  let nativeHeaderIsReady = false;
   const updateReadiness = () => {
-    isReady = pageResourcesAreReady && waterIsReady && nativeHeaderIsReady;
+    isReady = pageResourcesAreReady && waterIsReady;
   };
   const readinessFallback = window.setTimeout(() => {
     pageHasLoaded = true;
@@ -3242,14 +2766,10 @@ function startPageCurtain(libraryReady) {
     waterIsReady = true;
     updateReadiness();
   });
-  nativeLusionHeaderReady.then(() => {
-    nativeHeaderIsReady = true;
-    updateReadiness();
-  });
 
   function render(now) {
     const elapsed = now - startedAt;
-    // Lusion's 70/30 blend leaves an 86% bar when resource progress is at 80%.
+    // The 70/30 blend leaves an 86% bar when resource progress is at 80%.
     const stageProgress = libraryIsReady ? 80 : fontsAreReady ? 76 : pageHasLoaded ? 64 : 22;
     const targetProgress = isReady && elapsed >= minimumDuration ? 100 : stageProgress;
     const deltaMilliseconds = Math.max(0, now - previousFrameAt);
@@ -3369,7 +2889,7 @@ function scrollPageToSection(target) {
   sectionScrollFrame = window.requestAnimationFrame(render);
 }
 
-function bindWaterLusionHandoff() {
+function bindWaterHeroHandoff() {
   const hero = elements.hero;
   const nextSection = elements.catalogSection;
   if (!hero || !nextSection) return;
@@ -3389,14 +2909,6 @@ function bindWaterLusionHandoff() {
       "--water-handoff-opacity",
       `${(1 - progress * 0.42).toFixed(3)}`,
     );
-    nextSection.style.setProperty(
-      "--lusion-handoff-offset",
-      `${(6 * (1 - progress)).toFixed(2)}vh`,
-    );
-    nextSection.style.setProperty(
-      "--lusion-handoff-opacity",
-      `${progress.toFixed(3)}`,
-    );
   };
   const scheduleUpdate = () => {
     if (updateFrame) return;
@@ -3408,10 +2920,16 @@ function bindWaterLusionHandoff() {
   update();
 }
 
-function bindWaterToLusionScroll() {
+function bindWaterToCatalogScroll() {
   const hero = elements.hero;
   const nextSection = elements.catalogSection;
-  if (!hero || !nextSection) return;
+  if (
+    !hero ||
+    !nextSection ||
+    getComputedStyle(nextSection).display === "none"
+  ) {
+    return;
+  }
 
   let automaticScrollTimer = 0;
   let userHasTakenControl = false;
@@ -3479,7 +2997,7 @@ function bindWaterToLusionScroll() {
     { passive: true },
   );
 
-  const scrollToLusion = () => {
+  const scrollToCatalog = () => {
     if (nextSection.getBoundingClientRect().top <= 2) return;
     scrollPageToSection(nextSection);
   };
@@ -3488,13 +3006,7 @@ function bindWaterToLusionScroll() {
     "wheel",
     (event) => {
       if (event.ctrlKey || !event.cancelable || event.deltaY >= 0) return;
-      if (
-        document
-          .getElementById(NATIVE_LUSION_HEADER_ID)
-          ?.shadowRoot?.getElementById("header-right-menu-btn")
-          ?.classList.contains("--opened")
-      )
-        return;
+      if (elements.menu?.classList.contains("is-open")) return;
       if (
         event.target instanceof Element &&
         event.target.closest("select, input, textarea, [contenteditable='true']")
@@ -3528,7 +3040,7 @@ function bindWaterToLusionScroll() {
       }
       if (event.deltaY <= 0) return;
       event.preventDefault();
-      scrollToLusion();
+      scrollToCatalog();
     },
     { passive: false },
   );
@@ -3556,7 +3068,7 @@ function bindWaterToLusionScroll() {
       }
       if (scrollDelta <= 2) return;
       event.preventDefault();
-      scrollToLusion();
+      scrollToCatalog();
     },
     { passive: false },
   );
@@ -3576,146 +3088,16 @@ function bindWaterToLusionScroll() {
   );
 }
 
-function deferLusionFrame() {
-  const frame = document.querySelector("iframe[data-lazy-src]");
-  if (!frame) {
-    settleNativeLusionHeaderReady();
-    return;
-  }
-  nativeLusionHeaderReadyFallback = window.setTimeout(
-    settleNativeLusionHeaderReady,
-    35_000,
-  );
-  frame.addEventListener("error", settleNativeLusionHeaderReady, { once: true });
-  window.addEventListener("message", (event) => {
-    if (
-      event.origin !== window.location.origin ||
-      event.source !== frame.contentWindow ||
-      event.data?.type !== "lusion:language-selected"
-    ) {
-      return;
-    }
-    const locale = { en: "en", vi: "vi", "zh-CN": "zh" }[event.data.locale];
-    if (locale) setLocale(locale);
-  });
-
-  const bridgeFrameScrollToWater = () => {
-    let frameWindow;
-    let frameDocument;
-    try {
-      frameWindow = frame.contentWindow;
-      frameDocument = frame.contentDocument;
-    } catch {
-      return;
-    }
-    if (!frameWindow || !frameDocument || !elements.hero) return;
-
-    // Lusion uses virtual scrolling, so the iframe's native scrollY stays at zero.
-    const frameIsAtTop = () =>
-      frameWindow.__XLAB_LUSION_SCROLL_AT_TOP__ === true;
-    const returnToWater = (event, deltaY) => {
-      if (!event.cancelable) return;
-      if (deltaY > 0 && sectionScrollTarget === elements.hero) {
-        event.preventDefault();
-        event.stopPropagation();
-        scrollPageToSection(elements.catalogSection);
-        return;
-      }
-      if (deltaY >= 0 || !frameIsAtTop() || getScrollTop() <= 0) return;
-
-      event.preventDefault();
-      event.stopPropagation();
-      scrollPageToSection(elements.hero);
-    };
-
-    frameDocument.addEventListener(
-      "wheel",
-      (event) => {
-        const deltaScale =
-          event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? frameWindow.innerHeight : 1;
-        returnToWater(event, event.deltaY * deltaScale);
-      },
-      { passive: false, capture: true },
-    );
-
-    let lastTouchY = null;
-    frameDocument.addEventListener(
-      "touchstart",
-      (event) => {
-        lastTouchY = event.touches[0]?.clientY ?? null;
-      },
-      { passive: true, capture: true },
-    );
-    frameDocument.addEventListener(
-      "touchmove",
-      (event) => {
-        const touch = event.touches[0];
-        if (!touch || lastTouchY === null) return;
-        const deltaY = lastTouchY - touch.clientY;
-        lastTouchY = touch.clientY;
-        returnToWater(event, deltaY);
-      },
-      { passive: false, capture: true },
-    );
-    frameDocument.addEventListener(
-      "touchend",
-      () => {
-        lastTouchY = null;
-      },
-      { passive: true, capture: true },
-    );
-  };
-
-  frame.addEventListener("load", () => {
-    if (resolveNativeLusionHeaderReady) {
-      window.clearTimeout(nativeLusionHeaderReadyFallback);
-      nativeLusionHeaderReadyFallback = window.setTimeout(
-        settleNativeLusionHeaderReady,
-        35_000,
-      );
-    }
-    frame.classList.add("is-ready");
-    bridgeFrameScrollToWater();
-    const nativeHeader = mountNativeLusionHeader(frame);
-    void nativeHeader.then(
-      settleNativeLusionHeaderReady,
-      settleNativeLusionHeaderReady,
-    );
-    syncLocaleToLusion(state.locale, true);
-    if (frame.dataset.pendingNativeLusionContact === "true") {
-      void nativeHeader.then((shadow) => {
-        const contactLink = shadow?.querySelector(
-          "#header-menu-links > .header-menu-link[data-scroll-to='contact']",
-        );
-        if (!contactLink) return;
-        delete frame.dataset.pendingNativeLusionContact;
-        contactLink.click();
-      });
-    }
-  });
-
-  // The live Lusion header is the Portal header, so load its source document eagerly.
-  syncLocaleToLusion(state.locale);
-  frame.loading = "eager";
-  if (frame.dataset.lazySrc) {
-    frame.src = frame.dataset.lazySrc;
-    delete frame.dataset.lazySrc;
-  } else if (!frame.getAttribute("src")) {
-    frame.src = "/lusion/?water-page-embed=1";
-  }
-}
-
 function setupExperience(libraryReady) {
   bindRevealMotion();
   bindAnchorNavigation();
   bindSectionObserver();
-  bindWaterLusionHandoff();
-  bindWaterToLusionScroll();
+  bindWaterHeroHandoff();
+  bindWaterToCatalogScroll();
   bindStageParallax();
   bindAmbientSurfaceMotion();
   bindMagneticMotion();
   bindMotionScroll();
-  deferLusionFrame();
   startPageCurtain(libraryReady);
 }
 
