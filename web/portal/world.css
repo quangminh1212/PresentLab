@@ -2317,6 +2317,16 @@ html[data-theme="light"] .world-stage {
   transform: translate3d(0, var(--lusion-handoff-offset, 6vh), 0);
 }
 
+.lusion-home-frame {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #02070b;
+}
+
 html:has(.app-shell > main > .hero.hero-world):not(.is-lusion-section-active)
   .app-shell:has(> main > .hero.hero-world) > main > .lusion-home-section {
   overflow: visible;

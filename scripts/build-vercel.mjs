@@ -98,6 +98,7 @@ for (const pagePath of xlabPageFiles) {
     (_match, name, quote, value) => `${name}=${quote}${replaceBrandText(value)}${quote}`,
   );
   html = html.replace(/>([^<>]*)</g, (_match, text) => `>${replaceBrandText(text)}<`);
+  html = html.replace(/\bhref=("|')\/\1/gi, (_match, quote) => `href=${quote}/lusion/${quote}`);
   await writeFile(pagePath, html);
 }
 
@@ -112,13 +113,6 @@ if (!labsMenuLinkPattern.test(lusionHomeSource)) {
 lusionHomeSource = lusionHomeSource.replace(labsMenuLinkPattern, "");
 lusionHomeSource = lusionHomeSource.replace(headerLogoPattern, headerLogo);
 lusionHomeSource = lusionHomeSource.replace(
-  projectCardLinkPattern,
-  (_match, attributes, content) => {
-    const nonLinkAttributes = attributes.replace(/\s+href=(?:"[^"]*"|'[^']*')/i, "");
-    return `<div${nonLinkAttributes}>${content}</div>`;
-  },
-);
-lusionHomeSource = lusionHomeSource.replace(
   /\b(aria-label|alt|title)=("|')(.*?)\2/gi,
   (_match, name, quote, value) => `${name}=${quote}${replaceBrandText(value)}${quote}`,
 );
@@ -126,11 +120,17 @@ lusionHomeSource = lusionHomeSource.replace(
   />([^<>]*)</g,
   (_match, text) => `>${replaceBrandText(text)}<`,
 );
+lusionHomeSource = lusionHomeSource.replace(
+  /\bhref=("|')\/\1/gi,
+  (_match, quote) => `href=${quote}/lusion/${quote}`,
+);
 const lusionBody = lusionHomeSource.match(/<body\b[^>]*>([\s\S]*?)<\/body>/i)?.[1];
-if (!lusionBody || /\/lusion\//i.test(lusionBody)) {
-  throw new Error("The Lusion home markup is missing or still references /lusion/.");
+if (!lusionBody) {
+  throw new Error("The local Lusion home page is missing its body.");
 }
-const lusionHomeMarkup = lusionBody.trim();
+const lusionHomeRoute = join(output, "lusion", "index.html");
+await mkdir(dirname(lusionHomeRoute), { recursive: true });
+await writeFile(lusionHomeRoute, lusionHomeSource);
 
 const retiredShareImage = join(output, "assets", "meta", "social_sharing.jpg");
 await unlink(retiredShareImage);
@@ -229,25 +229,17 @@ for (const portalPagePath of [
   }
   portalHtml = portalHtml.replace(
     placeholder,
-    `<div class="lusion-home-content" data-lusion-home-content>${lusionHomeMarkup}</div>`,
+    '<div class="lusion-home-content" data-lusion-home-content>' +
+      '<iframe class="lusion-home-frame" data-lusion-home-frame title="XLab interactive home" src="/lusion/?water-page-embed" loading="eager" allow="autoplay; fullscreen"></iframe>' +
+      "</div>",
   );
-  if (portalHtml.includes("/lusion/") || /<iframe\b[^>]*class="lusion-home-frame"/i.test(portalHtml)) {
-    throw new Error(`The Portal page still references a Lusion embed route: ${portalPagePath}.`);
+  if (portalHtml.split('src="/lusion/?water-page-embed"').length - 1 !== 1) {
+    throw new Error(`Expected one same-origin Lusion iframe in ${portalPagePath}.`);
   }
-  portalHtml = portalHtml.replace(
-    /<\/head>/i,
-    '    <link rel="stylesheet" href="/_astro/lusion-section.css" />\n  </head>',
-  );
   const portalAppScript = '<script type="module" src="/web/portal/app.js"></script>';
   if (portalHtml.split(portalAppScript).length - 1 !== 1) {
     throw new Error(`Expected one Portal app entry in ${portalPagePath}.`);
   }
-  portalHtml = portalHtml.replace(
-    portalAppScript,
-    '<script defer src="/_astro/local-only.js"></script>\n' +
-      '<script type="module" src="/_astro/hoisted.CUO_IjfL.js"></script>\n' +
-      portalAppScript,
-  );
   await writeFile(portalPagePath, portalHtml);
 }
 
@@ -425,9 +417,20 @@ const astronautHeaderStateRuntime = `
   }
 })();
 `;
+const responsiveHeroTypeRuntime = `
+(() => {
+  const style = document.createElement("style");
+  style.textContent =
+    "@media (min-width:561px) and (max-width:812px){" +
+    "html[lang] body #home-hero-title{font-size:clamp(30px,4.8vw,36px)!important;line-height:1.08!important}" +
+    "html[lang] body #home-hero-title .line{line-height:inherit!important;overflow:visible!important}" +
+    "}";
+  document.head.appendChild(style);
+})();
+`;
 await writeFile(
   siteOverridesPath,
-  localizedSiteOverrides + astronautHeaderStateRuntime,
+  localizedSiteOverrides + astronautHeaderStateRuntime + responsiveHeroTypeRuntime,
 );
 
 const lusionBundlePath = join(output, "_astro", "hoisted.CUO_IjfL.js");
@@ -648,13 +651,34 @@ lusionBundle = lusionBundle.replace(
 );
 const lusionScrollStateSource = "scrollManager.update(o),pagesManager.update(o)";
 const lusionScrollStateReplacement =
-  "scrollManager.update(o),window.__XLAB_LUSION_SCROLL_AT_TOP__=scrollManager.scrollPixel<=2,pagesManager.update(o)";
+  "scrollManager.update(o),window.__XLAB_LUSION_SCROLL_AT_TOP__=scrollManager.scrollPixel<=2,window.__XLAB_LUSION_SCROLL_AT_BOTTOM__=scrollManager.scrollPixel>=scrollManager.contentSizePixel-2,pagesManager.update(o)";
 if (lusionBundle.split(lusionScrollStateSource).length - 1 !== 1) {
   throw new Error(
     "The copied Lusion scroll manager no longer matches the virtual scroll state patch.",
   );
 }
 lusionBundle = lusionBundle.replace(lusionScrollStateSource, lusionScrollStateReplacement);
+const lusionLocalHomeRouteSource = "if(n.regExp.test(this.path)){t=n;break}";
+const lusionLocalHomeRouteReplacement =
+  'if(n.regExp.test(this.path)||this.path?.startsWith("lusion")&&n.target.id==="home"){t=n;break}';
+if (lusionBundle.split(lusionLocalHomeRouteSource).length - 1 !== 1) {
+  throw new Error("The copied Lusion route matcher no longer matches the local home route patch.");
+}
+lusionBundle = lusionBundle.replace(
+  lusionLocalHomeRouteSource,
+  lusionLocalHomeRouteReplacement,
+);
+const lusionAbsoluteRouteSource =
+  'history.pushState(null,null,(e||"/")+(this.queryStr?"?"+this.queryStr:"")),this._onStatePop()';
+const lusionAbsoluteRouteReplacement =
+  'history.pushState(null,null,(e?"/"+e:"/")+(this.queryStr?"?"+this.queryStr:"")),this._onStatePop()';
+if (lusionBundle.split(lusionAbsoluteRouteSource).length - 1 !== 1) {
+  throw new Error("The copied Lusion route writer no longer matches the absolute local route patch.");
+}
+lusionBundle = lusionBundle.replace(
+  lusionAbsoluteRouteSource,
+  lusionAbsoluteRouteReplacement,
+);
 await writeFile(lusionBundlePath, lusionBundle);
 
 console.log(`Vercel static output prepared: ${output}`);
