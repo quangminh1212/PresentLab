@@ -51,18 +51,20 @@
     'html[lang="vi"] .project-item-line-2{height:calc(1em + 5px)!important}' +
     'html[lang="vi"] .project-item-line-2-inner{bottom:max(0px,calc(.2em - 5px))!important}' +
     'html[lang="vi"] .project-item-line-2-icon{top:calc(.1em + 5px)!important}' +
+    '.project-item-image img[data-mobile-project-fallback]{display:none}' +
+    '@media(max-width:812px){.project-item-image img[data-mobile-project-fallback]{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit;pointer-events:none}}' +
     'html[lang="vi"] .header-menu-link{padding:.9em 1.625em!important;line-height:1.45!important}' +
     'html[lang="vi"] .header-menu-link-text,html[lang="vi"] .header-menu-link-text-clone{font-size:1.25em!important;line-height:1.6!important}' +
     'html[lang="vi"] #lusion-language-trigger,html[lang="vi"] #lusion-language-menu .lusion-language-choice,html[lang="vi"] #lusion-mobile-language-controls .lusion-mobile-language-choice{font-family:"Be Vietnam Pro",sans-serif!important}' +
     '@media (min-width:813px){html[lang="vi"] #home-hero-title{grid-column:2/span 10!important;font-size:clamp(18px,2.1vw,40px)!important;line-height:1.08!important;text-wrap:balance!important}}' +
     '@media (min-width:813px){html[lang="vi"] #home-hero-title{margin-left:max(0px,calc(96px - 7.6vw))!important}}' +
-    /* FIX: Vietnamese mobile rules - reduced to match base styles */
-    '@media (max-width:812px){html[lang="vi"] #home-hero-title{grid-column:1/span 6!important;width:100%!important;font-size:clamp(10.5px,2.5vw,15px)!important;line-height:1.08!important;text-wrap:balance!important;margin-top:110px!important}}' +
-    '@media (min-width:521px) and (max-width:879px){html[lang] #home-hero-title{position:absolute!important;grid-column:1/-1!important;top:var(--base-padding-y)!important;left:6rem!important;right:9rem!important;width:auto!important;max-width:100%!important;margin:0!important;padding:.35em .55em!important;border-radius:8px!important;background:#f0f1fa!important;color:#101116!important;font-size:clamp(11px,1.8vw,13px)!important;line-height:1.08!important;z-index:54!important}}' +
+    /* Keep Vietnamese hero copy readable on mobile widths. */
+    '@media (max-width:812px){html[lang="vi"] #home-hero-title{grid-column:1/span 6!important;width:100%!important;font-size:clamp(18px,5vw,22px)!important;line-height:1.18!important;text-wrap:balance!important;margin-top:110px!important}}' +
+    '@media (min-width:521px) and (max-width:879px){html[lang] #home-hero-title{position:absolute!important;grid-column:1/-1!important;top:var(--base-padding-y)!important;left:6rem!important;right:9rem!important;width:auto!important;max-width:100%!important;margin:0!important;padding:.35em .55em!important;border-radius:8px!important;background:#f0f1fa!important;color:#101116!important;font-size:clamp(18px,2.6vw,24px)!important;line-height:1.18!important;z-index:54!important}}' +
     '@media (min-width:521px) and (max-width:879px){html[lang] #home-hero{grid-template-rows:calc(var(--header-size)*3 + 1rem) minmax(0,1fr)!important}html[lang] #home-hero-visual-container{grid-row:2!important}}' +
     '@media (min-width:813px) and (max-width:879px){html[lang] #home-hero-title{top:calc(var(--base-padding-y) + 8px)!important}}' +
     '@media (min-width:521px) and (max-width:879px){html[lang] #home-hero-title .line{overflow:visible!important}html[lang] #home-hero-title .word{transform:none!important}}' +
-    '@media (min-width:813px) and (max-width:919px){html[lang="vi"] .lusion-home-content #home-hero-title{font-size:clamp(14px,1.8vw,16px)!important}}';
+    '@media (min-width:813px) and (max-width:919px){html[lang="vi"] .lusion-home-content #home-hero-title{font-size:clamp(18px,2.6vw,24px)!important;line-height:1.18!important}}';
   document.head.appendChild(vietnameseFontStyle);
 
   const offlineMessage = (detail) =>
@@ -1044,6 +1046,39 @@ const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
     hero.textContent = translated;
   };
 
+  const installMobileProjectImageFallbacks = () => {
+    if (!window.matchMedia("(max-width: 812px)").matches) return;
+
+    document.querySelectorAll(".project-item[data-id]").forEach((project) => {
+      const imageHost = project.querySelector(".project-item-image");
+      const slug = project.dataset.id?.replace(/^home-project-/, "");
+      if (
+        !imageHost ||
+        !slug ||
+        !/^[a-z0-9_]+$/.test(slug) ||
+        imageHost.querySelector("img[data-mobile-project-fallback]")
+      ) {
+        return;
+      }
+
+      const image = document.createElement("img");
+      image.src = `/assets/projects/${slug}/home.webp`;
+      image.alt = "";
+      image.loading = "lazy";
+      image.decoding = "async";
+      image.dataset.mobileProjectFallback = "";
+      image.setAttribute("aria-hidden", "true");
+      imageHost.appendChild(image);
+    });
+  };
+  installMobileProjectImageFallbacks();
+  document.addEventListener("DOMContentLoaded", installMobileProjectImageFallbacks, {
+    once: true,
+  });
+  window.addEventListener("resize", installMobileProjectImageFallbacks, {
+    passive: true,
+  });
+
   const languageObserver = new MutationObserver((records) => {
     for (const record of records) {
       if (record.type === "attributes") translateElementAttributes(record.target);
@@ -1212,27 +1247,38 @@ const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
         };
         const preloader = document.getElementById("preloader");
         if (preloader) {
+          const isPreloaderVisible = () => {
+            const style = getComputedStyle(preloader);
+            return (
+              style.display !== "none" &&
+              style.visibility !== "hidden" &&
+              Number.parseFloat(style.opacity) > 0
+            );
+          };
           const syncPreloaderState = () => {
-            const isLoading = getComputedStyle(preloader).display !== "none";
+            const isLoading = isPreloaderVisible();
             document.documentElement.classList.toggle(
               "is-lusion-preloading",
               isLoading,
             );
             syncMenuMotion();
+            if (!isLoading && document.readyState === "complete") {
+              preloaderObserver.disconnect();
+            }
           };
           const preloaderObserver = new MutationObserver(() => {
             syncPreloaderState();
-            if (getComputedStyle(preloader).display === "none") {
-              preloaderObserver.disconnect();
-            }
+          });
+          preloaderObserver.observe(preloader, {
+            attributes: true,
+            attributeFilter: ["style", "class"],
+          });
+          preloaderObserver.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ["class"],
           });
           syncPreloaderState();
-          if (getComputedStyle(preloader).display !== "none") {
-            preloaderObserver.observe(preloader, {
-              attributes: true,
-              attributeFilter: ["style"],
-            });
-          }
+          window.addEventListener("load", syncPreloaderState, { once: true });
         }
         const menuMotionObserver = new MutationObserver(syncMenuMotion);
         for (
@@ -1412,7 +1458,15 @@ const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
     let reveal = null;
     let revealAt = 0;
     let exitTimer = 0;
-    let preloaderIsHidden = getComputedStyle(preloader).display === "none";
+    const isPreloaderVisible = () => {
+      const style = getComputedStyle(preloader);
+      return (
+        style.display !== "none" &&
+        style.visibility !== "hidden" &&
+        Number.parseFloat(style.opacity) > 0
+      );
+    };
+    let preloaderIsHidden = !isPreloaderVisible();
     let completionObserver;
     let preloaderObserver;
 
@@ -1456,7 +1510,7 @@ const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
 
     completionObserver = new MutationObserver(syncCompletion);
     preloaderObserver = new MutationObserver(() => {
-      if (getComputedStyle(preloader).display !== "none") return;
+      if (isPreloaderVisible()) return;
       preloaderIsHidden = true;
       preloaderObserver.disconnect();
       scheduleExit();
@@ -1467,7 +1521,11 @@ const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
     });
     preloaderObserver.observe(preloader, {
       attributes: true,
-      attributeFilter: ["style"],
+      attributeFilter: ["style", "class"],
+    });
+    preloaderObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
     });
     syncCompletion();
   }
