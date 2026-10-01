@@ -428,3 +428,8 @@ html[lang="vi"] body #home-goal-tunnel-title .home-goal-tunnel-title-line {
 #scroll-indicator.is-dragging #scroll-indicator-bar {
   cursor: grabbing;
 }
+
+/* Keep the language pill clean; the button still opens its language menu. */
+#lusion-language-trigger::after {
+  display: none !important;
+}
