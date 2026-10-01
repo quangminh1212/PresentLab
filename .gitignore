@@ -12,5 +12,6 @@ coverage/
 *.log
 /log.txt
 *.tmp
+/temp/
 Thumbs.db
 .DS_Store

@@ -20,6 +20,7 @@ names and stable public contracts.
 | `tests/unit/`         | Fast isolated tests                                                           | `<capability>.test.ts`                                |
 | `tests/integration/`  | Browser, artifact, and MCP tests                                              | `<capability>.test.ts`                                |
 | `docs/`               | Contracts, architecture, operations, and release guidance                     | lowercase kebab-case Markdown                         |
+| `docs/analysis/`      | Retained design and lifecycle investigations                                 | lowercase kebab-case Markdown                         |
 | `schemas/`            | Versioned machine-readable contracts                                          | descriptive lowercase filenames                       |
 | `plugins/`            | Host integrations and reusable agent skills                                   | keep plugin IDs stable once published                 |
 | `web/lusion/`         | Static showcase microsite and its local media                                 | Keep custom scripts outside generated bundles         |
