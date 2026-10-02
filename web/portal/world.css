@@ -4294,14 +4294,11 @@ html:not(.is-ready) .portal-header * {
   }
 
   .portal-header-copy {
-    display: block;
     grid-column: 1 / -1;
     grid-row: 2;
     max-width: 36em;
     font-size: clamp(11px, 2.4vw, 12px);
     line-height: 1.35;
-    background: transparent;
-    transform: translateY(-6px);
   }
 
   .portal-header-actions {
