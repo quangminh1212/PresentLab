@@ -38,6 +38,7 @@ const COPY = {
     brandWorkspace: "PRESENTLAB / CLIENT WORKSPACE",
     brandAria: "XLab Web - về đầu trang",
     navAria: "Điều hướng chính",
+    navHome: "Trang chủ",
     navTemplates: "Mẫu slide",
     navProcess: "Quy trình",
     navPalette: "Bảng màu",
@@ -267,6 +268,7 @@ const COPY = {
     brandWorkspace: "PRESENTLAB / CLIENT WORKSPACE",
     brandAria: "XLab Web - back to top",
     navAria: "Main navigation",
+    navHome: "Home",
     navTemplates: "Templates",
     navProcess: "Process",
     navPalette: "Palettes",
@@ -499,6 +501,7 @@ const COPY = {
     brandWorkspace: "PRESENTLAB / 客户工作台",
     brandAria: "XLab Web - 返回顶部",
     navAria: "主导航",
+    navHome: "首页",
     navTemplates: "幻灯片模板",
     navProcess: "流程",
     navPalette: "配色",
@@ -2152,6 +2155,10 @@ function handleFiles(input) {
 
 function bindEvents() {
   const localeControl = document.querySelector("[data-locale-control]");
+  const categoryMenu = document.querySelector(".portal-category-menu");
+  const categoryTrigger = categoryMenu?.querySelector(
+    ".portal-category-trigger",
+  );
   const localeTrigger = localeControl?.querySelector("[data-locale-trigger]");
   const localeOptions = Array.from(
     localeControl?.querySelectorAll("[data-locale-option]") || [],
@@ -2168,6 +2175,7 @@ function bindEvents() {
   };
   const setLocaleMenuOpen = (open) => {
     if (!localeTrigger || !localeList) return;
+    if (open && categoryMenu?.open) categoryMenu.open = false;
     localeTrigger.setAttribute("aria-expanded", String(open));
     localeList.hidden = !open;
     if (!open) return;
@@ -2228,6 +2236,12 @@ function bindEvents() {
   });
   menuButton?.addEventListener("click", () => {
     setMenuOpen(!elements.menu?.classList.contains("is-open"));
+  });
+  categoryTrigger?.addEventListener("click", () => {
+    if (!categoryMenu?.open) setLocaleMenuOpen(false);
+  });
+  categoryMenu?.addEventListener("toggle", () => {
+    if (categoryMenu.open) setLocaleMenuOpen(false);
   });
   localeTrigger?.addEventListener("click", () => {
     setLocaleMenuOpen(!localeMenuIsOpen());
