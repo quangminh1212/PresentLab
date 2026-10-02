@@ -3938,7 +3938,7 @@ html:not(.is-ready) .portal-header * {
 }
 
 .portal-language-chevron {
-  display: block;
+  display: none;
   width: 0.36em;
   height: 0.36em;
   border-right: 1px solid currentColor;
