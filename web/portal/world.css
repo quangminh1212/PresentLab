@@ -3456,7 +3456,7 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy h1 em {
 .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--lead {
   margin: 0 0 0.02em 0.05em;
   color: #f2f3f5;
-  font-size: clamp(34px, 4vw, 58px);
+  font-size: clamp(40px, 4.8vw, 68px);
   font-weight: 500;
   letter-spacing: -0.025em;
   line-height: 1.12;
@@ -3470,7 +3470,7 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy h1 em {
   background-size: 185% 100%;
   background-clip: text;
   color: transparent;
-  font-size: clamp(72px, 8.8vw, 126px);
+  font-size: clamp(88px, 10vw, 152px);
   font-style: normal;
   font-weight: 500;
   letter-spacing: -0.045em;
@@ -3662,14 +3662,14 @@ html.is-ready .app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark {
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--lead {
-    font-size: clamp(33px, 9vw, 39px);
+    font-size: clamp(39px, 8.8vw, 52px);
     animation-duration: 740ms;
     animation-delay: 70ms;
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--final {
     margin-top: 0.06em;
-    font-size: clamp(62px, 17vw, 80px);
+    font-size: clamp(68px, 17.3vw, 90px);
     line-height: 1.08;
     animation-duration: 840ms, 1180ms;
     animation-delay: 170ms, 250ms;
@@ -3706,8 +3706,12 @@ html.is-ready .app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark {
 }
 
 @media (max-width: 360px) {
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--lead {
+    font-size: clamp(36px, 10vw, 40px);
+  }
+
   .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--final {
-    font-size: clamp(54px, 16vw, 64px);
+    font-size: clamp(60px, 17vw, 68px);
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-lede {
@@ -3729,11 +3733,11 @@ html.is-ready .app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark {
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--lead {
-    font-size: 30px;
+    font-size: clamp(36px, 8.8vw, 48px);
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--final {
-    font-size: clamp(54px, 16vw, 72px);
+    font-size: clamp(62px, 17vw, 90px);
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-lede {
@@ -3752,11 +3756,11 @@ html.is-ready .app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark {
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--lead {
-    font-size: 40px;
+    font-size: 48px;
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--final {
-    font-size: clamp(60px, 8vw, 90px);
+    font-size: clamp(80px, 9.5vw, 118px);
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-lede {
