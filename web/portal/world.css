@@ -4054,8 +4054,6 @@ html:not(.is-ready) .portal-header * {
 .portal-category-menu[open] > .portal-category-trigger {
   color: #000;
   background: #fff;
-  outline: 2px solid #c1ff00;
-  outline-offset: 3px;
 }
 
 .portal-category-trigger:focus-visible {
