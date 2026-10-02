@@ -1361,12 +1361,25 @@ function syncLocaleToLusion(locale = state.locale, force = false) {
   );
 }
 
+function syncLocalePicker() {
+  const localeLabels = { vi: "VI", en: "EN", zh: "中" };
+  const currentLabel = document.querySelector("[data-locale-current]");
+  if (currentLabel)
+    currentLabel.textContent = localeLabels[state.locale] || localeLabels.vi;
+  document.querySelectorAll("[data-locale-option]").forEach((option) => {
+    const selected = option.dataset.localeOption === state.locale;
+    option.setAttribute("aria-selected", String(selected));
+    option.tabIndex = selected ? 0 : -1;
+  });
+}
+
 function applyLocale() {
   const locale = state.locale;
   document.documentElement.lang = locale === "zh" ? "zh-CN" : locale;
   document.documentElement.dataset.locale = locale;
   const localeSelect = document.querySelector("select[data-locale]");
   if (localeSelect) localeSelect.value = locale;
+  syncLocalePicker();
   syncLocaleToLusion(locale);
   document.querySelectorAll("[data-i18n]").forEach((element) => {
     element.textContent = t(element.dataset.i18n);
@@ -2138,6 +2151,35 @@ function handleFiles(input) {
 }
 
 function bindEvents() {
+  const localeControl = document.querySelector("[data-locale-control]");
+  const localeTrigger = localeControl?.querySelector("[data-locale-trigger]");
+  const localeOptions = Array.from(
+    localeControl?.querySelectorAll("[data-locale-option]") || [],
+  );
+  const localeList = localeControl?.querySelector("[role='listbox']");
+  const localeMenuIsOpen = () =>
+    localeTrigger?.getAttribute("aria-expanded") === "true";
+  const focusLocaleOption = (option) => {
+    if (!option) return;
+    localeOptions.forEach((candidate) => {
+      candidate.tabIndex = candidate === option ? 0 : -1;
+    });
+    option.focus();
+  };
+  const setLocaleMenuOpen = (open) => {
+    if (!localeTrigger || !localeList) return;
+    localeTrigger.setAttribute("aria-expanded", String(open));
+    localeList.hidden = !open;
+    if (!open) return;
+
+    const selected = localeOptions.find(
+      (option) => option.dataset.localeOption === state.locale,
+    );
+    localeOptions.forEach((option) => {
+      option.tabIndex = option === selected ? 0 : -1;
+    });
+  };
+
   const menuButton = document.querySelector("[data-menu-toggle]");
   const setMenuOpen = (open) => {
     if (!elements.menu) return;
@@ -2186,6 +2228,61 @@ function bindEvents() {
   });
   menuButton?.addEventListener("click", () => {
     setMenuOpen(!elements.menu?.classList.contains("is-open"));
+  });
+  localeTrigger?.addEventListener("click", () => {
+    setLocaleMenuOpen(!localeMenuIsOpen());
+  });
+  localeOptions.forEach((option) => {
+    option.addEventListener("click", () => {
+      setLocale(option.dataset.localeOption);
+      setLocaleMenuOpen(false);
+      localeTrigger?.focus();
+    });
+  });
+  localeControl?.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && localeMenuIsOpen()) {
+      event.preventDefault();
+      event.stopPropagation();
+      setLocaleMenuOpen(false);
+      localeTrigger?.focus();
+      return;
+    }
+
+    const isTrigger = event.target === localeTrigger;
+    const activeIndex = localeOptions.indexOf(event.target);
+    if (isTrigger && ["ArrowDown", "ArrowUp"].includes(event.key)) {
+      event.preventDefault();
+      if (!localeMenuIsOpen()) setLocaleMenuOpen(true);
+      const selected = localeOptions.find(
+        (option) => option.dataset.localeOption === state.locale,
+      );
+      const target =
+        event.key === "ArrowUp"
+          ? localeOptions[localeOptions.length - 1]
+          : selected;
+      focusLocaleOption(target);
+      return;
+    }
+    if (activeIndex < 0) return;
+
+    let nextIndex = activeIndex;
+    if (event.key === "ArrowDown")
+      nextIndex = (activeIndex + 1) % localeOptions.length;
+    else if (event.key === "ArrowUp")
+      nextIndex = (activeIndex - 1 + localeOptions.length) % localeOptions.length;
+    else if (event.key === "Home") nextIndex = 0;
+    else if (event.key === "End") nextIndex = localeOptions.length - 1;
+    else return;
+    event.preventDefault();
+    focusLocaleOption(localeOptions[nextIndex]);
+  });
+  document.addEventListener("pointerdown", (event) => {
+    if (localeControl && !localeControl.contains(event.target))
+      setLocaleMenuOpen(false);
+  });
+  document.addEventListener("focusin", (event) => {
+    if (localeControl && !localeControl.contains(event.target))
+      setLocaleMenuOpen(false);
   });
   document.querySelector("select[data-locale]")?.addEventListener("change", (event) => {
     setLocale(event.target.value);

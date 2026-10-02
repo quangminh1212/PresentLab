@@ -62,15 +62,37 @@
         <span data-i18n="brandDescriptionB">kể chuyện bằng hình ảnh, giúp ý tưởng trở nên nổi bật.</span>
       </p>
       <div class="portal-header-actions">
-        <label class="portal-language-control">
-          <span class="sr-only" data-i18n="languageLabel">Ngôn ngữ</span>
-          <select data-locale aria-label="Ngôn ngữ">
+        <div class="portal-language-control" data-locale-control>
+          <span id="portal-language-label" class="sr-only" data-i18n="languageLabel">Ngôn ngữ</span>
+          <button
+            class="portal-language-trigger"
+            type="button"
+            data-locale-trigger
+            aria-haspopup="listbox"
+            aria-expanded="false"
+            aria-controls="portal-language-options"
+            aria-labelledby="portal-language-label portal-language-current"
+          >
+            <span id="portal-language-current" data-locale-current>VI</span>
+            <span class="portal-language-chevron" aria-hidden="true"></span>
+          </button>
+          <div
+            id="portal-language-options"
+            class="portal-language-options"
+            role="listbox"
+            aria-labelledby="portal-language-label"
+            hidden
+          >
+            <button type="button" role="option" aria-selected="true" data-locale-option="vi">VI</button>
+            <button type="button" role="option" aria-selected="false" data-locale-option="en">EN</button>
+            <button type="button" role="option" aria-selected="false" data-locale-option="zh">中</button>
+          </div>
+          <select data-locale aria-label="Ngôn ngữ" aria-hidden="true" tabindex="-1" hidden>
             <option value="vi">VI</option>
             <option value="en">EN</option>
             <option value="zh">中</option>
           </select>
-          <span class="portal-language-chevron" aria-hidden="true"></span>
-        </label>
+        </div>
         <details class="portal-category-menu">
           <summary
             class="portal-category-trigger"
