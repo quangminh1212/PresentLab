@@ -64,7 +64,7 @@
     '@media (min-width:813px){html[lang="vi"] #home-hero-title{grid-column:2/span 10!important;font-size:clamp(18px,2.1vw,40px)!important;line-height:1.08!important;text-wrap:balance!important}}' +
     '@media (min-width:813px){html[lang="vi"] #home-hero-title{margin-left:max(0px,calc(96px - 7.6vw))!important}}' +
     /* Keep Vietnamese hero copy readable on mobile widths. */
-    '@media (max-width:812px){html[lang="vi"] #home-hero-title{grid-column:1/span 6!important;width:100%!important;font-size:clamp(18px,5vw,22px)!important;line-height:1.18!important;text-wrap:balance!important;margin-top:110px!important}}' +
+    '@media (max-width:812px){html[lang="vi"] #home-hero-title{grid-column:1/span 6!important;width:100%!important;font-size:clamp(18px,5vw,22px)!important;line-height:1.18!important;text-wrap:balance!important;margin-top:102px!important}}' +
     '@media (min-width:521px) and (max-width:879px){html[lang] #home-hero-title{position:absolute!important;grid-column:1/-1!important;top:var(--base-padding-y)!important;left:6rem!important;right:9rem!important;width:auto!important;max-width:100%!important;margin:0!important;padding:.35em .55em!important;border-radius:8px!important;background:#f0f1fa!important;color:#101116!important;font-size:clamp(18px,2.6vw,24px)!important;line-height:1.18!important;z-index:54!important}}' +
     // Preserve the source hero's artwork frame so its WebGL camera does not crop the scene on tablets.
     '@media (min-width:521px) and (max-width:879px){html[lang] #home-hero{grid-template-rows:calc(var(--header-size)*3 + 1rem) minmax(0,1fr)!important}html[lang] #home-hero-visual-container{grid-row:2!important;align-self:end!important;height:min(calc(92.915vw - 46.458px),calc(100svh - 179px))!important}}' +
