@@ -4251,6 +4251,21 @@ html:not(.is-ready) .portal-header * {
     font-size: 1.4em;
   }
 
+  .portal-category-panel {
+    --portal-category-gutter: clamp(20px, 4vw, 34px);
+    --portal-category-width: min(
+      22em,
+      calc(
+        100vw - var(--portal-category-gutter) - var(--portal-category-gutter)
+      )
+    );
+    width: var(--portal-category-width);
+    right: calc(
+      100vw - var(--portal-category-gutter) - var(--portal-category-gutter) -
+        var(--portal-category-width)
+    );
+  }
+
 }
 
 @media (max-width: 640px) {
