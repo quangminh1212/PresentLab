@@ -35,7 +35,8 @@
     "@media(prefers-reduced-motion:reduce){.lusion-home-content #xlab-preloader-reveal,.lusion-home-content #xlab-preloader-mark img{transition:none}}";
   document.head.appendChild(style);
 
-  // Aeonik is missing Vietnamese horn letters. Be Vietnam Pro is one grotesque for the whole line.
+  // This stylesheet runs inside the Lusion iframe, so its font rules target this document.
+  // Aeonik is missing Vietnamese horn letters, so use Be Vietnam Pro for Vietnamese text.
   const vietnameseFontStyle = document.createElement("style");
   const beVietnamFace = (file, weight, range) =>
     `@font-face{font-family:"Be Vietnam Pro";src:url("/assets/fonts/${file}") format("woff2");font-style:normal;font-weight:${weight};font-display:swap;unicode-range:${range}}`;
@@ -48,8 +49,8 @@
     beVietnamFace("BeVietnamPro-Regular-vietnamese.woff2", 400, beVietnamMarks) +
     beVietnamFace("BeVietnamPro-Medium-latin.woff2", 500, beVietnamLatin) +
     beVietnamFace("BeVietnamPro-Medium-vietnamese.woff2", 500, beVietnamMarks) +
-    'html[lang="vi"] .lusion-home-content,html[lang="vi"] .lusion-home-content h1,html[lang="vi"] .lusion-home-content h2,html[lang="vi"] .lusion-home-content h3,html[lang="vi"] .lusion-home-content h4,html[lang="vi"] .lusion-home-content h5,html[lang="vi"] .lusion-home-content h6,html[lang="vi"] .lusion-home-content button,html[lang="vi"] .lusion-home-content input{font-family:"Be Vietnam Pro",sans-serif!important}' +
-    'html[lang="vi"] #home-featured-title{padding-bottom:.22em!important;line-height:1.12!important;max-width:4.3em!important}' +
+    'html[lang="vi"] body,html[lang="vi"] h1,html[lang="vi"] h2,html[lang="vi"] h3,html[lang="vi"] h4,html[lang="vi"] h5,html[lang="vi"] h6,html[lang="vi"] button,html[lang="vi"] input{font-family:"Be Vietnam Pro",sans-serif!important}' +
+    'html[lang="vi"] #home-featured-title{font-family:"Be Vietnam Pro",sans-serif!important;padding-bottom:.22em!important;line-height:1.12!important;max-width:4.3em!important}' +
     'html[lang="vi"] #home-goal-title .goal-title-line-wrapper{padding:9px 0 12px!important}' +
     'html[lang="vi"] #home-goal-title .line{bottom:0!important}' +
     '@media (min-width:813px){html[lang="vi"] #home-goal-title{grid-column:1/span 7!important;width:100%!important;font-size:clamp(50px,6vw,96px)!important}}' +
