@@ -3874,7 +3874,7 @@ html:not(.is-ready) .portal-header * {
   display: none;
   max-width: 620px;
   margin: 0;
-  font-size: clamp(17px, 1.92vw, 22px);
+  font-size: clamp(14px, 1.6vw, 22px);
   font-weight: 400;
   line-height: 1.22;
   letter-spacing: -0.025em;
@@ -4227,7 +4227,7 @@ html:not(.is-ready) .portal-header * {
   }
 
   .portal-header-copy {
-    font-size: clamp(15px, 2vw, 18px);
+    font-size: clamp(12px, 1.6vw, 15px);
   }
 
   .portal-header-actions {
@@ -4290,7 +4290,7 @@ html:not(.is-ready) .portal-header * {
     grid-column: 1 / -1;
     grid-row: 2;
     max-width: 36em;
-    font-size: 14px;
+    font-size: clamp(11px, 2.4vw, 12px);
     line-height: 1.35;
   }
 
