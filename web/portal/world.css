@@ -4237,6 +4237,15 @@ html:not(.is-ready) .portal-header * {
 }
 
 @media (max-width: 812px) {
+  .portal-language-control {
+    width: 44.8px;
+  }
+
+  .portal-language-trigger {
+    border-radius: 50%;
+    padding: 0;
+  }
+
   .portal-category-trigger {
     position: relative;
     width: 3.2em;
