@@ -3881,14 +3881,14 @@ html:not(.is-ready) .portal-header * {
 .portal-header-actions {
   display: flex;
   align-items: center;
-  gap: clamp(14px, 3.8vw, 44px);
+  gap: 22px;
 }
 
 .portal-language-control {
   position: relative;
   display: block;
-  width: 74px;
-  height: 56px;
+  width: 48px;
+  height: 44px;
   flex: 0 0 auto;
 }
 
@@ -3898,7 +3898,8 @@ html:not(.is-ready) .portal-header * {
   appearance: none;
   border: 0;
   border-radius: 999px;
-  padding: 0 28px 0 19px;
+  padding: 0;
+  text-align: center;
   color: #fff;
   background: #292a35;
   font: inherit;
@@ -3915,15 +3916,7 @@ html:not(.is-ready) .portal-header * {
 }
 
 .portal-language-chevron {
-  position: absolute;
-  top: 23px;
-  right: 17px;
-  width: 6px;
-  height: 6px;
-  border-right: 1px solid #fff;
-  border-bottom: 1px solid #fff;
-  transform: rotate(45deg);
-  pointer-events: none;
+  display: none;
 }
 
 .portal-category-menu {
@@ -3934,14 +3927,15 @@ html:not(.is-ready) .portal-header * {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 14px;
-  min-width: 174px;
-  height: 56px;
+  gap: 0;
+  width: 48px;
+  min-width: 48px;
+  height: 44px;
   box-sizing: border-box;
-  border-radius: 999px;
-  padding: 0 20px 0 28px;
+  border-radius: 50%;
+  padding: 0;
   color: #171820;
-  background: rgb(31 34 47 / 6%);
+  background: #dfe0e8;
   font-size: 16px;
   font-weight: 500;
   list-style: none;
@@ -4020,24 +4014,14 @@ html:not(.is-ready) .portal-header * {
   }
 
   .portal-header-actions {
-    gap: 10px;
-  }
-
-  .portal-language-control {
-    width: 66px;
-    height: 50px;
-  }
-
-  .portal-language-chevron {
-    top: 20px;
-    right: 14px;
+    gap: 22px;
   }
 
   .portal-category-trigger {
-    min-width: 144px;
-    height: 50px;
-    gap: 10px;
-    padding-inline: 18px;
+    min-width: 48px;
+    height: 44px;
+    gap: 0;
+    padding: 0;
     font-size: 13px;
   }
 }
@@ -4066,29 +4050,19 @@ html:not(.is-ready) .portal-header * {
     grid-column: 2;
     grid-row: 1;
     justify-self: end;
-    gap: 8px;
-  }
-
-  .portal-language-control {
-    width: 58px;
-    height: 46px;
+    gap: 12px;
   }
 
   .portal-language-control select {
-    padding-left: 15px;
+    padding: 0;
     font-size: 14px;
   }
 
-  .portal-language-chevron {
-    top: 18px;
-    right: 12px;
-  }
-
   .portal-category-trigger {
-    min-width: 128px;
-    height: 46px;
-    gap: 8px;
-    padding-inline: 15px;
+    min-width: 48px;
+    height: 44px;
+    gap: 0;
+    padding: 0;
     font-size: 12px;
   }
 
