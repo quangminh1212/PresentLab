@@ -3014,9 +3014,8 @@ function startPageCurtain(libraryReady) {
 
 let sectionScrollFrame = 0;
 let sectionScrollTarget = null;
-let sectionScrollDownLockUntil = 0;
 
-function scrollPageToSection(target, { offset = 0, holdAfterMs = 0 } = {}) {
+function scrollPageToSection(target) {
   if (!target || (sectionScrollTarget === target && sectionScrollFrame)) return;
 
   if (sectionScrollFrame) window.cancelAnimationFrame(sectionScrollFrame);
@@ -3024,28 +3023,18 @@ function scrollPageToSection(target, { offset = 0, holdAfterMs = 0 } = {}) {
   sectionScrollTarget = target;
 
   const startY = getScrollTop();
-  const targetY = Math.max(
-    0,
-    startY + target.getBoundingClientRect().top + offset,
-  );
+  const targetY = Math.max(0, startY + target.getBoundingClientRect().top);
   const distance = targetY - startY;
-  const shouldAnimate = !isReducedMotion() && Math.abs(distance) >= 1;
-  const duration = shouldAnimate
-    ? Math.min(760, Math.max(460, Math.abs(distance) * 0.62))
-    : 0;
-  sectionScrollDownLockUntil = 0;
-
-  if (!shouldAnimate) {
+  if (isReducedMotion() || Math.abs(distance) < 1) {
     window.scrollTo({ top: targetY, behavior: "auto" });
     document.documentElement.classList.remove("is-section-transitioning");
     sectionScrollTarget = null;
-    sectionScrollDownLockUntil =
-      holdAfterMs > 0 ? performance.now() + holdAfterMs : 0;
     return;
   }
 
   // Let the easing animation control intermediate positions before scroll snap resumes.
   document.documentElement.classList.add("is-section-transitioning");
+  const duration = Math.min(760, Math.max(460, Math.abs(distance) * 0.62));
   let startTime = null;
   const render = (time) => {
     if (startTime === null) startTime = time;
@@ -3068,8 +3057,6 @@ function scrollPageToSection(target, { offset = 0, holdAfterMs = 0 } = {}) {
     document.documentElement.classList.remove("is-section-transitioning");
     sectionScrollFrame = 0;
     sectionScrollTarget = null;
-    sectionScrollDownLockUntil =
-      holdAfterMs > 0 ? performance.now() + holdAfterMs : 0;
   };
 
   sectionScrollFrame = window.requestAnimationFrame(render);
@@ -3129,7 +3116,6 @@ function bindWaterToLusionScroll() {
   let lastTouchY = null;
   let frameTouchY = null;
   let bridgedFrameDocument = null;
-  let lusionEntryOffset = 0;
   const pageRoot = document.documentElement;
   let lusionCanvasResizeTimer = 0;
   const frameWindow = () => {
@@ -3170,8 +3156,7 @@ function bindWaterToLusionScroll() {
 
     window.requestAnimationFrame(() => window.requestAnimationFrame(resize));
   };
-  const sectionIsAtTop = () =>
-    Math.abs(nextSection.getBoundingClientRect().top + lusionEntryOffset) <= 2;
+  const sectionIsAtTop = () => Math.abs(nextSection.getBoundingClientRect().top) <= 2;
   const lusionIsAtTop = () =>
     frameWindow()?.__XLAB_LUSION_SCROLL_AT_TOP__ === true ||
     window.__XLAB_LUSION_SCROLL_AT_TOP__ === true;
@@ -3179,9 +3164,7 @@ function bindWaterToLusionScroll() {
     frameWindow()?.__XLAB_LUSION_SCROLL_AT_BOTTOM__ === true;
   const updateSectionState = () => {
     const bounds = nextSection.getBoundingClientRect();
-    const active =
-      Math.abs(bounds.top + lusionEntryOffset) <= 2 &&
-      bounds.bottom >= window.innerHeight - lusionEntryOffset - 2;
+    const active = Math.abs(bounds.top) <= 2 && bounds.bottom >= window.innerHeight - 2;
     const wasActive = pageRoot.classList.contains("is-lusion-section-active");
     pageRoot.classList.toggle("is-lusion-section-active", active);
     frameDocument()?.documentElement.classList.toggle(
@@ -3201,9 +3184,6 @@ function bindWaterToLusionScroll() {
   const inputIsActive = (target) =>
     target instanceof Element &&
     Boolean(target.closest("select, input, textarea, [contenteditable='true']"));
-  const lusionEntryDownScrollIsLocked = () =>
-    sectionScrollTarget === nextSection ||
-    performance.now() < sectionScrollDownLockUntil;
   const menuIsOpen = () =>
     frameDocument()
       ?.getElementById("header-right-menu-btn")
@@ -3211,19 +3191,11 @@ function bindWaterToLusionScroll() {
   const scrollToLusion = (event) => {
     event.preventDefault();
     event.stopImmediatePropagation();
-    lusionEntryOffset = Math.min(
-      24,
-      Math.max(12, Math.round(window.innerHeight * 0.024)),
-    );
-    scrollPageToSection(nextSection, {
-      offset: lusionEntryOffset,
-      holdAfterMs: 1000,
-    });
+    scrollPageToSection(nextSection);
   };
   const returnToWater = (event) => {
     event.preventDefault();
     event.stopImmediatePropagation();
-    lusionEntryOffset = 0;
     scrollPageToSection(hero);
   };
   const scrollPastLusion = (event) => {
@@ -3231,7 +3203,6 @@ function bindWaterToLusionScroll() {
     if (!nextPageSection) return false;
     event.preventDefault();
     event.stopImmediatePropagation();
-    lusionEntryOffset = 0;
     scrollPageToSection(nextPageSection);
     return true;
   };
@@ -3246,11 +3217,6 @@ function bindWaterToLusionScroll() {
       Boolean(target.closest("select, input, textarea, [contenteditable='true']"));
     const handleFrameWheel = (event) => {
       if (event.ctrlKey || !event.cancelable || isFrameInputActive(event.target)) return;
-      if (event.deltaY > 0 && lusionEntryDownScrollIsLocked()) {
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        return;
-      }
       if (
         event.deltaY < 0 &&
         sectionIsAtTop() &&
@@ -3292,11 +3258,6 @@ function bindWaterToLusionScroll() {
         const deltaY = frameTouchY - touch.clientY;
         frameTouchY = touch.clientY;
         if (isFrameInputActive(event.target)) return;
-        if (deltaY > 2 && lusionEntryDownScrollIsLocked()) {
-          event.preventDefault();
-          event.stopImmediatePropagation();
-          return;
-        }
         if (
           deltaY < -2 &&
           sectionIsAtTop() &&
@@ -3341,11 +3302,6 @@ function bindWaterToLusionScroll() {
 
   window.addEventListener("wheel", (event) => {
     if (event.ctrlKey || !event.cancelable || inputIsActive(event.target)) return;
-    if (event.deltaY > 0 && lusionEntryDownScrollIsLocked()) {
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      return;
-    }
     const insideLusion = nextSection.contains(event.target);
     if (
       event.deltaY > 0 &&
@@ -3379,11 +3335,6 @@ function bindWaterToLusionScroll() {
     const deltaY = lastTouchY - touch.clientY;
     lastTouchY = touch.clientY;
     if (inputIsActive(event.target)) return;
-    if (deltaY > 2 && lusionEntryDownScrollIsLocked()) {
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      return;
-    }
     const insideLusion = nextSection.contains(event.target);
     if (
       deltaY > 2 &&
