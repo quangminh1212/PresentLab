@@ -3901,7 +3901,7 @@ html:not(.is-ready) .portal-header * {
   padding: 0;
   text-align: center;
   color: #fff;
-  background: #292a35;
+  background: transparent;
   font: inherit;
   font-size: 16px;
   font-weight: 650;
@@ -3934,8 +3934,8 @@ html:not(.is-ready) .portal-header * {
   box-sizing: border-box;
   border-radius: 50%;
   padding: 0;
-  color: #171820;
-  background: #dfe0e8;
+  color: #fff;
+  background: transparent;
   font-size: 16px;
   font-weight: 500;
   list-style: none;
