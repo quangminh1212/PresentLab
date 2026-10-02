@@ -3830,9 +3830,12 @@ html.is-ready .app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark {
     radial-gradient(ellipse at 52% 42%, transparent 30%, rgb(24 28 35 / 10%) 100%);
 }
 
-/* Light XLab header above the visual-first home scene. */
+/* Let the existing water scene continue behind the XLab header. */
 .portal-header {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
   z-index: 20;
   display: grid;
   grid-template-columns: 104px minmax(0, 1fr) auto;
