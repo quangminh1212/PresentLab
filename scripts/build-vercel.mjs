@@ -292,12 +292,10 @@ const astronautHeaderStateRuntime = `
 
   const attach = () => {
     const pageContainer = document.getElementById("page-container");
-    const homeGoal = document.getElementById("home-goal");
-    const aboutDescription = document.getElementById("about-who-desc-top");
+    const homeHero = document.getElementById("home-hero");
     if (
       !pageContainer ||
-      !homeGoal ||
-      !aboutDescription
+      !homeHero
     ) {
       return false;
     }
@@ -309,15 +307,9 @@ const astronautHeaderStateRuntime = `
       const translateY = matrix ? values[matrix[1] ? 13 : 5] : 0;
       if (!Number.isFinite(translateY)) return;
 
-      const viewportHeight = window.innerHeight;
-      const homeGoalRect = homeGoal.getBoundingClientRect();
-      const aboutDescriptionRect = aboutDescription.getBoundingClientRect();
-      const start = homeGoalRect.top - translateY;
-      const headerClearance = Math.min(
-        132,
-        Math.max(88, viewportHeight * 0.175),
-      );
-      const end = aboutDescriptionRect.top - translateY - headerClearance;
+      const homeHeroRect = homeHero.getBoundingClientRect();
+      const start = homeHeroRect.top - translateY;
+      const end = homeHeroRect.bottom - translateY;
       const scrollPixel = -translateY;
       document.documentElement.classList.toggle(
         "is-xlab-astronaut-scene",
