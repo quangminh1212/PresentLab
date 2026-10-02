@@ -4322,15 +4322,15 @@ html:not(.is-ready) .portal-header * {
   left: 50%;
   width: min(1320px, calc(100vw - clamp(40px, 8vw, 120px)));
   translate: -50% -50%;
-  text-align: center;
+  text-align: left;
 }
 
 .app-shell:has(> main > .hero.hero-world) .world-copy h1 {
-  justify-items: center;
+  justify-items: start;
 }
 
 .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line {
-  transform-origin: center center;
+  transform-origin: left center;
 }
 
 .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--lead {
@@ -4345,9 +4345,9 @@ html:not(.is-ready) .portal-header * {
 
 .app-shell:has(> main > .hero.hero-world) .world-lede {
   max-width: min(52ch, 100%);
-  margin: clamp(14px, 1.6vw, 24px) auto 0;
+  margin: clamp(14px, 1.6vw, 24px) 0 0 4px;
   font-size: clamp(18px, 1.4vw, 23px);
-  text-align: center;
+  text-align: left;
 }
 
 @media (max-width: 760px) {
@@ -4368,7 +4368,7 @@ html:not(.is-ready) .portal-header * {
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-lede > span {
-    margin-inline: auto;
-    text-align: center;
+    margin-inline: 0;
+    text-align: left;
   }
 }
