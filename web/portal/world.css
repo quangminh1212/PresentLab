@@ -3830,9 +3830,9 @@ html.is-ready .app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark {
     radial-gradient(ellipse at 52% 42%, transparent 30%, rgb(24 28 35 / 10%) 100%);
 }
 
-/* Let the existing water scene continue behind the XLab header. */
+/* Keep the XLab header pinned over the full-screen scenes. */
 .portal-header {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
@@ -3843,8 +3843,6 @@ html.is-ready .app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark {
   column-gap: 20px;
   min-height: 116px;
   padding: 27px clamp(22px, 4.4vw, 56px) 13px;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
   color: #1c1d25;
   background: transparent;
 }
