@@ -1135,6 +1135,8 @@ const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
     window.location.reload();
   });
   function mountLanguageSwitcher() {
+    if (document.documentElement.classList.contains("water-page-embed-root"))
+      return;
     const header = document.getElementById("header");
     if (!header) return;
     if (!document.getElementById("lusion-language-switcher")) {
