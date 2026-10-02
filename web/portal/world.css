@@ -4260,10 +4260,7 @@ html:not(.is-ready) .portal-header * {
       )
     );
     width: var(--portal-category-width);
-    right: calc(
-      100vw - var(--portal-category-gutter) - var(--portal-category-gutter) -
-        var(--portal-category-width)
-    );
+    right: 0;
   }
 
 }
