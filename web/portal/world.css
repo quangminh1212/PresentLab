@@ -3959,14 +3959,14 @@ html:not(.is-ready) .portal-header * {
   z-index: 58;
   display: flex;
   flex-direction: column;
-  width: 12em;
+  width: max-content;
   max-width: calc(
     100vw - clamp(20px, 4vw, 34px) - clamp(20px, 4vw, 34px)
   );
-  min-width: 0;
+  min-width: 5.5em;
   box-sizing: border-box;
   gap: 0;
-  padding: 0.65em 0.3125em;
+  padding: 0.4em 0.3125em;
   border-radius: 0.625em;
   background: #fff;
   color: #080808;
@@ -3982,11 +3982,11 @@ html:not(.is-ready) .portal-header * {
   display: block;
   position: relative;
   width: 100%;
-  min-height: 44px;
+  min-height: 40px;
   box-sizing: border-box;
   border: 0;
   border-radius: 6.25em;
-  padding: 0.7em 1.3em;
+  padding: 0.45em 1em;
   color: inherit;
   background: transparent;
   font-family: inherit;
