@@ -3370,10 +3370,49 @@ function deferLusionFrame() {
     return;
   }
   let wiredDocument = null;
+  let astronautSceneObserver = null;
+  let frameIsVisible = false;
+  let syncAstronautSceneVisibility = () => {};
+  let frameVisibilityObserver = null;
+  const isFrameVisible = () => {
+    if (frameVisibilityObserver) return frameIsVisible;
+    const bounds = frame.getBoundingClientRect();
+    const visibleWidth = Math.max(
+      0,
+      Math.min(bounds.right, window.innerWidth) - Math.max(bounds.left, 0),
+    );
+    const visibleHeight = Math.max(
+      0,
+      Math.min(bounds.bottom, window.innerHeight) - Math.max(bounds.top, 0),
+    );
+    const area = bounds.width * bounds.height;
+    return area > 0 && (visibleWidth * visibleHeight) / area >= 0.5;
+  };
+  if (typeof IntersectionObserver === "function") {
+    frameVisibilityObserver = new IntersectionObserver(
+      (entries) => {
+        const entry = entries.find((item) => item.target === frame);
+        if (!entry) return;
+        frameIsVisible =
+          entry.isIntersecting && entry.intersectionRatio >= 0.5;
+        syncAstronautSceneVisibility();
+      },
+      { threshold: 0.5 },
+    );
+    frameVisibilityObserver.observe(frame);
+  }
+  window.addEventListener("scroll", () => syncAstronautSceneVisibility(), {
+    passive: true,
+  });
+  window.addEventListener("resize", () => syncAstronautSceneVisibility(), {
+    passive: true,
+  });
   const attachFrame = () => {
     const doc = frame.contentDocument;
     const view = frame.contentWindow;
     if (!doc || !view || doc === wiredDocument) return;
+    astronautSceneObserver?.disconnect();
+    astronautSceneObserver = null;
     wiredDocument = doc;
 
     if (
@@ -3442,6 +3481,28 @@ function deferLusionFrame() {
       "is-lusion-section-active",
       document.documentElement.classList.contains("is-lusion-section-active"),
     );
+    syncAstronautSceneVisibility = () => {
+      const isLusionHome =
+        view.location.pathname.replace(/\/+$/, "") === "/lusion";
+      const isVisible =
+        isLusionHome &&
+        isFrameVisible() &&
+        doc.documentElement.classList.contains("is-xlab-astronaut-scene");
+      document.documentElement.classList.toggle(
+        "is-astronaut-scene-visible",
+        isVisible,
+      );
+    };
+    if (typeof view.MutationObserver === "function") {
+      astronautSceneObserver = new view.MutationObserver(
+        syncAstronautSceneVisibility,
+      );
+      astronautSceneObserver.observe(doc.documentElement, {
+        attributes: true,
+        attributeFilter: ["class"],
+      });
+    }
+    syncAstronautSceneVisibility();
     syncLocaleToLusion(state.locale, true);
   };
   frame.addEventListener("load", attachFrame);

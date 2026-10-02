@@ -9409,7 +9409,8 @@ html[data-theme="light"] .journey-float-card--brief strong {
   }
 }
 
-html.is-astronaut-scene-visible .portal-header-brand {
+html.is-astronaut-scene-visible .portal-header-brand,
+html.is-astronaut-scene-visible .portal-header-actions {
   visibility: hidden;
   opacity: 0;
   pointer-events: none;
