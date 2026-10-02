@@ -3843,7 +3843,7 @@ html.is-ready .app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark {
   scroll-snap-align: start;
   scroll-snap-stop: always;
   color: #1c1d25;
-  background: linear-gradient(108deg, #f3f4fb 0%, #f0f1f8 82%, #d9dbe3 100%);
+  background: transparent;
 }
 
 html:not(.is-ready) .portal-header {
@@ -3869,6 +3869,7 @@ html:not(.is-ready) .portal-header * {
 }
 
 .portal-header-copy {
+  display: none;
   max-width: 620px;
   margin: 0;
   font-size: clamp(17px, 1.92vw, 22px);
