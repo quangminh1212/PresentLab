@@ -72,9 +72,20 @@
           <span class="portal-language-chevron" aria-hidden="true"></span>
         </label>
         <details class="portal-category-menu">
-          <summary class="portal-category-trigger">
-            <span class="portal-category-label" data-i18n="categoriesLabel">DANH MỤC</span>
-            <span class="portal-category-chevron" aria-hidden="true"></span>
+          <summary
+            class="portal-category-trigger"
+            data-i18n-aria-label="categoriesLabel"
+          >
+            <span class="portal-category-trigger-inner" aria-hidden="true">
+              <span class="portal-category-label-viewport">
+                <span class="portal-category-label-current" data-i18n="categoriesLabel">DANH MỤC</span>
+                <span class="portal-category-label-close" data-i18n="categoriesCloseLabel">ĐÓNG</span>
+              </span>
+              <span class="portal-category-dots">
+                <span class="portal-category-dot"></span>
+                <span class="portal-category-dot"></span>
+              </span>
+            </span>
           </summary>
           <nav
             class="portal-category-panel"

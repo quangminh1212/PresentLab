@@ -3914,8 +3914,7 @@ html:not(.is-ready) .portal-header * {
   outline-offset: 3px;
 }
 
-.portal-language-control select,
-.portal-category-trigger {
+.portal-language-control select {
   border: 1px solid rgb(255 255 255 / 18%);
   border-radius: 6.25em;
   color: #fff;
@@ -3927,14 +3926,8 @@ html:not(.is-ready) .portal-header * {
   transition: opacity 0.45s, background-color 0.3s, color 0.3s;
 }
 
-.portal-language-control select:hover,
-.portal-category-trigger:hover {
+.portal-language-control select:hover {
   background: #237478;
-}
-
-.portal-category-trigger:focus-visible {
-  outline: 2px solid #c1ff00;
-  outline-offset: 3px;
 }
 
 .portal-language-chevron {
@@ -3964,21 +3957,35 @@ html:not(.is-ready) .portal-header * {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.65em;
   width: auto;
   min-width: 0;
-  height: 44.8px;
+  height: 3.2em;
   box-sizing: border-box;
-  padding: 0 1em;
-  font-size: 14px;
+  border: none;
+  border-radius: 6.25em;
+  padding: 0 1.125em 0 1.625em;
+  color: #000;
+  background: #e4e6ef;
+  font-family: inherit;
+  font-size: 0.875em;
+  font-weight: 500;
+  line-height: 1;
+  text-transform: uppercase;
   list-style: none;
   cursor: pointer;
   user-select: none;
+  transition: color 0.4s, background-color 0.4s;
 }
 
-.portal-category-label {
-  display: block;
-  white-space: nowrap;
+.portal-category-trigger:hover,
+.portal-category-menu[open] > .portal-category-trigger {
+  color: #000;
+  background: #fff;
+}
+
+.portal-category-trigger:focus-visible {
+  outline: 2px solid #c1ff00;
+  outline-offset: 3px;
 }
 
 .portal-category-trigger::-webkit-details-marker {
@@ -3989,21 +3996,82 @@ html:not(.is-ready) .portal-header * {
   content: "";
 }
 
-.portal-category-chevron {
-  display: block;
-  flex: 0 0 auto;
-  width: 0.36em;
-  height: 0.36em;
-  margin-top: -0.2em;
-  border-right: 1px solid currentColor;
-  border-bottom: 1px solid currentColor;
-  transform: rotate(45deg);
-  transition: transform 0.2s, margin 0.2s;
+.portal-category-trigger-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  gap: 0.625em;
+  overflow: hidden;
+  background: transparent;
 }
 
-.portal-category-menu[open] > .portal-category-trigger .portal-category-chevron {
-  margin-top: 0;
-  transform: rotate(315deg);
+.portal-category-label-viewport {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  height: 1.2em;
+  line-height: 1.2em;
+  white-space: nowrap;
+}
+
+.portal-category-label-current,
+.portal-category-label-close {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.1, 1);
+}
+
+.portal-category-label-current {
+  display: block;
+}
+
+.portal-category-label-close {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate3d(0, 100%, 0);
+}
+
+.portal-category-menu[open] > .portal-category-trigger
+  .portal-category-label-current {
+  transform: translate3d(0, -100%, 0);
+}
+
+.portal-category-menu[open] > .portal-category-trigger
+  .portal-category-label-close {
+  transform: translateZ(0);
+}
+
+.portal-category-dots {
+  position: relative;
+  flex: 0 0 auto;
+  width: 1.15em;
+  height: 1.15em;
+  transform: translateZ(0) rotate(180deg);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.1, 1);
+}
+
+.portal-category-dot {
+  position: absolute;
+  display: inline-block;
+  top: 50%;
+  width: 0.3125em;
+  height: 0.3125em;
+  border-radius: 100%;
+  background: currentColor;
+  transform: translateY(-50%);
+}
+
+.portal-category-dot:first-child {
+  left: 0.11em;
+}
+
+.portal-category-dot:last-child {
+  right: 0.1em;
+}
+
+.portal-category-trigger:hover .portal-category-dots,
+.portal-category-menu[open] > .portal-category-trigger .portal-category-dots {
+  transform: translateY(-0.1em) translateZ(0) rotate(270deg);
 }
 
 .portal-category-panel {
@@ -4058,8 +4126,21 @@ html:not(.is-ready) .portal-header * {
     gap: clamp(18px, 2.2vw, 34px);
   }
 
+}
+
+@media (max-width: 812px) {
   .portal-category-trigger {
-    font-size: 13px;
+    position: relative;
+    width: 3.2em;
+    padding: 0;
+  }
+
+  .portal-category-label-viewport {
+    display: none;
+  }
+
+  .portal-category-dots {
+    font-size: 1.4em;
   }
 }
 
@@ -4095,10 +4176,4 @@ html:not(.is-ready) .portal-header * {
     font-size: 13px;
   }
 
-  .portal-category-trigger {
-    height: 44.8px;
-    font-size: 13px;
-    min-width: 10.25em;
-    padding: 0 0.75em;
-  }
 }
