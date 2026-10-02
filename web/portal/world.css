@@ -4059,8 +4059,7 @@ html:not(.is-ready) .portal-header * {
 }
 
 .portal-category-trigger:focus-visible {
-  outline: 2px solid #c1ff00;
-  outline-offset: 3px;
+  outline: none;
 }
 
 .portal-category-trigger::-webkit-details-marker {
