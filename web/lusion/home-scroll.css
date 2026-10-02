@@ -129,6 +129,11 @@
   padding-bottom: 0;
 }
 
+/* Remove the cross markers around the Home intro scroll prompt. */
+#page-container-inner > #about-who #about-crosses {
+  display: none !important;
+}
+
 #page-container-inner #about-who-subsection-container {
   width: 100%;
   height: auto;
