@@ -966,6 +966,8 @@
   style.textContent +=
     '@media(max-width:812px){#lusion-language-menu{position:absolute;top:calc(100% + .55em + var(--lusion-menu-motion-y,0px));left:auto;right:0;max-height:calc(100vh - var(--base-padding-y)*2 - var(--header-size));overflow-y:auto}}';
   style.textContent +=
+    '@media(min-width:813px){#header-right-talk-btn{left:-5.8em!important}}';
+  style.textContent +=
     'html[lang="vi"] #projects-main-title{padding-bottom:.18em!important}';
 const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
   const translatedTextNodes = new WeakMap();
