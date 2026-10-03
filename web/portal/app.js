@@ -2647,13 +2647,27 @@ function bindAnchorNavigation() {
           contextOffset - 170,
         );
       } else if (link.dataset.portalTarget === "lusion-contact") {
+        const readyDeadline = Date.now() + 20_000;
         const scrollToContact = () => {
           const frame = document
             .querySelector("[data-lusion-home-content]")
             ?.querySelector("[data-lusion-home-frame]");
+          const frameDocument = frame?.contentDocument;
+          const frameRoot = frameDocument?.documentElement;
+          if (
+            !frameDocument ||
+            !frameRoot?.classList.contains("is-ready") ||
+            frameRoot.classList.contains("is-lusion-preloading") ||
+            !frameRoot.classList.contains("is-lusion-section-active")
+          ) {
+            if (Date.now() < readyDeadline) {
+              window.setTimeout(scrollToContact, 100);
+            }
+            return;
+          }
           const headerBottom =
-            frame?.contentDocument?.getElementById("header")
-              ?.getBoundingClientRect().bottom ?? 0;
+            frameDocument.getElementById("header")?.getBoundingClientRect()
+              .bottom ?? 0;
           const contactOffset = headerBottom + 32;
           if (!scrollLusionFrameToTarget("xlab-contact-panel", contactOffset)) {
             scrollLusionFrameToTarget("footer-section", contactOffset);
