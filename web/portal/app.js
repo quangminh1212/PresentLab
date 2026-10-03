@@ -2638,10 +2638,12 @@ function bindAnchorNavigation() {
         const headerBottom =
           frame?.contentDocument?.getElementById("header")
             ?.getBoundingClientRect().bottom ?? 0;
-        // Leave the scroll-transformed goal heading clear of the fixed header.
+        // The animated heading sits below its context anchor, so advance past
+        // the anchor to place the heading near the top of the viewport.
+        const contextOffset = Math.max(0, headerBottom - 42);
         scrollLusionFrameToTarget(
           "home-goal-context",
-          Math.max(0, headerBottom - 42),
+          contextOffset - 170,
         );
       }
     });
