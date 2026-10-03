@@ -2630,7 +2630,8 @@ function bindAnchorNavigation() {
         const headerBottom =
           frame?.contentDocument?.getElementById("header")
             ?.getBoundingClientRect().bottom ?? 0;
-        scrollLusionFrameToTarget("home-featured", headerBottom + 12);
+        // Keep the featured heading and first project cards in the viewport.
+        scrollLusionFrameToTarget("home-featured", headerBottom + 62);
       } else if (link.dataset.portalTarget === "lusion-goal") {
         const frame = document
           .querySelector("[data-lusion-home-content]")
