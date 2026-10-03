@@ -40,7 +40,7 @@ const COPY = {
     navAria: "Điều hướng chính",
     navHome: "Trang chủ",
     navTemplates: "Dự án",
-    navProcess: "Quy trình",
+    navContact: "Liên hệ",
     navPalette: "Bảng màu",
     navRequest: "Yêu cầu của tôi",
     languageLabel: "Ngôn ngữ",
@@ -270,7 +270,7 @@ const COPY = {
     navAria: "Main navigation",
     navHome: "Home",
     navTemplates: "Projects",
-    navProcess: "Process",
+    navContact: "Contact",
     navPalette: "Palettes",
     navRequest: "My request",
     languageLabel: "Language",
@@ -503,7 +503,7 @@ const COPY = {
     navAria: "主导航",
     navHome: "首页",
     navTemplates: "项目",
-    navProcess: "流程",
+    navContact: "联系",
     navPalette: "配色",
     navRequest: "我的需求",
     languageLabel: "语言",
@@ -2646,6 +2646,22 @@ function bindAnchorNavigation() {
           "home-goal-context",
           contextOffset - 170,
         );
+      } else if (link.dataset.portalTarget === "lusion-contact") {
+        const frame = document
+          .querySelector("[data-lusion-home-content]")
+          ?.querySelector("[data-lusion-home-frame]");
+        const headerBottom =
+          frame?.contentDocument?.getElementById("header")
+            ?.getBoundingClientRect().bottom ?? 0;
+        const contactOffset = headerBottom + 32;
+        if (
+          !scrollLusionFrameToTarget(
+            "xlab-footer-contact-methods",
+            contactOffset,
+          )
+        ) {
+          scrollLusionFrameToTarget("footer-section", contactOffset);
+        }
       }
     });
   });
