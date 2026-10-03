@@ -4222,17 +4222,6 @@ html:not(.is-ready) .portal-header * {
   transform: scale(1);
 }
 
-/* Keep the tagline inside its grid track at the screenshot's tablet width. */
-@media (min-width: 800px) and (max-width: 840px) {
-  .portal-header-copy {
-    display: block;
-    min-width: 0;
-    width: 100%;
-    max-width: 100%;
-    overflow-wrap: anywhere;
-  }
-}
-
 @media (max-width: 840px) {
   .portal-header {
     grid-template-columns: minmax(76px, 92px) minmax(0, 1fr) auto;
