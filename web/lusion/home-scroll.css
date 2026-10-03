@@ -201,6 +201,11 @@
   transition: transform 300ms cubic-bezier(0.35, 0, 0, 1);
 }
 
+html[lang="vi"] .xlab-contact-eyebrow,
+html[lang="vi"] .xlab-contact-card-action {
+  font-family: "Be Vietnam Pro", sans-serif;
+}
+
 .xlab-contact-card::after {
   position: absolute;
   right: 0;
