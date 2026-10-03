@@ -2574,11 +2574,8 @@ function bindMotionScroll() {
   window.addEventListener("resize", requestMotionFrame);
 }
 
-function scrollToMotionTarget(target, href, smooth = true) {
-  target.scrollIntoView({
-    behavior: smooth && !isReducedMotion() ? "smooth" : "auto",
-    block: "start",
-  });
+function scrollToMotionTarget(target, href) {
+  scrollPageToSection(target);
   window.history.replaceState(null, "", href);
 }
 
@@ -2588,7 +2585,8 @@ function bindAnchorNavigation() {
       const target = document.querySelector(link.getAttribute("href"));
       if (!target) return;
       event.preventDefault();
-      elements.menu.classList.remove("is-open");
+      elements.menu?.classList.remove("is-open");
+      document.querySelector(".portal-category-menu")?.removeAttribute("open");
       scrollToMotionTarget(target, link.getAttribute("href"));
     });
   });
