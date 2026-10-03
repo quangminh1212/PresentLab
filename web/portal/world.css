@@ -4185,6 +4185,7 @@ html:not(.is-ready) .portal-header * {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  column-gap: 0.75em;
   position: relative;
   min-height: clamp(40px, 4.6vw, 48px);
   box-sizing: border-box;
