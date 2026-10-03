@@ -23,6 +23,7 @@
     "html:not(.is-ready) #header #header-logo .xlab-logo-crop img,html.is-lusion-preloading #header #header-logo .xlab-logo-crop img{filter:brightness(0) invert(1)!important}" +
     "html.water-page-embed-root #header-logo{visibility:hidden!important}" +
     "html:not(.is-ready) #header-right-menu-btn,html.is-lusion-preloading #header-right-menu-btn,html:not(.is-ready) #lusion-language-trigger,html.is-lusion-preloading #lusion-language-trigger{visibility:visible!important;opacity:1!important;transform:none!important;clip-path:none!important}" +
+    "html.water-page-embed-root #header-right-menu-btn{display:none!important}" +
     "#header-logo .xlab-logo-crop{display:block;position:relative;flex:0 0 80px;width:80px;height:28px;overflow:hidden}" +
     "#header-logo .xlab-logo-crop img{position:absolute;top:-8.9px;left:0;display:block;width:80px;height:auto;max-width:none}" +
     "html:not(.is-black-bg):not(.is-blue-bg) #header-logo .xlab-logo-crop img{filter:none!important}" +
