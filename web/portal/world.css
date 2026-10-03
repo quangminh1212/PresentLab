@@ -4243,36 +4243,6 @@ html:not(.is-ready) .portal-header * {
 
 }
 
-@media (min-width: 813px) {
-  .portal-category-trigger {
-    position: relative;
-    width: 9.9em;
-    padding: 0;
-    border-radius: 50%;
-  }
-
-  .portal-category-trigger-inner {
-    width: 100%;
-    height: 100%;
-    gap: 0;
-  }
-
-  .portal-category-label-viewport {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin-top: -0.6em;
-    transform: translateX(-50%);
-  }
-
-  .portal-category-dots {
-    position: absolute;
-    top: 50%;
-    right: 0.6em;
-    margin-top: -0.575em;
-  }
-}
-
 @media (max-width: 812px) {
   .portal-language-control {
     width: 44.8px;
