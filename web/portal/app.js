@@ -2647,21 +2647,30 @@ function bindAnchorNavigation() {
           contextOffset - 170,
         );
       } else if (link.dataset.portalTarget === "lusion-contact") {
-        const frame = document
-          .querySelector("[data-lusion-home-content]")
-          ?.querySelector("[data-lusion-home-frame]");
-        const headerBottom =
-          frame?.contentDocument?.getElementById("header")
-            ?.getBoundingClientRect().bottom ?? 0;
-        const contactOffset = headerBottom + 32;
-        if (
-          !scrollLusionFrameToTarget(
-            "xlab-footer-contact-methods",
-            contactOffset,
-          )
-        ) {
-          scrollLusionFrameToTarget("footer-section", contactOffset);
-        }
+        const scrollToContact = () => {
+          const frame = document
+            .querySelector("[data-lusion-home-content]")
+            ?.querySelector("[data-lusion-home-frame]");
+          const headerBottom =
+            frame?.contentDocument?.getElementById("header")
+              ?.getBoundingClientRect().bottom ?? 0;
+          const contactOffset = headerBottom + 32;
+          if (!scrollLusionFrameToTarget("xlab-contact-panel", contactOffset)) {
+            scrollLusionFrameToTarget("footer-section", contactOffset);
+          }
+        };
+        const waitForSectionTransition = () => {
+          if (sectionScrollFrame) {
+            window.requestAnimationFrame(waitForSectionTransition);
+            return;
+          }
+          // The frame's virtual scroller only accepts input after its parent
+          // section has finished entering the viewport.
+          window.requestAnimationFrame(() =>
+            window.requestAnimationFrame(scrollToContact),
+          );
+        };
+        waitForSectionTransition();
       }
     });
   });
@@ -3521,8 +3530,23 @@ function deferLusionFrame() {
     doc.addEventListener(
       "click",
       (event) => {
-        if (!isLusionHeaderPreloading() || !(event.target instanceof view.Element))
+        if (!(event.target instanceof view.Element)) return;
+        const contactLink = event.target.closest(
+          '#header-menu [data-scroll-to="contact"]',
+        );
+        if (contactLink) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          setLusionMenuOpen(false);
+          const headerBottom =
+            doc.getElementById("header")?.getBoundingClientRect().bottom ?? 0;
+          const contactOffset = headerBottom + 32;
+          if (!scrollLusionFrameToTarget("xlab-contact-panel", contactOffset)) {
+            scrollLusionFrameToTarget("footer-section", contactOffset);
+          }
           return;
+        }
+        if (!isLusionHeaderPreloading()) return;
         const button = event.target.closest("#header-right-menu-btn");
         const isOpen = doc
           .getElementById("header-right-menu-btn")

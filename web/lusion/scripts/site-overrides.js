@@ -8,13 +8,6 @@
   style.textContent =
     ".lusion-home-content{--header-color:#237478}" +
     "#header-menu-talk{display:none!important}" +
-    "#xlab-footer-contact-methods{display:flex;align-items:center;flex-wrap:wrap;gap:.35rem 1rem;margin-top:.65rem}" +
-    "#xlab-footer-contact-methods a{position:relative;display:inline-block;width:max-content;max-width:100%;padding-bottom:.2em;font-size:clamp(.875rem,1.3vw,1rem);line-height:1.5;color:inherit;text-decoration:none}" +
-    "#xlab-footer-contact-methods a:before{content:\"\";position:absolute;left:0;bottom:0;width:100%;height:.1em;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .3s cubic-bezier(.35,0,0,1);pointer-events:none}" +
-    "@media(hover:hover){#xlab-footer-contact-methods a:hover:before{transform:scaleX(1)}}" +
-    "#xlab-footer-contact-methods a[target=_blank]:after{content:\"↗\";display:inline-block;margin-left:.35em;font-size:.82em;opacity:.65;transition:transform .3s cubic-bezier(.35,0,0,1),opacity .3s cubic-bezier(.35,0,0,1)}" +
-    "@media(hover:hover){#xlab-footer-contact-methods a[target=_blank]:hover:after{transform:translate(.08em,-.08em);opacity:1}}" +
-    "#xlab-footer-contact-methods a:focus-visible{outline:2px solid currentColor;outline-offset:3px}" +
     "#header-right-talk-btn.--is-contact-active:hover{background:var(--header-color)!important}" +
     "#video-overlay.is-offline-media #video-overlay__controls,#video-overlay.is-offline-media #video-overlay-cursor{display:none!important}" +
     "html:not(.is-ready) #ui,html.is-lusion-preloading #ui{z-index:202!important}" +
@@ -1425,39 +1418,125 @@ const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
       )
       .forEach((link) => link.setAttribute("href", emailHref));
 
+    const contactCopy =
+      activeLanguage === "vi"
+        ? {
+            eyebrow: "KẾT NỐI VỚI XLAB",
+            heading: "Cùng biến ý tưởng thành trải nghiệm.",
+            description:
+              "Chia sẻ dự án của bạn với đội ngũ XLab. Chúng tôi luôn sẵn sàng lắng nghe.",
+            navLabel: "Các kênh liên hệ XLab",
+            actions: ["Nhắn tin", "Gửi email", "Theo dõi XLab"],
+            accessibleLabels: [
+              "Nhắn tin qua Zalo: 0866 528 014",
+              "Gửi email cho XLab: xlab.rnd@gmail.com",
+              "Theo dõi XLab trên Facebook",
+            ],
+          }
+        : {
+            eyebrow: "GET IN TOUCH WITH XLAB",
+            heading: "Let's turn ideas into experiences.",
+            description:
+              "Tell us about your project. The XLab team is ready to listen.",
+            navLabel: "XLab contact channels",
+            actions: ["Message us", "Send email", "Follow XLab"],
+            accessibleLabels: [
+              "Message XLab on Zalo: 0866 528 014",
+              "Email XLab at xlab.rnd@gmail.com",
+              "Follow XLab on Facebook",
+            ],
+          };
     const methods = [
-      ["Zalo · 0866528014", "https://zalo.me/0866528014", "Zalo: 0866528014"],
-      ["xlab.rnd@gmail.com", emailHref, "Email: xlab.rnd@gmail.com"],
-      ["Facebook · XLab", "https://www.facebook.com/xlab.rnd", "Facebook: XLab"],
+      {
+        id: "zalo",
+        name: "Zalo",
+        detail: "0866 528 014",
+        action: contactCopy.actions[0],
+        href: "https://zalo.me/0866528014",
+        accessibleLabel: contactCopy.accessibleLabels[0],
+      },
+      {
+        id: "email",
+        name: "Email",
+        detail: "xlab.rnd@gmail.com",
+        action: contactCopy.actions[1],
+        href: emailHref,
+        accessibleLabel: contactCopy.accessibleLabels[1],
+      },
+      {
+        id: "facebook",
+        name: "Facebook",
+        detail: "XLab · Sáng tạo Studio",
+        action: contactCopy.actions[2],
+        href: "https://www.facebook.com/xlab.rnd",
+        accessibleLabel: contactCopy.accessibleLabels[2],
+      },
     ];
+    const panel = document.createElement("div");
+    panel.id = "xlab-contact-panel";
+    panel.className = "xlab-contact-panel";
+    const copy = document.createElement("div");
+    copy.className = "xlab-contact-copy";
+    const eyebrow = document.createElement("p");
+    eyebrow.className = "xlab-contact-eyebrow";
+    eyebrow.textContent = contactCopy.eyebrow;
+    const heading = document.createElement("h2");
+    heading.className = "xlab-contact-heading";
+    heading.textContent = contactCopy.heading;
+    const description = document.createElement("p");
+    description.className = "xlab-contact-description";
+    description.textContent = contactCopy.description;
+    copy.append(eyebrow, heading, description);
+
     const links = document.createElement("nav");
     links.id = "xlab-footer-contact-methods";
-    links.setAttribute("aria-label", "Kênh liên hệ XLab");
+    links.className = "xlab-contact-methods";
+    links.setAttribute("aria-label", contactCopy.navLabel);
 
-    for (const [label, href, accessibleLabel] of methods) {
+    const iconMarkup = {
+      zalo: '<path d="M20 11.5a8.5 8.5 0 0 1-12.6 7.4L4 20l1.1-3.2A8.5 8.5 0 1 1 20 11.5Z"/><path d="M9 9h5l-5 5h5"/>',
+      email:
+        '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/>',
+      facebook:
+        '<path d="M13.5 21v-8h2.7l.4-3h-3.1V8.1c0-.9.3-1.5 1.6-1.5h1.7V3.9c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3V10H7.4v3h2.7v8h3.4Z"/>',
+    };
+    for (const method of methods) {
       const link = document.createElement("a");
-      link.href = href;
-      link.textContent = label;
-      link.setAttribute("aria-label", accessibleLabel);
-      if (href.startsWith("https://")) {
+      link.className = `xlab-contact-card xlab-contact-card--${method.id}`;
+      link.href = method.href;
+      link.setAttribute("aria-label", method.accessibleLabel);
+      if (method.href.startsWith("https://")) {
         link.target = "_blank";
         link.rel = "noopener noreferrer";
       }
+      const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      icon.classList.add("xlab-contact-icon");
+      icon.setAttribute("viewBox", "0 0 24 24");
+      icon.setAttribute("aria-hidden", "true");
+      icon.innerHTML = iconMarkup[method.id];
+      const iconBox = document.createElement("span");
+      iconBox.className = `xlab-contact-icon-box xlab-contact-icon-box--${method.id}`;
+      iconBox.appendChild(icon);
+
+      const content = document.createElement("span");
+      content.className = "xlab-contact-card-copy";
+      const name = document.createElement("span");
+      name.className = "xlab-contact-card-name";
+      name.textContent = method.name;
+      const detail = document.createElement("span");
+      detail.className = "xlab-contact-card-detail";
+      detail.textContent = method.detail;
+      content.append(name, detail);
+
+      const action = document.createElement("span");
+      action.className = "xlab-contact-card-action";
+      action.setAttribute("aria-hidden", "true");
+      action.textContent = `${method.action} ↗`;
+      link.append(iconBox, content, action);
       links.appendChild(link);
     }
-    footer.appendChild(links);
-    const placeAfterContactLabel = () => {
-      const label = footer.querySelector(".footer-enquires-link-wrapper");
-      if (!label) return false;
-      if (links.previousElementSibling !== label) label.after(links);
-      return true;
-    };
-    if (!placeAfterContactLabel()) {
-      const observer = new MutationObserver(() => {
-        if (placeAfterContactLabel()) observer.disconnect();
-      });
-      observer.observe(footer, { childList: true, subtree: true });
-    }
+    panel.append(copy, links);
+    footer.appendChild(panel);
   }
 
   function mountXlabPreloaderReveal() {
