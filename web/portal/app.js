@@ -2579,6 +2579,38 @@ function scrollToMotionTarget(target, href) {
   window.history.replaceState(null, "", href);
 }
 
+function scrollLusionFrameToTarget(targetId, topOffset = 0) {
+  const frame = document
+    .querySelector("[data-lusion-home-content]")
+    ?.querySelector("[data-lusion-home-frame]");
+  let frameWindow;
+  let frameDocument;
+  try {
+    frameWindow = frame?.contentWindow;
+    frameDocument = frame?.contentDocument;
+  } catch {
+    return false;
+  }
+
+  const target = frameDocument?.getElementById(targetId);
+  if (!frameWindow || !frameDocument || !target) return false;
+
+  let delta = target.getBoundingClientRect().top - topOffset;
+  while (Math.abs(delta) > 0.5) {
+    const deltaY = Math.sign(delta) * Math.min(200, Math.abs(delta));
+    frameDocument.documentElement.dispatchEvent(
+      new frameWindow.WheelEvent("wheel", {
+        deltaY,
+        deltaMode: 0,
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+    delta -= deltaY;
+  }
+  return true;
+}
+
 function bindAnchorNavigation() {
   document.querySelectorAll('a[href^="#"]').forEach((link) => {
     link.addEventListener("click", (event) => {
@@ -2588,6 +2620,18 @@ function bindAnchorNavigation() {
       elements.menu?.classList.remove("is-open");
       document.querySelector(".portal-category-menu")?.removeAttribute("open");
       scrollToMotionTarget(target, link.getAttribute("href"));
+
+      if (link.dataset.portalTarget === "lusion-home") {
+        scrollLusionFrameToTarget("home-hero");
+      } else if (link.dataset.portalTarget === "lusion-featured") {
+        const frame = document
+          .querySelector("[data-lusion-home-content]")
+          ?.querySelector("[data-lusion-home-frame]");
+        const headerBottom =
+          frame?.contentDocument?.getElementById("header")
+            ?.getBoundingClientRect().bottom ?? 0;
+        scrollLusionFrameToTarget("home-featured", headerBottom + 12);
+      }
     });
   });
 }
