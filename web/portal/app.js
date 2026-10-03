@@ -2579,6 +2579,22 @@ function scrollToMotionTarget(target, href) {
   window.history.replaceState(null, "", href);
 }
 
+function scrollToMotionTargetImmediately(target, href) {
+  if (!target) return;
+
+  if (sectionScrollFrame) window.cancelAnimationFrame(sectionScrollFrame);
+  sectionScrollFrame = 0;
+  sectionScrollTarget = null;
+
+  const root = document.documentElement;
+  root.classList.add("is-section-transitioning");
+  target.scrollIntoView({ behavior: "auto", block: "start" });
+  root.classList.remove("is-section-transitioning");
+  window.dispatchEvent(new Event("scroll"));
+
+  window.history.replaceState(null, "", href);
+}
+
 function scrollLusionFrameToTarget(targetId, topOffset = 0) {
   const frame = document
     .querySelector("[data-lusion-home-content]")
@@ -2611,6 +2627,42 @@ function scrollLusionFrameToTarget(targetId, topOffset = 0) {
   return true;
 }
 
+function scrollLusionFrameToTargetWithRetry(targetId, topOffset = 0) {
+  if (!scrollLusionFrameToTarget(targetId, topOffset)) return false;
+
+  let attempts = 0;
+  const verifyTargetPosition = () => {
+    const frame = document
+      .querySelector("[data-lusion-home-content]")
+      ?.querySelector("[data-lusion-home-frame]");
+    const frameDocument = frame?.contentDocument;
+    const frameRoot = frameDocument?.documentElement;
+    const target = frameDocument?.getElementById(targetId);
+    if (
+      !frameRoot?.classList.contains("is-ready") ||
+      frameRoot.classList.contains("is-lusion-preloading") ||
+      !frameRoot.classList.contains("is-lusion-section-active") ||
+      !target
+    ) {
+      return;
+    }
+
+    if (
+      Math.abs(target.getBoundingClientRect().top - topOffset) <= 96 ||
+      attempts >= 2
+    ) {
+      return;
+    }
+
+    attempts += 1;
+    if (!scrollLusionFrameToTarget(targetId, topOffset)) return;
+    window.setTimeout(verifyTargetPosition, 900);
+  };
+
+  window.setTimeout(verifyTargetPosition, 900);
+  return true;
+}
+
 function bindAnchorNavigation() {
   document.querySelectorAll('a[href^="#"]').forEach((link) => {
     link.addEventListener("click", (event) => {
@@ -2619,7 +2671,11 @@ function bindAnchorNavigation() {
       event.preventDefault();
       elements.menu?.classList.remove("is-open");
       document.querySelector(".portal-category-menu")?.removeAttribute("open");
-      scrollToMotionTarget(target, link.getAttribute("href"));
+      if (link.dataset.portalTarget === "lusion-contact") {
+        scrollToMotionTargetImmediately(target, link.getAttribute("href"));
+      } else {
+        scrollToMotionTarget(target, link.getAttribute("href"));
+      }
 
       if (link.dataset.portalTarget === "lusion-home") {
         scrollLusionFrameToTarget("home-hero");
@@ -2666,25 +2722,28 @@ function bindAnchorNavigation() {
             return;
           }
           const headerBottom =
-            frameDocument.getElementById("header")?.getBoundingClientRect()
-              .bottom ?? 0;
+            frameDocument.getElementById("header")
+              ?.getBoundingClientRect().bottom ?? 0;
           const contactOffset = headerBottom + 32;
-          if (!scrollLusionFrameToTarget("xlab-contact-panel", contactOffset)) {
-            scrollLusionFrameToTarget("footer-section", contactOffset);
-          }
-        };
-        const waitForSectionTransition = () => {
-          if (sectionScrollFrame) {
-            window.requestAnimationFrame(waitForSectionTransition);
+          const lusionContactLink = frameDocument.querySelector(
+            '#header-menu-links .header-menu-link[data-scroll-to="contact"]',
+          );
+          if (lusionContactLink) {
+            lusionContactLink.click();
             return;
           }
-          // The frame's virtual scroller only accepts input after its parent
-          // section has finished entering the viewport.
-          window.requestAnimationFrame(() =>
-            window.requestAnimationFrame(scrollToContact),
-          );
+          if (
+            !scrollLusionFrameToTargetWithRetry(
+              "xlab-contact-panel",
+              contactOffset,
+            )
+          ) {
+            scrollLusionFrameToTargetWithRetry("footer-section", contactOffset);
+          }
         };
-        waitForSectionTransition();
+        // Wait for the native section scroll and its active-state update before
+        // sending input to Lusion's virtual scroller.
+        window.setTimeout(scrollToContact, 100);
       }
     });
   });
@@ -3549,15 +3608,23 @@ function deferLusionFrame() {
           '#header-menu [data-scroll-to="contact"]',
         );
         if (contactLink) {
-          event.preventDefault();
-          event.stopImmediatePropagation();
-          setLusionMenuOpen(false);
-          const headerBottom =
-            doc.getElementById("header")?.getBoundingClientRect().bottom ?? 0;
-          const contactOffset = headerBottom + 32;
-          if (!scrollLusionFrameToTarget("xlab-contact-panel", contactOffset)) {
-            scrollLusionFrameToTarget("footer-section", contactOffset);
-          }
+          view.setTimeout(() => {
+            const headerBottom =
+              doc.getElementById("header")?.getBoundingClientRect().bottom ??
+              0;
+            const contactOffset = headerBottom + 32;
+            if (
+              !scrollLusionFrameToTargetWithRetry(
+                "xlab-contact-panel",
+                contactOffset,
+              )
+            ) {
+              scrollLusionFrameToTargetWithRetry(
+                "footer-section",
+                contactOffset,
+              );
+            }
+          }, 900);
           return;
         }
         if (!isLusionHeaderPreloading()) return;
