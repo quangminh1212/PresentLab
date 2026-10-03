@@ -51,7 +51,6 @@
     beVietnamFace("BeVietnamPro-Medium-latin.woff2", 500, beVietnamLatin) +
     beVietnamFace("BeVietnamPro-Medium-vietnamese.woff2", 500, beVietnamMarks) +
     'html[lang="vi"] body,html[lang="vi"] h1,html[lang="vi"] h2,html[lang="vi"] h3,html[lang="vi"] h4,html[lang="vi"] h5,html[lang="vi"] h6,html[lang="vi"] button,html[lang="vi"] input{font-family:"Be Vietnam Pro",sans-serif!important}' +
-    'html[lang="vi"] #home-featured-cta{font-family:"Be Vietnam Pro",sans-serif!important}' +
     'html[lang="vi"] #home-featured-title{font-family:"Be Vietnam Pro",sans-serif!important;padding-bottom:.22em!important;line-height:1.12!important;max-width:4.3em!important}' +
     'html[lang="vi"] #home-goal-title .goal-title-line-wrapper{padding:9px 0 12px!important}' +
     'html[lang="vi"] #home-goal-title .line{bottom:0!important}' +
@@ -189,7 +188,6 @@
       "DDD 2024": "DDD 2024",
       "Meta: Spatial Fusion": "Meta: Spatial Fusion",
       "Spaace - NFT Marketplace": "Spaace - NFT Marketplace",
-      "See all projects": "Xem t\u1ea5t c\u1ea3 d\u1ef1 \u00e1n",
       "web \u2022 design \u2022 development \u2022 3d \u2022 animation":
         "web \u2022 thi\u1ebft k\u1ebf \u2022 ph\u00e1t tri\u1ec3n \u2022 3d \u2022 ho\u1ea1t h\u00ecnh",
       "web \u2022 design \u2022 development \u2022 3d \u2022 web3":
@@ -593,7 +591,6 @@
       "Choo Choo World": "Choo Choo World",
       "DDD 2024": "DDD 2024",
       "Soda Experience": "Soda Experience",
-      "See all projects": "\u67e5\u770b\u6240\u6709\u9879\u76ee",
       "concept \u2022 web \u2022 game design \u2022 3d":
         "\u6982\u5ff5\u2022\u7f51\u9875\u2022\u6e38\u620f\u8bbe\u8ba1\u20223D",
       "web \u2022 design \u2022 development \u2022 3d \u2022 web3":
