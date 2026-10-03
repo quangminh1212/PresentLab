@@ -3536,6 +3536,18 @@ function deferLusionFrame() {
       document.documentElement.classList.contains("is-lusion-section-active"),
     );
     syncAstronautSceneVisibility = () => {
+      const hasLusionLoadingOverlay =
+        doc.documentElement.classList.contains("is-lusion-preloading") ||
+        Boolean(doc.getElementById("xlab-preloader-reveal"));
+      const isLusionSectionPreloading =
+        document.documentElement.classList.contains(
+          "is-lusion-section-active",
+        ) && hasLusionLoadingOverlay;
+      document.documentElement.classList.toggle(
+        "is-lusion-section-preloading",
+        isLusionSectionPreloading,
+      );
+
       const isLusionHome =
         view.location.pathname.replace(/\/+$/, "") === "/lusion";
       const isVisible =
@@ -3548,12 +3560,25 @@ function deferLusionFrame() {
       );
     };
     if (typeof view.MutationObserver === "function") {
-      astronautSceneObserver = new view.MutationObserver(
-        syncAstronautSceneVisibility,
-      );
+      astronautSceneObserver = new view.MutationObserver((mutations) => {
+        const loadingOverlayChanged = mutations.some((mutation) => {
+          if (mutation.type !== "childList") return true;
+          return [...mutation.addedNodes, ...mutation.removedNodes].some(
+            (node) =>
+              node instanceof view.Element &&
+              (node.id === "xlab-preloader-reveal" ||
+                node.querySelector("#xlab-preloader-reveal")),
+          );
+        });
+        if (loadingOverlayChanged) syncAstronautSceneVisibility();
+      });
       astronautSceneObserver.observe(doc.documentElement, {
         attributes: true,
         attributeFilter: ["class"],
+      });
+      astronautSceneObserver.observe(doc.body ?? doc.documentElement, {
+        childList: true,
+        subtree: true,
       });
     }
     syncAstronautSceneVisibility();

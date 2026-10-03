@@ -3862,6 +3862,11 @@ html:not(.is-ready) .portal-header {
   visibility: hidden;
 }
 
+html.is-lusion-section-preloading .portal-header {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 html:not(.is-ready) .portal-header,
 html:not(.is-ready) .portal-header * {
   pointer-events: none;
@@ -4305,7 +4310,7 @@ html:not(.is-ready) .portal-header * {
 
 }
 
-/* Center and enlarge the Portal opening copy across viewport sizes. */
+/* Center and scale the Portal opening copy across viewport sizes. */
 .app-shell:has(> main > .hero.hero-world) .world-copy {
   top: 50%;
   right: auto;
@@ -4325,18 +4330,18 @@ html:not(.is-ready) .portal-header * {
 
 .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--lead {
   margin-left: 0;
-  font-size: clamp(52px, 6.1vw, 96px);
+  font-size: clamp(44px, 5.2vw, 80px);
 }
 
 .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--final {
   margin-left: 0;
-  font-size: clamp(112px, 16vw, 264px);
+  font-size: clamp(88px, 12vw, 216px);
 }
 
 .app-shell:has(> main > .hero.hero-world) .world-lede {
   max-width: min(52ch, 100%);
   margin: clamp(14px, 1.6vw, 24px) 0 0 4px;
-  font-size: clamp(18px, 1.4vw, 23px);
+  font-size: clamp(16px, 1.15vw, 20px);
   text-align: left;
 }
 
