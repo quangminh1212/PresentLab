@@ -2631,6 +2631,18 @@ function bindAnchorNavigation() {
           frame?.contentDocument?.getElementById("header")
             ?.getBoundingClientRect().bottom ?? 0;
         scrollLusionFrameToTarget("home-featured", headerBottom + 12);
+      } else if (link.dataset.portalTarget === "lusion-goal") {
+        const frame = document
+          .querySelector("[data-lusion-home-content]")
+          ?.querySelector("[data-lusion-home-frame]");
+        const headerBottom =
+          frame?.contentDocument?.getElementById("header")
+            ?.getBoundingClientRect().bottom ?? 0;
+        // Leave the scroll-transformed goal heading clear of the fixed header.
+        scrollLusionFrameToTarget(
+          "home-goal-context",
+          Math.max(0, headerBottom - 42),
+        );
       }
     });
   });
