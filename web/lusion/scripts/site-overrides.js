@@ -8,7 +8,7 @@
   style.textContent =
     ".lusion-home-content{--header-color:#237478}" +
     "#header-menu-talk{display:none!important}" +
-    "#xlab-footer-contact-methods{display:grid;justify-items:start;gap:.35rem;margin-top:.65rem}" +
+    "#xlab-footer-contact-methods{display:flex;align-items:center;flex-wrap:wrap;gap:.35rem 1rem;margin-top:.65rem}" +
     "#xlab-footer-contact-methods a{position:relative;display:inline-block;width:max-content;max-width:100%;padding-bottom:.2em;font-size:clamp(.875rem,1.3vw,1rem);line-height:1.5;color:inherit;text-decoration:none}" +
     "#xlab-footer-contact-methods a:before{content:\"\";position:absolute;left:0;bottom:0;width:100%;height:.1em;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .3s cubic-bezier(.35,0,0,1);pointer-events:none}" +
     "@media(hover:hover){#xlab-footer-contact-methods a:hover:before{transform:scaleX(1)}}" +
@@ -1426,18 +1426,19 @@ const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
       .forEach((link) => link.setAttribute("href", emailHref));
 
     const methods = [
-      ["Zalo: 0866528014", "https://zalo.me/0866528014"],
-      ["Email: xlab.rnd@gmail.com", emailHref],
-      ["Facebook: XLab", "https://www.facebook.com/xlab.rnd"],
+      ["Zalo · 0866528014", "https://zalo.me/0866528014", "Zalo: 0866528014"],
+      ["xlab.rnd@gmail.com", emailHref, "Email: xlab.rnd@gmail.com"],
+      ["Facebook · XLab", "https://www.facebook.com/xlab.rnd", "Facebook: XLab"],
     ];
     const links = document.createElement("nav");
     links.id = "xlab-footer-contact-methods";
     links.setAttribute("aria-label", "Kênh liên hệ XLab");
 
-    for (const [label, href] of methods) {
+    for (const [label, href, accessibleLabel] of methods) {
       const link = document.createElement("a");
       link.href = href;
       link.textContent = label;
+      link.setAttribute("aria-label", accessibleLabel);
       if (href.startsWith("https://")) {
         link.target = "_blank";
         link.rel = "noopener noreferrer";

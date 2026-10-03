@@ -34,7 +34,7 @@
 }
 
 #footer-contact-enquires {
-  grid-column: 1 / span 3;
+  grid-column: 1 / span 6;
   margin-top: 0;
 }
 
@@ -62,6 +62,7 @@
 
   #footer-contact-enquires {
     grid-column: 1 / span 6;
+    margin-top: calc(var(--header-size) + 0.75rem);
   }
 
   #footer-bottom {
@@ -226,7 +227,7 @@ html:not(.is-ready) #lusion-language-trigger {
   }
 
   #footer-section #xlab-footer-contact-methods {
-    gap: 0.3rem;
+    gap: 0.3rem 0.75rem;
     margin-top: 0.55rem;
   }
 
