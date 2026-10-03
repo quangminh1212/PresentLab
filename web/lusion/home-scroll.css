@@ -379,6 +379,11 @@ html[lang="vi"] .xlab-contact-card-action {
   display: none !important;
 }
 
+/* Remove the plus markers below the Home-to-About prompt. */
+#scroll-nav-cross-line {
+  display: none !important;
+}
+
 #page-container-inner #about-who-subsection-container {
   width: 100%;
   height: auto;
