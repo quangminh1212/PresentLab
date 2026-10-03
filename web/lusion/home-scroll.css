@@ -60,91 +60,156 @@
 }
 
 #xlab-contact-panel {
+  --xlab-contact-cream: #f5f7ef;
+  --xlab-contact-lime: #d8ff83;
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  box-sizing: border-box;
   width: 100%;
   max-width: 118rem;
+  grid-template-columns: minmax(0, 1.08fr) minmax(20rem, 0.92fr);
+  align-items: center;
+  gap: clamp(2rem, 5vw, 5rem);
   margin-inline: auto;
+  overflow: hidden;
+  padding: clamp(2.5rem, 5.4vw, 5.25rem);
+  border-radius: clamp(1.4rem, 2.5vw, 2.2rem);
+  background:
+    radial-gradient(ellipse at 82% 8%, rgb(216 255 131 / 13%), transparent 26rem),
+    linear-gradient(132deg, #0a2927 0%, #0c3935 55%, #082d30 100%);
+  box-shadow: 0 1.8rem 4.5rem rgb(8 38 35 / 16%);
+  color: var(--xlab-contact-cream);
+}
+
+#xlab-contact-panel::before {
+  position: absolute;
+  z-index: 0;
+  top: -12rem;
+  right: -8rem;
+  width: 26rem;
+  aspect-ratio: 1;
+  border: 1px solid rgb(216 255 131 / 28%);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 2.4rem rgb(216 255 131 / 4%),
+    0 0 0 4.8rem rgb(216 255 131 / 3%),
+    0 0 0 7.2rem rgb(216 255 131 / 2%);
+  content: "";
+  pointer-events: none;
+}
+
+#xlab-contact-panel::after {
+  position: absolute;
+  z-index: 0;
+  top: -0.38em;
+  right: 0.01em;
+  color: rgb(255 255 255 / 3.2%);
+  content: "X";
+  font-family: Georgia, serif;
+  font-size: clamp(16rem, 34vw, 34rem);
+  font-weight: 700;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
 }
 
 .xlab-contact-copy {
-  max-width: 55rem;
-  margin-bottom: clamp(1.75rem, 4vw, 3.5rem);
+  position: relative;
+  z-index: 1;
+  max-width: 36rem;
+  margin: 0;
 }
 
 .xlab-contact-eyebrow {
-  margin: 0 0 0.9rem;
-  color: #168879;
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  line-height: 1.4;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin: 0 0 1.15rem;
+  color: var(--xlab-contact-lime);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.17em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.xlab-contact-eyebrow::before {
+  width: 0.48rem;
+  height: 0.48rem;
+  border-radius: 50%;
+  background: var(--xlab-contact-lime);
+  box-shadow: 0 0 1.1rem rgb(216 255 131 / 85%);
+  content: "";
 }
 
 .xlab-contact-heading {
-  max-width: 16ch;
+  max-width: 13ch;
   margin: 0;
-  color: #15171a;
-  font-size: clamp(2rem, 4vw, 4.35rem);
-  font-weight: 400;
-  letter-spacing: -0.055em;
-  line-height: 1.05;
+  color: var(--xlab-contact-cream);
+  font-size: clamp(2.55rem, 4.6vw, 5.1rem);
+  font-weight: 450;
+  letter-spacing: -0.065em;
+  line-height: 0.99;
 }
 
 .xlab-contact-description {
-  max-width: 42rem;
-  margin: 1rem 0 0;
-  color: #676c72;
-  font-size: clamp(0.95rem, 1.25vw, 1.15rem);
-  line-height: 1.65;
+  max-width: 31rem;
+  margin: 1.4rem 0 0;
+  color: rgb(245 247 239 / 80%);
+  font-size: clamp(0.92rem, 1.15vw, 1.05rem);
+  line-height: 1.7;
 }
 
 .xlab-contact-methods {
+  position: relative;
+  z-index: 1;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(0.75rem, 1.25vw, 1.25rem);
+  min-width: 0;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
 }
 
 .xlab-contact-card {
   position: relative;
   display: grid;
   min-width: 0;
-  min-height: 9.5rem;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-content: start;
+  min-height: 5.6rem;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-content: center;
   align-items: center;
-  gap: 0.25rem 1rem;
-  padding: clamp(1rem, 1.5vw, 1.5rem);
-  border: 1px solid #e4e7e9;
+  gap: 0 1rem;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid rgb(245 247 239 / 17%);
   border-radius: 1rem;
-  background: #fff;
-  color: #202327;
+  background: rgb(255 255 255 / 4%);
+  color: var(--xlab-contact-cream);
   text-decoration: none;
-  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    transform 180ms ease;
 }
 
 .xlab-contact-icon-box {
   display: grid;
-  width: 3rem;
-  height: 3rem;
+  width: 2.85rem;
+  height: 2.85rem;
   grid-row: 1 / span 2;
   place-items: center;
-  border-radius: 0.9rem;
-  background: #f0f3f5;
-  color: #202327;
+  border: 1px solid rgb(255 255 255 / 32%);
+  border-radius: 0.95rem;
+  background: var(--xlab-contact-lime);
+  color: #123b34;
+  box-shadow: 0 0.45rem 1.2rem rgb(0 0 0 / 13%);
 }
 
 .xlab-contact-icon-box--zalo {
-  background: #0875f5;
-  color: #fff;
+  background: #9ce6dc;
 }
 
 .xlab-contact-icon-box--facebook {
-  background: #1877f2;
-  color: #fff;
-}
-
-.xlab-contact-icon-box--email {
-  background: #eaf4f2;
-  color: #168879;
+  background: #dce8ff;
 }
 
 .xlab-contact-icon {
@@ -166,41 +231,49 @@
 .xlab-contact-card-copy {
   display: grid;
   min-width: 0;
-  gap: 0.2rem;
+  gap: 0.28rem;
 }
 
 .xlab-contact-card-name {
-  font-size: 1.05rem;
-  font-weight: 600;
+  font-size: 1rem;
+  font-weight: 650;
   line-height: 1.3;
 }
 
 .xlab-contact-card-detail {
   overflow-wrap: anywhere;
-  color: #686d72;
-  font-size: 0.9rem;
-  line-height: 1.45;
+  color: rgb(245 247 239 / 72%);
+  font-size: 0.82rem;
+  line-height: 1.4;
 }
 
 .xlab-contact-card-action {
-  grid-column: 2;
-  margin-top: 0.85rem;
-  color: #168879;
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.015em;
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  margin: 0;
+  color: var(--xlab-contact-lime);
+  font-size: 0.74rem;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  text-align: right;
+  white-space: nowrap;
+  transition: transform 180ms ease;
 }
 
 .xlab-contact-card:focus-visible {
-  outline: 3px solid #168879;
+  outline: 3px solid var(--xlab-contact-lime);
   outline-offset: 3px;
 }
 
 @media (hover: hover) {
   .xlab-contact-card:hover {
-    transform: translateY(-3px);
-    border-color: #b9d5d0;
-    box-shadow: 0 1rem 2rem rgb(20 37 34 / 8%);
+    transform: translateY(-2px);
+    border-color: rgb(216 255 131 / 58%);
+    background: rgb(255 255 255 / 9%);
+  }
+
+  .xlab-contact-card:hover .xlab-contact-card-action {
+    transform: translate(2px, -2px);
   }
 }
 
@@ -214,17 +287,27 @@
   }
 }
 
-@media (max-width: 1200px) {
-  .xlab-contact-methods {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .xlab-contact-card:last-child {
-    grid-column: 1 / -1;
-  }
-}
-
 @media (max-width: 1000px) {
+  #xlab-contact-panel {
+    grid-template-columns: minmax(0, 0.92fr) minmax(18rem, 1fr);
+    gap: 1.5rem;
+    padding: clamp(1.75rem, 4vw, 2.6rem);
+  }
+
+  .xlab-contact-heading {
+    font-size: clamp(2.35rem, 5.3vw, 3.5rem);
+  }
+
+  .xlab-contact-card {
+    min-height: 5.1rem;
+    gap: 0 0.8rem;
+    padding-inline: 0.85rem;
+  }
+
+  .xlab-contact-card-action {
+    font-size: 0.68rem;
+  }
+
   #footer-section {
     min-height: 0;
   }
@@ -389,37 +472,54 @@ html:not(.is-ready) #lusion-language-trigger {
     background-color: #fff;
   }
 
-  .xlab-contact-copy {
-    margin-bottom: 1.5rem;
+  #xlab-contact-panel {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.6rem;
+    padding: 1.4rem;
+    border-radius: 1.25rem;
+  }
+
+  #xlab-contact-panel::before {
+    top: -15rem;
+    right: -15rem;
+    width: 25rem;
+  }
+
+  #xlab-contact-panel::after {
+    top: -0.2em;
+    right: -0.05em;
+    font-size: 19rem;
   }
 
   .xlab-contact-heading {
-    max-width: 18ch;
-    font-size: clamp(1.9rem, 8vw, 3rem);
+    max-width: 12ch;
+    font-size: clamp(2.35rem, 9vw, 3.35rem);
   }
 
   .xlab-contact-description {
-    margin-top: 0.75rem;
+    max-width: 28rem;
+    margin-top: 0.9rem;
     font-size: 0.9rem;
   }
 
   .xlab-contact-methods {
     grid-template-columns: 1fr;
-    gap: 0.65rem;
+    gap: 0.55rem;
   }
 
   .xlab-contact-card,
   .xlab-contact-card:last-child {
-    min-height: 6.75rem;
+    min-height: 4.65rem;
+    grid-template-columns: auto minmax(0, 1fr) auto;
     grid-column: auto;
-    gap: 0.2rem 0.85rem;
-    padding: 0.9rem 1rem;
-    border-radius: 0.85rem;
+    gap: 0 0.75rem;
+    padding: 0.7rem 0.8rem;
+    border-radius: 0.9rem;
   }
 
   .xlab-contact-icon-box {
-    width: 2.7rem;
-    height: 2.7rem;
+    width: 2.5rem;
+    height: 2.5rem;
     border-radius: 0.75rem;
   }
 
@@ -428,12 +528,12 @@ html:not(.is-ready) #lusion-language-trigger {
   }
 
   .xlab-contact-card-detail {
-    font-size: 0.82rem;
+    font-size: 0.77rem;
   }
 
   .xlab-contact-card-action {
-    margin-top: 0.5rem;
-    font-size: 0.74rem;
+    font-size: 0.7rem;
+    white-space: normal;
   }
 
   #footer-section #footer-bottom {
