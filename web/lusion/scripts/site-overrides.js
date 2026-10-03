@@ -1426,11 +1426,12 @@ const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
             description:
               "Chia sẻ dự án của bạn với đội ngũ XLab. Chúng tôi luôn sẵn sàng lắng nghe.",
             navLabel: "Các kênh liên hệ XLab",
-            actions: ["Nhắn tin", "Gửi email", "Theo dõi XLab"],
+            actions: ["Nhắn tin", "Gửi email", "Theo dõi XLab", "Xem GitHub"],
             accessibleLabels: [
               "Nhắn tin qua Zalo: 0866 528 014",
               "Gửi email cho XLab: xlab.rnd@gmail.com",
               "Theo dõi XLab trên Facebook",
+              "GitHub: quangminh1212",
             ],
           }
         : {
@@ -1439,11 +1440,12 @@ const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
             description:
               "Tell us about your project. The XLab team is ready to listen.",
             navLabel: "XLab contact channels",
-            actions: ["Message us", "Send email", "Follow XLab"],
+            actions: ["Message us", "Send email", "Follow XLab", "View GitHub"],
             accessibleLabels: [
               "Message XLab on Zalo: 0866 528 014",
               "Email XLab at xlab.rnd@gmail.com",
               "Follow XLab on Facebook",
+              "GitHub profile: quangminh1212",
             ],
           };
     const methods = [
@@ -1470,6 +1472,14 @@ const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
         action: contactCopy.actions[2],
         href: "https://www.facebook.com/xlab.rnd",
         accessibleLabel: contactCopy.accessibleLabels[2],
+      },
+      {
+        id: "github",
+        name: "GitHub",
+        detail: "github.com/quangminh1212",
+        action: contactCopy.actions[3],
+        href: "https://github.com/quangminh1212",
+        accessibleLabel: contactCopy.accessibleLabels[3],
       },
     ];
     const panel = document.createElement("div");
@@ -1499,6 +1509,8 @@ const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
         '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/>',
       facebook:
         '<path d="M13.5 21v-8h2.7l.4-3h-3.1V8.1c0-.9.3-1.5 1.6-1.5h1.7V3.9c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3V10H7.4v3h2.7v8h3.4Z"/>',
+      github:
+        '<path d="M9 19c-5 1.5-5-2.5-7-3"/><path d="M15 22v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 19.06 4.77 5.07 5.07 0 0 0 18.96 1S17.73.65 15 2.48a13.38 13.38 0 0 0-7 0C5.27.65 4.04 1 4.04 1a5.07 5.07 0 0 0-.1 3.77A5.44 5.44 0 0 0 2.5 8.52c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 8 18.13V22"/>',
     };
     for (const method of methods) {
       const link = document.createElement("a");
