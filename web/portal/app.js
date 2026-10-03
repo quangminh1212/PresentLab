@@ -3363,7 +3363,8 @@ function bindWaterToLusionScroll() {
   };
   const scrollPastLusion = (event) => {
     const nextPageSection = elements.journeySection;
-    if (!nextPageSection) return false;
+    if (!nextPageSection || nextPageSection.getClientRects().length === 0)
+      return false;
     event.preventDefault();
     event.stopImmediatePropagation();
     scrollPageToSection(nextPageSection);
