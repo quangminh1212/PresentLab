@@ -59,6 +59,13 @@
   margin-top: 0;
 }
 
+/* Keep the final heart fully visible instead of clipping the tagline's word reveal. */
+@media (min-width: 813px) {
+  #footer-bottom-tagline .word {
+    transform: none !important;
+  }
+}
+
 #xlab-contact-panel {
   display: grid;
   box-sizing: border-box;
