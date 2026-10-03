@@ -2574,12 +2574,20 @@ function bindMotionScroll() {
   window.addEventListener("resize", requestMotionFrame);
 }
 
-function scrollToMotionTarget(target, href) {
-  scrollPageToSection(target);
-  window.history.replaceState(null, "", href);
+function clearSectionHashFromAddressBar() {
+  window.history.replaceState(
+    null,
+    "",
+    `${window.location.pathname}${window.location.search}`,
+  );
 }
 
-function scrollToMotionTargetImmediately(target, href) {
+function scrollToMotionTarget(target) {
+  scrollPageToSection(target);
+  clearSectionHashFromAddressBar();
+}
+
+function scrollToMotionTargetImmediately(target) {
   if (!target) return;
 
   if (sectionScrollFrame) window.cancelAnimationFrame(sectionScrollFrame);
@@ -2592,7 +2600,7 @@ function scrollToMotionTargetImmediately(target, href) {
   root.classList.remove("is-section-transitioning");
   window.dispatchEvent(new Event("scroll"));
 
-  window.history.replaceState(null, "", href);
+  clearSectionHashFromAddressBar();
 }
 
 function scrollLusionFrameToTarget(targetId, topOffset = 0) {
@@ -2672,9 +2680,9 @@ function bindAnchorNavigation() {
       elements.menu?.classList.remove("is-open");
       document.querySelector(".portal-category-menu")?.removeAttribute("open");
       if (link.dataset.portalTarget === "lusion-contact") {
-        scrollToMotionTargetImmediately(target, link.getAttribute("href"));
+        scrollToMotionTargetImmediately(target);
       } else {
-        scrollToMotionTarget(target, link.getAttribute("href"));
+        scrollToMotionTarget(target);
       }
 
       if (link.dataset.portalTarget === "lusion-home") {
@@ -2826,7 +2834,7 @@ function handleWorldTarget(targetId) {
   }
   const href = targetId === "process" ? "#process" : "#templates";
   const target = document.querySelector(href);
-  if (target) scrollToMotionTarget(target, href);
+  if (target) scrollToMotionTarget(target);
 }
 
 function mountXLabWorld() {
