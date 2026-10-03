@@ -4192,7 +4192,7 @@ html:not(.is-ready) .portal-header * {
   padding: 0.25em 0.875em;
   color: inherit;
   font-family: Aeonik, "Be Vietnam Pro", ui-sans-serif, sans-serif;
-  font-size: clamp(16px, 3.2vw, 24px);
+  font-size: clamp(15px, 1vw, 24px);
   font-weight: 400;
   line-height: 1.1;
   text-transform: uppercase;
