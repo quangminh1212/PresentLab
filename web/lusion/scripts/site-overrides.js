@@ -51,6 +51,7 @@
     beVietnamFace("BeVietnamPro-Medium-latin.woff2", 500, beVietnamLatin) +
     beVietnamFace("BeVietnamPro-Medium-vietnamese.woff2", 500, beVietnamMarks) +
     'html[lang="vi"] body,html[lang="vi"] h1,html[lang="vi"] h2,html[lang="vi"] h3,html[lang="vi"] h4,html[lang="vi"] h5,html[lang="vi"] h6,html[lang="vi"] button,html[lang="vi"] input{font-family:"Be Vietnam Pro",sans-serif!important}' +
+    'html[lang="vi"] #home-featured-cta{font-family:"Be Vietnam Pro",sans-serif!important}' +
     'html[lang="vi"] #home-featured-title{font-family:"Be Vietnam Pro",sans-serif!important;padding-bottom:.22em!important;line-height:1.12!important;max-width:4.3em!important}' +
     'html[lang="vi"] #home-goal-title .goal-title-line-wrapper{padding:9px 0 12px!important}' +
     'html[lang="vi"] #home-goal-title .line{bottom:0!important}' +
