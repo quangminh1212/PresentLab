@@ -46,6 +46,11 @@
     'html[lang="vi"] body,html[lang="vi"] h1,html[lang="vi"] h2,html[lang="vi"] h3,html[lang="vi"] h4,html[lang="vi"] h5,html[lang="vi"] h6,html[lang="vi"] button,html[lang="vi"] input{font-family:"Be Vietnam Pro",sans-serif!important}' +
     'html[lang="vi"] #home-featured-cta{font-family:"Be Vietnam Pro",sans-serif!important}' +
     'html[lang="vi"] #home-featured-title{font-family:"Be Vietnam Pro",sans-serif!important;padding-bottom:.22em!important;line-height:1.12!important;max-width:4.3em!important}' +
+    'html[lang="vi"] body #end-section-title{--font-size:clamp(58px,8.4vw,120px)!important;line-height:1.25!important}' +
+    'html[lang="vi"] body #end-section-title .end-section-title-link-line{height:calc(var(--font-size)*1.35)!important}' +
+    'html[lang="vi"] body #end-section-title .end-section-title-link-word{top:-.2em!important;height:1.28em!important}' +
+    'html[lang="vi"] body #end-section-title .end-section-title-link-word .char-wrapper{top:0!important}' +
+    '@media(max-width:812px){html[lang="vi"] body #end-section-title{--font-size:clamp(54px,17vw,120px)!important}}' +
     'html[lang="vi"] #home-goal-title .goal-title-line-wrapper{padding:9px 0 12px!important}' +
     'html[lang="vi"] #home-goal-title .line{bottom:0!important}' +
     '@media (min-width:813px){html[lang="vi"] #home-goal-title{grid-column:1/span 7!important;width:100%!important;font-size:clamp(50px,6vw,96px)!important}}' +
