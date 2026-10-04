@@ -4256,44 +4256,12 @@ html:not(.is-ready) .portal-header * {
 
 }
 
-@media (max-width: 812px) {
-  .portal-language-control {
-    width: max-content;
-  }
-
-  .portal-language-trigger {
-    width: max-content;
-    min-width: 0;
-    border-radius: 6.25em;
-    padding: 0 0.75em;
-  }
-
-  .portal-language-chevron {
-    display: block;
-  }
-
-  .portal-category-trigger {
-    position: relative;
-    width: auto;
-    padding: 0 1.125em 0 1.625em;
-  }
-
-  .portal-category-label-viewport {
-    display: block;
-  }
-
-  .portal-category-dots {
-    font-size: 1.4em;
-  }
-
-}
-
 @media (max-width: 640px) {
   .portal-header {
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 12px 16px;
     min-height: 0;
-    padding: 16px 20px 18px;
+    padding: 15px 15px 18px;
   }
 
   .portal-header-brand {
@@ -4308,53 +4276,135 @@ html:not(.is-ready) .portal-header * {
     line-height: 1.35;
   }
 
+}
+
+@media (max-width: 812px) {
+  .portal-header {
+    --portal-lusion-gutter: clamp(15px, 5.07vw, 25px);
+    --portal-lusion-unit: clamp(12px, 3.245vw, 16px);
+    padding: var(--portal-lusion-gutter) var(--portal-lusion-gutter) 18px;
+  }
+
   .portal-header-actions {
-    grid-column: 2;
-    grid-row: 1;
-    justify-self: end;
-    margin-right: clamp(0px, 4.67vw, 23px);
-    gap: clamp(20px, 9.33vw, 46px);
+    align-self: start;
+    gap: 22px;
+    margin-right: 0;
+    font-size: var(--portal-lusion-unit);
   }
 
   .portal-language-control {
-    width: clamp(52px, 14.6vw, 72px);
-    height: clamp(44.8px, 11.36vw, 56px);
-    font-size: clamp(14px, 3.65vw, 18px);
+    width: max-content;
+    height: auto;
+    flex: 0 0 auto;
+    font-size: 0.875em;
   }
 
   .portal-language-trigger {
-    width: 100%;
+    width: auto;
+    min-width: 3.5em;
+    height: 3.2em;
+    min-height: 44px;
     padding: 0 0.75em;
+    font-size: 1em;
+    gap: 0.65em;
+  }
+
+  .portal-language-trigger[aria-expanded="true"] {
+    background: #2b2e3a;
+    outline: none;
+  }
+
+  .portal-language-chevron {
+    display: none;
+  }
+
+  .portal-language-options {
+    top: calc(100% + 0.55em);
+    right: 0;
+    width: 12em;
+    max-width: calc(
+      100vw - var(--portal-lusion-gutter) - var(--portal-lusion-gutter)
+    );
+    min-width: 0;
+    padding: 0.65em 0.3125em;
+    font-size: 1.142857em;
+  }
+
+  .portal-language-options [role="option"] {
+    min-height: 44px;
+    padding: 0.7em 1.3em;
+    font-size: 1.1em;
+  }
+
+  .portal-language-options [role="option"]::after {
+    right: 1.55em;
+  }
+
+  .portal-category-menu {
     font-size: inherit;
   }
 
   .portal-category-trigger {
-    width: clamp(44.8px, 11.36vw, 56px);
-    height: clamp(44.8px, 11.36vw, 56px);
+    width: 3.2em;
+    min-width: 44px;
+    height: 3.2em;
+    min-height: 44px;
     padding: 0;
-    font-size: clamp(14px, 3.65vw, 18px);
+    border-radius: 6.25em;
+    font-size: 0.875em;
   }
 
   .portal-category-label-viewport {
     display: none;
   }
 
-  .portal-category-menu[open] > .portal-category-trigger {
-    width: clamp(128px, 35.7vw, 176px);
-    padding: 0 1.125em 0 1.625em;
+  .portal-category-dots {
+    font-size: 1em;
   }
 
-  .portal-category-menu[open] > .portal-category-trigger
-    .portal-category-trigger-inner {
-    width: 100%;
-    justify-content: space-between;
+  .portal-category-panel {
+    top: calc(
+      var(--portal-lusion-gutter) + var(--portal-lusion-unit) +
+        var(--portal-lusion-unit) + var(--portal-lusion-unit)
+    );
+    right: 0;
+    width: calc(
+      100vw - var(--portal-lusion-gutter) - var(--portal-lusion-gutter)
+    );
+    max-width: calc(
+      100vw - var(--portal-lusion-gutter) - var(--portal-lusion-gutter)
+    );
+    padding: 1em 0.3125em;
+    border-radius: 0.625em;
+    font-size: var(--portal-lusion-unit);
   }
 
-  .portal-category-menu[open] > .portal-category-trigger
-    .portal-category-label-viewport {
+  .portal-category-panel a {
     display: block;
+    min-height: 0;
+    border-radius: 0;
+    padding: 0.9em 1.625em;
+    font-size: 1em;
+    line-height: 1.45;
   }
 
+  .portal-category-panel a::after {
+    position: absolute;
+    top: 50%;
+    right: 1.625em;
+    transform: translateY(-50%) scale(0);
+  }
+
+  .portal-category-panel a:hover::after,
+  .portal-category-panel a:focus-visible::after {
+    transform: translateY(-50%) scale(1);
+  }
+
+  .portal-category-panel .header-menu-link-text {
+    display: block;
+    font-size: 1.25em;
+    line-height: 1.6;
+  }
 }
 
 /* Center and scale the Portal opening copy across viewport sizes. */
