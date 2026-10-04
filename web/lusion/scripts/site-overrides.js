@@ -978,14 +978,14 @@ const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
   const aboutWhoVietnameseCopy = {
     "about-who-desc-top": {
       "A worldwide team": "Đội ngũ sáng tạo toàn cầu",
-      of: " gồm",
+      of: "\u00a0gồm",
       "specialists in design,": "các chuyên gia về thiết kế,",
     },
     "about-who-desc-bottom": {
       "working together to": "cùng nhau",
       "turn ambitious ideas into": "biến những ý tưởng táo bạo thành",
       "immersive digital": "những trải nghiệm số",
-      "experiences.": " sống động.",
+      "experiences.": "\u00a0sống động.",
     },
   };
   const translatedTextNodes = new WeakMap();
