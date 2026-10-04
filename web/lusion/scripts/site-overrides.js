@@ -984,7 +984,7 @@ const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
     "about-who-desc-bottom": {
       "working together to": "cùng nhau",
       "turn ambitious ideas into": "biến những ý tưởng táo bạo thành",
-      "immersive digital": "những trải nghiệm số",
+      "immersive digital": "những trải nghiệm số ",
       "experiences.": "sống động.",
     },
   };
