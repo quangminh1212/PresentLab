@@ -2370,6 +2370,12 @@ html:has(.app-shell > main > .hero.hero-world):not(.is-lusion-section-active)
   transform: none !important;
 }
 
+/* Keep the adopted Lusion header out of the way while the Portal header is visible. */
+html.is-ready:has(.app-shell > main > .hero.hero-world):not(.is-lusion-section-active):not(.is-lusion-section-preloading):not(.is-astronaut-scene-visible)
+  .app-shell:has(> main > .hero.hero-world) .lusion-home-content #header {
+  display: none !important;
+}
+
 .app-shell:has(> main > .hero.hero-world) .lusion-home-content > #canvas,
 .app-shell:has(> main > .hero.hero-world) .lusion-home-content > #ui,
 .app-shell:has(> main > .hero.hero-world) .lusion-home-content > #input-blocker,
