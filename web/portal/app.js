@@ -3043,6 +3043,8 @@ function startPageCurtain(libraryReady) {
   }
 
   const minimumDuration = 7000;
+  // A paused animation frame must not keep the whole portal behind the curtain.
+  const maximumDuration = 20_000;
   const startProgressDuration = 250;
   const markTransformDuration = 1000;
   const brandRevealDuration = 180;
@@ -3064,6 +3066,16 @@ function startPageCurtain(libraryReady) {
   let pageResourcesAreReady = false;
   let waterIsReady = false;
   let nativeHeaderIsReady = false;
+  const completePageCurtain = () => {
+    if (isFinishing) return;
+    isFinishing = true;
+    pageCurtain.classList.add("is-complete");
+    root.classList.add("is-ready");
+  };
+  const completionFallback = window.setTimeout(
+    completePageCurtain,
+    maximumDuration,
+  );
   const updateReadiness = () => {
     isReady = pageResourcesAreReady && waterIsReady && nativeHeaderIsReady;
   };
@@ -3104,6 +3116,7 @@ function startPageCurtain(libraryReady) {
   });
 
   function render(now) {
+    if (isFinishing) return;
     const elapsed = now - startedAt;
     // Lusion's 70/30 blend leaves an 86% bar when resource progress is at 80%.
     const stageProgress = libraryIsReady ? 80 : fontsAreReady ? 76 : pageHasLoaded ? 64 : 22;
@@ -3163,9 +3176,8 @@ function startPageCurtain(libraryReady) {
     );
 
     if (contentShowRatio >= 1 && !isFinishing) {
-      isFinishing = true;
-      pageCurtain.classList.add("is-complete");
-      root.classList.add("is-ready");
+      window.clearTimeout(completionFallback);
+      completePageCurtain();
       return;
     }
 
@@ -3363,8 +3375,26 @@ function bindWaterToLusionScroll() {
   };
   const scrollPastLusion = (event) => {
     const nextPageSection = elements.journeySection;
-    if (!nextPageSection || nextPageSection.getClientRects().length === 0)
-      return false;
+    if (!nextPageSection || nextPageSection.getClientRects().length === 0) {
+      const view = frameWindow();
+      const currentPath = view?.location.pathname.replace(/\/+$/, "") || "/";
+      const nextPath = {
+        "/": "/about",
+        "/lusion": "/about",
+        "/about": "/projects",
+      }[currentPath];
+      if (!view || !nextPath) return false;
+
+      const nextUrl = new URL(nextPath, view.location.origin);
+      nextUrl.search = view.location.search;
+      if (!nextUrl.searchParams.has("water-page-embed")) {
+        nextUrl.searchParams.set("water-page-embed", "");
+      }
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      view.location.assign(nextUrl.href);
+      return true;
+    }
     event.preventDefault();
     event.stopImmediatePropagation();
     scrollPageToSection(nextPageSection);
