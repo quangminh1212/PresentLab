@@ -143,11 +143,10 @@ if (blockingFontFaceCount !== 6) {
 }
 lusionStyles = lusionStyles.replaceAll("font-display:block", "font-display:swap");
 // The About title uses WebGL geometry anchored to its SVG, so hiding the SVG alone
-// leaves the Lusion wordmark visible. Collapse the anchor and show XLab in its box.
+// leaves the wordmark visible. Collapse the anchor while preserving the scroll cue box.
 lusionStyles +=
   "#about-who-title-main{aspect-ratio:191.553/38.502}" +
-  "#about-who-title-main-logo{position:absolute!important;width:0!important;height:0!important;visibility:hidden!important}" +
-  '#about-who-title-main::before{content:"XLab";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-family:Arial,sans-serif;font-size:18vw;font-weight:500;line-height:1;letter-spacing:-.035em;transform:scaleX(2)}';
+  "#about-who-title-main-logo{position:absolute!important;width:0!important;height:0!important;visibility:hidden!important}";
 await writeFile(lusionStylesPath, lusionStyles);
 
 for (const portalPagePath of [join(output, "index.html"), join(output, "portal", "index.html")]) {
