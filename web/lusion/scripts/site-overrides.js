@@ -50,6 +50,9 @@
     'html[lang="vi"] body #end-section-title .end-section-title-link-line{height:calc(var(--font-size)*1.35)!important}' +
     'html[lang="vi"] body #end-section-title .end-section-title-link-word{top:-.2em!important;height:1.28em!important}' +
     'html[lang="vi"] body #end-section-title .end-section-title-link-word .char-wrapper{top:0!important}' +
+    'html[lang="vi"] body #end-section-title-bottom-left-decoration{width:3.98em!important}' +
+    'html[lang="vi"] body #end-section-title-bottom-right-decoration{display:none!important}' +
+    '@media(max-width:560px){html[lang="vi"] body #end-section-title-bottom-left-decoration{width:4em!important}}' +
     '@media(max-width:812px){html[lang="vi"] body #end-section-title{--font-size:clamp(54px,17vw,120px)!important}}' +
     'html[lang="vi"] #home-goal-title .goal-title-line-wrapper{padding:9px 0 12px!important}' +
     'html[lang="vi"] #home-goal-title .line{bottom:0!important}' +
