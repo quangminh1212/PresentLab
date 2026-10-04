@@ -974,6 +974,19 @@
   style.textContent +=
     'html[lang="vi"] #projects-main-title{padding-bottom:.18em!important}';
 const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
+  const aboutWhoVietnameseCopy = {
+    "about-who-desc-top": {
+      "A worldwide team": "Đội ngũ sáng tạo toàn cầu",
+      of: "gồm",
+      "specialists in design,": "các chuyên gia về thiết kế,",
+    },
+    "about-who-desc-bottom": {
+      "working together to": "cùng nhau",
+      "turn ambitious ideas into": "biến những ý tưởng táo bạo thành",
+      "immersive digital": "những trải nghiệm số",
+      "experiences.": "sống động.",
+    },
+  };
   const translatedTextNodes = new WeakMap();
   const ignoredContentSelector = "script,style,noscript,svg,[data-lusion-no-translate]";
   const translateTextNode = (node) => {
@@ -986,7 +999,17 @@ const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
     const trailing = (raw.match(/\s*$/) || [""])[0];
     const end = Math.max(leading.length, raw.length - trailing.length);
     const key = normalizeLanguageText(raw.slice(leading.length, end));
-    const translated = languagePack[activeLanguage]?.[key];
+    const aboutWhoContainer =
+      activeLanguage === "vi" &&
+      parent.closest("#about-who-desc-top, #about-who-desc-bottom");
+    const contextualCopy = aboutWhoContainer
+      ? aboutWhoVietnameseCopy[aboutWhoContainer.id]
+      : undefined;
+    const hasContextualTranslation =
+      contextualCopy && Object.prototype.hasOwnProperty.call(contextualCopy, key);
+    const translated = hasContextualTranslation
+      ? contextualCopy[key]
+      : languagePack[activeLanguage]?.[key];
     if (typeof translated !== "string") return;
     const localized = leading + translated + trailing;
     translatedTextNodes.set(node, localized);
