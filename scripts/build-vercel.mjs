@@ -142,6 +142,8 @@ if (blockingFontFaceCount !== 6) {
   );
 }
 lusionStyles = lusionStyles.replaceAll("font-display:block", "font-display:swap");
+// The About intro uses Lusion's SVG wordmark above the XLab About content.
+lusionStyles += "#about-who-title-main-logo{visibility:hidden!important}";
 await writeFile(lusionStylesPath, lusionStyles);
 
 for (const portalPagePath of [join(output, "index.html"), join(output, "portal", "index.html")]) {

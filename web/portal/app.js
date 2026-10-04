@@ -3332,6 +3332,27 @@ function bindWaterToLusionScroll() {
     window.requestAnimationFrame(() => window.requestAnimationFrame(resize));
   };
   const sectionIsAtTop = () => Math.abs(nextSection.getBoundingClientRect().top) <= 2;
+  const portalHomePath =
+    window.location.pathname.replace(/\/+$/, "") === "/portal" ? "/portal" : "/";
+  const syncPortalAddressFromLusionRoute = () => {
+    const view = frameWindow();
+    if (!view) return;
+
+    const framePath = view.location.pathname.replace(/\/+$/, "") || "/";
+    const portalPath = {
+      "/": portalHomePath,
+      "/lusion": portalHomePath,
+      "/about": "/about",
+      "/projects": "/projects",
+    }[framePath];
+    if (!portalPath || window.location.pathname === portalPath) return;
+
+    window.history.replaceState(
+      window.history.state,
+      "",
+      `${portalPath}${window.location.search}`,
+    );
+  };
   const lusionIsAtTop = () =>
     frameWindow()?.__XLAB_LUSION_SCROLL_AT_TOP__ === true ||
     window.__XLAB_LUSION_SCROLL_AT_TOP__ === true;
@@ -3487,12 +3508,14 @@ function bindWaterToLusionScroll() {
   };
   frame.addEventListener("load", () => {
     attachFrameInputBridge();
+    syncPortalAddressFromLusionRoute();
     updateSectionState();
     syncLocaleToLusion(state.locale, true);
     if (pageRoot.classList.contains("is-lusion-section-active"))
       refreshLusionCanvas();
   });
   attachFrameInputBridge();
+  syncPortalAddressFromLusionRoute();
 
   window.addEventListener("wheel", (event) => {
     if (event.ctrlKey || !event.cancelable || inputIsActive(event.target)) return;
