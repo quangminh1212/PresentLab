@@ -143,10 +143,11 @@ if (blockingFontFaceCount !== 6) {
 }
 lusionStyles = lusionStyles.replaceAll("font-display:block", "font-display:swap");
 // The About title uses WebGL geometry anchored to its SVG, so hiding the SVG alone
-// leaves the wordmark visible. Collapse the anchor while preserving the scroll cue box.
+// leaves the wordmark visible. Collapse the anchor and reserve the cue's lower-right box.
 lusionStyles +=
   "#about-who-title-main{aspect-ratio:191.553/38.502}" +
-  "#about-who-title-main-logo{position:absolute!important;width:0!important;height:0!important;visibility:hidden!important}";
+  "#about-who-title-main-logo{position:absolute!important;width:0!important;height:0!important;visibility:hidden!important}" +
+  "#about-who-title-main-scroll{right:0;bottom:0;transform:none}";
 await writeFile(lusionStylesPath, lusionStyles);
 
 for (const portalPagePath of [join(output, "index.html"), join(output, "portal", "index.html")]) {
@@ -590,6 +591,18 @@ if (lusionBundle.split(lusionAbsoluteRouteSource).length - 1 !== 1) {
   );
 }
 lusionBundle = lusionBundle.replace(lusionAbsoluteRouteSource, lusionAbsoluteRouteReplacement);
+// Mobile layout writes a centering transform each frame; keep its vertical reveal only.
+const aboutScrollCueMobileTransformSource =
+  'this.domScroll.style.transform="translate3d(50%, "+(1-f)*120+"%, 0)"';
+const aboutScrollCueMobileTransformReplacement =
+  'this.domScroll.style.transform="translate3d(0, "+(1-f)*120+"%, 0)"';
+if (lusionBundle.split(aboutScrollCueMobileTransformSource).length - 1 !== 1) {
+  throw new Error("The About scroll cue mobile positioning no longer matches.");
+}
+lusionBundle = lusionBundle.replace(
+  aboutScrollCueMobileTransformSource,
+  aboutScrollCueMobileTransformReplacement,
+);
 await writeFile(lusionBundlePath, lusionBundle);
 
 console.log(`Vercel static output prepared: ${output}`);
