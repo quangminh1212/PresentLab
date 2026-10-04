@@ -113,16 +113,44 @@
             class="portal-category-panel"
             aria-label="Điều hướng các mục"
             data-i18n-aria-label="navAria"
+            aria-hidden="true"
+            inert
           >
-            <a class="header-menu-link" href="#templates" data-portal-target="lusion-home"><span class="header-menu-link-text" data-i18n="navHome">Trang chủ</span></a>
-            <a class="header-menu-link" href="#templates" data-portal-target="lusion-featured"><span class="header-menu-link-text" data-i18n="navTemplates">Mẫu slide</span></a>
-            <a class="header-menu-link" href="#templates" data-portal-target="lusion-goal"><span class="header-menu-link-text" data-i18n="navJourney">Hành trình</span></a>
+            <a class="header-menu-link" href="#templates" data-portal-target="lusion-home" aria-current="page">
+              <span class="header-menu-link-background" aria-hidden="true"></span>
+              <span class="header-menu-link-inner">
+                <span class="header-menu-link-text" data-i18n="navHome">Trang chủ</span>
+                <span class="header-menu-link-text-clone" data-i18n="navHome" aria-hidden="true">Trang chủ</span>
+              </span>
+              <svg class="header-menu-link-svg" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.515 12h16.97m0 0L13.01 4.525M20.485 12l-7.475 7.476" /></svg>
+            </a>
+            <a class="header-menu-link" href="#templates" data-portal-target="lusion-featured">
+              <span class="header-menu-link-background" aria-hidden="true"></span>
+              <span class="header-menu-link-inner">
+                <span class="header-menu-link-text" data-i18n="navTemplates">Mẫu slide</span>
+                <span class="header-menu-link-text-clone" data-i18n="navTemplates" aria-hidden="true">Mẫu slide</span>
+              </span>
+              <svg class="header-menu-link-svg" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.515 12h16.97m0 0L13.01 4.525M20.485 12l-7.475 7.476" /></svg>
+            </a>
+            <a class="header-menu-link" href="#templates" data-portal-target="lusion-goal">
+              <span class="header-menu-link-background" aria-hidden="true"></span>
+              <span class="header-menu-link-inner">
+                <span class="header-menu-link-text" data-i18n="navJourney">Hành trình</span>
+                <span class="header-menu-link-text-clone" data-i18n="navJourney" aria-hidden="true">Hành trình</span>
+              </span>
+              <svg class="header-menu-link-svg" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.515 12h16.97m0 0L13.01 4.525M20.485 12l-7.475 7.476" /></svg>
+            </a>
             <a
               class="header-menu-link"
               href="#templates"
               data-portal-target="lusion-contact"
             >
-              <span class="header-menu-link-text" data-i18n="navContact">Liên hệ</span>
+              <span class="header-menu-link-background" aria-hidden="true"></span>
+              <span class="header-menu-link-inner">
+                <span class="header-menu-link-text" data-i18n="navContact">Liên hệ</span>
+                <span class="header-menu-link-text-clone" data-i18n="navContact" aria-hidden="true">Liên hệ</span>
+              </span>
+              <svg class="header-menu-link-svg" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.515 12h16.97m0 0L13.01 4.525M20.485 12l-7.475 7.476" /></svg>
             </a>
           </nav>
         </details>

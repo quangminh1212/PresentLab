@@ -2159,6 +2159,7 @@ function bindEvents() {
   const categoryTrigger = categoryMenu?.querySelector(
     ".portal-category-trigger",
   );
+  const categoryPanel = categoryMenu?.querySelector(".portal-category-panel");
   const localeTrigger = localeControl?.querySelector("[data-locale-trigger]");
   const localeOptions = Array.from(
     localeControl?.querySelectorAll("[data-locale-option]") || [],
@@ -2223,6 +2224,10 @@ function bindEvents() {
         setMenuOpen(false);
         menuButton?.focus();
       }
+      if (categoryMenu?.open) {
+        categoryMenu.open = false;
+        categoryTrigger?.focus();
+      }
     }
     if (!elements.previewModal.hidden && event.key === "ArrowLeft") navigatePreview(-1);
     if (!elements.previewModal.hidden && event.key === "ArrowRight") navigatePreview(1);
@@ -2241,7 +2246,14 @@ function bindEvents() {
     if (!categoryMenu?.open) setLocaleMenuOpen(false);
   });
   categoryMenu?.addEventListener("toggle", () => {
+    if (categoryPanel) {
+      categoryPanel.inert = !categoryMenu.open;
+      categoryPanel.setAttribute("aria-hidden", String(!categoryMenu.open));
+    }
     if (categoryMenu.open) setLocaleMenuOpen(false);
+  });
+  categoryPanel?.addEventListener("click", (event) => {
+    if (event.target.closest("a")) categoryMenu.open = false;
   });
   localeTrigger?.addEventListener("click", () => {
     setLocaleMenuOpen(!localeMenuIsOpen());
@@ -2293,6 +2305,8 @@ function bindEvents() {
   document.addEventListener("pointerdown", (event) => {
     if (localeControl && !localeControl.contains(event.target))
       setLocaleMenuOpen(false);
+    if (categoryMenu?.open && !categoryMenu.contains(event.target))
+      categoryMenu.open = false;
   });
   document.addEventListener("focusin", (event) => {
     if (localeControl && !localeControl.contains(event.target))

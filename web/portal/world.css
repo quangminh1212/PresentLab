@@ -3909,6 +3909,17 @@ html:not(.is-ready) .portal-header * {
   gap: clamp(18px, 2.2vw, 34px);
 }
 
+.portal-language-trigger,
+.portal-category-trigger {
+  transform: translate3d(0, 4em, 0);
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.1, 1);
+}
+
+html.is-ready:not(.is-lusion-section-preloading) .portal-language-trigger,
+html.is-ready:not(.is-lusion-section-preloading) .portal-category-trigger {
+  transform: translateZ(0);
+}
+
 .portal-language-control {
   position: relative;
   display: block;
@@ -3938,7 +3949,11 @@ html:not(.is-ready) .portal-header * {
   text-transform: uppercase;
   text-align: center;
   cursor: pointer;
-  transition: opacity 0.45s, background-color 0.3s, color 0.3s;
+  transition:
+    transform 0.8s cubic-bezier(0.4, 0, 0.1, 1),
+    opacity 0.45s,
+    background-color 0.3s,
+    color 0.3s;
 }
 
 .portal-language-trigger:hover {
@@ -3947,8 +3962,7 @@ html:not(.is-ready) .portal-header * {
 
 .portal-language-trigger[aria-expanded="true"] {
   background: #2b2e3a;
-  outline: 2px solid #c1ff00;
-  outline-offset: 3px;
+  outline: none;
 }
 
 .portal-language-trigger:focus-visible,
@@ -3959,17 +3973,19 @@ html:not(.is-ready) .portal-header * {
 }
 
 .portal-language-chevron {
-  display: none;
+  display: block;
   width: 0.36em;
   height: 0.36em;
+  margin-top: -0.2em;
   border-right: 1px solid currentColor;
   border-bottom: 1px solid currentColor;
   color: #fff;
-  transform: translateY(-0.1em) rotate(45deg);
-  transition: transform 0.2s;
+  transform: rotate(45deg);
+  transition: transform 0.2s, margin 0.2s;
 }
 
 .portal-language-trigger[aria-expanded="true"] .portal-language-chevron {
+  margin-top: 0;
   transform: rotate(315deg);
 }
 
@@ -4068,7 +4084,10 @@ html:not(.is-ready) .portal-header * {
   list-style: none;
   cursor: pointer;
   user-select: none;
-  transition: color 0.4s, background-color 0.4s;
+  transition:
+    transform 0.8s cubic-bezier(0.4, 0, 0.1, 1),
+    color 0.4s,
+    background-color 0.4s;
 }
 
 .portal-category-trigger:hover,
@@ -4170,12 +4189,14 @@ html:not(.is-ready) .portal-header * {
 .portal-category-panel {
   position: absolute;
   --portal-category-gutter: clamp(20px, 4vw, 34px);
+  --portal-menu-open-delay: 0s;
+  --portal-menu-close-delay: 0.08s;
   top: calc(100% + clamp(0.5em, 1vw, 0.875em));
   right: 0;
   z-index: 57;
   display: flex;
   flex-direction: column;
-  width: max-content;
+  width: 19.38em;
   max-width: calc(
     100vw - var(--portal-category-gutter) - var(--portal-category-gutter)
   );
@@ -4186,53 +4207,154 @@ html:not(.is-ready) .portal-header * {
   border-radius: 0.625em;
   background: #fff;
   color: #080808;
+  opacity: 0;
+  visibility: hidden;
+  transform: translate3d(0, 5.5em, 0) rotate(3.5deg);
+  pointer-events: none;
+  will-change: transform, opacity;
+  transition:
+    transform 0.5s var(--portal-menu-close-delay, 0s)
+      cubic-bezier(0.4, 0, 0.1, 1),
+    opacity 0.5s var(--portal-menu-close-delay, 0s)
+      cubic-bezier(0.4, 0, 0.1, 1),
+    visibility 0s linear
+      calc(var(--portal-menu-close-delay, 0s) + 0.5s);
 }
 
-.portal-category-menu:not([open]) > .portal-category-panel {
-  display: none;
+.portal-category-menu[open] > .portal-category-panel {
+  opacity: 1;
+  visibility: visible;
+  transform: translateZ(0);
+  pointer-events: auto;
+  transition:
+    transform 0.5s var(--portal-menu-open-delay, 0s)
+      cubic-bezier(0.4, 0, 0.1, 1),
+    opacity 0.5s var(--portal-menu-open-delay, 0s)
+      cubic-bezier(0.4, 0, 0.1, 1),
+    visibility 0s linear var(--portal-menu-open-delay, 0s);
+}
+
+.portal-category-menu[open] > .portal-category-panel a {
+  pointer-events: auto;
 }
 
 .portal-category-panel a {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  column-gap: 0.75em;
+  display: block;
   position: relative;
   min-height: clamp(40px, 4.6vw, 48px);
   box-sizing: border-box;
-  border-radius: 6.25em;
-  padding: 0.25em 0.875em;
+  overflow: hidden;
+  width: 100%;
+  border-radius: 0;
+  padding: 0.9em 1.625em;
   color: inherit;
   font-family: Aeonik, "Be Vietnam Pro", ui-sans-serif, sans-serif;
   font-size: clamp(15px, 1vw, 24px);
   font-weight: 400;
-  line-height: 1.1;
+  line-height: 1.45;
   text-transform: uppercase;
   text-decoration: none;
-  transition: background-color 0.3s, color 0.3s;
+  pointer-events: none;
 }
 
-.portal-category-panel a::after {
+.portal-category-panel a::before {
   content: "";
-  width: 0.4em;
-  height: 0.4em;
-  flex: 0 0 auto;
+  position: absolute;
+  top: calc(50% - 0.25em);
+  right: 2em;
+  width: 0.5em;
+  height: 0.5em;
   border-radius: 50%;
-  background: currentColor;
-  opacity: 0;
+  background: #000;
   transform: scale(0);
-  transition: opacity 0.2s, transform 0.2s;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.1, 1);
 }
 
-.portal-category-panel a:hover,
-.portal-category-panel a:focus-visible {
-  background: rgb(0 0 0 / 4.5%);
-}
-
-.portal-category-panel a:hover::after,
-.portal-category-panel a:focus-visible::after {
-  opacity: 1;
+.portal-category-panel a[aria-current="page"]::before {
   transform: scale(1);
+}
+
+.portal-category-panel a[aria-current="page"]:hover::before {
+  transform: scale(0);
+}
+
+.header-menu-link-background {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 6.25em;
+  background: var(--accent, #65e9d5);
+  opacity: 0;
+  transform: scale(0.85);
+  transition:
+    opacity 0.3s,
+    transform 0.4s cubic-bezier(0.4, 0, 0.1, 1);
+}
+
+.header-menu-link-inner {
+  display: block;
+  position: relative;
+  overflow: hidden;
+}
+
+.header-menu-link-text,
+.header-menu-link-text-clone {
+  display: inline-block;
+  position: relative;
+  z-index: 1;
+  font-size: 1.625em;
+  text-transform: uppercase;
+  transition:
+    color 0.4s,
+    transform 0.4s cubic-bezier(0.4, 0, 0.1, 1);
+}
+
+.header-menu-link-text-clone {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate3d(0, calc(100% + 2px), 0);
+}
+
+.header-menu-link-svg {
+  position: absolute;
+  top: calc(50% - 0.75em);
+  right: 0;
+  width: 1.5em;
+  height: 1.5em;
+  transform: scale(0);
+  transition:
+    color 0.4s,
+    transform 0.2s cubic-bezier(0.4, 0, 0.1, 1);
+}
+
+@media (hover: hover) {
+  .portal-category-panel a:hover,
+  .portal-category-panel a:focus-visible {
+    color: var(--header-text-color, #000);
+  }
+
+  .portal-category-panel a:hover .header-menu-link-text,
+  .portal-category-panel a:focus-visible .header-menu-link-text {
+    transform: translate3d(0, -100%, 0);
+  }
+
+  .portal-category-panel a:hover .header-menu-link-text-clone,
+  .portal-category-panel a:focus-visible .header-menu-link-text-clone {
+    transform: translateZ(0);
+  }
+
+  .portal-category-panel a:hover .header-menu-link-background,
+  .portal-category-panel a:focus-visible .header-menu-link-background {
+    opacity: 0.1;
+    transform: scale(1);
+  }
+
+  .portal-category-panel a:hover .header-menu-link-svg,
+  .portal-category-panel a:focus-visible .header-menu-link-svg {
+    transform: scale(1);
+  }
 }
 
 @media (max-width: 840px) {
@@ -4315,7 +4437,7 @@ html:not(.is-ready) .portal-header * {
   }
 
   .portal-language-chevron {
-    display: none;
+    display: block;
   }
 
   .portal-language-options {
@@ -4359,7 +4481,12 @@ html:not(.is-ready) .portal-header * {
   }
 
   .portal-category-dots {
-    font-size: 1em;
+    font-size: 1.4em;
+  }
+
+  .portal-category-menu[open] > .portal-category-trigger
+    .portal-category-dots {
+    transform: translate(0.05em) translateY(-0.1em) translateZ(0) rotate(270deg);
   }
 
   .portal-category-panel {
@@ -4388,22 +4515,41 @@ html:not(.is-ready) .portal-header * {
     line-height: 1.45;
   }
 
-  .portal-category-panel a::after {
-    position: absolute;
-    top: 50%;
-    right: 1.625em;
-    transform: translateY(-50%) scale(0);
-  }
-
-  .portal-category-panel a:hover::after,
-  .portal-category-panel a:focus-visible::after {
-    transform: translateY(-50%) scale(1);
-  }
-
-  .portal-category-panel .header-menu-link-text {
+  .portal-category-panel .header-menu-link-text,
+  .portal-category-panel .header-menu-link-text-clone {
     display: block;
     font-size: 1.25em;
     line-height: 1.6;
+  }
+}
+
+html[lang="vi"] .portal-category-panel a {
+  padding: 0.9em 1.625em;
+  line-height: 1.45;
+}
+
+html[lang="vi"] .portal-category-panel .header-menu-link-text,
+html[lang="vi"] .portal-category-panel .header-menu-link-text-clone {
+  font-size: 1.25em;
+  line-height: 1.6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portal-language-trigger,
+  .portal-category-trigger {
+    transform: none;
+    transition-duration: 0.01ms;
+  }
+
+  .portal-category-panel,
+  .portal-category-panel a,
+  .portal-category-panel a::before,
+  .portal-category-panel .header-menu-link-background,
+  .portal-category-panel .header-menu-link-text,
+  .portal-category-panel .header-menu-link-text-clone,
+  .portal-category-panel .header-menu-link-svg {
+    transition-duration: 0.01ms;
+    transition-delay: 0ms;
   }
 }
 
