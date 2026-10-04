@@ -4258,22 +4258,28 @@ html:not(.is-ready) .portal-header * {
 
 @media (max-width: 812px) {
   .portal-language-control {
-    width: 44.8px;
+    width: max-content;
   }
 
   .portal-language-trigger {
-    border-radius: 50%;
-    padding: 0;
+    width: max-content;
+    min-width: 0;
+    border-radius: 6.25em;
+    padding: 0 0.75em;
+  }
+
+  .portal-language-chevron {
+    display: block;
   }
 
   .portal-category-trigger {
     position: relative;
-    width: 3.2em;
-    padding: 0;
+    width: auto;
+    padding: 0 1.125em 0 1.625em;
   }
 
   .portal-category-label-viewport {
-    display: none;
+    display: block;
   }
 
   .portal-category-dots {
@@ -4306,12 +4312,47 @@ html:not(.is-ready) .portal-header * {
     grid-column: 2;
     grid-row: 1;
     justify-self: end;
-    gap: 12px;
+    margin-right: clamp(0px, 4.67vw, 23px);
+    gap: clamp(20px, 9.33vw, 46px);
+  }
+
+  .portal-language-control {
+    width: clamp(52px, 14.6vw, 72px);
+    height: clamp(44.8px, 11.36vw, 56px);
+    font-size: clamp(14px, 3.65vw, 18px);
   }
 
   .portal-language-trigger {
+    width: 100%;
     padding: 0 0.75em;
-    font-size: 13px;
+    font-size: inherit;
+  }
+
+  .portal-category-trigger {
+    width: clamp(44.8px, 11.36vw, 56px);
+    height: clamp(44.8px, 11.36vw, 56px);
+    padding: 0;
+    font-size: clamp(14px, 3.65vw, 18px);
+  }
+
+  .portal-category-label-viewport {
+    display: none;
+  }
+
+  .portal-category-menu[open] > .portal-category-trigger {
+    width: clamp(128px, 35.7vw, 176px);
+    padding: 0 1.125em 0 1.625em;
+  }
+
+  .portal-category-menu[open] > .portal-category-trigger
+    .portal-category-trigger-inner {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .portal-category-menu[open] > .portal-category-trigger
+    .portal-category-label-viewport {
+    display: block;
   }
 
 }
