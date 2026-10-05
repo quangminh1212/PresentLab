@@ -374,13 +374,8 @@ html[lang="vi"] .xlab-contact-card-action {
   padding-bottom: 0;
 }
 
-/* Remove the cross markers around the Home intro scroll prompt. */
-#page-container-inner > #about-who #about-crosses {
-  display: none !important;
-}
-
-/* Hide each About marker independently in the Home intro. */
-.about-cross {
+/* Remove the plus row next to the About intro scroll prompt. */
+#about-crosses {
   display: none !important;
 }
 
