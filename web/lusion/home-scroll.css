@@ -715,7 +715,4 @@ html[lang="vi"] body #home-goal-tunnel-title .home-goal-tunnel-title-line {
   cursor: grabbing;
 }
 
-/* Keep the language pill clean; the button still opens its language menu. */
-#lusion-language-trigger::after {
-  display: none !important;
-}
+/* The language pill uses Lusion-style dot markers instead of a chevron. */

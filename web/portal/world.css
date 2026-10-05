@@ -2300,7 +2300,10 @@ html[data-theme="light"] .world-stage {
   background: #000;
 }
 
-.app-shell:has(> main > .hero.hero-world) > main > .lusion-home-section > :not(.lusion-home-content) {
+.app-shell:has(> main > .hero.hero-world)
+  > main
+  > .lusion-home-section
+  > :not(.lusion-home-content) {
   display: none !important;
 }
 
@@ -2328,42 +2331,59 @@ html[data-theme="light"] .world-stage {
 }
 
 html:has(.app-shell > main > .hero.hero-world):not(.is-lusion-section-active)
-  .app-shell:has(> main > .hero.hero-world) > main > .lusion-home-section {
+  .app-shell:has(> main > .hero.hero-world)
+  > main
+  > .lusion-home-section {
   overflow: visible;
 }
 
 html:has(.app-shell > main > .hero.hero-world):not(.is-lusion-section-active)
-  .app-shell:has(> main > .hero.hero-world) .lusion-home-content {
+  .app-shell:has(> main > .hero.hero-world)
+  .lusion-home-content {
   overflow: visible;
   background: transparent;
   opacity: 1;
 }
 
 html:has(.app-shell > main > .hero.hero-world):not(.is-lusion-section-active)
-  .app-shell:has(> main > .hero.hero-world) .lusion-home-content > :not(#ui) {
+  .app-shell:has(> main > .hero.hero-world)
+  .lusion-home-content
+  > :not(#ui) {
   opacity: var(--lusion-handoff-opacity, 0) !important;
 }
 
 html:has(.app-shell > main > .hero.hero-world):not(.is-lusion-section-active)
-  .app-shell:has(> main > .hero.hero-world) .lusion-home-frame {
+  .app-shell:has(> main > .hero.hero-world)
+  .lusion-home-frame {
   pointer-events: none;
 }
 
 html:has(.app-shell > main > .hero.hero-world):not(.is-lusion-section-active)
-  .app-shell:has(> main > .hero.hero-world) .lusion-home-content > #ui > :not(#header) {
+  .app-shell:has(> main > .hero.hero-world)
+  .lusion-home-content
+  > #ui
+  > :not(#header) {
   opacity: var(--lusion-handoff-opacity, 0) !important;
 }
 
 html:has(.app-shell > main > .hero.hero-world):not(.is-lusion-section-active)
-  .app-shell:has(> main > .hero.hero-world) .lusion-home-content #header {
+  .app-shell:has(> main > .hero.hero-world)
+  .lusion-home-content
+  #header {
   position: fixed !important;
-  top: calc(0px - var(--lusion-scene-offset, 100svh) - var(--lusion-handoff-offset, 6vh)) !important;
+  top: calc(
+    0px - var(--lusion-scene-offset, 100svh) - var(--lusion-handoff-offset, 6vh)
+  ) !important;
 }
 
 html:has(.app-shell > main > .hero.hero-world):not(.is-lusion-section-active)
-  .app-shell:has(> main > .hero.hero-world) .lusion-home-content #header-right-menu-btn,
+  .app-shell:has(> main > .hero.hero-world)
+  .lusion-home-content
+  #header-right-menu-btn,
 html:has(.app-shell > main > .hero.hero-world):not(.is-lusion-section-active)
-  .app-shell:has(> main > .hero.hero-world) .lusion-home-content #lusion-language-trigger {
+  .app-shell:has(> main > .hero.hero-world)
+  .lusion-home-content
+  #lusion-language-trigger {
   visibility: visible !important;
   opacity: 1 !important;
   pointer-events: auto !important;
@@ -2371,8 +2391,12 @@ html:has(.app-shell > main > .hero.hero-world):not(.is-lusion-section-active)
 }
 
 /* Keep the adopted Lusion header out of the way while the Portal header is visible. */
-html.is-ready:has(.app-shell > main > .hero.hero-world):not(.is-lusion-section-active):not(.is-lusion-section-preloading):not(.is-astronaut-scene-visible)
-  .app-shell:has(> main > .hero.hero-world) .lusion-home-content #header {
+html.is-ready:has(.app-shell > main > .hero.hero-world):not(.is-lusion-section-active):not(
+    .is-lusion-section-preloading
+  ):not(.is-astronaut-scene-visible)
+  .app-shell:has(> main > .hero.hero-world)
+  .lusion-home-content
+  #header {
   display: none !important;
 }
 
@@ -2447,18 +2471,13 @@ html:has(.app-shell > main > .hero.hero-world).is-section-transitioning {
 @media (max-width: 760px) {
   .app-shell:has(> main > .hero.hero-world) .world-stage::after {
     background:
-      linear-gradient(
-        180deg,
-        transparent 58%,
-        rgb(8 9 12 / 15%) 72%,
-        rgb(0 0 0 / 94%) 100%
-      ),
+      linear-gradient(180deg, transparent 58%, rgb(8 9 12 / 15%) 72%, rgb(0 0 0 / 94%) 100%),
       radial-gradient(
         ellipse at 56% 43%,
         transparent 28%,
         rgb(15 16 19 / 7%) 70%,
         rgb(0 0 0 / 35%) 100%
-    );
+      );
   }
 }
 
@@ -2501,7 +2520,9 @@ html:has(.app-shell > main > .hero.hero-world).is-section-transitioning {
       rgb(171 192 211 / 22%) 23px 27px,
       transparent 28px 48px
     );
-  background-size: 210% 100%, 190% 100%;
+  background-size:
+    210% 100%,
+    190% 100%;
   content: "";
   filter: blur(2px);
   opacity: 0.72;
@@ -2511,11 +2532,15 @@ html:has(.app-shell > main > .hero.hero-world).is-section-transitioning {
 
 @keyframes world-css-water-flow {
   from {
-    background-position: 0% 0%, 100% 0%;
+    background-position:
+      0% 0%,
+      100% 0%;
   }
 
   to {
-    background-position: 100% 12%, 0% -8%;
+    background-position:
+      100% 12%,
+      0% -8%;
   }
 }
 
@@ -3491,7 +3516,11 @@ html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy h1 em {
   -webkit-text-fill-color: transparent;
 }
 
-html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--final {
+html[lang="zh-CN"]
+  .app-shell:has(> main > .hero.hero-world)
+  .world-copy
+  h1
+  > .world-title-line--final {
   background-image: linear-gradient(100deg, #b3e8df 0%, #d4e9e6 54%, #c8d0eb 100%);
   background-clip: text;
   color: transparent;
@@ -3916,19 +3945,22 @@ html:not([lang="vi"]) .portal-header-actions {
   gap: 24px;
 }
 
-.portal-language-control,
-.portal-category-trigger {
-  transform: translate3d(0, 4em, 0);
-  transition: transform 0.8s 1.1s cubic-bezier(0.35, 0, 0, 1);
-  will-change: transform;
+/* The controls fade into place as the curtain lifts; they never travel, so the
+   buttons read as appearing rather than sliding up from below the header. The
+   parent carries the delay so both controls stay in lockstep with the curtain. */
+.portal-header-actions {
+  opacity: 0;
+  transition: opacity 0.8s 0.9s cubic-bezier(0.35, 0, 0, 1);
 }
 
-html.is-ready:not(.is-lusion-section-preloading) .portal-language-control,
-html.is-ready:not(.is-lusion-section-preloading) .portal-category-trigger {
-  transform: translateZ(0);
+html.is-ready:not(.is-lusion-section-preloading) .portal-header-actions {
+  opacity: 1;
 }
 
 .portal-language-control {
+  /* XLab lockup teal: the wordmark's accent tile deepens to #237478 on dark UI. */
+  --portal-brand-teal: #57b5b4;
+  --portal-brand-teal-deep: #237478;
   position: relative;
   display: block;
   width: 4.2em;
@@ -3941,34 +3973,35 @@ html.is-ready:not(.is-lusion-section-preloading) .portal-category-trigger {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.65em;
+  position: relative;
   width: 100%;
   height: 100%;
   box-sizing: border-box;
-  border: 1px solid rgb(255 255 255 / 18%);
+  border: none;
   border-radius: 6.25em;
-  padding: 0 1em;
+  padding: 0 1.125em 0 1.625em;
   color: #fff;
-  background: #2b2e3a;
+  background: var(--portal-brand-teal-deep, #237478);
   font-family: inherit;
   font-size: inherit;
   font-weight: 500;
-  line-height: 1;
+  line-height: 1.15;
   text-transform: uppercase;
   text-align: center;
   cursor: pointer;
+  overflow: hidden;
   transition:
-    opacity 0.45s,
-    background-color 0.3s,
-    color 0.3s;
+    background-color 0.4s,
+    color 0.4s;
 }
 
 .portal-language-trigger:hover {
-  background: var(--header-color, #0016ec);
+  background: var(--portal-brand-teal, #57b5b4);
+  color: #fff;
 }
 
 .portal-language-trigger[aria-expanded="true"] {
-  background: #2b2e3a;
+  background: var(--portal-brand-teal-deep, #237478);
   outline: none;
 }
 
@@ -3979,21 +4012,74 @@ html.is-ready:not(.is-lusion-section-preloading) .portal-category-trigger {
   outline-offset: 3px;
 }
 
-.portal-language-chevron {
-  display: block;
-  width: 0.36em;
-  height: 0.36em;
-  margin-top: -0.2em;
-  border-right: 1px solid currentColor;
-  border-bottom: 1px solid currentColor;
-  color: #fff;
-  transform: rotate(45deg);
-  transition: transform 0.2s, margin 0.2s;
+.portal-language-inner {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  gap: 0.625em;
+  white-space: nowrap;
 }
 
-.portal-language-trigger[aria-expanded="true"] .portal-language-chevron {
-  margin-top: 0;
-  transform: rotate(315deg);
+#portal-language-current,
+.portal-language-arrow {
+  transition: transform cubic-bezier(0.4, 0, 0.1, 1) 0.3s;
+}
+
+/* Parked far enough left that the trigger's overflow clipping hides it
+   completely at rest, then slides in to sit beside the label on hover. */
+.portal-language-arrow {
+  position: absolute;
+  top: calc(50% - 0.5em);
+  left: 0;
+  width: 1em;
+  height: 1em;
+  transform: translate3d(-3.75em, 0, 0);
+}
+
+.portal-language-arrow svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.portal-language-dots {
+  position: relative;
+  flex: 0 0 auto;
+  width: 1.15em;
+  height: 1.15em;
+  transform: scale(0.9) translateZ(0);
+  transition: transform cubic-bezier(0.4, 0, 0.1, 1) 0.1s;
+}
+
+.portal-language-dot {
+  position: absolute;
+  display: block;
+  top: 50%;
+  left: 50%;
+  width: 0.3125em;
+  height: 0.3125em;
+  border-radius: 100%;
+  background: #fff;
+  transform: translate(-50%, -50%);
+}
+
+@media (hover: hover) {
+  .portal-language-trigger:hover .portal-language-dots,
+  .portal-language-trigger[aria-expanded="true"] .portal-language-dots {
+    transform: scale(0) translateZ(0);
+  }
+
+  .portal-language-trigger:hover #portal-language-current,
+  .portal-language-trigger[aria-expanded="true"] #portal-language-current {
+    transform: translate3d(1.5em, 0, 0);
+  }
+
+  .portal-language-trigger:hover .portal-language-arrow,
+  .portal-language-trigger[aria-expanded="true"] .portal-language-arrow {
+    transform: translateZ(0);
+  }
 }
 
 .portal-language-options {
@@ -4005,9 +4091,7 @@ html.is-ready:not(.is-lusion-section-preloading) .portal-category-trigger {
   flex-direction: column;
   --portal-language-gutter: max(5vw, 40px);
   width: 12em;
-  max-width: calc(
-    100vw - var(--portal-language-gutter) - var(--portal-language-gutter)
-  );
+  max-width: calc(100vw - var(--portal-language-gutter) - var(--portal-language-gutter));
   min-width: 0;
   box-sizing: border-box;
   gap: 0;
@@ -4041,7 +4125,9 @@ html.is-ready:not(.is-lusion-section-preloading) .portal-category-trigger {
   text-align: left;
   text-transform: uppercase;
   cursor: pointer;
-  transition: background-color 0.3s, color 0.3s;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
 }
 
 .portal-language-options [role="option"]::after {
@@ -4055,7 +4141,9 @@ html.is-ready:not(.is-lusion-section-preloading) .portal-category-trigger {
   background: currentColor;
   opacity: 0;
   transform: scale(0);
-  transition: opacity 0.2s, transform 0.2s;
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
 }
 
 .portal-language-options [role="option"][aria-selected="true"]::after {
@@ -4087,33 +4175,25 @@ html.is-ready:not(.is-lusion-section-preloading) .portal-category-trigger {
   font-family: inherit;
   font-size: 0.875em;
   font-weight: 500;
-  line-height: 1;
+  line-height: 1.15;
   text-transform: uppercase;
   list-style: none;
   cursor: pointer;
   user-select: none;
   transition:
-    transform 0.8s 1.1s cubic-bezier(0.35, 0, 0, 1),
+    transform 0.8s 1s cubic-bezier(0.35, 0, 0, 1),
     color 0.4s,
     background-color 0.4s;
 }
 
 .portal-category-trigger:hover,
-.portal-category-menu[open] > .portal-category-trigger {
+.portal-category-menu.is-open > .portal-category-trigger {
   color: #000;
   background: #fff;
 }
 
 .portal-category-trigger:focus-visible {
   outline: none;
-}
-
-.portal-category-trigger::-webkit-details-marker {
-  display: none;
-}
-
-.portal-category-trigger::marker {
-  content: "";
 }
 
 .portal-category-trigger-inner {
@@ -4152,13 +4232,11 @@ html.is-ready:not(.is-lusion-section-preloading) .portal-category-trigger {
   transform: translate3d(0, 100%, 0);
 }
 
-.portal-category-menu[open] > .portal-category-trigger
-  .portal-category-label-current {
+.portal-category-menu.is-open > .portal-category-trigger .portal-category-label-current {
   transform: translate3d(0, -100%, 0);
 }
 
-.portal-category-menu[open] > .portal-category-trigger
-  .portal-category-label-close {
+.portal-category-menu.is-open > .portal-category-trigger .portal-category-label-close {
   transform: translateZ(0);
 }
 
@@ -4191,24 +4269,20 @@ html.is-ready:not(.is-lusion-section-preloading) .portal-category-trigger {
 }
 
 .portal-category-trigger:hover .portal-category-dots,
-.portal-category-menu[open] > .portal-category-trigger .portal-category-dots {
+.portal-category-menu.is-open > .portal-category-trigger .portal-category-dots {
   transform: translateY(-0.1em) translateZ(0) rotate(270deg);
 }
 
 .portal-category-panel {
   position: absolute;
   --portal-category-gutter: clamp(20px, 4vw, 34px);
-  --portal-menu-open-delay: 0s;
-  --portal-menu-close-delay: 0.08s;
   top: 3.6em;
   right: 0;
   z-index: 57;
   display: flex;
   flex-direction: column;
   width: 19.38em;
-  max-width: calc(
-    100vw - var(--portal-category-gutter) - var(--portal-category-gutter)
-  );
+  max-width: calc(100vw - var(--portal-category-gutter) - var(--portal-category-gutter));
   box-sizing: border-box;
   gap: 0;
   padding: clamp(0.25em, 0.45vw, 0.375em);
@@ -4221,29 +4295,28 @@ html.is-ready:not(.is-lusion-section-preloading) .portal-category-trigger {
   transform: translate3d(0, 5.5em, 0) rotate(3.5deg);
   pointer-events: none;
   will-change: transform, opacity;
+  /* Lusion staggers its four menu containers with --open-delay: index/50s and
+     --close-delay: |index - count|/50s. This panel is a single container, so
+     that formula resolves to no delay on either side and the slide starts on
+     the very next frame. */
   transition:
-    transform 0.5s var(--portal-menu-close-delay, 0s)
-      cubic-bezier(0.4, 0, 0.1, 1),
-    opacity 0.5s var(--portal-menu-close-delay, 0s)
-      cubic-bezier(0.4, 0, 0.1, 1),
-    visibility 0s linear
-      calc(var(--portal-menu-close-delay, 0s) + 0.5s);
+    transform 0.5s cubic-bezier(0.4, 0, 0.1, 1),
+    opacity 0.5s cubic-bezier(0.4, 0, 0.1, 1),
+    visibility 0s linear 0.5s;
 }
 
-.portal-category-menu[open] > .portal-category-panel {
+.portal-category-menu.is-open > .portal-category-panel {
   opacity: 1;
   visibility: visible;
   transform: translateZ(0);
   pointer-events: auto;
   transition:
-    transform 0.5s var(--portal-menu-open-delay, 0s)
-      cubic-bezier(0.4, 0, 0.1, 1),
-    opacity 0.5s var(--portal-menu-open-delay, 0s)
-      cubic-bezier(0.4, 0, 0.1, 1),
-    visibility 0s linear var(--portal-menu-open-delay, 0s);
+    transform 0.5s cubic-bezier(0.4, 0, 0.1, 1),
+    opacity 0.5s cubic-bezier(0.4, 0, 0.1, 1),
+    visibility 0s linear;
 }
 
-.portal-category-menu[open] > .portal-category-panel a {
+.portal-category-menu.is-open > .portal-category-panel a {
   pointer-events: auto;
 }
 
@@ -4293,7 +4366,8 @@ html.is-ready:not(.is-lusion-section-preloading) .portal-category-trigger {
   width: 100%;
   height: 100%;
   border-radius: 6.25em;
-  background: var(--header-color, #0016ec);
+  /* Same XLab lockup teal as the language trigger, declared on .portal-language-control. */
+  background: var(--portal-brand-teal-deep, #237478);
   opacity: 0;
   transform: scale(0.85);
   transition:
@@ -4304,6 +4378,19 @@ html.is-ready:not(.is-lusion-section-preloading) .portal-category-trigger {
 .header-menu-link-inner {
   display: block;
   position: relative;
+  /* One token drives the clip height, the label roll distance, and the clone
+     offset, so the three can never disagree.
+     The label's painted box is ~1.28x its line box (the display face and the
+     Vietnamese diacritics both overshoot), so a roll distance of 100% of the
+     line box leaves the clone overlapping the label and the text renders
+     twice for the whole roll. 1.28 clears it with a hair of margin. */
+  --header-menu-link-font-size: 1.625em;
+  --header-menu-link-line-height: 1.3;
+  --header-menu-link-roll: 128%;
+  height: calc(
+    var(--header-menu-link-font-size) * var(--header-menu-link-line-height) *
+      var(--header-menu-link-roll) / 100%
+  );
   overflow: hidden;
 }
 
@@ -4312,7 +4399,8 @@ html.is-ready:not(.is-lusion-section-preloading) .portal-category-trigger {
   display: inline-block;
   position: relative;
   z-index: 1;
-  font-size: 1.625em;
+  font-size: var(--header-menu-link-font-size);
+  line-height: var(--header-menu-link-line-height);
   text-transform: uppercase;
   transition:
     color 0.4s,
@@ -4323,7 +4411,8 @@ html.is-ready:not(.is-lusion-section-preloading) .portal-category-trigger {
   position: absolute;
   top: 0;
   left: 0;
-  transform: translate3d(0, calc(100% + 2px), 0);
+  /* Parked exactly one roll distance below the label so it stays clipped. */
+  transform: translate3d(0, var(--header-menu-link-roll), 0);
 }
 
 .header-menu-link-svg {
@@ -4346,7 +4435,8 @@ html.is-ready:not(.is-lusion-section-preloading) .portal-category-trigger {
 
   .portal-category-panel a:hover .header-menu-link-text,
   .portal-category-panel a:focus-visible .header-menu-link-text {
-    transform: translate3d(0, -100%, 0);
+    /* Same distance the clone travels, so the two labels swap cleanly. */
+    transform: translate3d(0, calc(-1 * var(--header-menu-link-roll)), 0);
   }
 
   .portal-category-panel a:hover .header-menu-link-text-clone,
@@ -4391,7 +4481,6 @@ html.is-ready:not(.is-lusion-section-preloading) .portal-category-trigger {
   .portal-header-actions {
     gap: 36px;
   }
-
 }
 
 @media (max-width: 640px) {
@@ -4413,7 +4502,6 @@ html.is-ready:not(.is-lusion-section-preloading) .portal-category-trigger {
     font-size: clamp(11px, 2.4vw, 12px);
     line-height: 1.35;
   }
-
 }
 
 @media (max-width: 812px) {
@@ -4444,31 +4532,24 @@ html.is-ready:not(.is-lusion-section-preloading) .portal-category-trigger {
   }
 
   .portal-language-trigger {
-    width: 100%;
-    min-width: 3.5em;
+    width: 3.2em;
+    min-width: 3.2em;
     height: 3.2em;
     min-height: 44px;
-    padding: 0 0.75em;
+    padding: 0;
     font-size: 1em;
-    gap: 0.65em;
   }
 
   .portal-language-trigger[aria-expanded="true"] {
-    background: #2b2e3a;
+    background: var(--portal-brand-teal-deep, #237478);
     outline: none;
-  }
-
-  .portal-language-chevron {
-    display: block;
   }
 
   .portal-language-options {
     top: calc(100% + 0.55em);
     right: 0;
     width: 12em;
-    max-width: calc(
-      100vw - var(--portal-lusion-gutter) - var(--portal-lusion-gutter)
-    );
+    max-width: calc(100vw - var(--portal-lusion-gutter) - var(--portal-lusion-gutter));
     min-width: 0;
     padding: 0.65em 0.3125em;
     font-size: 1.142857em;
@@ -4506,23 +4587,18 @@ html.is-ready:not(.is-lusion-section-preloading) .portal-category-trigger {
     font-size: 1.4em;
   }
 
-  .portal-category-menu[open] > .portal-category-trigger
-    .portal-category-dots {
+  .portal-category-menu.is-open > .portal-category-trigger .portal-category-dots {
     transform: translate(0.05em) translateY(-0.1em) translateZ(0) rotate(270deg);
   }
 
   .portal-category-panel {
     top: calc(
-      var(--portal-lusion-gutter) + var(--portal-lusion-unit) +
-        var(--portal-lusion-unit) + var(--portal-lusion-unit)
+      var(--portal-lusion-gutter) + var(--portal-lusion-unit) + var(--portal-lusion-unit) +
+        var(--portal-lusion-unit)
     );
     right: 0;
-    width: calc(
-      100vw - var(--portal-lusion-gutter) - var(--portal-lusion-gutter)
-    );
-    max-width: calc(
-      100vw - var(--portal-lusion-gutter) - var(--portal-lusion-gutter)
-    );
+    width: calc(100vw - var(--portal-lusion-gutter) - var(--portal-lusion-gutter));
+    max-width: calc(100vw - var(--portal-lusion-gutter) - var(--portal-lusion-gutter));
     padding: 1em 0.3125em;
     border-radius: 0.625em;
     font-size: var(--portal-lusion-unit);
@@ -4550,16 +4626,34 @@ html[lang="vi"] .portal-category-panel a {
   line-height: 1.45;
 }
 
-html[lang="vi"] .portal-category-panel .header-menu-link-text,
-html[lang="vi"] .portal-category-panel .header-menu-link-text-clone {
-  font-size: 1.25em;
-  line-height: 1.6;
+html[lang="vi"] .portal-category-panel {
+  --header-menu-link-font-size: 1.25em;
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .portal-header-actions {
+    transition-duration: 0.01ms;
+    transition-delay: 0ms;
+  }
+
   .portal-language-control,
   .portal-category-trigger {
     transform: none;
+  }
+
+  .portal-language-dots,
+  .portal-language-trigger:hover .portal-language-dots,
+  .portal-language-trigger[aria-expanded="true"] .portal-language-dots {
+    transform: scale(0.9) translateZ(0);
+    transition-duration: 0.01ms;
+  }
+
+  .portal-language-arrow,
+  #portal-language-current,
+  .portal-language-trigger:hover .portal-language-arrow,
+  .portal-language-trigger[aria-expanded="true"] .portal-language-arrow,
+  .portal-language-trigger:hover #portal-language-current,
+  .portal-language-trigger[aria-expanded="true"] #portal-language-current {
     transition-duration: 0.01ms;
     transition-delay: 0ms;
   }

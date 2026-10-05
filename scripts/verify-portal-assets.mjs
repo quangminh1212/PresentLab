@@ -61,10 +61,20 @@ const verifyPortalRoute = (document, routeLabel) => {
   if (!document.querySelector(".portal-header select[data-locale]")) {
     throw new Error(`${routeLabel} is missing the header language control.`);
   }
-  if (
-    !document.querySelector(".portal-header details.portal-category-menu .portal-category-trigger")
-  ) {
+  if (!document.querySelector(".portal-header .portal-category-menu .portal-category-trigger")) {
     throw new Error(`${routeLabel} is missing the category menu control.`);
+  }
+  // The panel must stay a sibling of the trigger in a plain container: a
+  // closing <details> hides its content in the same frame the open state drops,
+  // which cancels the panel's exit transition.
+  if (
+    !document.querySelector(
+      ".portal-header .portal-category-menu button.portal-category-trigger[aria-expanded] + .portal-category-panel",
+    )
+  ) {
+    throw new Error(
+      `${routeLabel} must pair the category trigger with a sibling panel outside <details>.`,
+    );
   }
 
   const lusionSection = document.querySelector(
