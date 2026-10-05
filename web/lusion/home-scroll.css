@@ -379,6 +379,11 @@ html[lang="vi"] .xlab-contact-card-action {
   display: none !important;
 }
 
+/* Hide each About marker independently in the Home intro. */
+.about-cross {
+  display: none !important;
+}
+
 /* Remove the plus markers below the Home-to-About prompt. */
 #scroll-nav-cross-line {
   display: none !important;
