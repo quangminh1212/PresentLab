@@ -62,20 +62,6 @@ const headerLogo =
 const projectCardLinkPattern =
   /<a\b(?=[^>]*\bclass="[^"]*\bproject-item\b[^"]*")([^>]*)>([\s\S]*?)<\/a>/gi;
 const labsMenuLinkPattern = /<a\b(?=[^>]*\bid="header-menu-labs")[^>]*>[\s\S]*?<\/a>/i;
-const lusionHomeRawSource = await readFile(join(root, "web/lusion/index.html"), "utf8");
-// The About route opens with the same hero scene as the home route, so the two pages
-// share one loader-to-hero reveal. The hero markup is lifted from the local home page
-// and pushed through the same XLab branding pass as the rest of the page text.
-const lusionHomeHeroMarkup = (() => {
-  const markup = lusionHomeRawSource.match(
-    /<div\b[^>]*\bid="home-hero"[\s\S]*?(?=<div\b[^>]*\bid="home-reel")/i,
-  );
-  if (!markup) {
-    throw new Error("Could not locate the Home hero markup to reuse on the About route.");
-  }
-  return markup[0];
-})();
-const aboutWhoAnchorPattern = /<div\b[^>]*\bid="about-who"/i;
 for (const pagePath of xlabPageFiles) {
   let html = await readFile(pagePath, "utf8");
   const logos = html.match(headerLogoPattern);
@@ -87,18 +73,6 @@ for (const pagePath of xlabPageFiles) {
   }
   html = html.replace(labsMenuLinkPattern, "");
   html = html.replace(headerLogoPattern, headerLogo);
-  if (pagePath.endsWith(join("about", "index.html"))) {
-    if (html.split('id="home-hero"').length - 1 !== 0) {
-      throw new Error(`The About route already contains a home-hero section: ${pagePath}.`);
-    }
-    if (!aboutWhoAnchorPattern.test(html)) {
-      throw new Error(`Could not find the About opening section in ${pagePath}.`);
-    }
-    html = html.replace(
-      aboutWhoAnchorPattern,
-      (match) => `${lusionHomeHeroMarkup}${match}`,
-    );
-  }
   html = html.replace(projectCardLinkPattern, (_match, attributes, content) => {
     const nonLinkAttributes = attributes.replace(/\s+href=(?:"[^"]*"|'[^']*')/i, "");
     return `<div${nonLinkAttributes}>${content}</div>`;
@@ -122,7 +96,7 @@ for (const pagePath of xlabPageFiles) {
   await writeFile(pagePath, html);
 }
 
-let lusionHomeSource = lusionHomeRawSource;
+let lusionHomeSource = await readFile(join(root, "web/lusion/index.html"), "utf8");
 const homeLogos = lusionHomeSource.match(headerLogoPattern);
 if (!homeLogos || homeLogos.length !== 1) {
   throw new Error("Expected one Lusion header logo in the Portal section source.");
@@ -629,117 +603,6 @@ lusionBundle = lusionBundle.replace(
   aboutScrollCueMobileTransformSource,
   aboutScrollCueMobileTransformReplacement,
 );
-
-// The About route reuses the Home hero as its opening scene so both pages share the
-// same loader-to-hero reveal. The engine only ever drives homeHeroSection from
-// HomePage, so AboutPage has to run the same section lifecycle. homeHeroSection.update()
-// sets homeBalloons.isActive from the hero's own DOM range, so the balloons activate
-// while the hero is on screen and hand back to the About scene once it is scrolled past.
-const aboutPageHeroPatches = [
-  [
-    "AboutPage hero preInit",
-    'class AboutPage extends Page{path="about";id="about";endVisualColor=properties.offWhiteColorHex;preInit(){let e=this.domContainer;aboutWhoSection.preInit(e)',
-    'class AboutPage extends Page{path="about";id="about";endVisualColor=properties.offWhiteColorHex;preInit(){let e=this.domContainer;homeHeroSection.preInit(e),aboutWhoSection.preInit(e)',
-  ],
-  [
-    "AboutPage hero init",
-    'class AboutPage extends Page{path="about";id="about";endVisualColor=properties.offWhiteColorHex;preInit(){let e=this.domContainer;homeHeroSection.preInit(e),aboutWhoSection.preInit(e),aboutClientSection.preInit(e),aboutAwardSection.preInit(e),aboutCapabilitySection.preInit(e)}init(){aboutWhoSection.init()',
-    'class AboutPage extends Page{path="about";id="about";endVisualColor=properties.offWhiteColorHex;preInit(){let e=this.domContainer;homeHeroSection.preInit(e),aboutWhoSection.preInit(e),aboutClientSection.preInit(e),aboutAwardSection.preInit(e),aboutCapabilitySection.preInit(e)}init(){homeHeroSection.init(),aboutWhoSection.init()',
-  ],
-  [
-    "AboutPage hero resize",
-    "aboutCapabilitySection.init(),super.init()}resize(e,t){aboutWhoSection.resize(e,t)",
-    "aboutCapabilitySection.init(),super.init()}resize(e,t){homeHeroSection.resize(e,t),aboutWhoSection.resize(e,t)",
-  ],
-  [
-    "AboutPage hero show",
-    "aboutCapabilitySection.resize(e,t)}show(e,t,r){aboutWhoSection.show()",
-    "aboutCapabilitySection.resize(e,t)}show(e,t,r){homeHeroSection.initEvent(),aboutWhoSection.show()",
-  ],
-  [
-    "AboutPage hero update",
-    "aboutCapabilitySection.update(e),aboutPageAudios.update(r)}}const aboutPage=new AboutPage",
-    "aboutCapabilitySection.update(e),aboutPageAudios.update(r),homeHeroSection.update(e)}}const aboutPage=new AboutPage",
-  ],
-];
-for (const [label, source, replacement] of aboutPageHeroPatches) {
-  if (lusionBundle.split(source).length - 1 !== 1) {
-    throw new Error(`The copied Lusion bundle no longer matches the ${label} patch.`);
-  }
-  lusionBundle = lusionBundle.replace(source, replacement);
-}
-
-// homeHeroSection needs to report whether its hero is off screen so the About stage can
-// yield to it (see the About stage patch below). A plain prototype getter keeps the
-// check cheap and inside the class, which is declared before aboutHero.
-const heroSectionOffScreenSource =
-  "class HomeHeroSection{domContainer;domHomeTitle;sectionDomRange;preInit(e){";
-const heroSectionOffScreenReplacement =
-  "class HomeHeroSection{domContainer;domHomeTitle;sectionDomRange;get isOffScreen(){return!this.sectionDomRange||!this.sectionDomRange.isActive};preInit(e){";
-if (lusionBundle.split(heroSectionOffScreenSource).length - 1 !== 1) {
-  throw new Error("The copied Lusion HomeHeroSection declaration no longer matches.");
-}
-lusionBundle = lusionBundle.replace(heroSectionOffScreenSource, heroSectionOffScreenReplacement);
-
-// Both stages can be active at once on the About route: the About section activates
-// aboutHero (its particle cloud) whenever the About content is on screen, while
-// homeHeroSection activates homeBalloons for the reused opening hero. Visuals.syncProperties
-// picks the LAST active stage in stage3DList, and aboutHero is registered after
-// homeBalloons, so aboutHero always won and the hero scene never rendered. Gate the
-// About stage on the hero being off screen; this runs where aboutHero is in scope,
-// because aboutHero is declared after homeHeroSection.
-const aboutStageSource = "aboutHero.isActive=!0}else aboutHero.isActive=!1,whoSubsectionTeam.wasActive=!1";
-const aboutStageReplacement =
-  "aboutHero.isActive=homeHeroSection.isOffScreen!==!1}else aboutHero.isActive=!1,whoSubsectionTeam.wasActive=!1";
-if (lusionBundle.split(aboutStageSource).length - 1 !== 1) {
-  throw new Error("The copied Lusion About stage activation no longer matches.");
-}
-lusionBundle = lusionBundle.replace(aboutStageSource, aboutStageReplacement);
-// The reused hero animates its headline from homePage.time, but on the About route only
-// aboutPage.time advances, so homePage.time stays 0 and every word keeps its initial
-// transform (translated down 1.7em and rotated 15deg) and never becomes visible.
-// homeHeroSection.update() is called with the already-advanced page time on whatever
-// route is showing, so feed that in rather than reading homePage.time whose declaration
-// also sits after this class.
-const heroTimeSource = "_updateUi(e){scrollManager.scrollPixel,math.fit(this.sectionDomRange.ratio,.3,.7,0,1,ease.cubcInOut);let t=Math.max(0,homePage.time-1)";
-const heroTimeReplacement =
-  "_updateUi(e){scrollManager.scrollPixel,math.fit(this.sectionDomRange.ratio,.3,.7,0,1,ease.cubcInOut);let t=Math.max(0,(this.clockTime??homePage.time)-1)";
-if (lusionBundle.split(heroTimeSource).length - 1 !== 1) {
-  throw new Error("The copied Lusion hero update clock no longer matches.");
-}
-lusionBundle = lusionBundle.replace(heroTimeSource, heroTimeReplacement);
-
-// Record the active page's clock before the hero reads it.
-const heroClockSource = "aboutCapabilitySection.update(e),aboutPageAudios.update(r),homeHeroSection.update(e)";
-const heroClockReplacement =
-  "aboutCapabilitySection.update(e),aboutPageAudios.update(r),homeHeroSection.clockTime=this.time,homeHeroSection.update(e)";
-if (lusionBundle.split(heroClockSource).length - 1 !== 1) {
-  throw new Error("The copied Lusion About hero clock hook no longer matches.");
-}
-lusionBundle = lusionBundle.replace(heroClockSource, heroClockReplacement);
-
-// HomeBalloons.syncProperties() also reads homePage.time to drive the camera dolly
-// (z 25->17.5 and fov offset 100->0), which is what sweeps the teal ribbon into frame.
-// On the About route that clock is frozen, so reuse the same advancing clock the hero
-// already feeds in.
-const balloonClockSource =
-  "syncProperties(e){this.properties.defaultCameraPosition.z=math.fit(homePage.time,.3,2,25,17.5,ease.backOut),this.properties.cameraDollyZoomFovOffset=math.fit(homePage.time,.3,3,100,0,ease.backOut)}";
-const balloonClockReplacement =
-  "syncProperties(e){let _t=window.__XLAB_HERO_CLOCK__??homePage.time;this.properties.defaultCameraPosition.z=math.fit(_t,.3,2,25,17.5,ease.backOut),this.properties.cameraDollyZoomFovOffset=math.fit(_t,.3,3,100,0,ease.backOut)}";
-if (lusionBundle.split(balloonClockSource).length - 1 !== 1) {
-  throw new Error("The copied Lusion balloon camera dolly no longer matches.");
-}
-lusionBundle = lusionBundle.replace(balloonClockSource, balloonClockReplacement);
-
-// Publish the advancing clock so HomeBalloons (declared earlier) can read it at runtime.
-const heroClockPublishSource = "homeHeroSection.clockTime=this.time,homeHeroSection.update(e)";
-const heroClockPublishReplacement =
-  "homeHeroSection.clockTime=this.time,window.__XLAB_HERO_CLOCK__=this.time,homeHeroSection.update(e)";
-if (lusionBundle.split(heroClockPublishSource).length - 1 !== 1) {
-  throw new Error("The copied Lusion About hero clock publish no longer matches.");
-}
-lusionBundle = lusionBundle.replace(heroClockPublishSource, heroClockPublishReplacement);
-
 await writeFile(lusionBundlePath, lusionBundle);
 
 console.log(`Vercel static output prepared: ${output}`);
