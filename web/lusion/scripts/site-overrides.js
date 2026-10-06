@@ -22,12 +22,22 @@
     "#header-logo .xlab-logo-crop img{position:absolute;top:-8.9px;left:0;display:block;width:80px;height:auto;max-width:none}" +
     "html:not(.is-black-bg):not(.is-blue-bg) #header-logo .xlab-logo-crop img{filter:none!important}" +
     "html.is-black-bg #header-logo .xlab-logo-crop img,html.is-blue-bg #header-logo .xlab-logo-crop img{filter:brightness(0) invert(1)}" +
-    ".lusion-home-content #xlab-preloader-reveal{position:absolute;inset:0;z-index:201;display:grid;place-items:center;background:#000;opacity:1;transition:opacity .22s ease;pointer-events:auto}" +
-    ".lusion-home-content #xlab-preloader-reveal.is-exiting{opacity:0}" +
-    ".lusion-home-content #xlab-preloader-mark{position:relative;display:block;width:min(280px,72vw);aspect-ratio:20/7;overflow:hidden}" +
-    ".lusion-home-content #xlab-preloader-mark img{position:absolute;top:-31.8%;left:0;display:block;width:100%;height:auto;max-width:none;filter:brightness(0) invert(1);transform:scale(1);transition:transform .22s cubic-bezier(.16,1,.3,1)}" +
-    ".lusion-home-content #xlab-preloader-reveal.is-exiting #xlab-preloader-mark img{transform:scale(.96)}" +
-    "@media(prefers-reduced-motion:reduce){.lusion-home-content #xlab-preloader-reveal,.lusion-home-content #xlab-preloader-mark img{transition:none}}";
+    "#xlab-preloader-reveal{position:fixed;inset:0;z-index:202;display:grid;place-items:center;background:#000;opacity:1;transition:opacity .22s ease;pointer-events:auto}" +
+    "#xlab-preloader-reveal.is-exiting{opacity:0}" +
+    "#xlab-preloader-mark{position:relative;display:block;width:min(280px,72vw);aspect-ratio:20/7;overflow:hidden}" +
+    "#xlab-preloader-mark img{position:absolute;top:-31.8%;left:0;display:block;width:100%;height:auto;max-width:none;filter:brightness(0) invert(1);transform:scale(1);transition:transform .22s cubic-bezier(.16,1,.3,1)}" +
+    "#xlab-preloader-reveal.is-exiting #xlab-preloader-mark img{transform:scale(.96)}" +
+    "@media(prefers-reduced-motion:reduce){#xlab-preloader-reveal,#xlab-preloader-mark img{transition:none}}" +
+    // Portal loading curtain, so the standalone routes show the same opening as the
+    // home page: the 000->100 counter, the bar that draws the mark, and the large XLAB
+    // wordmark painted on canvas.
+    ".page-curtain{position:fixed;inset:0;z-index:201;overflow:hidden;background:#000;pointer-events:auto}" +
+    ".page-curtain-canvas{position:absolute;top:0;left:0;display:block;max-width:none}" +
+    ".page-curtain-count{position:absolute;z-index:1;bottom:0;left:0;height:.75em;overflow:hidden;color:#fff;font-family:Aeonik,\"Be Vietnam Pro\",sans-serif;font-size:clamp(7em,8vw,20em);font-weight:400;line-height:.75em}" +
+    ".page-curtain-digit{position:relative;float:left;width:1ch;text-align:center;transform:translateY(-.05em)}" +
+    ".page-curtain-digit>span{display:block;height:.75em;line-height:.75em}" +
+    "@media(max-width:812px){.page-curtain-count{font-size:13vw}}" +
+    ".page-curtain.is-complete{display:none}";
   document.head.appendChild(style);
 
   // This stylesheet runs inside the Lusion iframe, so its font rules target this document.
@@ -1593,88 +1603,335 @@ const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
     footer.appendChild(panel);
   }
 
+  // Ported from the portal loading curtain (web/portal/app.js + xlab-wordmark.js) so the
+  // standalone Lusion routes show the same opening: a 000->100 counter, a progress bar
+  // that draws the mark, and the large XLAB wordmark drawn on canvas.
+  const XLAB_PRELOADER_LOCKUP = { xWidth: 3.6, aWidth: 3, bWidth: 3.1, glyphHeight: 3.8, stroke: 1, textGap: 0.5, letterGap: 0.35 };
+
+  function clipGlyphBounds(context, left, top, width, height) {
+    context.beginPath();
+    context.rect(left, top, width, height);
+    context.clip();
+  }
+
+  function clipLowerLeftNotch(context, left, top, width, height) {
+    const cut = XLAB_PRELOADER_LOCKUP.stroke;
+    const right = left + width;
+    const bottom = top + height;
+    context.beginPath();
+    context.moveTo(left + cut, top);
+    context.lineTo(right, top);
+    context.lineTo(right, bottom);
+    context.lineTo(left + cut, bottom);
+    context.lineTo(left + cut, bottom - cut);
+    context.lineTo(left, bottom - cut);
+    context.lineTo(left, top);
+    context.closePath();
+    context.clip();
+  }
+
+  function drawWordmarkX(context, left, top) {
+    const { xWidth, glyphHeight, stroke } = XLAB_PRELOADER_LOCKUP;
+    context.save();
+    clipGlyphBounds(context, left, top, xWidth, glyphHeight);
+    context.strokeStyle = "#fff";
+    context.lineWidth = stroke;
+    context.lineCap = "butt";
+    context.lineJoin = "miter";
+    context.beginPath();
+    context.moveTo(left, top);
+    context.lineTo(left + xWidth, top + glyphHeight);
+    context.moveTo(left + xWidth, top);
+    context.lineTo(left, top + glyphHeight);
+    context.stroke();
+    context.restore();
+  }
+
+  function drawWordmarkA(context, left, top) {
+    const { aWidth, glyphHeight, stroke } = XLAB_PRELOADER_LOCKUP;
+    context.save();
+    clipGlyphBounds(context, left, top, aWidth, glyphHeight);
+    context.strokeStyle = "#fff";
+    context.lineWidth = stroke;
+    context.lineCap = "butt";
+    context.lineJoin = "miter";
+    context.beginPath();
+    context.moveTo(left, top + glyphHeight);
+    context.lineTo(left + aWidth * 0.5, top);
+    context.lineTo(left + aWidth, top + glyphHeight);
+    context.stroke();
+    context.fillStyle = "#fff";
+    const crossbarWidth = aWidth * 0.58;
+    context.fillRect(left + (aWidth - crossbarWidth) * 0.5, top + glyphHeight * 0.58 - stroke * 0.5, crossbarWidth, stroke);
+    context.restore();
+  }
+
+  function drawWordmarkB(context, left, top) {
+    const { bWidth, glyphHeight, stroke } = XLAB_PRELOADER_LOCKUP;
+    const bowlStroke = stroke * 0.75;
+    const stemX = left + stroke * 0.5;
+    const bowlX = left + stroke * 1.1;
+    const upperRightX = left + bWidth - bowlStroke * 0.5 - stroke * 0.18;
+    const lowerRightX = left + bWidth - bowlStroke * 0.5;
+    const chamfer = stroke * 0.24;
+    const topY = top + bowlStroke * 0.5;
+    const middleY = top + glyphHeight * 0.5;
+    const bottomY = top + glyphHeight - bowlStroke * 0.5;
+    context.save();
+    clipLowerLeftNotch(context, left, top, bWidth, glyphHeight);
+    context.strokeStyle = "#fff";
+    context.lineWidth = stroke;
+    context.lineCap = "round";
+    context.lineJoin = "miter";
+    context.beginPath();
+    context.moveTo(stemX, bottomY);
+    context.lineTo(stemX, topY);
+    context.stroke();
+    context.lineWidth = bowlStroke;
+    context.beginPath();
+    context.moveTo(stemX, topY);
+    context.lineTo(bowlX, topY);
+    context.lineTo(upperRightX - chamfer, topY);
+    context.lineTo(upperRightX, topY + chamfer);
+    context.lineTo(upperRightX, middleY - chamfer);
+    context.lineTo(upperRightX - chamfer, middleY);
+    context.lineTo(bowlX, middleY);
+    context.lineTo(stemX, middleY);
+    context.stroke();
+    context.beginPath();
+    context.moveTo(stemX, middleY);
+    context.lineTo(bowlX, middleY);
+    context.lineTo(lowerRightX - chamfer, middleY);
+    context.lineTo(lowerRightX, middleY + chamfer);
+    context.lineTo(lowerRightX, bottomY - chamfer);
+    context.lineTo(lowerRightX - chamfer, bottomY);
+    context.lineTo(bowlX, bottomY);
+    context.lineTo(stemX, bottomY);
+    context.stroke();
+    context.restore();
+  }
+
+  const clampUnit = (value) => Math.min(1, Math.max(0, value));
+  const easeLusionExpo = (value) => {
+    const clamped = clampUnit(value);
+    return clamped === 0 ? 0 : 2 ** (10 * (clamped - 1));
+  };
+
+  function drawXlabPreloaderCanvas(canvas, progress, lineTransformRatio, brandRevealRatio, contentShowRatio) {
+    const width = window.innerWidth + 2;
+    const height = window.innerHeight + 2;
+    const pixelRatio = Math.max(1, window.devicePixelRatio || 1);
+    const canvasWidth = Math.trunc(width * pixelRatio);
+    const canvasHeight = Math.trunc(height * pixelRatio);
+    if (canvas.width !== canvasWidth || canvas.height !== canvasHeight) {
+      canvas.width = canvasWidth;
+      canvas.height = canvasHeight;
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+    }
+    const context = canvas.getContext("2d");
+    if (!context) return;
+
+    context.save();
+    context.scale(pixelRatio, pixelRatio);
+    context.fillStyle = "#000";
+    context.fillRect(0, 0, width, height);
+
+    const barUnit = Math.trunc(Math.min(42, window.innerWidth / 30));
+    const activeRatio = Math.min(1 - contentShowRatio, 1);
+    if (activeRatio <= 0) {
+      context.restore();
+      canvas.style.display = "none";
+      return;
+    }
+    canvas.style.display = "block";
+
+    const diagonal = Math.sqrt(width * width + height * height) / barUnit;
+    const transform = easeLusionExpo(1 - activeRatio);
+    const scale = (1 + transform * diagonal) * barUnit;
+    context.translate(width * 0.5, height * 0.5);
+    context.rotate(transform * (contentShowRatio === 0 ? -1 : 1));
+    context.translate(barUnit * transform * diagonal, -barUnit * 0.5 * transform * diagonal);
+    context.scale(scale, scale);
+
+    const markBounds = { left: -1.5, right: 1.5, top: -2, bottom: 2 };
+    const { xWidth, aWidth, glyphHeight, textGap, letterGap } = XLAB_PRELOADER_LOCKUP;
+    const xLeft = markBounds.left - textGap - xWidth;
+    const aLeft = markBounds.right + textGap;
+    const bLeft = aLeft + aWidth + letterGap;
+    const glyphTop = markBounds.bottom - glyphHeight;
+
+    const line = clampUnit(lineTransformRatio);
+    if (line === 0) {
+      context.fillStyle = "#333";
+      context.fillRect(-2.5, -0.5, 5, 1);
+      context.fillStyle = "#fff";
+      context.fillRect(-2.5, -0.5, 5 * clampUnit(progress), 1);
+    } else {
+      context.fillStyle = "#fff";
+      context.translate(-line, 1.5 * line);
+      context.save();
+      context.translate(0.5, -0.5);
+      context.rotate(line * Math.PI * 0.5);
+      context.globalCompositeOperation = "xor";
+      context.fillRect(-3, 0, 3, 1);
+      context.globalCompositeOperation = "source-over";
+      context.globalAlpha = 1 - transform;
+      context.fillRect(-3, 0, 3, 1);
+      context.restore();
+      context.save();
+      context.translate(0.5, -0.5);
+      context.globalCompositeOperation = "xor";
+      context.fillRect(0, 0, 2, 1);
+      context.globalCompositeOperation = "source-over";
+      context.globalAlpha = 1 - transform;
+      context.fillRect(0, 0, 2, 1);
+      context.restore();
+    }
+
+    if (brandRevealRatio > 0) {
+      context.translate(line, -1.5 * line);
+      context.save();
+      context.globalAlpha = clampUnit(brandRevealRatio) * (1 - transform);
+      context.fillStyle = "#fff";
+      drawWordmarkX(context, xLeft, glyphTop);
+      drawWordmarkA(context, aLeft, glyphTop);
+      drawWordmarkB(context, bLeft, glyphTop);
+      context.restore();
+    }
+    context.restore();
+  }
+
+  function updateXlabPreloaderDigits(digits, progress, deltaSeconds, startTime) {
+    const easedStartTime = clampUnit(startTime);
+    digits.forEach((digit, index) => {
+      const power = 10 ** (digits.length - index - 1);
+      const target = Math.floor(progress / power);
+      const previous = Number.isFinite(digit._easedValue) ? digit._easedValue : 0;
+      let easedValue = previous + (target - previous) * (1 - Math.exp(-7 * deltaSeconds));
+      if (target - easedValue < 0.01) easedValue = target;
+      digit._easedValue = easedValue;
+      const digitValue = easedValue % 10;
+      const lowerDigit = Math.floor(digitValue);
+      const upperDigit = Math.ceil(digitValue) % 10;
+      const digitProgress = digitValue - lowerDigit;
+      const startOffset = easeLusionExpo(easedStartTime * 1.2 - (0.2 * index) / (digits.length - 1));
+      const numbers = digit.querySelectorAll("[data-xlab-curtain-num]");
+      if (numbers[0]) numbers[0].textContent = String(lowerDigit);
+      if (numbers[1]) numbers[1].textContent = String(upperDigit);
+      digit.style.transform = `translateY(${-(digitProgress - easeLusionExpo(clampUnit((startTime >= 1 ? startOffset : 0) * 1.2 - 0.2 * (index / (digits.length - 1))))) * 50}%) translateY(-0.05em)`;
+    });
+  }
+
   function mountXlabPreloaderReveal() {
     const preloader = document.getElementById("preloader");
     const digits = document.getElementById("preloader-percent-digits");
-    if (!preloader || !digits || document.getElementById("xlab-preloader-reveal")) {
+    const container = document.querySelector("[data-lusion-home-content]") || document.body;
+    if (!preloader || !digits || container.querySelector("[data-xlab-page-curtain]")) {
       return;
     }
 
-    const holdDuration = 2000;
-    const fadeDuration = 220;
-    let reveal = null;
-    let revealAt = 0;
-    let exitTimer = 0;
-    const isPreloaderVisible = () => {
+    // Curtain markup mirrors the portal's .page-curtain.
+    const curtain = document.createElement("div");
+    curtain.className = "page-curtain";
+    curtain.setAttribute("data-xlab-page-curtain", "");
+    curtain.setAttribute("aria-hidden", "true");
+    const canvas = document.createElement("canvas");
+    canvas.className = "page-curtain-canvas";
+    const count = document.createElement("span");
+    count.className = "page-curtain-count";
+    const digitEls = [];
+    for (let i = 0; i < 3; i += 1) {
+      const digit = document.createElement("span");
+      digit.className = "page-curtain-digit";
+      const lower = document.createElement("span");
+      lower.setAttribute("data-xlab-curtain-num", "");
+      lower.textContent = "0";
+      const upper = document.createElement("span");
+      upper.setAttribute("data-xlab-curtain-num", "");
+      upper.textContent = "0";
+      digit.append(lower, upper);
+      count.appendChild(digit);
+      digitEls.push(digit);
+    }
+    curtain.append(canvas, count);
+    container.appendChild(curtain);
+
+    const MINIMUM_DURATION = 7000;
+    const MAXIMUM_DURATION = 20000;
+    const MARK_TRANSFORM_DURATION = 1000;
+    const BRAND_REVEAL_DURATION = 180;
+    const BRAND_HOLD_DURATION = 2000;
+    const BRAND_HIDE_DURATION = 180;
+    const CONTENT_SHOW_DELAY = BRAND_HOLD_DURATION + BRAND_HIDE_DURATION;
+    const CONTENT_SHOW_DURATION = 1000;
+
+    const startedAt = performance.now();
+    let previousFrameAt = startedAt;
+    let progress = 0;
+    let markStartedAt = 0;
+    let brandHoldStartedAt = 0;
+    let isFinishing = false;
+    let preloaderFinished = false;
+
+    const finish = () => {
+      if (isFinishing) return;
+      isFinishing = true;
+      curtain.classList.add("is-complete");
+      curtain.remove();
+    };
+    const completionFallback = window.setTimeout(finish, MAXIMUM_DURATION);
+
+    // The Lusion engine owns the resource loading; treat its preloader as the progress
+    // source, and mirror the portal's 80%-when-ready blend so the bar matches.
+    const preloaderObserver = new MutationObserver(() => {
       const style = getComputedStyle(preloader);
-      return (
-        style.display !== "none" &&
-        style.visibility !== "hidden" &&
-        Number.parseFloat(style.opacity) > 0
-      );
-    };
-    let preloaderIsHidden = !isPreloaderVisible();
-    let completionObserver;
-    let preloaderObserver;
-
-    const scheduleExit = () => {
-      if (!reveal || !preloaderIsHidden || exitTimer) return;
-      const remaining = Math.max(0, holdDuration - (performance.now() - revealAt));
-      exitTimer = window.setTimeout(() => {
-        if (!reveal) return;
-        reveal.classList.add("is-exiting");
-        window.setTimeout(() => {
-          reveal?.remove();
-          preloaderObserver.disconnect();
-        }, fadeDuration);
-      }, remaining);
-    };
-
-    const showXlab = () => {
-      if (reveal) return;
-      reveal = document.createElement("div");
-      reveal.id = "xlab-preloader-reveal";
-      reveal.setAttribute("aria-hidden", "true");
-
-      const logoCrop = document.createElement("span");
-      logoCrop.id = "xlab-preloader-mark";
-      const logo = document.createElement("img");
-      logo.src = "/web/portal/xlab-logo.webp";
-      logo.alt = "";
-      logo.decoding = "async";
-      logoCrop.appendChild(logo);
-      reveal.appendChild(logoCrop);
-      (document.querySelector("[data-lusion-home-content]") || document.body).appendChild(reveal);
-      revealAt = performance.now();
-      scheduleExit();
-    };
-
-    const syncCompletion = () => {
-      if (getComputedStyle(digits).display !== "none") return;
-      completionObserver.disconnect();
-      showXlab();
-    };
-
-    completionObserver = new MutationObserver(syncCompletion);
-    preloaderObserver = new MutationObserver(() => {
-      if (isPreloaderVisible()) return;
-      preloaderIsHidden = true;
-      preloaderObserver.disconnect();
-      scheduleExit();
+      if (style.display === "none" || getComputedStyle(digits).display === "none") {
+        preloaderFinished = true;
+        preloaderObserver.disconnect();
+      }
     });
-    completionObserver.observe(digits, {
-      attributes: true,
-      attributeFilter: ["style"],
-    });
-    preloaderObserver.observe(preloader, {
-      attributes: true,
-      attributeFilter: ["style", "class"],
-    });
-    preloaderObserver.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-    syncCompletion();
+    preloaderObserver.observe(preloader, { attributes: true, attributeFilter: ["style", "class"] });
+    preloaderObserver.observe(digits, { attributes: true, attributeFilter: ["style"] });
+    preloaderObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+
+    function render(now) {
+      if (isFinishing) return;
+      const elapsed = now - startedAt;
+      const targetProgress = preloaderFinished && elapsed >= MINIMUM_DURATION ? 100 : preloaderFinished ? 80 : 64;
+      const deltaMilliseconds = Math.max(0, now - previousFrameAt);
+      progress = Math.min(targetProgress, progress + deltaMilliseconds / 10);
+      previousFrameAt = now;
+
+      const loadRatio = (progress / 100) * 0.7 + clampUnit(elapsed / 250) * 0.3;
+      const percent = Math.floor(loadRatio * 100);
+      let lineTransformRatio = 0;
+      let brandRevealRatio = 0;
+      let contentShowRatio = 0;
+      if (loadRatio >= 1) {
+        if (!markStartedAt) markStartedAt = now;
+        const markElapsed = now - markStartedAt;
+        lineTransformRatio = easeLusionExpo(markElapsed / MARK_TRANSFORM_DURATION);
+        brandRevealRatio = clampUnit((markElapsed - MARK_TRANSFORM_DURATION) / BRAND_REVEAL_DURATION);
+        if (brandRevealRatio >= 1 && !brandHoldStartedAt) brandHoldStartedAt = now;
+        if (brandHoldStartedAt) {
+          const brandHoldElapsed = now - brandHoldStartedAt;
+          brandRevealRatio = 1 - clampUnit((brandHoldElapsed - BRAND_HOLD_DURATION) / BRAND_HIDE_DURATION);
+          contentShowRatio = clampUnit((brandHoldElapsed - CONTENT_SHOW_DELAY) / CONTENT_SHOW_DURATION);
+        }
+      }
+
+      updateXlabPreloaderDigits(digitEls, percent, deltaMilliseconds / 1000, contentShowRatio);
+      drawXlabPreloaderCanvas(canvas, loadRatio, lineTransformRatio, brandRevealRatio, contentShowRatio);
+
+      if (contentShowRatio >= 1) {
+        window.clearTimeout(completionFallback);
+        finish();
+        return;
+      }
+      window.requestAnimationFrame(render);
+    }
+    window.requestAnimationFrame(render);
   }
 
   document.addEventListener(
