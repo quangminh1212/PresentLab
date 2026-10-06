@@ -22,12 +22,15 @@
     "#header-logo .xlab-logo-crop img{position:absolute;top:-8.9px;left:0;display:block;width:80px;height:auto;max-width:none}" +
     "html:not(.is-black-bg):not(.is-blue-bg) #header-logo .xlab-logo-crop img{filter:none!important}" +
     "html.is-black-bg #header-logo .xlab-logo-crop img,html.is-blue-bg #header-logo .xlab-logo-crop img{filter:brightness(0) invert(1)}" +
-    ".lusion-home-content #xlab-preloader-reveal{position:absolute;inset:0;z-index:201;display:grid;place-items:center;background:#000;opacity:1;transition:opacity .22s ease;pointer-events:auto}" +
-    ".lusion-home-content #xlab-preloader-reveal.is-exiting{opacity:0}" +
-    ".lusion-home-content #xlab-preloader-mark{position:relative;display:block;width:min(280px,72vw);aspect-ratio:20/7;overflow:hidden}" +
-    ".lusion-home-content #xlab-preloader-mark img{position:absolute;top:-31.8%;left:0;display:block;width:100%;height:auto;max-width:none;filter:brightness(0) invert(1);transform:scale(1);transition:transform .22s cubic-bezier(.16,1,.3,1)}" +
-    ".lusion-home-content #xlab-preloader-reveal.is-exiting #xlab-preloader-mark img{transform:scale(.96)}" +
-    "@media(prefers-reduced-motion:reduce){.lusion-home-content #xlab-preloader-reveal,.lusion-home-content #xlab-preloader-mark img{transition:none}}";
+    // Kept unscoped: the reveal is mounted on the standalone Lusion routes (/about,
+    // /projects) where the .lusion-home-content wrapper does not exist, so scoping
+    // these rules left the overlay statically positioned and invisible.
+    "#xlab-preloader-reveal{position:fixed;inset:0;z-index:201;display:grid;place-items:center;background:#000;opacity:1;transition:opacity .22s ease;pointer-events:auto}" +
+    "#xlab-preloader-reveal.is-exiting{opacity:0}" +
+    "#xlab-preloader-mark{position:relative;display:block;width:min(280px,72vw);aspect-ratio:20/7;overflow:hidden}" +
+    "#xlab-preloader-mark img{position:absolute;top:-31.8%;left:0;display:block;width:100%;height:auto;max-width:none;filter:brightness(0) invert(1);transform:scale(1);transition:transform .22s cubic-bezier(.16,1,.3,1)}" +
+    "#xlab-preloader-reveal.is-exiting #xlab-preloader-mark img{transform:scale(.96)}" +
+    "@media(prefers-reduced-motion:reduce){#xlab-preloader-reveal,#xlab-preloader-mark img{transition:none}}";
   document.head.appendChild(style);
 
   // This stylesheet runs inside the Lusion iframe, so its font rules target this document.
@@ -1644,6 +1647,9 @@ const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
       logo.decoding = "async";
       logoCrop.appendChild(logo);
       reveal.appendChild(logoCrop);
+      // The home route mounts inside the Portal shell; the standalone Lusion routes
+      // (/about, /projects) have no such wrapper, so fall back to <body>. The overlay
+      // is position:fixed, so either mount point covers the viewport.
       (document.querySelector("[data-lusion-home-content]") || document.body).appendChild(reveal);
       revealAt = performance.now();
       scheduleExit();
