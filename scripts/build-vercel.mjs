@@ -26,6 +26,7 @@ const assets = [
   ["web/lusion/about", "about"],
   ["web/lusion/projects", "projects"],
   ["web/lusion/home-scroll.css", "home-scroll.css"],
+  ["web/lusion/xlab-chrome.css", "xlab-chrome.css"],
 ];
 
 for (const [source, destination] of assets) {
