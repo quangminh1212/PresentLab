@@ -6,6 +6,19 @@
 
   const style = document.createElement("style");
   style.textContent =
+    // XLab palette: --xlab-ink is lifted off pure black so the page reads as the
+    // logo's near-black rather than a flat #000; --xlab-teal is the accent block
+    // inside the X of /web/portal/xlab-logo.png.
+    ":root{--xlab-ink:#1A2028;--xlab-teal:#237478}" +
+    // Flat page background for the DOM/CSS layer.
+    "html,body{background-color:var(--xlab-ink)!important}" +
+    // The Lusion engine paints the fixed #canvas from --color-black / --color-off-white,
+    // which it reads once at startup into properties.blackColorHex / offWhiteColorHex
+    // (verified via the WebGL clearColor calls those values produce). The About page
+    // sets properties.bgColor to blackColorHex for its dark sections, so --color-black
+    // is the variable that actually brands the rendered page; point it at the same ink
+    // so canvas and DOM agree instead of the canvas staying pure black.
+    ":root{--color-black:var(--xlab-ink)}" +
     ".lusion-home-content{--header-color:#237478}" +
     "#header-menu-talk{display:none!important}" +
     "#header-right-talk-btn.--is-contact-active:hover{background:var(--header-color)!important}" +
@@ -22,7 +35,7 @@
     "#header-logo .xlab-logo-crop img{position:absolute;top:-8.9px;left:0;display:block;width:80px;height:auto;max-width:none}" +
     "html:not(.is-black-bg):not(.is-blue-bg) #header-logo .xlab-logo-crop img{filter:none!important}" +
     "html.is-black-bg #header-logo .xlab-logo-crop img,html.is-blue-bg #header-logo .xlab-logo-crop img{filter:brightness(0) invert(1)}" +
-    "#xlab-preloader-reveal{position:fixed;inset:0;z-index:202;display:grid;place-items:center;background:#000;opacity:1;transition:opacity .22s ease;pointer-events:auto}" +
+    "#xlab-preloader-reveal{position:fixed;inset:0;z-index:202;display:grid;place-items:center;background:var(--xlab-ink,#0F1217);opacity:1;transition:opacity .22s ease;pointer-events:auto}" +
     "#xlab-preloader-reveal.is-exiting{opacity:0}" +
     "#xlab-preloader-mark{position:relative;display:block;width:min(280px,72vw);aspect-ratio:20/7;overflow:hidden}" +
     "#xlab-preloader-mark img{position:absolute;top:-31.8%;left:0;display:block;width:100%;height:auto;max-width:none;filter:brightness(0) invert(1);transform:scale(1);transition:transform .22s cubic-bezier(.16,1,.3,1)}" +
@@ -31,9 +44,9 @@
     // Portal loading curtain, so the standalone routes show the same opening as the
     // home page: the 000->100 counter, the bar that draws the mark, and the large XLAB
     // wordmark painted on canvas.
-    ".page-curtain{position:fixed;inset:0;z-index:201;overflow:hidden;background:#000;pointer-events:auto}" +
+    ".page-curtain{position:fixed;inset:0;z-index:201;overflow:hidden;background:var(--xlab-ink,#0F1217);pointer-events:auto}" +
     ".page-curtain-canvas{position:absolute;top:0;left:0;display:block;max-width:none}" +
-    ".page-curtain-count{position:absolute;z-index:1;bottom:0;left:0;height:.75em;overflow:hidden;color:#fff;font-family:Aeonik,\"Be Vietnam Pro\",sans-serif;font-size:clamp(7em,8vw,20em);font-weight:400;line-height:.75em}" +
+    '.page-curtain-count{position:absolute;z-index:1;bottom:0;left:0;height:.75em;overflow:hidden;color:#fff;font-family:Aeonik,"Be Vietnam Pro",sans-serif;font-size:clamp(7em,8vw,20em);font-weight:400;line-height:.75em}' +
     ".page-curtain-digit{position:relative;float:left;width:1ch;text-align:center;transform:translateY(-.05em)}" +
     ".page-curtain-digit>span{display:block;height:.75em;line-height:.75em}" +
     "@media(max-width:812px){.page-curtain-count{font-size:13vw}}" +
@@ -71,8 +84,8 @@
     'html[lang="vi"] .project-item-line-2{height:calc(1em + 5px)!important}' +
     'html[lang="vi"] .project-item-line-2-inner{bottom:max(0px,calc(.2em - 5px))!important}' +
     'html[lang="vi"] .project-item-line-2-icon{top:calc(.1em + 5px)!important}' +
-    '.project-item-image img[data-mobile-project-fallback]{display:none}' +
-    '@media(max-width:812px){.project-item-image img[data-mobile-project-fallback]{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit;pointer-events:none}}' +
+    ".project-item-image img[data-mobile-project-fallback]{display:none}" +
+    "@media(max-width:812px){.project-item-image img[data-mobile-project-fallback]{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit;pointer-events:none}}" +
     'html[lang="vi"] .header-menu-link{padding:.9em 1.625em!important;line-height:1.45!important}' +
     'html[lang="vi"] .header-menu-link-text,html[lang="vi"] .header-menu-link-text-clone{font-size:1.25em!important;line-height:1.6!important}' +
     'html[lang="vi"] #lusion-language-trigger,html[lang="vi"] #lusion-language-menu .lusion-language-choice,html[lang="vi"] #lusion-mobile-language-controls .lusion-mobile-language-choice{font-family:"Be Vietnam Pro",sans-serif!important}' +
@@ -80,11 +93,11 @@
     '@media (min-width:813px){html[lang="vi"] #home-hero-title{margin-left:max(0px,calc(96px - 7.6vw))!important}}' +
     /* Keep Vietnamese hero copy readable on mobile widths. */
     '@media (max-width:812px){html[lang="vi"] #home-hero-title{grid-column:1/span 6!important;width:100%!important;font-size:clamp(18px,5vw,22px)!important;line-height:1.18!important;text-wrap:balance!important;margin-top:63px!important;background:rgba(240,241,250,.8)!important}}' +
-    '@media (min-width:521px) and (max-width:879px){html[lang] #home-hero-title{position:absolute!important;grid-column:1/-1!important;top:var(--base-padding-y)!important;left:6rem!important;right:9rem!important;width:auto!important;max-width:100%!important;margin:0!important;padding:.35em .55em!important;border-radius:8px!important;background:#f0f1fa!important;color:#101116!important;font-size:clamp(18px,2.6vw,24px)!important;line-height:1.18!important;z-index:54!important}}' +
+    "@media (min-width:521px) and (max-width:879px){html[lang] #home-hero-title{position:absolute!important;grid-column:1/-1!important;top:var(--base-padding-y)!important;left:6rem!important;right:9rem!important;width:auto!important;max-width:100%!important;margin:0!important;padding:.35em .55em!important;border-radius:8px!important;background:#f0f1fa!important;color:#101116!important;font-size:clamp(18px,2.6vw,24px)!important;line-height:1.18!important;z-index:54!important}}" +
     // Preserve the source hero's artwork frame so its WebGL camera does not crop the scene on tablets.
-    '@media (min-width:521px) and (max-width:879px){html[lang] #home-hero{grid-template-rows:calc(var(--header-size)*3 + 1rem) minmax(0,1fr)!important}html[lang] #home-hero-visual-container{grid-row:2!important;align-self:end!important;height:min(calc(92.915vw - 46.458px),calc(100svh - 179px))!important}}' +
-    '@media (min-width:813px) and (max-width:879px){html[lang] #home-hero-title{top:calc(var(--base-padding-y) + 8px)!important}}' +
-    '@media (min-width:521px) and (max-width:879px){html[lang] #home-hero-title .line{overflow:visible!important}html[lang] #home-hero-title .word{transform:none!important}}' +
+    "@media (min-width:521px) and (max-width:879px){html[lang] #home-hero{grid-template-rows:calc(var(--header-size)*3 + 1rem) minmax(0,1fr)!important}html[lang] #home-hero-visual-container{grid-row:2!important;align-self:end!important;height:min(calc(92.915vw - 46.458px),calc(100svh - 179px))!important}}" +
+    "@media (min-width:813px) and (max-width:879px){html[lang] #home-hero-title{top:calc(var(--base-padding-y) + 8px)!important}}" +
+    "@media (min-width:521px) and (max-width:879px){html[lang] #home-hero-title .line{overflow:visible!important}html[lang] #home-hero-title .word{transform:none!important}}" +
     '@media (min-width:813px) and (max-width:919px){html[lang="vi"] .lusion-home-content #home-hero-title{font-size:clamp(18px,2.6vw,24px)!important;line-height:1.18!important}}';
   document.head.appendChild(vietnameseFontStyle);
 
@@ -218,7 +231,7 @@
         "Quy tr\u00ecnh c\u1ee7a ch\u00fang t\u00f4i k\u1ebft h\u1ee3p \u0111\u1ecbnh h\u01b0\u1edbng s\u00e1ng t\u1ea1o, k\u1ef9 thu\u1eadt 3D v\u00e0 ph\u00e1t tri\u1ec3n t\u01b0\u01a1ng t\u00e1c \u0111\u1ec3 x\u00e2y d\u1ef1ng c\u00e1c h\u00e0nh tr\u00ecnh k\u1ef9 thu\u1eadt s\u1ed1 ph\u00f9 h\u1ee3p mang l\u1ea1i c\u1ea3m gi\u00e1c nguy\u00ean b\u1ea3n, b\u00f3ng b\u1ea9y v\u00e0 \u0111\u01b0\u1ee3c x\u00e2y d\u1ef1ng \u0111\u1ec3 t\u1ea1o ra t\u00e1c \u0111\u1ed9ng.",
       "Step into a new world": "B\u01b0\u1edbc v\u00e0o m\u1ed9t th\u1ebf gi\u1edbi m\u1edbi",
       "Soda Experience": "Soda Experience",
-      STUDIO: "PH\u00d2NG THU",
+      STUDIO: "STUDIO",
       "imagination run wild": "tr\u00ed t\u01b0\u1edfng t\u01b0\u1ee3ng bay b\u1ed5ng",
       "and let your": "v\u00e0 \u0111\u1ec3 b\u1ea1n",
       of: "c\u1ee7a",
@@ -226,6 +239,11 @@
       "WE ARE": "CH\u00daNG T\u00d4I L\u00c0",
       "SCROLL TO EXPLORE": "CU\u1ed8N \u0110\u1ec2 KH\u00c1M PH\u00c1",
       "DIGITAL EXPERIENCES": "TR\u1ea2I NGHI\u1ec6M K\u1ef8 THU\u1eacT S\u1ed0",
+      // XLab #about-who hero. Keyed on the exact source strings so they do not
+      // collide with the shared PRODUCTION / STUDIO keys used further down.
+      TECHNOLOGY: "C\u00d4NG NGH\u1ec6",
+      "CRAFTING DISTINCT": "T\u1ea0O RA D\u1ea4U \u1ea4N",
+      "DIGITAL WORK": "S\u1ea2N PH\u1ea8M S\u1ed0",
       "experiences.": "nh\u1eefng tr\u1ea3i nghi\u1ec7m.",
       "Creative Director": "Gi\u00e1m \u0111\u1ed1c s\u00e1ng t\u1ea1o",
       "motion, 3D, and technology": "chuy\u1ec3n \u0111\u1ed9ng, 3D v\u00e0 c\u00f4ng ngh\u1ec7",
@@ -256,11 +274,8 @@
       "Agency Site of the Year": "Trang web \u0111\u1ea1i l\u00fd c\u1ee7a n\u0103m",
       "Developer Site of the Year":
         "Trang web d\u00e0nh cho nh\u00e0 ph\u00e1t tri\u1ec3n c\u1ee7a n\u0103m",
-      Articles: "b\u00e0i vi\u1ebft",
       "Trusted by global brands, cultural institutions, and forward thinking teams.":
         "\u0110\u01b0\u1ee3c c\u00e1c th\u01b0\u01a1ng hi\u1ec7u to\u00e0n c\u1ea7u, c\u00e1c t\u1ed5 ch\u1ee9c v\u0103n h\u00f3a v\u00e0 c\u00e1c nh\u00f3m t\u01b0 duy ti\u1ebfn b\u1ed9 tin c\u1eady.",
-      "Porsche Newsroom - Driven By Dream":
-        "Ph\u00f2ng tin t\u1ee9c Porsche - D\u1eabn d\u1eaft b\u1edfi \u01b0\u1edbc m\u01a1",
       "The Drum Awards for Design":
         "Gi\u1ea3i th\u01b0\u1edfng Tr\u1ed1ng v\u1ec1 Thi\u1ebft k\u1ebf",
       CommArts: "CommArts",
@@ -271,9 +286,6 @@
       "Drum Awards": "Gi\u1ea3i tr\u1ed1ng",
       "Webby Nominee": "Ng\u01b0\u1eddi \u0111\u01b0\u1ee3c \u0111\u1ec1 c\u1eed Webby",
       Talks: "Cu\u1ed9c n\u00f3i chuy\u1ec7n",
-      "Opera North - The Turn of the Screw": "Opera North - The Turn of the Screw",
-      "Wallpaper - Driven by Dreams":
-        "H\u00ecnh n\u1ec1n - \u0110\u01b0\u1ee3c th\u00fac \u0111\u1ea9y b\u1edfi nh\u1eefng gi\u1ea5c m\u01a1",
       "Digital Design Days": "Digital Design Days",
       EXPERTISE: "KINH NGHI\u1ec6M",
       "KIKK Festival": "KIKK Festival",
@@ -630,6 +642,11 @@
       "experiences.": "\u7ecf\u9a8c\u3002",
       "CRAFTING UNIQUE": "\u6253\u9020\u72ec\u7279",
       "DIGITAL EXPERIENCES": "\u6570\u5b57\u4f53\u9a8c",
+      // XLab #about-who hero. Keyed on the exact source strings so they do not
+      // collide with the shared PRODUCTION / STUDIO keys used further down.
+      TECHNOLOGY: "\u6280\u672f",
+      "CRAFTING DISTINCT": "\u6253\u9020\u5353\u8d8a",
+      "DIGITAL WORK": "\u6570\u5b57\u4f5c\u54c1",
       "Creative Director": "\u521b\u610f\u603b\u76d1",
       "turn ambitious ideas into": "\u5c06\u96c4\u5fc3\u52c3\u52c3\u7684\u60f3\u6cd5\u53d8\u6210",
       "motion, 3D, and technology": "\u8fd0\u52a8\u30013D \u548c\u6280\u672f",
@@ -659,13 +676,8 @@
       "Webby Winner": "\u5a01\u6bd4\u83b7\u80dc\u8005",
       "Webby Nominee": "\u5a01\u6bd4\u63d0\u540d\u8005",
       "Developer Site of the Year": "\u5e74\u5ea6\u5f00\u53d1\u8005\u7f51\u7ad9",
-      Articles: "\u6587\u7ae0",
       Talks: "\u4f1a\u8c08",
       "The Drum Awards for Design": "\u9f13\u8bbe\u8ba1\u5956",
-      "Wallpaper - Driven by Dreams": "\u58c1\u7eb8 - \u68a6\u60f3\u9a71\u52a8",
-      "Opera North - The Turn of the Screw": "Opera North - The Turn of the Screw",
-      "Porsche Newsroom - Driven By Dream":
-        "\u4fdd\u65f6\u6377\u65b0\u95fb\u4e2d\u5fc3 - \u68a6\u60f3\u9a71\u52a8",
       "Drum Awards": "\u9f13\u5956",
       "Lovie Winner": "\u6d1b\u7ef4\u83b7\u80dc\u8005",
       "Best-in-show Interactive": "\u6700\u4f73\u4e92\u52a8\u5c55\u793a",
@@ -977,25 +989,61 @@
   style.textContent +=
     '#lusion-mobile-language-controls{display:none;margin-top:.35em;padding:.8em .35em .25em;border-top:1px solid rgba(0,0,0,.14);color:#080808;text-transform:none}#lusion-mobile-language-controls .lusion-mobile-language-label{display:block;margin-bottom:.65em;font-size:.72em;font-weight:500;letter-spacing:.08em;text-transform:uppercase;opacity:.55}#lusion-mobile-language-controls .lusion-mobile-language-options{display:flex;gap:.4em}#lusion-mobile-language-controls .lusion-mobile-language-choice{flex:1;min-height:2.7em;padding:.5em .75em;border:1px solid #e4e6ef;border-radius:999px;background:#fff;color:#080808;font-family:inherit;font-size:.78em;font-weight:500;line-height:1;text-align:center;text-transform:uppercase;cursor:pointer}#lusion-mobile-language-controls .lusion-mobile-language-choice[aria-pressed="true"]{background:#080808;color:#fff;border-color:#080808}@media(max-width:812px){#lusion-language-switcher{display:block!important;right:calc(var(--base-padding-x) + 8.2em)}#lusion-language-menu{position:fixed;top:calc(var(--base-padding-y)*2 + 3*var(--header-size) + var(--lusion-menu-motion-y,0px));left:auto;right:var(--base-padding-x);width:12em;max-width:calc(100vw - var(--base-padding-x)*2);max-height:calc(100vh - var(--base-padding-y)*3 - var(--header-size));overflow-y:auto}#lusion-mobile-language-controls{display:none!important}}';
   style.textContent +=
-    '@media(max-width:812px){#lusion-language-switcher{translate:14px 0!important}}';
+    "#lusion-mobile-email-card{display:flex;align-items:center;gap:.7em;box-sizing:border-box;width:100%;min-height:44px;margin-top:.35em;padding:.7em 1.15em;border-radius:6.25em;background:#080808;color:#fff;font-family:inherit;font-size:.95em;font-weight:500;line-height:1;text-transform:none;text-decoration:none;transition:background-color .3s,color .3s}" +
+    "#lusion-mobile-email-card[hidden]{display:none!important}" +
+    "#lusion-mobile-email-card:hover,#lusion-mobile-email-card:focus-visible{background:#fff;color:#080808}" +
+    "#lusion-mobile-email-card .lusion-mobile-email-icon{flex:0 0 auto;width:1.1em;height:1.1em;stroke:currentColor}" +
+    "#lusion-mobile-email-card .lusion-mobile-email-address{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left}" +
+    "#lusion-mobile-email-card .lusion-mobile-email-arrow{flex:0 0 auto;opacity:.55}" +
+    'html[lang="vi"] #lusion-mobile-email-card{font-family:"Be Vietnam Pro",sans-serif!important}';
   style.textContent +=
-    '@media(max-width:812px){#lusion-language-menu{position:absolute;top:calc(100% + .55em + var(--lusion-menu-motion-y,0px));left:auto;right:0;max-height:calc(100vh - var(--base-padding-y)*2 - var(--header-size));overflow-y:auto}}';
+    "@media(max-width:812px){#lusion-language-switcher{translate:14px 0!important}}";
   style.textContent +=
-    '@media(min-width:813px){#header-right-talk-btn{left:-5.8em!important}}';
+    "@media(max-width:812px){#lusion-language-menu{position:absolute;top:calc(100% + .55em + var(--lusion-menu-motion-y,0px));left:auto;right:0;max-height:calc(100vh - var(--base-padding-y)*2 - var(--header-size));overflow-y:auto}}";
+  style.textContent += "@media(min-width:813px){#header-right-talk-btn{left:-5.8em!important}}";
+  // The About hero headline is not wanted; hide it without removing the nodes, because
+  // the engine indexes "#about-who-title-left-2 svg" positionally (index 1 drives the
+  // WebGL word morph), so deleting markup would shift that index and break the morph.
   style.textContent +=
-    'html[lang="vi"] #projects-main-title{padding-bottom:.18em!important}';
-const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
+    "#about-who-title-left-1," +
+    "#about-who-title-left-2," +
+    "#about-who-title-left-3," +
+    "#about-who-title-left-4," +
+    "#about-who-title-right{visibility:hidden!important;pointer-events:none!important}";
+  // The Team subsection is the third page of the About horizontal track. Hide it and
+  // drop the trailing pages so the scroll ends on the details page instead of panning
+  // onto an empty panel. Hiding keeps the node so the engine's lookups stay valid.
+  style.textContent += "#about-who-subsection-team{display:none!important}";
+  style.textContent +=
+    "#about-who-subsection-container{width:225vw}" +
+    "#about-who-subsection-details{margin-right:0}";
+  // The client logo carousel is a normal vertical section, and the engine skips all of
+  // its animation work when the section is off screen, so collapsing it is enough.
+  // Point the logos at a 1x1 placeholder so the hidden strip stops costing 15 requests.
+  style.textContent +=
+    "#about-clients{display:none!important}" +
+    '#about-clients-carousel img[src*="/assets/images/logo/"]{content:url("data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==")}';
+  style.textContent += 'html[lang="vi"] #projects-main-title{padding-bottom:.18em!important}';
+  const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
+  // The About intro is split into <span> runs with no whitespace between them, so the
+  // visible word gaps come from the CSS margin on each run, not from the text itself.
+  // Keep every translated run free of glue characters: a \u00a0 here would add a second,
+  // non-collapsing space and stop the line from wrapping on narrow viewports.
+  // Every run must also be listed, otherwise it falls back to the page-wide dictionary
+  // and the paragraph ends up mixing two different Vietnamese phrasings.
   const aboutWhoVietnameseCopy = {
     "about-who-desc-top": {
-      "A worldwide team": "Đội ngũ sáng tạo toàn cầu",
-      of: "\u00a0gồm",
-      "specialists in design,": "các chuyên gia về thiết kế,",
+      "A worldwide team": "\u0110\u1ed9i ng\u0169 s\u00e1ng t\u1ea1o to\u00e0n c\u1ea7u",
+      of: "g\u1ed3m",
+      "specialists in design,": "c\u00e1c chuy\u00ean gia v\u1ec1 thi\u1ebft k\u1ebf,",
+      "motion, 3D, and technology": "chuy\u1ec3n \u0111\u1ed9ng, 3D v\u00e0 c\u00f4ng ngh\u1ec7",
     },
     "about-who-desc-bottom": {
-      "working together to": "cùng nhau",
-      "turn ambitious ideas into": "biến những ý tưởng táo bạo thành",
-      "immersive digital": "những trải nghiệm số",
-      "experiences.": "\u00a0sống động.",
+      "working together to": "c\u00f9ng nhau",
+      "turn ambitious ideas into":
+        "bi\u1ebfn nh\u1eefng \u00fd t\u01b0\u1edfng t\u00e1o b\u1ea1o th\u00e0nh",
+      "immersive digital": "nh\u1eefng tr\u1ea3i nghi\u1ec7m s\u1ed1",
+      "experiences.": "s\u1ed1ng \u0111\u1ed9ng.",
     },
   };
   const translatedTextNodes = new WeakMap();
@@ -1011,8 +1059,7 @@ const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
     const end = Math.max(leading.length, raw.length - trailing.length);
     const key = normalizeLanguageText(raw.slice(leading.length, end));
     const aboutWhoContainer =
-      activeLanguage === "vi" &&
-      parent.closest("#about-who-desc-top, #about-who-desc-bottom");
+      activeLanguage === "vi" && parent.closest("#about-who-desc-top, #about-who-desc-bottom");
     const contextualCopy = aboutWhoContainer
       ? aboutWhoVietnameseCopy[aboutWhoContainer.id]
       : undefined;
@@ -1137,7 +1184,8 @@ const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
       }
     }
   });
-  const translationRoot = document.querySelector("[data-lusion-home-content]") || document.documentElement;
+  const translationRoot =
+    document.querySelector("[data-lusion-home-content]") || document.documentElement;
   languageObserver.observe(translationRoot, {
     subtree: true,
     childList: true,
@@ -1159,15 +1207,12 @@ const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
     } catch {
       // Keep the language switcher usable when browser storage is unavailable.
     }
-    window.dispatchEvent(
-      new CustomEvent("lusion:language-selected", { detail: { locale: code } }),
-    );
+    window.dispatchEvent(new CustomEvent("lusion:language-selected", { detail: { locale: code } }));
     window.location.reload();
   };
   window.addEventListener("presentlab:set-lusion-language", (event) => {
     const nextLanguage = event.detail?.locale;
-    if (!languages.includes(nextLanguage) || nextLanguage === activeLanguage)
-      return;
+    if (!languages.includes(nextLanguage) || nextLanguage === activeLanguage) return;
     try {
       window.localStorage.setItem(languageKey, nextLanguage);
     } catch {
@@ -1176,8 +1221,7 @@ const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
     window.location.reload();
   });
   function mountLanguageSwitcher() {
-    if (document.documentElement.classList.contains("water-page-embed-root"))
-      return;
+    if (document.documentElement.classList.contains("water-page-embed-root")) return;
     const header = document.getElementById("header");
     if (!header) return;
     if (!document.getElementById("lusion-language-switcher")) {
@@ -1318,10 +1362,7 @@ const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
           };
           const syncPreloaderState = () => {
             const isLoading = isPreloaderVisible();
-            document.documentElement.classList.toggle(
-              "is-lusion-preloading",
-              isLoading,
-            );
+            document.documentElement.classList.toggle("is-lusion-preloading", isLoading);
             syncMenuMotion();
           };
           const preloaderObserver = new MutationObserver(() => {
@@ -1426,6 +1467,7 @@ const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
       });
     }
     mountMobileLanguageSwitcher();
+    mountMobileMenuEmail();
   }
   function mountMobileLanguageSwitcher() {
     const menuLinks = document.getElementById("header-menu-links");
@@ -1459,15 +1501,34 @@ const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
     group.append(label, choices);
     menuLinks.appendChild(group);
   }
+  // Lusion shows its contact address in the menu footer; XLab shows the mail address
+  // instead so a tap on mobile opens a ready-to-send mail.
+  function mountMobileMenuEmail() {
+    const menuLinks = document.getElementById("header-menu-links");
+    if (!menuLinks || document.getElementById("lusion-mobile-email-card")) return;
+    const card = document.createElement("a");
+    card.id = "lusion-mobile-email-card";
+    card.dataset.lusionNoTranslate = "true";
+    card.href = "mailto:xlab.rnd@gmail.com";
+    card.setAttribute(
+      "aria-label",
+      activeLanguage === "vi"
+        ? "Gửi email cho XLab: xlab.rnd@gmail.com"
+        : "Email XLab at xlab.rnd@gmail.com",
+    );
+    card.innerHTML =
+      '<svg class="lusion-mobile-email-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.6" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg>' +
+      '<span class="lusion-mobile-email-address">xlab.rnd@gmail.com</span>' +
+      '<span class="lusion-mobile-email-arrow" aria-hidden="true">↗</span>';
+    menuLinks.appendChild(card);
+  }
   function mountXlabContactMethods() {
     const footer = document.getElementById("footer-contact-enquires");
     if (!footer || footer.querySelector("#xlab-footer-contact-methods")) return;
 
     const emailHref = "mailto:xlab.rnd@gmail.com";
     document
-      .querySelectorAll(
-        "#header-right-talk-btn > a,#footer-enquires-link,#footer-business-link",
-      )
+      .querySelectorAll("#header-right-talk-btn > a,#footer-enquires-link,#footer-business-link")
       .forEach((link) => link.setAttribute("href", emailHref));
 
     const contactCopy =
@@ -1489,8 +1550,7 @@ const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
         : {
             eyebrow: "GET IN TOUCH WITH XLAB",
             heading: "Let's turn ideas into experiences.",
-            description:
-              "Tell us about your project. The XLab team is ready to listen.",
+            description: "Tell us about your project. The XLab team is ready to listen.",
             navLabel: "XLab contact channels",
             actions: ["Message us", "Send email", "Follow XLab", "View GitHub"],
             accessibleLabels: [
@@ -1557,8 +1617,7 @@ const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
 
     const iconMarkup = {
       zalo: '<path d="M20 11.5a8.5 8.5 0 0 1-12.6 7.4L4 20l1.1-3.2A8.5 8.5 0 1 1 20 11.5Z"/><path d="M9 9h5l-5 5h5"/>',
-      email:
-        '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/>',
+      email: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/>',
       facebook:
         '<path d="M13.5 21v-8h2.7l.4-3h-3.1V8.1c0-.9.3-1.5 1.6-1.5h1.7V3.9c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3V10H7.4v3h2.7v8h3.4Z"/>',
       github:
@@ -1606,7 +1665,15 @@ const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
   // Ported from the portal loading curtain (web/portal/app.js + xlab-wordmark.js) so the
   // standalone Lusion routes show the same opening: a 000->100 counter, a progress bar
   // that draws the mark, and the large XLAB wordmark drawn on canvas.
-  const XLAB_PRELOADER_LOCKUP = { xWidth: 3.6, aWidth: 3, bWidth: 3.1, glyphHeight: 3.8, stroke: 1, textGap: 0.5, letterGap: 0.35 };
+  const XLAB_PRELOADER_LOCKUP = {
+    xWidth: 3.6,
+    aWidth: 3,
+    bWidth: 3.1,
+    glyphHeight: 3.8,
+    stroke: 1,
+    textGap: 0.5,
+    letterGap: 0.35,
+  };
 
   function clipGlyphBounds(context, left, top, width, height) {
     context.beginPath();
@@ -1662,7 +1729,12 @@ const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
     context.stroke();
     context.fillStyle = "#fff";
     const crossbarWidth = aWidth * 0.58;
-    context.fillRect(left + (aWidth - crossbarWidth) * 0.5, top + glyphHeight * 0.58 - stroke * 0.5, crossbarWidth, stroke);
+    context.fillRect(
+      left + (aWidth - crossbarWidth) * 0.5,
+      top + glyphHeight * 0.58 - stroke * 0.5,
+      crossbarWidth,
+      stroke,
+    );
     context.restore();
   }
 
@@ -1717,7 +1789,13 @@ const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
     return clamped === 0 ? 0 : 2 ** (10 * (clamped - 1));
   };
 
-  function drawXlabPreloaderCanvas(canvas, progress, lineTransformRatio, brandRevealRatio, contentShowRatio) {
+  function drawXlabPreloaderCanvas(
+    canvas,
+    progress,
+    lineTransformRatio,
+    brandRevealRatio,
+    contentShowRatio,
+  ) {
     const width = window.innerWidth + 2;
     const height = window.innerHeight + 2;
     const pixelRatio = Math.max(1, window.devicePixelRatio || 1);
@@ -1815,7 +1893,9 @@ const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
       const lowerDigit = Math.floor(digitValue);
       const upperDigit = Math.ceil(digitValue) % 10;
       const digitProgress = digitValue - lowerDigit;
-      const startOffset = easeLusionExpo(easedStartTime * 1.2 - (0.2 * index) / (digits.length - 1));
+      const startOffset = easeLusionExpo(
+        easedStartTime * 1.2 - (0.2 * index) / (digits.length - 1),
+      );
       const numbers = digit.querySelectorAll("[data-xlab-curtain-num]");
       if (numbers[0]) numbers[0].textContent = String(lowerDigit);
       if (numbers[1]) numbers[1].textContent = String(upperDigit);
@@ -1893,12 +1973,16 @@ const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
     });
     preloaderObserver.observe(preloader, { attributes: true, attributeFilter: ["style", "class"] });
     preloaderObserver.observe(digits, { attributes: true, attributeFilter: ["style"] });
-    preloaderObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    preloaderObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
 
     function render(now) {
       if (isFinishing) return;
       const elapsed = now - startedAt;
-      const targetProgress = preloaderFinished && elapsed >= MINIMUM_DURATION ? 100 : preloaderFinished ? 80 : 64;
+      const targetProgress =
+        preloaderFinished && elapsed >= MINIMUM_DURATION ? 100 : preloaderFinished ? 80 : 64;
       const deltaMilliseconds = Math.max(0, now - previousFrameAt);
       progress = Math.min(targetProgress, progress + deltaMilliseconds / 10);
       previousFrameAt = now;
@@ -1912,17 +1996,28 @@ const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
         if (!markStartedAt) markStartedAt = now;
         const markElapsed = now - markStartedAt;
         lineTransformRatio = easeLusionExpo(markElapsed / MARK_TRANSFORM_DURATION);
-        brandRevealRatio = clampUnit((markElapsed - MARK_TRANSFORM_DURATION) / BRAND_REVEAL_DURATION);
+        brandRevealRatio = clampUnit(
+          (markElapsed - MARK_TRANSFORM_DURATION) / BRAND_REVEAL_DURATION,
+        );
         if (brandRevealRatio >= 1 && !brandHoldStartedAt) brandHoldStartedAt = now;
         if (brandHoldStartedAt) {
           const brandHoldElapsed = now - brandHoldStartedAt;
-          brandRevealRatio = 1 - clampUnit((brandHoldElapsed - BRAND_HOLD_DURATION) / BRAND_HIDE_DURATION);
-          contentShowRatio = clampUnit((brandHoldElapsed - CONTENT_SHOW_DELAY) / CONTENT_SHOW_DURATION);
+          brandRevealRatio =
+            1 - clampUnit((brandHoldElapsed - BRAND_HOLD_DURATION) / BRAND_HIDE_DURATION);
+          contentShowRatio = clampUnit(
+            (brandHoldElapsed - CONTENT_SHOW_DELAY) / CONTENT_SHOW_DURATION,
+          );
         }
       }
 
       updateXlabPreloaderDigits(digitEls, percent, deltaMilliseconds / 1000, contentShowRatio);
-      drawXlabPreloaderCanvas(canvas, loadRatio, lineTransformRatio, brandRevealRatio, contentShowRatio);
+      drawXlabPreloaderCanvas(
+        canvas,
+        loadRatio,
+        lineTransformRatio,
+        brandRevealRatio,
+        contentShowRatio,
+      );
 
       if (contentShowRatio >= 1) {
         window.clearTimeout(completionFallback);
