@@ -358,9 +358,41 @@ const responsiveHeroTypeRuntime = `
   document.head.appendChild(style);
 })();
 `;
+// The About scroll cue is only readable on the intro screen: hide it as soon as
+// the viewport moves past the wordmark, and whenever the intro is not shown.
+const aboutScrollCueVisibilityRuntime = `
+(() => {
+  const attach = () => {
+    const cue = document.getElementById("about-who-title-main-scroll");
+    const intro = document.getElementById("about-who-subsection-we-are");
+    const homeGoal = document.getElementById("home-goal");
+    if (!cue || !intro || !homeGoal) return false;
+
+    const syncCue = () => {
+      const rect = intro.getBoundingClientRect();
+      window.__XLAB_ABOUT_SCROLL_CUE_VISIBLE__ =
+        rect.bottom > 0 && rect.top < window.innerHeight;
+    };
+
+    const observer = new MutationObserver(syncCue);
+    observer.observe(intro, { attributes: true, attributeFilter: ["style"] });
+    window.addEventListener("resize", syncCue, { passive: true });
+    window.addEventListener("scroll", syncCue, { passive: true });
+    syncCue();
+    return true;
+  };
+
+  if (!attach()) {
+    document.addEventListener("DOMContentLoaded", attach, { once: true });
+  }
+})();
+`;
 await writeFile(
   siteOverridesPath,
-  localizedSiteOverrides + astronautHeaderStateRuntime + responsiveHeroTypeRuntime,
+  localizedSiteOverrides +
+    astronautHeaderStateRuntime +
+    responsiveHeroTypeRuntime +
+    aboutScrollCueVisibilityRuntime,
 );
 
 const lusionBundlePath = join(output, "_astro", "hoisted.CUO_IjfL.js");
@@ -488,6 +520,187 @@ if (lusionBundle.split(scrollIndicatorInitSource).length - 1 !== 1) {
   throw new Error("The Lusion scroll indicator init anchor changed.");
 }
 lusionBundle = lusionBundle.replace(scrollIndicatorInitSource, scrollIndicatorInitReplacement);
+// The About hero word is WebGL geometry loaded from about/logo_text.buf, which still
+// spells the upstream studio name. The engine already owns a morph from that geometry
+// into the XLab svg anchor (#about-who-title-left-2), but it only runs while scrolling,
+// so the very first view shows the old word. Start the morph already complete.
+const aboutHeroWordMorphSource =
+  "let c=aboutHero.introRatio<.05;this.logoHideRatio=math.saturate(this.logoHideRatio+e*(c?-1:1))";
+const aboutHeroWordMorphReplacement = "let c=aboutHero.introRatio<.05;this.logoHideRatio=1";
+if (lusionBundle.split(aboutHeroWordMorphSource).length - 1 !== 1) {
+  throw new Error("The Lusion About hero word morph anchor changed.");
+}
+lusionBundle = lusionBundle.replace(aboutHeroWordMorphSource, aboutHeroWordMorphReplacement);
+// The About hero word is drawn on the WebGL canvas, not in the DOM, so hiding the
+// headline markup cannot remove it. Keep the whole mesh container hidden instead.
+const aboutHeroWordVisibleSource = "aboutWhoLogo.container.visible=t,t){";
+const aboutHeroWordVisibleReplacement = "aboutWhoLogo.container.visible=!1,t){";
+if (lusionBundle.split(aboutHeroWordVisibleSource).length - 1 !== 1) {
+  throw new Error("The Lusion About hero word visibility anchor changed.");
+}
+lusionBundle = lusionBundle.replace(aboutHeroWordVisibleSource, aboutHeroWordVisibleReplacement);
+// The Team subsection is removed, so the About track only has two pages left. Trim the
+// trailing scroll ranges that used to pan onto the team panel. RANGE_END_WAIT must stay
+// positive: it is the length of the final scroll leg, and a zero leg makes math.fit
+// divide by zero.
+const aboutTeamScrollRangeSource = "RANGE_PAGE_34=1.75;RANGE_END_WAIT=2.5;";
+const aboutTeamScrollRangeReplacement = "RANGE_PAGE_34=0;RANGE_END_WAIT=1;";
+if (lusionBundle.split(aboutTeamScrollRangeSource).length - 1 !== 1) {
+  throw new Error("The Lusion About team scroll range anchor changed.");
+}
+lusionBundle = lusionBundle.replace(aboutTeamScrollRangeSource, aboutTeamScrollRangeReplacement);
+// With the team panel gone the About track holds two panels instead of three, but the
+// pan is computed as ratio * PAGE_DISTANCE * viewportWidth with ratio ending at 2.
+// Each panel is 100vw wide and carries `margin-right: 25vw` from about.*.css, so the
+// distance between the start of one panel and the start of the next is 1.25 * viewportWidth.
+// The details panel must land flush with the left edge of the viewport, so the total pan
+// has to be that same 1.25 * viewportWidth: 2 * 0.625 = 1.25.
+// The previous value of .5 only panned 1.0 * viewportWidth, which left the details panel
+// short by exactly the 25vw margin (360px at 1440px wide) and pushed the right-aligned
+// closing paragraph off the screen.
+const aboutTeamPanDistanceSource = "RANGE_END_WAIT=1;PAGE_DISTANCE=1.25;";
+const aboutTeamPanDistanceReplacement = "RANGE_END_WAIT=1;PAGE_DISTANCE=.625;";
+if (lusionBundle.split(aboutTeamPanDistanceSource).length - 1 !== 1) {
+  throw new Error("The Lusion About pan distance anchor changed.");
+}
+lusionBundle = lusionBundle.replace(aboutTeamPanDistanceSource, aboutTeamPanDistanceReplacement);
+// The intro copy fades word by word as the panel pans past. The fade-out windows are
+// anchored to r = c - PAGE_DISTANCE, so they move whenever PAGE_DISTANCE changes.
+//
+// The visible span of r is narrower than it first looks. WhoSubsectionDetails only shows
+// itself while `0 < c && c < PAGE_DISTANCE * 2`, and c = r + PAGE_DISTANCE, so the panel is
+// on screen for r in (-PAGE_DISTANCE, +PAGE_DISTANCE) and is hidden outright at r = 0.625.
+// Within that span the panel is still travelling: panelX = (PAGE_DISTANCE - r) * viewportWidth,
+// so the copy only finishes arriving at the flush position at the very moment the engine
+// hides it.
+//
+// That means the exit has to happen inside r = -0.625 .. 0.625, and it has to be complete
+// by r = 0.625 or the words are cut off mid-fade by the hard visibility switch.
+// A previous attempt started the fade at r = 0.625, which is after the panel is already
+// hidden, so the fade never ran and the copy simply snapped off.
+//
+// Run the fade-out over r = 0.30 .. 0.625: the copy is fully opaque while it travels into
+// frame and while it is being read, then it dims smoothly and reaches zero exactly as the
+// engine switches the panel off, so the handover is invisible.
+// Words are staggered so they do not all dim in lock step, but the stagger has to END at
+// r = 0.625 rather than start there: a window like 0.30 .. 0.625 + p*0.15 keeps the last
+// word above zero past the point where the engine hides the panel, so it gets cut off
+// mid-fade. Ending at 0.625 - (1 - p) * 0.10 keeps every word at zero on the last visible
+// frame while preserving the trailing-word stagger.
+const aboutDetailsFadeOutStart = ".30";
+const aboutDetailsFadeOutEnd = ".625";
+const aboutDetailsFadeOutStagger = ".10";
+const aboutDetailsFadeWordEnd = `${aboutDetailsFadeOutEnd} - (1 - p) * ${aboutDetailsFadeOutStagger}`;
+const aboutDetailsFadeLineEnd = `${aboutDetailsFadeOutEnd} - (1 - f) * ${aboutDetailsFadeOutStagger}`;
+const aboutDetailsTopFadeSource = "T=math.fit(r,.1,.5+p*.5,0,1)";
+const aboutDetailsTopFadeReplacement = `T=math.fit(r,${aboutDetailsFadeOutStart},${aboutDetailsFadeWordEnd},0,1)`;
+if (lusionBundle.split(aboutDetailsTopFadeSource).length - 1 !== 1) {
+  throw new Error("The Lusion About top-word fade anchor changed.");
+}
+lusionBundle = lusionBundle.replace(aboutDetailsTopFadeSource, aboutDetailsTopFadeReplacement);
+const aboutDetailsBottomFadeSource = "T=math.fit(r,.2,.5+p*.5,0,1)";
+const aboutDetailsBottomFadeReplacement = `T=math.fit(r,${aboutDetailsFadeOutStart},${aboutDetailsFadeWordEnd},0,1)`;
+if (lusionBundle.split(aboutDetailsBottomFadeSource).length - 1 !== 1) {
+  throw new Error("The Lusion About bottom-word fade anchor changed.");
+}
+lusionBundle = lusionBundle.replace(
+  aboutDetailsBottomFadeSource,
+  aboutDetailsBottomFadeReplacement,
+);
+// The words also slide sideways, and those windows were anchored to the old pan too.
+// Each word is drawn with a horizontal offset of, in viewport widths,
+//     slide-in  fit(r, -1, 0, -50, 0)          (top words; -20 for the bottom set)
+//   + slide-out fit(r, <start>, 1, 0, <end>)   (top words end at +20vw, bottom at +50vw)
+// The slide-in finishes at r = 0, so from there the slide-out is the only term left.
+// Start the slide-out on the same window as the fade so the words hold their positions
+// while legible and only drift away as they dim.
+const aboutDetailsTopSlideSource = "math.fit(r,.1,1,0,20)";
+const aboutDetailsTopSlideReplacement = `math.fit(r,${aboutDetailsFadeOutStart},${aboutDetailsFadeOutEnd},0,20)`;
+if (lusionBundle.split(aboutDetailsTopSlideSource).length - 1 !== 1) {
+  throw new Error("The Lusion About top-word slide anchor changed.");
+}
+lusionBundle = lusionBundle.replace(aboutDetailsTopSlideSource, aboutDetailsTopSlideReplacement);
+const aboutDetailsBottomSlideSource = "math.fit(r,0,1,0,50)";
+const aboutDetailsBottomSlideReplacement = `math.fit(r,${aboutDetailsFadeOutStart},${aboutDetailsFadeOutEnd},0,50)`;
+if (lusionBundle.split(aboutDetailsBottomSlideSource).length - 1 !== 1) {
+  throw new Error("The Lusion About bottom-word slide anchor changed.");
+}
+lusionBundle = lusionBundle.replace(
+  aboutDetailsBottomSlideSource,
+  aboutDetailsBottomSlideReplacement,
+);
+// Each word also gets an inline offset in em from
+//     fit(g, 0, 1, 10, 0) + fit(_, 0, 1, 0, -10)
+// which is the "scatter into place" motion. Its _ window was anchored to the same old
+// ratios, so at the reading position the -10em term was already fully applied and every
+// word sat up to 10em (about 480px here) to the left of its real position, which pushed the
+// intro copy off the left edge of the viewport.
+// Hold the scatter until the fade-out begins: the words then keep their true positions for
+// the whole readable span and only scatter as they leave.
+// Note the p-based twin of the top window shares its text with the fade term replaced
+// above, so only the line-based f windows still need re-anchoring here. The bottom set
+// keeps its own leading value (.2 rather than .1) on both variants.
+const aboutDetailsTopScatterLineSource = "math.fit(r,.1,.5+f*.5,0,1)";
+const aboutDetailsTopScatterLineReplacement = `math.fit(r,${aboutDetailsFadeOutStart},${aboutDetailsFadeLineEnd},0,1)`;
+if (lusionBundle.split(aboutDetailsTopScatterLineSource).length - 1 !== 1) {
+  throw new Error("The Lusion About top-word line scatter anchor changed.");
+}
+lusionBundle = lusionBundle.replace(
+  aboutDetailsTopScatterLineSource,
+  aboutDetailsTopScatterLineReplacement,
+);
+const aboutDetailsBottomScatterLineSource = "math.fit(r,.2,.5+f*.5,0,1)";
+const aboutDetailsBottomScatterLineReplacement = `math.fit(r,${aboutDetailsFadeOutStart},${aboutDetailsFadeLineEnd},0,1)`;
+if (lusionBundle.split(aboutDetailsBottomScatterLineSource).length - 1 !== 1) {
+  throw new Error("The Lusion About bottom-word line scatter anchor changed.");
+}
+lusionBundle = lusionBundle.replace(
+  aboutDetailsBottomScatterLineSource,
+  aboutDetailsBottomScatterLineReplacement,
+);
+// On the mobile layout the whole container fades instead of the individual words, using
+//     n = fit(r, -.75, -.25, 0, 1) * fit(r, .25, .5, 1, 0)
+// The second factor closed the copy out at r = 0.5, well before the panel is hidden at
+// r = 0.625, so the intro text read as pale grey for the last stretch and then vanished.
+// Close it out over the same exit window as the desktop words instead.
+const aboutDetailsMobileOpacitySource = "math.fit(r,.25,.5,1,0)";
+const aboutDetailsMobileOpacityReplacement = `math.fit(r,${aboutDetailsFadeOutStart},${aboutDetailsFadeOutEnd},1,0)`;
+if (lusionBundle.split(aboutDetailsMobileOpacitySource).length - 1 !== 1) {
+  throw new Error("The Lusion About mobile container opacity anchor changed.");
+}
+lusionBundle = lusionBundle.replace(
+  aboutDetailsMobileOpacitySource,
+  aboutDetailsMobileOpacityReplacement,
+);
+// The team portraits are WebGL point clouds that fade in whenever the team subsection is
+// on screen. Hiding that subsection cannot switch them off, and the About track still
+// scrolls past its position, so the face keeps appearing. Pin the switch that gates it.
+const aboutTeamFacesActiveSource = "aboutHeroFaces.isActive=aboutHeroFaces.showRatio>0";
+const aboutTeamFacesActiveReplacement = "aboutHeroFaces.isActive=!1";
+if (lusionBundle.split(aboutTeamFacesActiveSource).length - 1 !== 1) {
+  throw new Error("The Lusion About team faces visibility anchor changed.");
+}
+lusionBundle = lusionBundle.replace(aboutTeamFacesActiveSource, aboutTeamFacesActiveReplacement);
+// The team subsection is hidden, so its portrait models are never displayed. The page
+// show hook still loads all seven .buf files (about 610 KB), so skip those fetches while
+// keeping the remaining bookkeeping that the rest of the section relies on.
+const aboutTeamFacesLoadSource =
+  "for(let e=0;e<this.teamDataList.length;e++){let t=this.teamDataList[e].id;aboutHeroFaces.load(t)}";
+const aboutTeamFacesLoadReplacement = "";
+if (lusionBundle.split(aboutTeamFacesLoadSource).length - 1 !== 1) {
+  throw new Error("The Lusion About team face preload anchor changed.");
+}
+lusionBundle = lusionBundle.replace(aboutTeamFacesLoadSource, aboutTeamFacesLoadReplacement);
+// One portrait is also fetched eagerly while the team section is constructed.
+const aboutTeamFacesEagerLoadSource = "}),aboutHeroFaces.load(this.faceId),this.letterMesh=";
+const aboutTeamFacesEagerLoadReplacement = "}),this.letterMesh=";
+if (lusionBundle.split(aboutTeamFacesEagerLoadSource).length - 1 !== 1) {
+  throw new Error("The Lusion About team face eager load anchor changed.");
+}
+lusionBundle = lusionBundle.replace(
+  aboutTeamFacesEagerLoadSource,
+  aboutTeamFacesEagerLoadReplacement,
+);
 const astronautRevealSource =
   "v.position.y-=(properties.useMobileLayout?0:.4)*ease.backInOut(p),v.updateMatrix();";
 // Pull the astronaut back into the viewport during the heading, then release it into the tunnel.
@@ -604,6 +817,17 @@ lusionBundle = lusionBundle.replace(
   aboutScrollCueMobileTransformSource,
   aboutScrollCueMobileTransformReplacement,
 );
+// The About intro hides the scroll cue beside the wordmark, and LuaLusion never
+// transitions it (it only writes transform), so it stays at its authored
+// opacities of 0/0.2 forever and the prompt never appears. Reveal it while the
+// intro is expanded and fade it back out as the cue starts to hide.
+const aboutScrollCueRevealSource = "this.domScroll.style.opacity=f";
+const aboutScrollCueRevealReplacement =
+  "this.domScroll.style.opacity=window.__XLAB_ABOUT_SCROLL_CUE_VISIBLE__?1:2*f";
+if (lusionBundle.split(aboutScrollCueRevealSource).length - 1 !== 1) {
+  throw new Error("The About scroll cue opacity write no longer matches.");
+}
+lusionBundle = lusionBundle.replace(aboutScrollCueRevealSource, aboutScrollCueRevealReplacement);
 await writeFile(lusionBundlePath, lusionBundle);
 
 console.log(`Vercel static output prepared: ${output}`);
