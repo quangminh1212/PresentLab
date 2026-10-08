@@ -525,3 +525,204 @@ html[lang="vi"] .xlab-contact-card-action {
 }
 
 /* The language pill uses Lusion-style dot markers instead of a chevron. */
+
+/* ---------------------------------------------------------------------------
+   #about-who hero: XLab typography and responsive behaviour.
+   The upstream layout positions #about-who-title-right absolutely with
+   font-size:4vw (8vw under 560px) and no width bound, so on narrow viewports it
+   grows into the left column and the two sets of lines overlap. The rules below
+   give the right column a real box and scale the type from the viewport width
+   instead, so the hero stays legible from 320px up to ultrawide.
+   Loaded after _astro/about.*.css, so these win at equal specificity.
+   --------------------------------------------------------------------------- */
+
+#about-who-title-left,
+#about-who-title-right {
+  /* Keep long lines from pushing the layout wider than the viewport. */
+  max-width: 100%;
+}
+
+/* The wordmark renders as an inline SVG; keep its stroke weight crisp and stop
+   it from stretching the line box when the text scales down. */
+#about-who-title-left-2 svg {
+  display: block;
+  height: 100%;
+  max-width: 100%;
+}
+
+#about-who-title-left-2 {
+  /* Reserve the mark's width so it does not collapse before fonts settle. */
+  aspect-ratio: 14.425 / 4.409;
+}
+
+#about-who-title-left-4 span {
+  /* Long words such as TECHNOLOGY must not overflow the column. */
+  overflow-wrap: anywhere;
+}
+
+/* Tablet and below: the absolutely positioned right column is the main source
+   of overlap. Give it a bounded width and pull it clear of the left column. */
+@media (max-width: 812px) {
+  #about-who-title-right {
+    left: 0;
+    right: var(--base-padding-x);
+    /* Sit beneath the left column instead of on top of it. */
+    text-align: left;
+    font-size: clamp(1.5rem, 6.2vw, 2.6rem);
+    line-height: 1.12;
+  }
+}
+
+/* Phones: keep the type from ballooning; 8vw at 360px is already 28.8px per
+   line, which is what made the two columns collide. */
+@media (max-width: 560px) {
+  #about-who-title-right {
+    left: 0;
+    right: var(--base-padding-x);
+    font-size: clamp(1.25rem, 7.4vw, 2rem);
+    line-height: 1.14;
+  }
+}
+
+@media (max-width: 400px) {
+  #about-who-title-right {
+    font-size: clamp(1.15rem, 7.2vw, 1.7rem);
+  }
+}
+
+/* Ultrawide: cap the display type so lines do not drift apart on very wide
+   screens, where 4vw becomes enormous. */
+@media (min-width: 1600px) {
+  #about-who-title-right {
+    font-size: clamp(2.6rem, 2.6vw, 3.6rem);
+  }
+}
+
+/* Vietnamese diacritics need extra line height; without it the horn and
+   circumflex marks clip against the line box at small sizes. */
+html[lang="vi"] #about-who-title-right,
+html[lang="vi"] #about-who-title-left-3,
+html[lang="vi"] #about-who-title-left-4 {
+  line-height: 1.18;
+}
+
+/* ---------------------------------------------------------------------------
+   About intro copy: word spacing and overflow.
+
+   The paragraph is authored as consecutive <span> runs with no whitespace
+   between them:
+       <span class="is-italic">A worldwide team</span><span>of</span>...
+   so the runs sit flush against each other and the words read as one token
+   ("Aworldwideteam", "Độingũsángtạotoàncầu").
+
+   WhoSubsectionDetails._parseDomText rewrites each run at runtime: it takes the
+   run's innerHTML, splits it on single spaces, and wraps every word in its own
+   nested <span>. Those nested spans are what the scroll animation moves and
+   fades (opacity + translate3d per word), and they are what the upstream rule
+       #about-who-desc-top > span span { margin-right: 1ex }
+   targets to supply the word gap.
+
+   That rule is correct, but it only works while the outer run stays inline:
+   the rewrite uses innerHTML on the run, so making the run an inline-block (or
+   replacing its text) changes what the engine sees and re-splits. Keep the runs
+   inline and adjust only the nested word spans.
+
+   The remaining rules give the longer Vietnamese strings somewhere to go: the
+   copy gets its own scale, and both paragraphs are bounded to the panel so the
+   right-aligned closing line cannot sit outside the viewport.
+   Loaded after _astro/about.*.css, so these win at equal specificity.
+   --------------------------------------------------------------------------- */
+
+/* Keep the outer runs inline: the engine splits their innerHTML into words. */
+#about-who-desc-top > span,
+#about-who-desc-bottom > span {
+  display: inline;
+}
+
+/* Word gap. Each nested span holds one word, so a margin on it is the space
+   between words. The trailing margin on the last word of a line is harmless
+   because the line is already broken there. */
+#about-who-desc-top > span span,
+#about-who-desc-bottom > span span {
+  margin-right: 0.3em;
+  margin-left: 0;
+}
+
+/* Let a long single word break rather than push the line past the panel. */
+#about-who-desc-top > span span,
+#about-who-desc-bottom > span span {
+  overflow-wrap: break-word;
+}
+
+/* The engine rewrites opacity and transform on every word box each frame, so the
+   exit fade is one compositor animation per word. Without a layer hint the browser
+   repaints the whole paragraph on each step, which is what made the dimming read as
+   coarse and steppy. Promoting the word boxes keeps the ramp on the compositor. */
+#about-who-desc-top > span span,
+#about-who-desc-bottom > span span {
+  will-change: opacity, transform;
+  backface-visibility: hidden;
+}
+
+/* Keep the animated word boxes from being clipped by their line box, so the
+   per-word translate3d and the stacked Vietnamese diacritics stay visible. */
+#about-who-desc-top,
+#about-who-desc-bottom {
+  max-width: 100%;
+  overflow: visible;
+}
+
+#about-who-desc-bottom {
+  /* This paragraph is absolutely positioned against the panel's padding box, so
+     a long translated line could still sit outside it. Bound it to the padded
+     width so its right edge lines up with the rest of the column. */
+  box-sizing: border-box;
+  max-width: calc(100vw - var(--base-padding-x) * 2);
+}
+
+/* Vietnamese runs noticeably longer than the English source. Give the copy its
+   own scale so a full phrase fits the panel, and add the leading the stacked
+   diacritics need. */
+html[lang="vi"] #about-who-subsection-details {
+  font-size: 3.35vw;
+}
+
+html[lang="vi"] #about-who-desc-top,
+html[lang="vi"] #about-who-desc-bottom {
+  line-height: 1.26;
+}
+
+@media (max-width: 812px) {
+  html[lang="vi"] #about-who-subsection-details {
+    font-size: 5.4vw;
+  }
+
+  /* The desktop-only <br> is hidden here, so the runs reflow into one block.
+     Use the full panel width and give the second paragraph its own row instead
+     of letting the absolute placement overlap the first. */
+  #about-who-desc-top {
+    width: 100%;
+  }
+
+  #about-who-desc-bottom {
+    max-width: 100%;
+    position: relative;
+    right: auto;
+    bottom: auto;
+    margin-top: 0.6em;
+    text-align: left;
+  }
+}
+
+@media (max-width: 560px) {
+  html[lang="vi"] #about-who-subsection-details {
+    font-size: 7.2vw;
+  }
+
+  /* A slightly tighter gap reads better once the type is narrow, but the gap
+     must stay: removing it entirely glues the words back together. */
+  #about-who-desc-top > span span,
+  #about-who-desc-bottom > span span {
+    margin-right: 0.24em;
+  }
+}
