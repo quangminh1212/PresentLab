@@ -1023,6 +1023,42 @@
   style.textContent +=
     "#about-clients{display:none!important}" +
     '#about-clients-carousel img[src*="/assets/images/logo/"]{content:url("data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==")}';
+  // The capability title splits into two stacked bars, "LĨNH VỰC" and "CHUYÊN MÔN".
+  // Above 1000px the section uses a 12-column grid and both bars fit on one line each.
+  // At 812px and below the bundle swaps in `#about-capability-title{grid-column:1 / span 6;
+  // font-size:18vw}`, so the title is the full content width of a 6-column grid.
+  // "CHUYÊN MÔN" then needs more width than that column can give, by a constant factor:
+  // measured with the shipped Aeonik, needed/available is ~0.736 at every mobile width
+  // (448/330 at 360px, 597/430 at 480px, 746/550 at 600px, 1010/762 at 812px), so the
+  // second bar always wraps to two lines no matter the viewport.
+  //
+  // The engine sizes each clip wrapper from the pre-split markup, one line per bar, and
+  // never grows it. The wrapped second bar therefore keeps a one-line box and spills out
+  // of it. Because the box is anchored at the bar's layout position, the wrapped content
+  // overflows upward over the first bar and slices "Ĩ" in half, while "MÔN" lands a full
+  // wrapped line below and reads as a stray word. The title also reserved two bars' worth
+  // of height, so the gap underneath it collapses.
+  //
+  // Fitting the bar is not the goal: shrinking to about 10.4vw would read as a different,
+  // much smaller title. Cap the size at what the narrowest grid can hold (13vw, never past
+  // the 12vw the 12-column desktop layout already uses) so both bars stay on one line and
+  // the clip wrapper always matches what it contains. The Vietnamese bar is the widest of
+  // the three locales, so sizing on it leaves the English and Chinese titles room too.
+  //
+  // The accented forms also need more vertical ink than the bundle's line-height:1em box
+  // allows: at 172.8px the ink of "LĨNH VỰC" measures 167px above the baseline plus 39px
+  // below, against a 172.8px box, which crops the diacritics even once the wrap is gone.
+  // The engine reaches those bars as `#about-capability-title>div` and
+  // `#about-capability-title #about-capability-title-line-2` at (1,1,0), so a bare id at
+  // (1,0,0) loses. Matching (1,1,0) wins without !important, and 1.32 rests on the font's
+  // own ascent to hold the highest diacritic while keeping the two-bar split and the
+  // second bar's indent intact.
+  style.textContent +=
+    "@media(max-width:1000px){#about-capability-title{font-size:min(13vw,12vw)}}" +
+    "#about-capability-title>div{line-height:1.32}" +
+    "#about-capability-title #about-capability-title-line-1," +
+    "#about-capability-title #about-capability-title-line-2{line-height:1.32;height:auto;overflow:visible}";
+
   style.textContent += 'html[lang="vi"] #projects-main-title{padding-bottom:.18em!important}';
   const normalizeLanguageText = (value) => value.replace(/\s+/g, " ").trim();
   // The About intro is split into <span> runs with no whitespace between them, so the
