@@ -619,13 +619,14 @@ html[lang="vi"] #about-who-title-left-4 {
    run's innerHTML, splits it on single spaces, and wraps every word in its own
    nested <span>. Those nested spans are what the scroll animation moves and
    fades (opacity + translate3d per word), and they are what the upstream rule
-       #about-who-desc-top > span span { margin-right: 1ex }
+       #about-who-desc-top > span span { display: inline-block; margin-right: 1ex }
    targets to supply the word gap.
 
-   That rule is correct, but it only works while the outer run stays inline:
-   the rewrite uses innerHTML on the run, so making the run an inline-block (or
-   replacing its text) changes what the engine sees and re-splits. Keep the runs
-   inline and adjust only the nested word spans.
+   That upstream rule is what makes the paragraph readable, so these overrides
+   keep it intact: the runs stay inline, the word boxes stay inline-block, and
+   the gap stays in `ex` units. An earlier revision replaced the `ex` gap with a
+   fixed `em` margin and dropped `inline-block`; that removed the space the
+   engine relies on between words, which is what made the copy run together.
 
    The remaining rules give the longer Vietnamese strings somewhere to go: the
    copy gets its own scale, and both paragraphs are bounded to the panel so the
@@ -639,19 +640,64 @@ html[lang="vi"] #about-who-title-left-4 {
   display: inline;
 }
 
-/* Word gap. Each nested span holds one word, so a margin on it is the space
-   between words. The trailing margin on the last word of a line is harmless
-   because the line is already broken there. */
+/* Word gap. Each nested span holds one word, so the box and its margin are the
+   space between words. Restate Lusion's `inline-block` + `1ex` gap: the browser
+   collapses whitespace between the nested spans, so without the box the words
+   would sit flush against each other. */
 #about-who-desc-top > span span,
 #about-who-desc-bottom > span span {
-  margin-right: 0.3em;
-  margin-left: 0;
+  display: inline-block;
+}
+
+#about-who-desc-top > span span {
+  margin-right: 1ex;
+}
+
+/* The closing paragraph is right-aligned, so its gap goes on the leading edge
+   and its trailing margin must not push the last word off the panel. */
+#about-who-desc-bottom > span span {
+  margin-left: 1ex;
+  margin-right: 0;
 }
 
 /* Let a long single word break rather than push the line past the panel. */
 #about-who-desc-top > span span,
 #about-who-desc-bottom > span span {
   overflow-wrap: break-word;
+}
+
+/* Intro copy envelope, published from site-overrides.js.
+   The engine's own update() fades each word with fadeIn * (1 - fadeOut) over a
+   window so narrow that the copy never reaches full opacity while it is on
+   screen: it slides past half-lit, which reads as the paragraph being stuck at
+   "nearly there" instead of arriving. The override publishes two unitless
+   factors per word, --word-enter and --word-exit, and these declarations compose
+   the opacity and the slide from them.
+
+   !important is required: the engine writes opacity straight onto the word's
+   inline style, and its resize() pass re-writes it whenever the section
+   re-lays-out (including when the block parks at the end of its travel), so a
+   plain rule would lose that race and the copy would flash back to full after
+   it had already faded out.
+
+   The fallbacks are the hidden state (--word-enter: 0, --word-exit: 0), not the
+   visible one. The engine leaves every word at opacity 1 before the section
+   starts, so a visible fallback would paint the paragraph at full strength while
+   it is still parked off-screen and then snap it to nothing on the first frame
+   the override drives. Starting hidden means the copy only ever appears through
+   the envelope, so it arrives and leaves instead of blinking. */
+#about-who-desc-top > span span,
+#about-who-desc-bottom > span span {
+  --word-enter: 0;
+  --word-exit: 0;
+  opacity: calc(var(--word-enter) * (1 - var(--word-exit))) !important;
+  /* Slide with the same pair so the movement matches the fade. Travel matches
+     ABOUT_COPY_ENVELOPE.travel in site-overrides.js. */
+  transform: translate3d(
+    calc((1 - var(--word-enter)) * 40px + var(--word-exit) * -40px),
+    0,
+    0
+  ) !important;
 }
 
 /* The engine rewrites opacity and transform on every word box each frame, so the
@@ -680,11 +726,19 @@ html[lang="vi"] #about-who-title-left-4 {
   max-width: calc(100vw - var(--base-padding-x) * 2);
 }
 
-/* Vietnamese runs noticeably longer than the English source. Give the copy its
-   own scale so a full phrase fits the panel, and add the leading the stacked
-   diacritics need. */
-html[lang="vi"] #about-who-subsection-details {
-  font-size: 3.35vw;
+/* Keep Lusion's own scale. The Vietnamese copy is longer than the English
+   source, but it still fits the panel at every breakpoint (measured natural
+   text width stays inside the subsection's padded box from desktop down to a
+   390px phone), so it needs no separate scale. Only the three breakpoints and
+   the 21/9 ultrawide guard are restated here, mirroring _astro/about.*.css. */
+#about-who-subsection-details {
+  font-size: 4vw;
+}
+
+@media (min-aspect-ratio: 21/9) {
+  #about-who-subsection-details {
+    font-size: 2.7vw;
+  }
 }
 
 html[lang="vi"] #about-who-desc-top,
@@ -693,8 +747,8 @@ html[lang="vi"] #about-who-desc-bottom {
 }
 
 @media (max-width: 812px) {
-  html[lang="vi"] #about-who-subsection-details {
-    font-size: 5.4vw;
+  #about-who-subsection-details {
+    font-size: 6vw;
   }
 
   /* The desktop-only <br> is hidden here, so the runs reflow into one block.
@@ -715,14 +769,7 @@ html[lang="vi"] #about-who-desc-bottom {
 }
 
 @media (max-width: 560px) {
-  html[lang="vi"] #about-who-subsection-details {
-    font-size: 7.2vw;
-  }
-
-  /* A slightly tighter gap reads better once the type is narrow, but the gap
-     must stay: removing it entirely glues the words back together. */
-  #about-who-desc-top > span span,
-  #about-who-desc-bottom > span span {
-    margin-right: 0.24em;
+  #about-who-subsection-details {
+    font-size: 8vw;
   }
 }

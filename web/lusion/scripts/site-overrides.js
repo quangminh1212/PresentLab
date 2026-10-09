@@ -19,7 +19,18 @@
     // is the variable that actually brands the rendered page; point it at the same ink
     // so canvas and DOM agree instead of the canvas staying pure black.
     ":root{--color-black:var(--xlab-ink)}" +
-    ".lusion-home-content{--header-color:#237478}" +
+    // The About page lerps its WebGL background toward properties.blueColorHex while the
+    // capability section is on screen, and the engine reads that hex once at startup from
+    // --color-blue. Left at the stock Lusion #1a2ffb the whole section renders navy blue,
+    // which is off-brand; point the variable at the logo's teal accent (#237478, sampled
+    // from web/portal/xlab-logo.png) so the section matches the wordmark.
+    ":root{--color-blue:var(--xlab-teal)}" +
+    // The header tint has its own stock Lusion blue (#0016ec) declared on :root, and the
+    // header hover rule hardcodes that same hex. The .lusion-home-content scope below only
+    // covers the portal embed, so the standalone /about and /projects pages kept the navy
+    // tint. Override both here so every page uses the logo teal.
+    ":root{--header-color:var(--xlab-teal)}" +
+    ".lusion-home-content{--header-color:var(--xlab-teal)}" +
     "#header-menu-talk{display:none!important}" +
     "#header-right-talk-btn.--is-contact-active:hover{background:var(--header-color)!important}" +
     "#video-overlay.is-offline-media #video-overlay__controls,#video-overlay.is-offline-media #video-overlay-cursor{display:none!important}" +
@@ -287,13 +298,13 @@
       "Webby Nominee": "Ng\u01b0\u1eddi \u0111\u01b0\u1ee3c \u0111\u1ec1 c\u1eed Webby",
       Talks: "Cu\u1ed9c n\u00f3i chuy\u1ec7n",
       "Digital Design Days": "Digital Design Days",
-      EXPERTISE: "KINH NGHI\u1ec6M",
+      EXPERTISE: "CHUY\u00caN M\u00d4N",
       "KIKK Festival": "KIKK Festival",
       "Oct 2024 Milan": "Th\u00e1ng 10 n\u0103m 2024 Milano",
       "Oct 2023 Amsterdam": "Th\u00e1ng 10 n\u0103m 2023 Amsterdam",
       "Oct 2022 Amsterdam": "Th\u00e1ng 10 n\u0103m 2022 Amsterdam",
       "Grow Paris": "Grow Paris",
-      "AREA OF": "DI\u1ec6N T\u00cdCH C\u1ee6A",
+      "AREA OF": "L\u0128NH V\u1ef0C",
       "Awwwards Conf": "Awwwards Conf",
       "Oct 2023 Namur": "Th\u00e1ng 10 n\u0103m 2023",
       "Nov 2018 Paris": "Th\u00e1ng 11 n\u0103m 2018 Paris",
@@ -984,8 +995,10 @@
   if (localeMeta) localeMeta.setAttribute("content", metaLocale[activeLanguage]);
 
   style.textContent +=
-    '#lusion-language-switcher{position:absolute;top:var(--base-padding-y);right:calc(var(--base-padding-x) + 7.8em);z-index:56;pointer-events:auto;font-size:.875em;color:#fff}#lusion-language-trigger{display:flex;align-items:center;justify-content:center;gap:.625em;box-sizing:border-box;min-width:4.2em;height:3.2em;min-height:44px;padding:0 1.125em 0 1.625em;border:none;border-radius:6.25em;background:var(--color-grey-blue);color:#fff;font-family:inherit;font-size:1em;font-weight:500;line-height:1;text-transform:uppercase;cursor:pointer;overflow:hidden;transition:background-color .4s,color .4s}#lusion-language-trigger .lusion-language-dots{position:relative;flex:0 0 auto;width:1.15em;height:1.15em;transform:translateZ(0) rotate(180deg);transition:transform .4s cubic-bezier(.4,0,.1,1)}#lusion-language-trigger .lusion-language-dot{position:absolute;display:inline-block;top:50%;width:.3125em;height:.3125em;border-radius:100%;background:currentColor;transform:translateY(-50%)}#lusion-language-trigger .lusion-language-dot:first-child{left:.1em}#lusion-language-trigger .lusion-language-dot:last-child{right:.1em}#lusion-language-trigger:hover .lusion-language-dots,#lusion-language-switcher.is-open #lusion-language-trigger .lusion-language-dots{transform:translateY(-.1em) translateZ(0) rotate(270deg)}#lusion-language-trigger:hover{background:var(--header-color)}#lusion-language-menu{position:absolute;top:calc(100% + .55em + var(--lusion-menu-motion-y,0px));left:0;right:auto;z-index:58;display:flex;flex-direction:column;width:12em;max-width:calc(100vw - var(--base-padding-x)*2);min-width:0;gap:0;padding:.65em .3125em;border-radius:.625em;background:#fff;color:#080808;box-shadow:0 12px 30px rgba(0,0,0,.12);font-size:1.142857em}#lusion-language-menu[hidden]{display:none!important}.lusion-language-choice{display:block;position:relative;width:100%;box-sizing:border-box;min-height:44px;padding:.7em 1.3em;border:0;border-radius:6.25em;background:transparent;color:inherit;font-family:inherit;font-size:1.1em;font-weight:400;line-height:1;text-align:left;text-transform:uppercase;cursor:pointer;transition:background-color .3s,color .3s}.lusion-language-choice:hover{background:rgba(0,0,0,.045)}.lusion-language-choice:after{content:"";position:absolute;top:calc(50% - .2em);right:1.55em;width:.4em;height:.4em;margin:0;border:0;border-radius:50%;background:currentColor;opacity:0;transform:scale(0);transition:opacity .2s,transform .2s}.lusion-language-choice[aria-checked="true"]:after{opacity:1;transform:scale(1)}#lusion-language-trigger:focus-visible,.lusion-language-choice:focus-visible{outline:2px solid #c1ff00;outline-offset:3px}@media(max-width:812px){#lusion-language-switcher{right:calc(var(--base-padding-x) + 8.2em)}#lusion-language-trigger{min-width:3.5em;padding:0 1.125em 0 1.625em}}html[lang="vi"] body,html[lang="vi"] h1,html[lang="vi"] h2,html[lang="vi"] h3,html[lang="vi"] button,html[lang="vi"] input{font-family:Aeonik,system-ui,sans-serif}html[lang="zh-CN"] body,html[lang="zh-CN"] h1,html[lang="zh-CN"] h2,html[lang="zh-CN"] h3,html[lang="zh-CN"] button,html[lang="zh-CN"] input{font-family:Aeonik,system-ui,"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif}#lusion-language-trigger,#lusion-language-menu .lusion-language-choice,#lusion-mobile-language-controls .lusion-mobile-language-choice{font-family:Aeonik}html[lang="vi"] #lusion-language-trigger,html[lang="vi"] #lusion-language-menu .lusion-language-choice,html[lang="vi"] #lusion-mobile-language-controls .lusion-mobile-language-choice{font-family:Aeonik,system-ui,sans-serif}html[lang="zh-CN"] #lusion-language-trigger,html[lang="zh-CN"] #lusion-language-menu .lusion-language-choice,html[lang="zh-CN"] #lusion-mobile-language-controls .lusion-mobile-language-choice{font-family:Aeonik,system-ui,"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif}';
+    '#lusion-language-switcher{position:absolute;top:var(--base-padding-y);right:calc(var(--base-padding-x) + 7.8em);z-index:56;pointer-events:auto;font-size:.875em;color:#fff}#lusion-language-trigger{display:flex;align-items:center;justify-content:center;gap:.625em;box-sizing:border-box;min-width:4.2em;height:3.2em;min-height:44px;padding:0 1.125em 0 1.625em;border:none;border-radius:6.25em;background:var(--color-grey-blue);color:#fff;font-family:inherit;font-size:1em;font-weight:500;line-height:1;text-transform:uppercase;cursor:pointer;overflow:hidden;transition:background-color .4s,color .4s}#lusion-language-trigger .lusion-language-dots{position:relative;flex:0 0 auto;width:1.15em;height:1.15em;transform:translateZ(0) rotate(180deg);transition:transform .4s cubic-bezier(.4,0,.1,1)}#lusion-language-trigger .lusion-language-dot{position:absolute;display:inline-block;top:50%;width:.3125em;height:.3125em;border-radius:100%;background:currentColor;transform:translateY(-50%)}#lusion-language-trigger .lusion-language-dot:first-child{left:.1em}#lusion-language-trigger .lusion-language-dot:last-child{right:.1em}#lusion-language-trigger:hover .lusion-language-dots,#lusion-language-trigger:focus-visible .lusion-language-dots,#lusion-language-switcher.is-open #lusion-language-trigger .lusion-language-dots{transform:translateY(-.1em) translateZ(0) rotate(270deg)}#lusion-language-menu{position:absolute;top:calc(100% + .55em + var(--lusion-menu-motion-y,0px));left:0;right:auto;z-index:58;display:flex;flex-direction:column;width:12em;max-width:calc(100vw - var(--base-padding-x)*2);min-width:0;gap:0;padding:.65em .3125em;border-radius:.625em;background:#fff;color:#080808;box-shadow:0 12px 30px rgba(0,0,0,.12);font-size:1.142857em}#lusion-language-menu[hidden]{display:none!important}.lusion-language-choice{display:block;position:relative;width:100%;box-sizing:border-box;min-height:44px;padding:.7em 1.3em;border:0;border-radius:6.25em;background:transparent;color:inherit;font-family:inherit;font-size:1.1em;font-weight:400;line-height:1;text-align:left;text-transform:uppercase;cursor:pointer;transition:background-color .3s,color .3s}.lusion-language-choice:hover{background:rgba(0,0,0,.045)}.lusion-language-choice:after{content:"";position:absolute;top:calc(50% - .2em);right:1.55em;width:.4em;height:.4em;margin:0;border:0;border-radius:50%;background:currentColor;opacity:0;transform:scale(0);transition:opacity .2s,transform .2s}.lusion-language-choice[aria-checked="true"]:after{opacity:1;transform:scale(1)}#lusion-language-trigger:focus-visible,.lusion-language-choice:focus-visible{outline:2px solid #c1ff00;outline-offset:3px}@media(max-width:812px){#lusion-language-switcher{right:calc(var(--base-padding-x) + 8.2em)}#lusion-language-trigger{min-width:3.5em;padding:0 1.125em 0 1.625em}}html[lang="vi"] body,html[lang="vi"] h1,html[lang="vi"] h2,html[lang="vi"] h3,html[lang="vi"] button,html[lang="vi"] input{font-family:Aeonik,system-ui,sans-serif}html[lang="zh-CN"] body,html[lang="zh-CN"] h1,html[lang="zh-CN"] h2,html[lang="zh-CN"] h3,html[lang="zh-CN"] button,html[lang="zh-CN"] input{font-family:Aeonik,system-ui,"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif}#lusion-language-trigger,#lusion-language-menu .lusion-language-choice,#lusion-mobile-language-controls .lusion-mobile-language-choice{font-family:Aeonik}html[lang="vi"] #lusion-language-trigger,html[lang="vi"] #lusion-language-menu .lusion-language-choice,html[lang="vi"] #lusion-mobile-language-controls .lusion-mobile-language-choice{font-family:Aeonik,system-ui,sans-serif}html[lang="zh-CN"] #lusion-language-trigger,html[lang="zh-CN"] #lusion-language-menu .lusion-language-choice,html[lang="zh-CN"] #lusion-mobile-language-controls .lusion-mobile-language-choice{font-family:Aeonik,system-ui,"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",sans-serif}';
 
+  style.textContent +=
+    "#lusion-language-trigger:hover,#lusion-language-trigger:focus-visible,#lusion-language-switcher.is-open #lusion-language-trigger{background:var(--header-color)!important}";
   style.textContent +=
     '#lusion-mobile-language-controls{display:none;margin-top:.35em;padding:.8em .35em .25em;border-top:1px solid rgba(0,0,0,.14);color:#080808;text-transform:none}#lusion-mobile-language-controls .lusion-mobile-language-label{display:block;margin-bottom:.65em;font-size:.72em;font-weight:500;letter-spacing:.08em;text-transform:uppercase;opacity:.55}#lusion-mobile-language-controls .lusion-mobile-language-options{display:flex;gap:.4em}#lusion-mobile-language-controls .lusion-mobile-language-choice{flex:1;min-height:2.7em;padding:.5em .75em;border:1px solid #e4e6ef;border-radius:999px;background:#fff;color:#080808;font-family:inherit;font-size:.78em;font-weight:500;line-height:1;text-align:center;text-transform:uppercase;cursor:pointer}#lusion-mobile-language-controls .lusion-mobile-language-choice[aria-pressed="true"]{background:#080808;color:#fff;border-color:#080808}@media(max-width:812px){#lusion-language-switcher{display:block!important;right:calc(var(--base-padding-x) + 8.2em)}#lusion-language-menu{position:fixed;top:calc(var(--base-padding-y)*2 + 3*var(--header-size) + var(--lusion-menu-motion-y,0px));left:auto;right:var(--base-padding-x);width:12em;max-width:calc(100vw - var(--base-padding-x)*2);max-height:calc(100vh - var(--base-padding-y)*3 - var(--header-size));overflow-y:auto}#lusion-mobile-language-controls{display:none!important}}';
   style.textContent +=
@@ -1023,6 +1036,15 @@
   style.textContent +=
     "#about-clients{display:none!important}" +
     '#about-clients-carousel img[src*="/assets/images/logo/"]{content:url("data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==")}';
+  // The Awards and Articles panels are not wanted on the About page. Hide them the same
+  // way as the Team subsection: collapse the whole category so the engine skips its
+  // animation work, and point the Articles links at nothing so the hidden list stops
+  // costing external requests. Hiding rather than deleting keeps the sibling Talks panel
+  // and the category indexing the engine relies on intact.
+  style.textContent +=
+    "#about-award .award-category-awards," +
+    "#about-award .award-category-articles{display:none!important}" +
+    "#about-award .award-category-articles a{pointer-events:none!important}";
   // The capability title splits into two stacked bars, "LĨNH VỰC" and "CHUYÊN MÔN".
   // Above 1000px the section uses a 12-column grid and both bars fit on one line each.
   // At 812px and below the bundle swaps in `#about-capability-title{grid-column:1 / span 6;
@@ -2065,6 +2087,129 @@
     window.requestAnimationFrame(render);
   }
 
+  // The engine fades the About intro copy with a very narrow "fully visible"
+  // window. Its per-word opacity is fadeIn * (1 - fadeOut), where fadeIn finishes
+  // at its internal ratio -0.1 and fadeOut starts at 0.1, so the copy crosses over
+  // itself and never seems to arrive: it slides past while still fading in.
+  //
+  // Progress is taken from where the copy actually sits on screen rather than from
+  // any engine transform. The container's translate3d is not a usable clock: the
+  // engine drives several sections through the same matrix and resets it to zero
+  // between them, so reading it back produces a non-monotonic signal and the copy
+  // flickers. The paragraph's own bounding box is monotonic through the section,
+  // retraces exactly when scrolling back up, and is literally what the viewer sees.
+  //
+  // The envelope is expressed in two steps. First the block's centre (progress,
+  // in viewport widths) is mapped onto a 0..1 unit across the span it travels:
+  //   spanStart +1.64  -> unit 0   (fully off screen right)
+  //   spanEnd   +0.05  -> unit 1   (past the end of its travel)
+  // Then the windows below are read as fractions of that unit:
+  //   enter  unit 0.00 -> 0.45   (rise to full opacity)
+  //   hold   unit 0.45 -> 0.78   (every word fully opaque)
+  //   exit   unit 0.78 -> 1.00   (fade away)
+  // Nothing overlaps, so the paragraph is fully legible for the middle of its run
+  // instead of crossing over itself.
+  //
+  // Every value here is a fraction of the unit, not a raw progress. Mixing the two
+  // is the mistake an earlier revision made: it passed span coordinates (1.28) as
+  // the enter end, which is outside the 0..1 unit, so the enter never completed and
+  // the copy parked at 75% opacity instead of reaching full.
+  //
+  // The windows are sized against the scroll step. A wheel step moves the block's
+  // centre by roughly 0.1 viewport widths, which is about 0.06 of the unit, and it
+  // is not evenly paced. The enter in particular has to stay wide: at a narrower
+  // 0.35 the copy still jumped from 17% to 54% opacity in a single step, which
+  // reads as snapping on rather than rising.
+  //
+  // spanEnd sits past where the block actually parks (progress +0.41), so the exit
+  // completes and the copy is fully faded by the time it stops moving.
+  //
+  // Staggering stays per-word, clamped inside the enter/exit windows, so a word
+  // never starts leaving before the last word has finished arriving.
+  const ABOUT_COPY_ENVELOPE = {
+    // Horizontal travel of the block's centre, in viewport widths, right to left.
+    spanStart: 1.64,
+    spanEnd: 0.05,
+    // Window edges, as fractions of the normalised 0..1 travel.
+    enterEnd: 0.45,
+    exitStart: 0.78,
+    exitEnd: 1.0,
+    // Each successive word trails the leader by this share of a window.
+    stagger: 0.05,
+    // Slide distance, in px, applied per word on the way in and out.
+    travel: 40,
+  };
+
+  const clamp01 = (value) => Math.min(1, Math.max(0, value));
+  const fitRange = (value, inMin, inMax, outMin, outMax) => {
+    if (inMax === inMin) return outMin;
+    const unit = clamp01((value - inMin) / (inMax - inMin));
+    return outMin + (outMax - outMin) * unit;
+  };
+  const easeInOutCubic = (unit) =>
+    unit < 0.5 ? 4 * unit * unit * unit : 1 - (-2 * unit + 2) ** 3 / 2;
+
+  function installAboutCopyEnvelope() {
+    const container = document.querySelector("#about-who-subsection-details");
+    if (!container) return;
+    const topRun = container.querySelector("#about-who-desc-top");
+    const bottomRun = container.querySelector("#about-who-desc-bottom");
+    if (!topRun || !bottomRun) return;
+
+    const env = ABOUT_COPY_ENVELOPE;
+    // The engine rewrites each run's innerHTML in its own _parseDomText pass, which
+    // runs after this DOMContentLoaded handler, so the per-word spans do not exist
+    // yet. Resolve them per frame and only drive once they appear.
+    //
+    // The engine also re-writes opacity from its own resize() pass, which runs
+    // whenever the section re-lays-out (including when the block parks at the end
+    // of its travel). Writing opacity from JS alone loses that race, so the value
+    // is published as a custom property on the word and the opacity rule in
+    // xlab-chrome.css consumes it with !important. A property write cannot be lost
+    // to call ordering the way an inline style can.
+
+    // Per-word factors are published as `--word-enter` / `--word-exit`, consumed by
+    // the CSS rule that composes opacity and the slide offset. Both are unitless.
+    const applyEnvelope = (words, unit) => {
+      const count = words.length || 1;
+      for (let index = 0; index < words.length; index += 1) {
+        const word = words[index];
+        // 0 for the first word, 1 for the last: later words trail the leader.
+        const order = count > 1 ? index / (count - 1) : 0;
+        const lag = order * env.stagger;
+
+        // Rising edge: each word finishes its fade slightly after the previous one.
+        const enter = easeInOutCubic(fitRange(unit, 0 + lag, env.enterEnd + lag, 0, 1));
+        // Falling edge: the same order, so the last word leaves last.
+        const exit = easeInOutCubic(fitRange(unit, env.exitStart + lag, env.exitEnd + lag, 0, 1));
+        word.style.setProperty("--word-enter", String(enter));
+        word.style.setProperty("--word-exit", String(exit));
+      }
+    };
+
+    const frame = () => {
+      const rect = topRun.getBoundingClientRect();
+      const progress = (rect.left + rect.right) / 2 / window.innerWidth;
+
+      // Drive only while the copy is inside the run, and otherwise leave the last
+      // published state untouched. Widening this to "whenever the block is on
+      // screen" is what snapped the copy to invisible: the block is still fully
+      // on screen at progress 1.32, but that clamps to the start of the span, so
+      // the words were driven to zero opacity while the viewer was reading them.
+      if (progress <= env.spanStart && progress >= env.spanEnd) {
+        const topWords = topRun.querySelectorAll("span span");
+        const bottomWords = bottomRun.querySelectorAll("span span");
+        if (topWords.length || bottomWords.length) {
+          const unit = fitRange(progress, env.spanStart, env.spanEnd, 0, 1);
+          applyEnvelope(topWords, unit);
+          applyEnvelope(bottomWords, unit);
+        }
+      }
+      window.requestAnimationFrame(frame);
+    };
+    window.requestAnimationFrame(frame);
+  }
+
   document.addEventListener(
     "DOMContentLoaded",
     () => {
@@ -2072,6 +2217,7 @@
       mountXlabContactMethods();
       mountXlabPreloaderReveal();
       mountLanguageSwitcher();
+      installAboutCopyEnvelope();
     },
     { once: true },
   );
