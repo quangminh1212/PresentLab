@@ -406,9 +406,19 @@ for (const [source, replacement] of [
     'this.containers.forEach((e,t)=>{e.style.setProperty("--open-delay",t/50+"s"),e.style.setProperty("--close-delay",Math.abs(t-this.containers.length)/50+"s")})',
     'this.containers.filter(Boolean).forEach((e,t)=>{e.style.setProperty("--open-delay",t/50+"s"),e.style.setProperty("--close-delay",Math.abs(t-this.containers.length)/50+"s")})',
   ],
+  // The wheel easing is a first-order lag: scrollPixel += (target - scrollPixel) * (1 - exp(-coeff * dt)).
+  // Wheel notches arrive in discrete bursts, so a stiff coeff makes the follower alternately lurch on a
+  // notch and then bleed it off, which reads as a repeating per-frame velocity sawtooth -- the "jerky"
+  // scroll feel. Lowering the coeff spreads each notch across more frames: identical total travel over a
+  // gesture, but a much flatter velocity curve. The engine instance is module-local and cannot be reached
+  // at runtime, so this has to be a build-time source rewrite.
+  [
+    "frictionCoeffWeightDivisor=5;minVelocity=-1;wheelEaseCoeff=12",
+    "frictionCoeffWeightDivisor=5;minVelocity=-1;wheelEaseCoeff=6",
+  ],
 ]) {
-  if (!lusionBundle.includes(source)) {
-    throw new Error("The copied Lusion bundle no longer matches the runtime patch.");
+  if (lusionBundle.split(source).length - 1 !== 1) {
+    throw new Error(`Expected one occurrence of the Lusion runtime patch: ${source}`);
   }
   lusionBundle = lusionBundle.replace(source, replacement);
 }
