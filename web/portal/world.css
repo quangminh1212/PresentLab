@@ -3996,7 +3996,7 @@ html.is-ready:not(.is-lusion-section-preloading) .portal-header-actions {
   font-family: inherit;
   font-size: inherit;
   font-weight: 500;
-  line-height: 1.15;
+  line-height: 1;
   text-transform: uppercase;
   text-align: center;
   cursor: pointer;
@@ -4033,26 +4033,10 @@ html.is-ready:not(.is-lusion-section-preloading) .portal-header-actions {
   white-space: nowrap;
 }
 
-#portal-language-current,
-.portal-language-arrow {
-  transition: transform cubic-bezier(0.4, 0, 0.1, 1) 0.3s;
-}
-
-/* Parked far enough left that the trigger's overflow clipping hides it
-   completely at rest, then slides in to sit beside the label on hover. */
-.portal-language-arrow {
-  position: absolute;
-  top: calc(50% - 0.5em);
-  left: 0;
-  width: 1em;
-  height: 1em;
-  transform: translate3d(-3.75em, 0, 0);
-}
-
-.portal-language-arrow svg {
-  display: block;
-  width: 100%;
-  height: 100%;
+/* The /about pill carries no arrow glyph -- just the label and a two-dot
+   indicator -- so the portal matches that structure exactly. */
+#portal-language-current {
+  transition: none;
 }
 
 .portal-language-dots {
@@ -4060,36 +4044,33 @@ html.is-ready:not(.is-lusion-section-preloading) .portal-header-actions {
   flex: 0 0 auto;
   width: 1.15em;
   height: 1.15em;
-  transform: scale(0.9) translateZ(0);
-  transition: transform cubic-bezier(0.4, 0, 0.1, 1) 0.1s;
+  transform: translateZ(0) rotate(180deg);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.1, 1);
 }
 
 .portal-language-dot {
   position: absolute;
-  display: block;
+  display: inline-block;
   top: 50%;
-  left: 50%;
   width: 0.3125em;
   height: 0.3125em;
   border-radius: 100%;
-  background: #fff;
-  transform: translate(-50%, -50%);
+  background: currentColor;
+  transform: translateY(-50%);
+}
+
+.portal-language-dot:first-child {
+  left: 0.1em;
+}
+
+.portal-language-dot:last-child {
+  right: 0.1em;
 }
 
 @media (hover: hover) {
   .portal-language-trigger:hover .portal-language-dots,
   .portal-language-trigger[aria-expanded="true"] .portal-language-dots {
-    transform: scale(0) translateZ(0);
-  }
-
-  .portal-language-trigger:hover #portal-language-current,
-  .portal-language-trigger[aria-expanded="true"] #portal-language-current {
-    transform: translate3d(1.5em, 0, 0);
-  }
-
-  .portal-language-trigger:hover .portal-language-arrow,
-  .portal-language-trigger[aria-expanded="true"] .portal-language-arrow {
-    transform: translateZ(0);
+    transform: translateY(-0.1em) translateZ(0) rotate(270deg);
   }
 }
 
@@ -4627,14 +4608,16 @@ html[lang="vi"] .portal-category-panel {
   .portal-language-dots,
   .portal-language-trigger:hover .portal-language-dots,
   .portal-language-trigger[aria-expanded="true"] .portal-language-dots {
-    transform: scale(0.9) translateZ(0);
+    transform: translateZ(0) rotate(180deg);
     transition-duration: 0.01ms;
   }
 
-  .portal-language-arrow,
+  .portal-language-trigger:hover .portal-language-dots,
+  .portal-language-trigger[aria-expanded="true"] .portal-language-dots {
+    transform: translateY(-0.1em) translateZ(0) rotate(270deg);
+  }
+
   #portal-language-current,
-  .portal-language-trigger:hover .portal-language-arrow,
-  .portal-language-trigger[aria-expanded="true"] .portal-language-arrow,
   .portal-language-trigger:hover #portal-language-current,
   .portal-language-trigger[aria-expanded="true"] #portal-language-current {
     transition-duration: 0.01ms;
