@@ -308,8 +308,43 @@
       "Awwwards Conf": "Awwwards Conf",
       "Oct 2023 Namur": "Th\u00e1ng 10 n\u0103m 2023",
       "Nov 2018 Paris": "Th\u00e1ng 11 n\u0103m 2018 Paris",
-      "Multidisciplinary expertise across strategy, creative, technology, and production.":
-        "Chuy\u00ean m\u00f4n \u0111a ng\u00e0nh v\u1ec1 chi\u1ebfn l\u01b0\u1ee3c, s\u00e1ng t\u1ea1o, c\u00f4ng ngh\u1ec7 v\u00e0 s\u1ea3n xu\u1ea5t.",
+      "AI research, agent engineering, reverse engineering, and intelligence amplification.":
+        "Nghi\u00ean c\u1ee9u AI, k\u1ef9 thu\u1eadt t\u00e1c nh\u00e2n, d\u1ecbch ng\u01b0\u1ee3c v\u00e0 khu\u1ebfch \u0111\u1ea1i tr\u00ed tu\u1ec7.",
+      // XLab capability cards. These are long, unambiguous keys so they cannot
+      // collide with the terse Strategy / Creative / Tech / Production keys
+      // used elsewhere in the dictionary, and so the single-letter tiles
+      // (a/g/r/i) never match a stray one-character text node.
+      "AI R&D": "AI R&D",
+      a: "a",
+      "Model Fine-Tuning": "Tinh ch\u1ec9nh m\u00f4 h\u00ecnh",
+      "Applied Research": "Nghi\u00ean c\u1ee9u \u1ee9ng d\u1ee5ng",
+      "Model Evaluation": "\u0110\u00e1nh gi\u00e1 m\u00f4 h\u00ecnh",
+      "Multimodal AI": "AI \u0111a ph\u01b0\u01a1ng th\u1ee9c",
+      "Training Pipelines": "Pipeline hu\u1ea5n luy\u1ec7n",
+      Agents: "T\u00e1c nh\u00e2n",
+      g: "g",
+      "Agent Design": "Thi\u1ebft k\u1ebf t\u00e1c nh\u00e2n",
+      "Tool Calling": "G\u1ecdi c\u00f4ng c\u1ee5",
+      "RAG & Memory": "RAG & b\u1ed9 nh\u1edb",
+      "Multi-Agent Systems": "\u0110a t\u00e1c nh\u00e2n",
+      "Agent Evaluation": "\u0110\u00e1nh gi\u00e1 t\u00e1c nh\u00e2n",
+      "Reverse Eng.": "D\u1ecbch ng\u01b0\u1ee3c",
+      r: "r",
+      "Binary Analysis": "Ph\u00e2n t\u00edch nh\u1ecb ph\u00e2n",
+      "Protocol RE": "D\u1ecbch ng\u01b0\u1ee3c giao th\u1ee9c",
+      "Firmware & Embedded": "Firmware & nh\u00fang",
+      Deobfuscation: "G\u1ee1 r\u1ed1i m\u00e3",
+      "Threat Profiling": "H\u1ed3 s\u01a1 \u0111e d\u1ecda",
+      Intelligence: "Tr\u00ed tu\u1ec7",
+      i: "i",
+      "Context Engineering": "K\u1ef9 thu\u1eadt ng\u1eef c\u1ea3nh",
+      "Reasoning & CoT": "Suy lu\u1eadn & CoT",
+      "Retrieval Aug.": "T\u0103ng c\u01b0\u1eddng truy xu\u1ea5t",
+      "Human-in-the-Loop": "Con ng\u01b0\u1eddi trong v\u00f2ng l\u1eb7p",
+      "Capability Scaling": "M\u1edf r\u1ed9ng n\u0103ng l\u1ef1c",
+      // Legacy capability keys. The hidden home-page capability section and
+      // several project "Services" lists still render these strings, so they
+      // must keep their translations even though /about no longer uses them.
       Strategy: "Chi\u1ebfn l\u01b0\u1ee3c",
       s: "S",
       Research: "Nghi\u00ean c\u1ee9u",
@@ -325,7 +360,7 @@
       Creative: "S\u00e1ng t\u1ea1o",
       Tech: "C\u00f4ng ngh\u1ec7",
       "Interactive Design": "Thi\u1ebft k\u1ebf t\u01b0\u01a1ng t\u00e1c",
-      Production: "S\u1ea3n xu\u1ea5t",
+      "Production": "S\u1ea3n xu\u1ea5t",
       P: "P",
       "Digital Experience Strategy":
         "Chi\u1ebfn l\u01b0\u1ee3c tr\u1ea3i nghi\u1ec7m k\u1ef9 thu\u1eadt s\u1ed1",
@@ -337,7 +372,7 @@
       "3D Asset Creation": "T\u1ea1o n\u1ed9i dung 3D",
       "Front End Development": "Ph\u00e1t tri\u1ec3n giao di\u1ec7n ng\u01b0\u1eddi d\u00f9ng",
       "Procedural Modeling": "M\u00f4 h\u00ecnh th\u1ee7 t\u1ee5c",
-      "Unity/Unreal": "Th\u1ed1ng nh\u1ea5t/Kh\u00f4ng th\u1ef1c",
+      "Unity/Unreal": "Unity/Unreal",
       "AR and VR Experiences": "Tr\u1ea3i nghi\u1ec7m AR v\u00e0 VR",
       "api design \u2022 webgl \u2022 3d": "thi\u1ebft k\u1ebf api \u2022 webgl \u2022 3d",
       "design \u2022 development \u2022 3d":
@@ -706,8 +741,38 @@
       "Grow Paris": "Grow Paris",
       s: "s",
       d: "d",
-      "Multidisciplinary expertise across strategy, creative, technology, and production.":
-        "\u8de8\u6218\u7565\u3001\u521b\u610f\u3001\u6280\u672f\u548c\u5236\u4f5c\u7684\u591a\u5b66\u79d1\u4e13\u4e1a\u77e5\u8bc6\u3002",
+      "AI research, agent engineering, reverse engineering, and intelligence amplification.":
+        "AI \u7814\u7a76\u3001\u667a\u80fd\u4f53\u5de5\u7a0b\u3001\u9006\u5411\u5de5\u7a0b\u4e0e\u667a\u80fd\u589e\u5f3a\u3002",
+      "AI R&D": "AI \u7814\u53d1",
+      a: "a",
+      "Model Fine-Tuning": "\u6a21\u578b\u5fae\u8c03",
+      "Applied Research": "\u5e94\u7528\u7814\u7a76",
+      "Model Evaluation": "\u6a21\u578b\u8bc4\u4f30",
+      "Multimodal AI": "\u591a\u6a21\u6001 AI",
+      "Training Pipelines": "\u8bad\u7ec3\u7ba1\u9053",
+      Agents: "\u667a\u80fd\u4f53",
+      g: "g",
+      "Agent Design": "\u667a\u80fd\u4f53\u8bbe\u8ba1",
+      "Tool Calling": "\u5de5\u5177\u8c03\u7528",
+      "RAG & Memory": "RAG \u4e0e\u8bb0\u5fc6",
+      "Multi-Agent Systems": "\u591a\u667a\u80fd\u4f53\u7cfb\u7edf",
+      "Agent Evaluation": "\u667a\u80fd\u4f53\u8bc4\u4f30",
+      "Reverse Eng.": "\u9006\u5411\u5de5\u7a0b",
+      r: "r",
+      "Binary Analysis": "\u4e8c\u8fdb\u5236\u5206\u6790",
+      "Protocol RE": "\u534f\u8bae\u9006\u5411",
+      "Firmware & Embedded": "\u56fa\u4ef6\u4e0e\u5d4c\u5165\u5f0f",
+      Deobfuscation: "\u53cd\u6df7\u6dc6",
+      "Threat Profiling": "\u5a01\u80c1\u753b\u50cf",
+      Intelligence: "\u667a\u80fd\u589e\u5f3a",
+      i: "i",
+      "Context Engineering": "\u4e0a\u4e0b\u6587\u5de5\u7a0b",
+      "Reasoning & CoT": "\u63a8\u7406\u4e0e CoT",
+      "Retrieval Aug.": "\u68c0\u7d22\u589e\u5f3a",
+      "Human-in-the-Loop": "\u4eba\u673a\u534f\u540c",
+      "Capability Scaling": "\u80fd\u529b\u6269\u5c55",
+      PROJECTS: "\u9879\u76ee",
+      // Legacy capability keys (see note in the vi pack).
       Strategy: "\u6218\u7565",
       Discovery: "\u53d1\u73b0",
       "Creative Direction": "\u521b\u610f\u65b9\u5411",
@@ -730,8 +795,7 @@
       "AR and VR Experiences": "AR \u548c VR \u4f53\u9a8c",
       "Interactive Design": "\u4ea4\u4e92\u8bbe\u8ba1",
       "WebGL Development": "WebGL\u5f00\u53d1",
-      "Unity/Unreal": "\u7edf\u4e00/\u865a\u5e7b",
-      PROJECTS: "\u9879\u76ee",
+      "Unity/Unreal": "Unity/Unreal",
       Animation: "\u52a8\u753b\u7247",
       "Procedural Modeling": "\u7a0b\u5e8f\u5efa\u6a21",
       "3D Asset Creation": "3D \u8d44\u4ea7\u521b\u5efa",
@@ -981,7 +1045,9 @@
   };
   const languageKey = "lusion-language";
   const languages = ["en", "vi", "zh-CN"];
-  let activeLanguage = "en";
+  // Default to Vietnamese: a first-time visitor (no saved choice) gets tiếng
+  // Việt. A previously saved choice still wins, so the switcher keeps working.
+  let activeLanguage = "vi";
   try {
     const savedLanguage = window.localStorage.getItem(languageKey);
     if (languages.includes(savedLanguage)) activeLanguage = savedLanguage;
@@ -1067,6 +1133,17 @@
   // the clip wrapper always matches what it contains. The Vietnamese bar is the widest of
   // the three locales, so sizing on it leaves the English and Chinese titles room too.
   //
+  // Above 1000px the bundle sizes the title at 12vw with no width constraint. Measured
+  // across 1001-1863px, the widest bar's ink is a constant 0.618 of the content width, so
+  // 12vw renders the text ~1.6x larger than the section can hold: at 1863px the font is
+  // 223.56px while "CHUYÊN MÔN" needs only ~7.4vw. The engine also lays each bar out at a
+  // fixed 0.9 * viewport width (1677px at 1863px) that never shrinks to the ink (900px and
+  // 1095px), and the second bar is indented a further 2em (447px, scaling with the font).
+  // Its wrapper therefore ends at 2217px, 354px past the viewport, slicing the final glyph.
+  // 7.4vw is the measured fit for the widest locale; the small margin below absorbs
+  // rounding. The shipped 12vw is kept only as the fallback for the 21:9 branch, which is
+  // already near the fit point and is not reached at normal desktop aspect ratios.
+  //
   // The accented forms also need more vertical ink than the bundle's line-height:1em box
   // allows: at 172.8px the ink of "LĨNH VỰC" measures 167px above the baseline plus 39px
   // below, against a 172.8px box, which crops the diacritics even once the wrap is gone.
@@ -1076,6 +1153,7 @@
   // own ascent to hold the highest diacritic while keeping the two-bar split and the
   // second bar's indent intact.
   style.textContent +=
+    "@media(min-width:1001px){#about-capability-title{font-size:7.4vw}}" +
     "@media(max-width:1000px){#about-capability-title{font-size:min(13vw,12vw)}}" +
     "#about-capability-title>div{line-height:1.32}" +
     "#about-capability-title #about-capability-title-line-1," +
