@@ -2250,18 +2250,30 @@
     // the CSS rule that composes opacity and the slide offset. Both are unitless.
     const applyEnvelope = (words, unit) => {
       const count = words.length || 1;
+      // The whole cascade must fit inside the drive window, so the per-word delay
+      // is scaled by the slack between the shared window and the shared boundary.
+      const span = env.enterEnd - env.exitStart;
+      const step = count > 1 ? Math.min(env.stagger, span / (count - 1)) : 0;
       for (let index = 0; index < words.length; index += 1) {
         const word = words[index];
         // 0 for the first word, 1 for the last: later words trail the leader.
         const order = count > 1 ? index / (count - 1) : 0;
-        const lag = order * env.stagger;
+        // A word waits `order * step` longer to start, and every word finishes on
+        // the same shared boundary. Holding the END fixed (rather than sliding the
+        // whole window by the delay) is what makes this a cascade instead of a
+        // translation, and it keeps both windows inside [0, 1].
+        const enterStart = order * step;
+        const enterEnd = env.enterEnd;
+        const exitStart = env.exitStart + (1 - order) * step;
+        const exitEnd = env.exitEnd;
 
-        // Rising edge: each word finishes its fade slightly after the previous one.
-        const enter = easeInOutCubic(fitRange(unit, 0 + lag, env.enterEnd + lag, 0, 1));
-        // Falling edge: the same order, so the last word leaves last.
-        const exit = easeInOutCubic(fitRange(unit, env.exitStart + lag, env.exitEnd + lag, 0, 1));
-        word.style.setProperty("--word-enter", String(enter));
-        word.style.setProperty("--word-exit", String(exit));
+        // Rising edge: each word finishes its fade no later than the shared end,
+        // having started progressively later than the word before it.
+        const enter = easeInOutCubic(fitRange(unit, enterStart, enterEnd, 0, 1));
+        // Falling edge: reversing the delay, so the last word leaves last.
+        const exit = easeInOutCubic(fitRange(unit, exitStart, exitEnd, 0, 1));
+        word.style.setProperty("--word-enter", enter.toFixed(4));
+        word.style.setProperty("--word-exit", exit.toFixed(4));
       }
     };
 
