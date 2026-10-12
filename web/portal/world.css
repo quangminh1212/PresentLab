@@ -3918,26 +3918,258 @@ html:not(.is-ready) .portal-header * {
 }
 
 /* Same crop lockup the XLab header uses on /about: the webp carries padding
-   above the wordmark, so an 80x28 window clips it to the mark's own bounds. */
+   above the wordmark, so a window clips it to the mark's own bounds.
+   The window is 2px taller than the mark on each side (32 vs ~28.15) so the rim
+   below has somewhere to bleed. At a flush 28px the letters filled the window
+   exactly and the rim sheared off flat along the top and bottom. The 2px is
+   invisible on its own â€” it only ever shows as rim. */
 .portal-header-brand .xlab-logo-crop {
   display: block;
   position: relative;
   flex: 0 0 80px;
   width: 80px;
-  height: 28px;
-  overflow: hidden;
+  height: 32px;
+  /* No overflow: hidden here on purpose. The crop window still has to clip the
+     artwork's padding, but it must NOT clip the halo: a clipped child is cut off
+     dead straight at the box edge, which turned the bloom into a hard rectangle.
+     So the img clips itself (see below) and the ::before/::after halo layers are
+     left free to bleed. */
 }
 
 .portal-header-brand .xlab-logo-crop img {
   position: absolute;
-  top: -8.9px;
+  top: -6.9px;
   left: 0;
   display: block;
   width: 80px;
   height: auto;
   max-width: none;
+  /* The crop window's job, done on the artwork itself now that the box no longer
+     clips: the webp carries padding above the wordmark, so we slice it back to the
+     mark's own bounds. The `top: -6.9px` puts the mark's top edge at the box top, and
+     the 32px-tall window then runs 2px past the mark on each side (32 vs ~28.15) so
+     the rim has somewhere to bleed. */
+  clip-path: inset(6.9px 0 0 0);
 }
 
+/* Halo hugging the wordmark's edges: a hard rim at the edge, fading outward.
+   The logo is a transparent PNG/WebP, so a chain of short drop-shadows at four
+   compass offsets traces the alpha silhouette and reads as a stroke that follows
+   the letterforms â€” a real CSS stroke is impossible on a raster.
+   The halo is now two layers rather than one. The masked ::before still draws the
+   hard rim, but only the rim: a mask bounds the layer to a rectangle of artwork, so
+   any falloff painted there is sheared off flat at the mask's edge. The bloom that
+   makes the halo read as *thick* therefore lives on an unmasked ::after (below),
+   and this layer's job is reduced to the crisp edge.
+   Within this layer, the four offsets give the
+   rim its *edge*: they are the pass that actually sits on the letterforms. The
+   graded falloff that makes the halo read soft is *not* here - it lives on the
+   unmasked `::after` bloom below, because a blurred pass on this masked layer would
+   be sheared off flat at the mask rectangle.
+   The offsets are near-pixel rather than sub-pixel (this replaced a 0.3px rim):
+   at 0.3px the halo was only faintly visible at the 80px header size. No blur is
+   applied here at all, because blur is exactly what refills the letter counters
+   (below) - measured, a blurred pass costs about 7 luminance in the "B" bowls at
+   this radius, and a second, wider pass costs another 8-10. Keeping this layer
+   blur-free is what lets the bloom below carry the thickness without hazing the
+   counters. The chain was picked by rendering variants at 12x and
+   measuring counter luminance against a flat background (clean = 117).
+   The halo is painted as its own `::before` layer rather than as a `filter` on the
+   mark, because a drop-shadow follows the alpha silhouette and so also rings the
+   *inside* of every enclosed counter â€” the triangle in the "A" and both bowls in
+   the "B" â€” which reads as a glow trapped in the letter holes. A filter has no
+   notion of "outside edge only", and repainting the mark over the halo cannot help
+   either: those counters are fully transparent in the asset (centre alpha = 0), so
+   a repaint layers transparency over transparency and leaves the halo showing.
+   The counters are cleared by masking this layer with the asset's own alpha, which
+   makes the halo follow the artwork exactly. The mask is *grown* to 84px against
+   the 80px background rather than used at 1:1: at 1:1 the mask deletes the halo
+   wherever the artwork is transparent, which includes the overhang the halo is
+   itself made of, so the outline disappears completely. Enlarging the mask frees
+   that overhang while still covering the counters. The grow amount is matched to
+   the rim: 1px of growth funds a rim of roughly that size, so the near-pixel rim
+   here is paired with 2px of growth per side (84px), where the old 0.3px rim
+   needed only 1px (82px).
+   Growing further does *not* buy back the counters, which is the one hard limit in
+   this effect. The counters are only about 5.2px wide at the 80px header render,
+   so a rim of any real thickness eats a large fraction of them, and the two "B"
+   bowls are also only ~5.1-5.7px tall, so they close before the wider "A" triangle
+   does. Because one mask scales about a single origin it cannot give each counter a
+   different amount of room, and measurements over six increasingly grown masks
+   showed no single transform that cleared the "A" triangle and both "B" bowls at
+   once â€” growing enough to clear the bowls broke the "A", and vice versa (worst
+   case read 189 against a clean 117). A thick rim and perfectly clean counters are
+   therefore in genuine pixel-budget conflict at this render size; the current
+   settings are the point where the halo is clearly visible and the "B" bowls are
+   only lightly hazy. Enlarging the mark itself (or accepting haze in the bowls)
+   is the escape hatch if a thicker rim is ever wanted.
+   The header layer is the crop box's size plus a 3px bleed so the rim clears the box
+   edge. The box deliberately does *not* use `overflow: hidden`: what bounds this
+   layer's painted area is its own mask rectangle, not the box, so a clipped box would
+   only ever cut the *unmasked* bloom below.
+   The header is scoped to the crop box on purpose, and the footer to `.site-footer`
+   rather than to a bare `.brand-logo-frame`: that class is shared with the topbar,
+   where `.brand-logo` is already filtered to solid white â€” a white halo around a
+   white mark is invisible, and stacking a second `filter` there would replace the
+   `invert(1)`, turning the topbar mark back to dark. */
+.portal-header-brand .xlab-logo-crop::before {
+  content: "";
+  position: absolute;
+  /* The crop box's size plus a 3px bleed: the halo needs room to fade out before
+     the box's `overflow: hidden`, or it is sliced off in a straight line across
+     the letter tops. */
+  inset: -3px;
+  background: url("/web/portal/xlab-logo.webp") no-repeat;
+  background-size: 80px auto;
+  background-position: 3px -3.9px;
+  /* The mask draws the same artwork at `mask-size`; only `mask-position` keeps its
+     centre on the background's. Growing 80 -> 87 widens the drawing by 7px, so the
+     position shifts by half that on each axis: x 3 - 3.5 = -0.5, and y -3.9 - 3.5 =
+     -7.4, less the 0.6px downward nudge the original rule carried to sit the
+     silhouette on the wordmark rather than on the artwork's padding. */
+  -webkit-mask-image: url("/web/portal/xlab-logo.webp");
+  -webkit-mask-size: 87px auto;
+  -webkit-mask-position: -0.5px -6.8px;
+  -webkit-mask-repeat: no-repeat;
+  mask-image: url("/web/portal/xlab-logo.webp");
+  mask-size: 87px auto;
+  mask-position: -0.5px -6.8px;
+  mask-repeat: no-repeat;
+  /* Above the bloom layer below, so the crisp rim is not washed out by it. */
+  z-index: 2;
+  /* Hard rim only: the four compass offsets that trace the alpha silhouette and sit
+     on the letterforms. The blurred pass that used to end this chain now lives on
+     the ::after bloom layer below, because blur on *this* layer was wasted: the
+     mask erases anything past its own edge, so the falloff was being cut off before
+     it could read. Keeping the rim itself unblurred also keeps it crisp against the
+     softer bloom underneath, which is what makes the edge look drawn rather than
+     smudged.
+     1px remains the inward ceiling for exactly the reason it always was: below it the
+     four offsets snap to one device pixel and 0.65 reads identically to 0.9, while
+     past ~1.25px the rim floods the enclosed counters (the "A" triangle, the "B"
+     bowls). So thickness is bought *outward*, by the bloom layer, not by pushing
+     this rim inward.
+     Alpha 52% for a light halo; the bloom below supplies the rest of the depth. */
+  filter: drop-shadow(1px 0 0 rgb(255 255 255 / 52%))
+    drop-shadow(-1px 0 0 rgb(255 255 255 / 52%)) drop-shadow(0 1px 0 rgb(255 255 255 / 52%))
+    drop-shadow(0 -1px 0 rgb(255 255 255 / 52%));
+  pointer-events: none;
+}
+
+/* The soft outer bloom, and the reason the halo is now actually thick.
+   The rim layer above is *masked*, which caps how far the halo can reach: the mask
+   is a bounded rectangle of artwork, so everything past its edge is erased and the
+   glow gets sheared off in a straight line. Growing mask-size does not help —
+   it enlarges the artwork too, so the rim grows with it and the halo stays pinched.
+   This layer sidesteps the mask entirely: no mask at all, just the blurred artwork
+   painted from its own alpha, so the falloff is free to spread in every direction.
+   Being unmasked it also rings the counters, but at this alpha and radius it only
+   reads as a soft interior haze rather than a trapped glow, and the rim layer sits
+   on top to re-cut the edge. Two graded radii (a tight core plus a wide tail) give
+   the "dÃ y nhÆ°ng dá»‹u" falloff "” one pass alone reads as either a hard ring or a
+   flat smear. */
+.portal-header-brand .xlab-logo-crop::after {
+  content: "";
+  position: absolute;
+  /* A bigger bleed than the rim's: this layer is what needs the room. */
+  inset: -12px;
+  background: url("/web/portal/xlab-logo.webp") no-repeat;
+  background-size: 80px auto;
+  /* The 12px bleed shifts the layer's origin up-left by 9px more than the rim's
+     3px, so the artwork has to be nudged back by the same 9px on both axes to keep
+     the two layers registered: 3 + 9 = 12, -3.9 + 9 = 5.1. */
+  background-position: 12px 5.1px;
+  /* Under the rim, over the mark. */
+  z-index: 1;
+  filter: drop-shadow(0 0 2.5px rgb(255 255 255 / 32%))
+    drop-shadow(0 0 6px rgb(255 255 255 / 22%)) drop-shadow(0 0 11px rgb(255 255 255 / 10%));
+  pointer-events: none;
+}
+
+
+/* The same halo on the footer lockup, but anchored and sized differently.
+   The footer frame is a fixed-size, unclipped flex box with padding, so the mark
+   inside it is `object-fit: contain`ed by `.brand-logo` and therefore floats
+   smaller than the frame instead of filling it. Painting the halo at the frame's
+   size misaligns it into a doubled image (caught by render), and hardcoding the
+   contain rect would break silently at the `86x43` / `78x40` / `72x37` frame sizes
+   the layout uses.
+   Anchoring to the `picture` element sidesteps both: `.brand-logo-frame > picture`
+   is exactly the contain box â€” the frame's padding already sits outside it â€” so a
+   `contain` background there lands on the artwork's own rect with no arithmetic.
+   The mask can then be a plain percentage of that same box, which keeps the growth
+   proportional at every breakpoint; the header's pixel mask-size would not, because
+   a footer percentage resolves against the layer and so scales with the artwork.
+   That is precisely the behaviour wanted here. No bleed is applied (the frame does
+   not clip), since a bleed would widen the layer and skew that percentage.
+   The picture also needs `position: relative` for the layer's `inset` to resolve
+   against it; that is declared here rather than in the base sheet because only this
+   halo needs it. */
+.site-footer .brand-logo-frame > picture {
+  position: relative;
+}
+
+.site-footer .brand-logo-frame > picture::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("/web/portal/xlab-logo.webp") no-repeat center / contain;
+  /* Percentages resolve against the layer, so the grow scales with the artwork at
+     every breakpoint. 110% funds the 1.1px rim on the same "grow grows with the rim"
+     rule the header uses: at 1:1 the mask deletes the halo's own overhang and the
+     outline vanishes. Growing it further does NOT make the halo thicker, though -
+     that only enlarges the artwork the mask is cut from, so the rim scales with it
+     and the glow stays pinched. Thickness comes from the ::after bloom below. */
+  -webkit-mask-image: url("/web/portal/xlab-logo.webp");
+  -webkit-mask-size: 110% auto;
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-image: url("/web/portal/xlab-logo.webp");
+  mask-size: 110% auto;
+  mask-position: center;
+  mask-repeat: no-repeat;
+  /* Above the bloom layer below, so the crisp rim is not washed out by it. */
+  z-index: 2;
+ /* Hard rim only, matching the header: the graded falloff moved to the unmasked
+     `::after` bloom below, where the mask cannot shear it off. The four offsets sit
+     at 1.1px against the header's 1px and the alpha one step higher (54% vs 52%),
+     because this artwork is smaller and an identical rim would read weaker.
+     1.1px is still held under the ~1.25px counter ceiling that governs both layers;
+     extra thickness comes from the bloom, not from this rim. */
+  filter: drop-shadow(1.1px 0 0 rgb(255 255 255 / 54%))
+    drop-shadow(-1.1px 0 0 rgb(255 255 255 / 54%)) drop-shadow(0 1.1px 0 rgb(255 255 255 / 54%))
+    drop-shadow(0 -1.1px 0 rgb(255 255 255 / 54%));
+  pointer-events: none;
+}
+
+/* The soft outer bloom, split out of the rim for the same reason as the header's:
+   the rim layer is masked, and its mask caps the halo's reach, so the falloff has
+   to live on an unmasked layer to actually spread. Percentages again, so the bloom
+   scales with the artwork at every breakpoint rather than being pinned to the one
+   size the header happens to render at. Radii run one step above the header's: the
+   footer artwork is smaller, so an identical bloom would read weaker. */
+.site-footer .brand-logo-frame > picture::after {
+  content: "";
+  position: absolute;
+  /* inset: 0, NOT a percentage bleed. Percentages on inset resolve against the
+     containing block's WIDTH for all four sides, and this picture box is far wider
+     than it is tall, so a percentage bleed would spread sideways by ~100px while
+     spreading vertically by ~2px and the bloom would collapse into a flat smear.
+     Growth has to come from blur instead, which is what makes this resize-proof:
+     every blur digit is a fraction of the layer, so it scales with the artwork. */
+  inset: 0;
+  /* contain, the SAME scale as the rim and the mark. A bloom is the artwork's own
+     glyph shape blurred, so the transparent holes of the real letterforms have to sit
+     exactly over the opaque glyphs of the halo; if the halo's artwork were scaled any
+     differently, its glyphs would poke through those holes and the mark would read as
+     a doubled, ghosted image. Scaling is therefore not a lever here - only the blur
+     radii and alphas below are. */
+  background: url("/web/portal/xlab-logo.webp") no-repeat center / contain;
+  z-index: 1;
+  filter: drop-shadow(0 0 2.8px rgb(255 255 255 / 34%))
+    drop-shadow(0 0 6.6px rgb(255 255 255 / 24%)) drop-shadow(0 0 12px rgb(255 255 255 / 11%));
+  pointer-events: none;
+}
 .portal-header-actions {
   position: fixed;
   /* Matches the XLab header on /about: pills sit 50px from the top, 72px from
@@ -4460,7 +4692,7 @@ html.is-ready:not(.is-lusion-section-preloading) .portal-header-actions {
 @media (max-width: 812px) {
   .portal-header {
     /* Same breakpoint the XLab header uses: the wordmark stays at 80px and the
-       pills collapse to the square DANH MỤC button with the label clipped. */
+       pills collapse to the square DANH Má»¤C button with the label clipped. */
     --portal-lusion-gutter: clamp(15px, 5.07vw, 25px);
     --portal-lusion-unit: clamp(12px, 3.245vw, 16px);
     grid-template-columns: 80px minmax(0, 1fr) auto;
