@@ -3982,11 +3982,9 @@ html:not(.is-ready) .portal-header * {
   width: 80px;
   height: 50.05px;
   max-width: none;
-  /* The artwork is NOT white - its brightest pixel is rgb(96,144,138) at luminance
-     133, a muted teal - so as-is the wordmark peaks near 111 against the near-black
-     stage. brightness() drives it to true white; saturate(0) removes the teal cast
-     so the lift lands on neutral white rather than brighter teal. */
-  filter: brightness(2.35) saturate(0) contrast(1.08);
+  /* Lift the dark wordmark for the near-black header while preserving its teal
+     accent. */
+  filter: brightness(2.35) contrast(1.08);
   /* The artwork's ink runs the full 807x505 canvas (measured: ink columns 3..799,
      rows 0..504), so there is no padding to trim and any inset() only cuts into
      real letterforms. The mark is 50.05px tall and the row is 32px, so the img
@@ -3997,7 +3995,7 @@ html:not(.is-ready) .portal-header * {
   clip-path: inset(9.02px 0 9.02px 0);
 }
 
-/* White halo around the header wordmark.
+/* Previous halo treatment, disabled because the duplicate read as a gray shadow.
    ---------------------------------------------------------------------------------
    The obvious build is a single drop-shadow chain on the img (that is what commit
    7736a5d did: `drop-shadow(0 0 2px rgb(255 255 255 / 96%)) drop-shadow(0 0 9px
@@ -4080,6 +4078,7 @@ html:not(.is-ready) .portal-header * {
    The 1272-wide figures are the trustworthy ones. `ink` and `peak` are
    frame-independent and agree across both captures. */
 .portal-header-brand .xlab-logo-crop::after {
+  display: none;
   content: "";
   position: absolute;
   inset: -14px;
