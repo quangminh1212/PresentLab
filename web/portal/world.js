@@ -663,7 +663,9 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {}, onReady = (
     renderer.setClearColor(0x000000, 0);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 0.75;
+    // Low exposure keeps the open ocean in the same near-black key as the
+    // Lusion-style sections that scroll up after the hero.
+    renderer.toneMappingExposure = 0.38;
     rippleField = createRippleField(renderer);
 
     scene = new THREE.Scene();
@@ -722,8 +724,10 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {}, onReady = (
       waterNormals,
       sunDirection: new THREE.Vector3(-0.35, 0.65, 0.68).normalize(),
       sunColor: 0xe9edf3,
-      waterColor: 0x075b94,
-      distortionScale: 2.2,
+      // Deep steel-navy instead of daylight blue: the surface should read as
+      // dark water with a silver horizon, matching the dark editorial pages.
+      waterColor: 0x05263a,
+      distortionScale: 1.4,
       alpha: 0.58,
       fog: false,
     });
@@ -731,7 +735,9 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {}, onReady = (
     water.position.set(0, -0.42, -46);
     water.material.transparent = true;
     water.material.depthWrite = false;
-    water.material.uniforms.size.value = 1.25;
+    // Broader swell instead of tight chop: the surface should read as long,
+    // calm ripples, not busy noise.
+    water.material.uniforms.size.value = 0.62;
     water.material.uniforms.rippleWaveTime = { value: 0 };
     water.material.uniforms.rippleImpacts = {
       value: Array.from({ length: RIPPLE_SLOT_COUNT }, () => new THREE.Vector4(0, 0, -1000, 0)),
@@ -741,7 +747,7 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {}, onReady = (
       const defaultSunGlint =
         "sunLight( surfaceNormal, eyeDirection, 100.0, 2.0, 0.5, diffuseLight, specularLight );";
       const softenedSunGlint =
-        "sunLight( surfaceNormal, eyeDirection, 64.0, 0.65, 0.5, diffuseLight, specularLight );";
+        "sunLight( surfaceNormal, eyeDirection, 64.0, 0.45, 0.5, diffuseLight, specularLight );";
       shader.fragmentShader = shader.fragmentShader.replace(
         defaultSunGlint,
         softenedSunGlint,
@@ -819,15 +825,15 @@ export function setupXLabWorld({ canvas, stage, onTarget = () => {}, onReady = (
         `vec3 outgoingLight = albedo;
         float rippleCrest = smoothstep( 0.012, 0.065, length( rippleSlope ) );
         float rippleFacingSun = max( 0.0, dot( surfaceNormal, normalize( sunDirection ) ) );
-        outgoingLight += sunColor * rippleCrest * rippleFacingSun * 0.42;
-        outgoingLight += sunColor * rippleCrestLight * 1.25;`,
+        outgoingLight += sunColor * rippleCrest * rippleFacingSun * 0.2;
+        outgoingLight += sunColor * rippleCrestLight * 0.6;`,
       );
       stage.dataset.worldRippleShader =
         shader.vertexShader.includes("ripplePosition.z +=") &&
         shader.fragmentShader.includes("rippleSlope = rippleField.ba") &&
         shader.fragmentShader.includes("rippleCrest = smoothstep") &&
         shader.fragmentShader.includes("float waveFront = distanceToImpact") &&
-        shader.fragmentShader.includes("rippleCrestLight * 1.25")
+        shader.fragmentShader.includes("rippleCrestLight * 0.6")
           ? "threejs-water-displacement-and-normal-map"
           : "threejs-water-patch-missing";
     };

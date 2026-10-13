@@ -3854,25 +3854,48 @@ html.is-ready .app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark {
   }
 }
 
-/* Bring the water light forward while keeping the hero copy readable. */
+/* Keep the water light readable while parking the hero in the same near-black
+   key as the Lusion sections below; the silver horizon stays at mid-height. */
+.app-shell:has(> main > .hero.hero-world) .world-stage {
+  border-color: rgb(140 194 236 / 16%);
+  background:
+    radial-gradient(ellipse at 76% 38%, rgb(140 232 216 / 8%), transparent 26%),
+    linear-gradient(
+      180deg,
+      #03070b 0%,
+      #050f19 25%,
+      #223747 38%,
+      #0c1c2c 42%,
+      #081624 49%,
+      #05101a 66%,
+      #02070b 100%
+    );
+}
+
 .app-shell:has(> main > .hero.hero-world) .world-space-image {
-  filter: grayscale(1) saturate(0.78) contrast(0.88) brightness(1.04) blur(0.45px);
+  filter: grayscale(1) saturate(0.78) contrast(0.96) brightness(0.26) blur(0.45px);
 }
 
 .app-shell:has(> main > .hero.hero-world) .world-water-video {
-  filter: saturate(1.22) contrast(0.88) brightness(1) blur(0.45px);
+  filter: saturate(0.9) contrast(0.94) brightness(0.32) blur(0.45px);
 }
 
 .app-shell:has(> main > .hero.hero-world) .world-canvas {
-  filter: saturate(1.22) contrast(0.82) brightness(1.08) blur(1.4px);
-  opacity: 0.72;
+  filter: saturate(0.6) contrast(0.94) brightness(0.46) blur(2.2px);
+  opacity: 0.5;
 }
 
 .app-shell:has(> main > .hero.hero-world) .world-stage::after {
   background:
-    linear-gradient(90deg, rgb(8 11 16 / 10%) 0%, transparent 68%),
-    linear-gradient(180deg, rgb(242 244 248 / 14%) 0%, transparent 42%, rgb(0 0 0 / 22%) 100%),
-    radial-gradient(ellipse at 52% 42%, transparent 30%, rgb(24 28 35 / 10%) 100%);
+    linear-gradient(90deg, rgb(2 7 11 / 44%) 0%, transparent 68%),
+    linear-gradient(
+      180deg,
+      rgb(2 7 11 / 84%) 0%,
+      rgb(2 7 11 / 58%) 34%,
+      rgb(2 7 11 / 56%) 58%,
+      rgb(0 0 0 / 62%) 100%
+    ),
+    radial-gradient(ellipse at 52% 42%, transparent 34%, rgb(0 0 0 / 54%) 100%);
 }
 
 /* Keep the XLab header pinned over the full-screen scenes. */
@@ -3919,15 +3942,25 @@ html:not(.is-ready) .portal-header * {
 
 /* Same crop lockup the XLab header uses on /about: the webp carries padding
    above the wordmark, so a window clips it to the mark's own bounds.
-   The window is 2px taller than the mark on each side (32 vs ~28.15) so the rim
-   below has somewhere to bleed. At a flush 28px the letters filled the window
-   exactly and the rim sheared off flat along the top and bottom. The 2px is
-   invisible on its own â€” it only ever shows as rim. */
+   The window is deliberately WIDER and TALLER than the mark, because it is the only
+   thing that bounds the halo: the halo layers are `inset: 0` boxes exactly this size,
+   so every side needs its share of slack between the ink and the edge or the glow is
+   sliced off flat there. Measured: with a 1.5px rim plus a 10px bloom the light wants
+   ~8px of room per side, and cutting it to 2px killed the ring in exactly the two
+   directions that had least slack.
+   The width is 96px against an 80px mark, and the extra 16px is all on the left: the
+   artwork's ink runs flush to its own right edge (last inked column 777 of 807, only
+   ~3.1px of clearance at this size) while it carries ~18px of dead margin on the left,
+   so an 80px window cut the halo off dead straight down the right of the wordmark.
+   The mark sits at left 16px, which is exactly that dead margin, so its position on
+   screen is unchanged - the window just now has clearance on both sides.
+   The box is 32px tall against a 25.27px mark, and offset -3.4px so the mark lands
+   centred (see the img below). */
 .portal-header-brand .xlab-logo-crop {
   display: block;
   position: relative;
-  flex: 0 0 80px;
-  width: 80px;
+  flex: 0 0 96px;
+  width: 96px;
   height: 32px;
   /* No overflow: hidden here on purpose. The crop window still has to clip the
      artwork's padding, but it must NOT clip the halo: a clipped child is cut off
@@ -3938,309 +3971,838 @@ html:not(.is-ready) .portal-header * {
 
 .portal-header-brand .xlab-logo-crop img {
   position: absolute;
-  top: -6.9px;
-  left: 0;
+  /* The mark's rendered box. The artwork is 807x505, so 80px wide renders 50.05px
+     tall, which is taller than the 32px header row. Centring it means
+     (32 - 50.05) / 2 = -9.02px, so the visible band is the mark's middle. The
+     previous -3.5px sat the mark low in the row. */
+  top: -9.02px;
+  /* Centred in the 96px window: (96 - 80) / 2 = 8px. */
+  left: 8px;
   display: block;
   width: 80px;
-  height: auto;
+  height: 50.05px;
   max-width: none;
-  /* The crop window's job, done on the artwork itself now that the box no longer
-     clips: the webp carries padding above the wordmark, so we slice it back to the
-     mark's own bounds. The `top: -6.9px` puts the mark's top edge at the box top, and
-     the 32px-tall window then runs 2px past the mark on each side (32 vs ~28.15) so
-     the rim has somewhere to bleed. */
-  clip-path: inset(6.9px 0 0 0);
+  /* The artwork is NOT white - its brightest pixel is rgb(96,144,138) at luminance
+     133, a muted teal - so as-is the wordmark peaks near 111 against the near-black
+     stage. brightness() drives it to true white; saturate(0) removes the teal cast
+     so the lift lands on neutral white rather than brighter teal. */
+  filter: brightness(2.35) saturate(0) contrast(1.08);
+  /* The artwork's ink runs the full 807x505 canvas (measured: ink columns 3..799,
+     rows 0..504), so there is no padding to trim and any inset() only cuts into
+     real letterforms. The mark is 50.05px tall and the row is 32px, so the img
+     clips ITSELF to the band the row can show: 9.02px off the top and bottom leaves
+     50.05 - 18.04 = 32.01px. It clips itself rather than letting the window clip it
+     because the window must stay unclipped - see the halo layers, whose band has to
+     bleed outward past the window's edges. */
+  clip-path: inset(9.02px 0 9.02px 0);
 }
 
-/* Halo hugging the wordmark's edges: a hard rim at the edge, fading outward.
-   The logo is a transparent PNG/WebP, so a chain of short drop-shadows at four
-   compass offsets traces the alpha silhouette and reads as a stroke that follows
-   the letterforms â€” a real CSS stroke is impossible on a raster.
-   The halo is now two layers rather than one. The masked ::before still draws the
-   hard rim, but only the rim: a mask bounds the layer to a rectangle of artwork, so
-   any falloff painted there is sheared off flat at the mask's edge. The bloom that
-   makes the halo read as *thick* therefore lives on an unmasked ::after (below),
-   and this layer's job is reduced to the crisp edge.
-   Within this layer, the four offsets give the
-   rim its *edge*: they are the pass that actually sits on the letterforms. The
-   graded falloff that makes the halo read soft is *not* here - it lives on the
-   unmasked `::after` bloom below, because a blurred pass on this masked layer would
-   be sheared off flat at the mask rectangle.
-   The offsets are near-pixel rather than sub-pixel (this replaced a 0.3px rim):
-   at 0.3px the halo was only faintly visible at the 80px header size. No blur is
-   applied here at all, because blur is exactly what refills the letter counters
-   (below) - measured, a blurred pass costs about 7 luminance in the "B" bowls at
-   this radius, and a second, wider pass costs another 8-10. Keeping this layer
-   blur-free is what lets the bloom below carry the thickness without hazing the
-   counters. The chain was picked by rendering variants at 12x and
-   measuring counter luminance against a flat background (clean = 117).
-   The halo is painted as its own `::before` layer rather than as a `filter` on the
-   mark, because a drop-shadow follows the alpha silhouette and so also rings the
-   *inside* of every enclosed counter â€” the triangle in the "A" and both bowls in
-   the "B" â€” which reads as a glow trapped in the letter holes. A filter has no
-   notion of "outside edge only", and repainting the mark over the halo cannot help
-   either: those counters are fully transparent in the asset (centre alpha = 0), so
-   a repaint layers transparency over transparency and leaves the halo showing.
-   The counters are cleared by masking this layer with the asset's own alpha, which
-   makes the halo follow the artwork exactly. The mask is *grown* to 84px against
-   the 80px background rather than used at 1:1: at 1:1 the mask deletes the halo
-   wherever the artwork is transparent, which includes the overhang the halo is
-   itself made of, so the outline disappears completely. Enlarging the mask frees
-   that overhang while still covering the counters. The grow amount is matched to
-   the rim: 1px of growth funds a rim of roughly that size, so the near-pixel rim
-   here is paired with 2px of growth per side (84px), where the old 0.3px rim
-   needed only 1px (82px).
-   Growing further does *not* buy back the counters, which is the one hard limit in
-   this effect. The counters are only about 5.2px wide at the 80px header render,
-   so a rim of any real thickness eats a large fraction of them, and the two "B"
-   bowls are also only ~5.1-5.7px tall, so they close before the wider "A" triangle
-   does. Because one mask scales about a single origin it cannot give each counter a
-   different amount of room, and measurements over six increasingly grown masks
-   showed no single transform that cleared the "A" triangle and both "B" bowls at
-   once â€” growing enough to clear the bowls broke the "A", and vice versa (worst
-   case read 189 against a clean 117). A thick rim and perfectly clean counters are
-   therefore in genuine pixel-budget conflict at this render size; the current
-   settings are the point where the halo is clearly visible and the "B" bowls are
-   only lightly hazy. Enlarging the mark itself (or accepting haze in the bowls)
-   is the escape hatch if a thicker rim is ever wanted.
-   The header layer is the crop box's size plus a 3px bleed so the rim clears the box
-   edge. The box deliberately does *not* use `overflow: hidden`: what bounds this
-   layer's painted area is its own mask rectangle, not the box, so a clipped box would
-   only ever cut the *unmasked* bloom below.
-   The header is scoped to the crop box on purpose, and the footer to `.site-footer`
-   rather than to a bare `.brand-logo-frame`: that class is shared with the topbar,
-   where `.brand-logo` is already filtered to solid white â€” a white halo around a
-   white mark is invisible, and stacking a second `filter` there would replace the
-   `invert(1)`, turning the topbar mark back to dark. */
-.portal-header-brand .xlab-logo-crop::before {
-  content: "";
-  position: absolute;
-  /* The crop box's size plus a 3px bleed: the halo needs room to fade out before
-     the box's `overflow: hidden`, or it is sliced off in a straight line across
-     the letter tops. */
-  inset: -3px;
-  background: url("/web/portal/xlab-logo.webp") no-repeat;
-  background-size: 80px auto;
-  background-position: 3px -3.9px;
-  /* The mask draws the same artwork at `mask-size`; only `mask-position` keeps its
-     centre on the background's. Growing 80 -> 87 widens the drawing by 7px, so the
-     position shifts by half that on each axis: x 3 - 3.5 = -0.5, and y -3.9 - 3.5 =
-     -7.4, less the 0.6px downward nudge the original rule carried to sit the
-     silhouette on the wordmark rather than on the artwork's padding. */
-  -webkit-mask-image: url("/web/portal/xlab-logo.webp");
-  -webkit-mask-size: 87px auto;
-  -webkit-mask-position: -0.5px -6.8px;
-  -webkit-mask-repeat: no-repeat;
-  mask-image: url("/web/portal/xlab-logo.webp");
-  mask-size: 87px auto;
-  mask-position: -0.5px -6.8px;
-  mask-repeat: no-repeat;
-  /* Above the bloom layer below, so the crisp rim is not washed out by it. */
-  z-index: 2;
-  /* Hard rim only: the four compass offsets that trace the alpha silhouette and sit
-     on the letterforms. The blurred pass that used to end this chain now lives on
-     the ::after bloom layer below, because blur on *this* layer was wasted: the
-     mask erases anything past its own edge, so the falloff was being cut off before
-     it could read. Keeping the rim itself unblurred also keeps it crisp against the
-     softer bloom underneath, which is what makes the edge look drawn rather than
-     smudged.
-     1px remains the inward ceiling for exactly the reason it always was: below it the
-     four offsets snap to one device pixel and 0.65 reads identically to 0.9, while
-     past ~1.25px the rim floods the enclosed counters (the "A" triangle, the "B"
-     bowls). So thickness is bought *outward*, by the bloom layer, not by pushing
-     this rim inward.
-     Alpha 52% for a light halo; the bloom below supplies the rest of the depth. */
-  filter: drop-shadow(1px 0 0 rgb(255 255 255 / 52%))
-    drop-shadow(-1px 0 0 rgb(255 255 255 / 52%)) drop-shadow(0 1px 0 rgb(255 255 255 / 52%))
-    drop-shadow(0 -1px 0 rgb(255 255 255 / 52%));
-  pointer-events: none;
-}
+/* White halo around the header wordmark.
+   ---------------------------------------------------------------------------------
+   The obvious build is a single drop-shadow chain on the img (that is what commit
+   7736a5d did: `drop-shadow(0 0 2px rgb(255 255 255 / 96%)) drop-shadow(0 0 9px
+   rgb(255 255 255 / 76%))`). It does not hold up here. drop-shadow derives its
+   shadow shape from the source's own ALPHA channel, and the img above is cut top
+   and bottom by `clip-path: inset(9.02px 0 9.02px 0)`. So the shadow's mask is a
+   flat-sliced rectangle: the vertical density collapses and the glow degenerates
+   into a flat rim running the full 80px width and shearing off dead straight at the
+   top and bottom edges.
 
-/* The soft outer bloom, and the reason the halo is now actually thick.
-   The rim layer above is *masked*, which caps how far the halo can reach: the mask
-   is a bounded rectangle of artwork, so everything past its edge is erased and the
-   glow gets sheared off in a straight line. Growing mask-size does not help —
-   it enlarges the artwork too, so the rim grows with it and the halo stays pinched.
-   This layer sidesteps the mask entirely: no mask at all, just the blurred artwork
-   painted from its own alpha, so the falloff is free to spread in every direction.
-   Being unmasked it also rings the counters, but at this alpha and radius it only
-   reads as a soft interior haze rather than a trapped glow, and the rim layer sits
-   on top to re-cut the edge. Two graded radii (a tight core plus a wide tail) give
-   the "dÃ y nhÆ°ng dá»‹u" falloff "” one pass alone reads as either a hard ring or a
-   flat smear. */
+   So the bloom is painted as its own layer: a plain, MASK-FREE `background-image` of
+   the artwork plus a four-stop drop-shadow chain. Reading the artwork back as a
+   background rather than filtering the img is what escapes the clip-path: the
+   layer's own box is the crop window grown by 14px, and the layer is not clipped.
+
+   THIS USED TO HAVE A SECOND LAYER, AND IT WAS DELETED ON PURPOSE. There was a
+   `::before` carrying four 1.5px drop-shadows at 62%, meant as a crisp rim
+   underneath the bloom. It did not draw a rim. Measured on the real page
+   (`.artifacts/c3-hdrrim.cjs`, 8 isolated loads, background-subtracted):
+
+     tat         background + mask kept, `filter` removed ............ 0 px
+     full-iso    mask kept, `::before` set to display:none .......... 0 px
+     rim-only    `::before` alone, img and ::after hidden ........... 0 px
+     size        mask made exactly coincident with its background ... 4441 px
+     bloom-only  `::after` alone ................................... 96152 px
+     full        both layers as originally shipped ................. 94557 px
+
+   `::before` on its own contributes exactly zero. It worked only as an amplifier
+   for the bloom: turn the mask off and the layer's own `background` lands exactly
+   on top of the img's identical artwork, so the four drop-shadows trace a second,
+   sharp copy of the wordmark sitting slightly off-register behind the real one -
+   which read as a ghost "XLab" behind the logo, exactly what it looked like, and
+   the visible "thicker white" the bloom was supposed to supply was never the rim's
+   doing. Because the layer only ever clipped and repeated the existing letterform
+   shape, it could not widen that shape, so no setting produced a ring: alpha 62% ->
+   26% moved 94557 -> 90203 and radius 1.5px -> 1px moved it to 92073, i.e. the
+   parameters changed nothing measurable. A layer whose knobs do nothing is not a
+   rim. `::after` alone carries the halo.
+
+   Removing it is confirmed by the one number that isolates a sharp letterform:
+   `ink` (pixels at >= 60% of peak) drops from 11203 with the layer present to 1329
+   without it, while `halo` rises - the layer was inflating hard-edged letterform
+   pixels, which is what a second off-register copy does. This 1329 is identical in
+   both capture frames below, so it is a stable measurement and not a frame effect.
+
+   The bloom does reproduce the artwork's own background pixels in its transparent
+   gaps (an ~11.5-luminance plateau between the ink peaks). That is inherent to the
+   `background-image` + `drop-shadow` mechanism and is identical in all three
+   candidate commits - not a defect of this build.
+
+   Geometry. The crop box is 96x32 with the mark at (8, -9.02). A layer with
+   `inset: -N` is a (96+2N)x(32+2N) box whose origin is (-N, -N), so its
+   background-position is `(8 + N, -9.02 + N - C)`:
+     ::after, inset -14px -> 22px -5.02px   (8+14, -9.02+14 - 10)
+   The `- 10` is NOT a fudge: a drop-shadow filter grows the layer's filter region
+   by roughly its largest blur radius per side (26px blur here, ~10px of region
+   growth), and the background paints relative to the resulting region. Dropping the
+   compensation puts the bloom ~10px too low.
+
+   Bleed outside the 80x32 mark box (px, - = does not reach the edge):
+     ::after  left -7.5  right 26.5  top -30.8  bottom 9.0
+   Left and top are negative because the artwork carries real dead margin on those
+   sides at this size (ink columns 3..799 of 807, rows 0..504), so the halo is a
+   genuinely asymmetric ring around the letterforms rather than a symmetric box
+   glow - the shape follows the ink, which is the point.
+
+   Longest comment for the shortest block of CSS, but every number above was
+   measured, and the next person to touch this will otherwise re-add the rim and
+   rediscover the ghost.
+
+   Capture frame. `halo` and `reach` depend on how much of the scene is captured,
+   so quote them only with their frame. The findings above were taken twice, at a
+   46px and a 120px margin around the mark (probe frames 680x488 and 1272x1080):
+     frame 680x488   halo 115408   boxW 468   boxH 296   reach 233.5   haloPct 34.78
+     frame 1272x1080 halo 131555   boxW 497   boxH 349   reach 248.0   haloPct  9.58
+   Quadrupling the frame area adds only ~14% to the lit-pixel count, so the lit
+   region is a bounded object of roughly fixed size, not a falloff spilling past the
+   edge. The 680-wide frame does clip ~29px of the dimmest outer fringe (boxW 468 vs
+   497), which is why only `haloPct` looks wildly different - a percentage artifact.
+   The 1272-wide figures are the trustworthy ones. `ink` and `peak` are
+   frame-independent and agree across both captures. */
 .portal-header-brand .xlab-logo-crop::after {
   content: "";
   position: absolute;
-  /* A bigger bleed than the rim's: this layer is what needs the room. */
-  inset: -12px;
-  background: url("/web/portal/xlab-logo.webp") no-repeat;
+  inset: -14px;
+  background-image: url("/web/portal/xlab-logo.webp");
+  background-repeat: no-repeat;
   background-size: 80px auto;
-  /* The 12px bleed shifts the layer's origin up-left by 9px more than the rim's
-     3px, so the artwork has to be nudged back by the same 9px on both axes to keep
-     the two layers registered: 3 + 9 = 12, -3.9 + 9 = 5.1. */
-  background-position: 12px 5.1px;
-  /* Under the rim, over the mark. */
+  background-position: 22px -5.02px;
+  pointer-events: none;
   z-index: 1;
-  filter: drop-shadow(0 0 2.5px rgb(255 255 255 / 32%))
-    drop-shadow(0 0 6px rgb(255 255 255 / 22%)) drop-shadow(0 0 11px rgb(255 255 255 / 10%));
-  pointer-events: none;
+  filter: drop-shadow(0 0 3.4px rgb(255 255 255 / 42%))
+    drop-shadow(0 0 8px rgb(255 255 255 / 30%))
+    drop-shadow(0 0 15px rgb(255 255 255 / 18%))
+    drop-shadow(0 0 26px rgb(255 255 255 / 9%));
 }
 
+/* Halo around the XLab wordmark, on the is-ready hero.
+   ===========================================================================
+   WHERE THIS LIVES. The magnified wordmark at the top of the hero page is
+   marked up in index.html as `<svg class="world-logo-glow">`, placed inside
+   `.hero.hero-world` immediately BEFORE `.world-stage`. It is NOT the header
+   logo (`.portal-header-brand .xlab-logo-crop`, a 80x50.05px mark clipped to
+   the middle 32px) and NOT the footer mark - those are separately sized copies
+   of the same artwork and this SVG deliberately does not share their rules.
 
-/* The same halo on the footer lockup, but anchored and sized differently.
-   The footer frame is a fixed-size, unclipped flex box with padding, so the mark
-   inside it is `object-fit: contain`ed by `.brand-logo` and therefore floats
-   smaller than the frame instead of filling it. Painting the halo at the frame's
-   size misaligns it into a doubled image (caught by render), and hardcoding the
-   contain rect would break silently at the `86x43` / `78x40` / `72x37` frame sizes
-   the layout uses.
-   Anchoring to the `picture` element sidesteps both: `.brand-logo-frame > picture`
-   is exactly the contain box â€” the frame's padding already sits outside it â€” so a
-   `contain` background there lands on the artwork's own rect with no arithmetic.
-   The mask can then be a plain percentage of that same box, which keeps the growth
-   proportional at every breakpoint; the header's pixel mask-size would not, because
-   a footer percentage resolves against the layer and so scales with the artwork.
-   That is precisely the behaviour wanted here. No bleed is applied (the frame does
-   not clip), since a bleed would widen the layer and skew that percentage.
-   The picture also needs `position: relative` for the layer's `inset` to resolve
-   against it; that is declared here rather than in the base sheet because only this
-   halo needs it. */
-.site-footer .brand-logo-frame > picture {
-  position: relative;
-}
+   WHAT IT IS. The artwork is warmed up with `brightness()` + `saturate(0)` so
+   the strokes come out white, and then an SVG `<filter>` turns that white
+   silhouette into a glow and merges it back under the strokes. The glow's
+   thickness comes from ONE `feGaussianBlur` radius applied in the SVG's user
+   space, so the rim is the same width on every side by construction. Nothing
+   here uses drop-shadow, mask-size, transform or clip-path.
 
-.site-footer .brand-logo-frame > picture::before {
-  content: "";
+   WHY AN SVG FILTER RATHER THAN A CSS MASK - the measurement, not a preference.
+   The design this replaces grew a CSS mask beyond the artwork so the surplus
+   would read as a rim. It cannot work on this file, and the reason is in the
+   artwork, not in the CSS: per-column count of alpha>128 of the source PNG,
+   sampled every 20px (.artifacts/alpha-profile.cjs on web/portal/xlab-logo.png,
+   807x505) reads
+
+       x=0:4  20:51  40:100  60:149  80:199  100:241 ... 760:240  780:217  800:0
+
+   so the LEFT edge fades in over ~100 artwork px while the RIGHT edge is a hard
+   cut of ~20px. A uniformly enlarged mask therefore paints a rim immediately on
+   the right and along the top/bottom long edges but stays buried under the ink
+   on the left. Measured on the live page with the box aligned to the ink
+   (left: -8px, mask-size 106px 66.332px, mask-position: center) at three scan
+   rows: L +10.00 R -0.50 at every row, i.e. 10px of rim on the left and none on
+   the right. Sliding the box only trades the two edges (left: -4px measured
+   L +2.50..+6.00 / R +3.50), and mask-position slides the whole mask so it can
+   never widen one edge without narrowing the other.
+
+   Worse, and decisive: the surplus wraps to the left and the top but never
+   reaches the bottom at all. Raw per-pixel luminance on the captured frame
+   (.artifacts/probe-out.cjs reading .artifacts/raydump.png, no thresholds):
+   every sample of row y=94 - five px below the ink floor - reads 7.2-7.5, which
+   is the header's own background, while col x=105 puts the only white run at
+   y 54..80, ABOVE the ink, and row y=52 shows a broken, intermittent top rim.
+   Cross-checked by counting newly-bright pixels per band
+   (.artifacts/floodmap.cjs, 8x4 grid, clip 124x64 css at dpr 2):
+   band top 2329, letter body 1 1883, letter body 2 1076, band bottom 0.
+
+   An SVG filter sidesteps all of it, because blur is computed from the ALREADY
+   COMPOSITED silhouette: the alpha ramp is a property of the artwork's edges, so
+   it no longer matters whether the ramp is 20px or 100px long. The filter reads
+   the element's own painted pixels, which is also why this cannot be a
+   pseudo-element: ::before can only paste a second copy of the artwork BEHIND
+   the artwork, and a flat second copy is exactly the muddy look being fixed.
+
+   THE FILTER, stage by stage (all four stages in one `<filter>`):
+     1. SourceGraphic comes in as the white silhouette. feComponentTransfer with
+        tableValues="0 0.35 1 1" snaps alpha up so the antialiased artwork edge
+        becomes a solid edge BEFORE blurring - without it the glow inherits the
+        artwork's own soft edge and reads as haze rather than a rim.
+     2. feGaussianBlur stdDeviation="1.6" in the 807x505 viewBox. The viewBox is
+        mapped onto the rendered box with preserveAspectRatio="none", so one user
+        unit of blur becomes (renderedWidth / 807) CSS px: at a 720px-wide render
+        that is 0.89px of blur, i.e. a rim roughly 1.3-1.8px wide depending on how
+        you count the shoulder - a hairline that reads as a clean outline rather
+        than a smear.
+     3. The second feComponentTransfer with tableValues="0 0.9 1 1" is the step
+        that makes it look like a rim instead of a halo. A bare Gaussian falls off
+        as a long tail, so its outermost 20% is invisible mush; ramping alpha up
+        near the top of the range pushes the tail to near-opaque and cuts it off,
+        converting the smear into a defined edge.
+     4. feMerge drops the sharp `ink` back on top of `halo`. That ordering is
+        what keeps the letterforms crisp: the glow is only ever seen in the
+        margin the strokes do not cover.
+   `color-interpolation-filters="sRGB"` is required, not cosmetic: in the default
+   linearRGB the transfer tables would act on linearised alpha and the rim would
+   come out dull grey. The filter region is widened to -40%/180% because the
+   default region clips at 10% and would shear the glow off.
+
+   The artwork is painted white through the `<image>` rule below rather than
+   `fill=` on the SVG: an `<image>` has no fill, and the source PNG's brightest
+   pixel is rgb(96,144,138) at luminance 133 - a muted teal - so it needs the
+   same lift the header logo uses (`brightness(2.35) saturate(0)`) to reach
+   white. `preserveAspectRatio="none"` on the `<image>` too, so the artwork's
+   807x505 pixels map 1:1 onto the viewBox and the CSS box alone decides size.
+
+   Positioning: the SVG is `position: absolute` inside the hero, and the hero
+   itself is `position: relative`. `z-index: 0` with no stacking context of its
+   own puts it behind the hero copy while keeping it above the stage. */
+.world-logo-glow {
   position: absolute;
-  inset: 0;
-  background: url("/web/portal/xlab-logo.webp") no-repeat center / contain;
-  /* Percentages resolve against the layer, so the grow scales with the artwork at
-     every breakpoint. 110% funds the 1.1px rim on the same "grow grows with the rim"
-     rule the header uses: at 1:1 the mask deletes the halo's own overhang and the
-     outline vanishes. Growing it further does NOT make the halo thicker, though -
-     that only enlarges the artwork the mask is cut from, so the rim scales with it
-     and the glow stays pinched. Thickness comes from the ::after bloom below. */
-  -webkit-mask-image: url("/web/portal/xlab-logo.webp");
-  -webkit-mask-size: 110% auto;
-  -webkit-mask-position: center;
-  -webkit-mask-repeat: no-repeat;
-  mask-image: url("/web/portal/xlab-logo.webp");
-  mask-size: 110% auto;
-  mask-position: center;
-  mask-repeat: no-repeat;
-  /* Above the bloom layer below, so the crisp rim is not washed out by it. */
-  z-index: 2;
- /* Hard rim only, matching the header: the graded falloff moved to the unmasked
-     `::after` bloom below, where the mask cannot shear it off. The four offsets sit
-     at 1.1px against the header's 1px and the alpha one step higher (54% vs 52%),
-     because this artwork is smaller and an identical rim would read weaker.
-     1.1px is still held under the ~1.25px counter ceiling that governs both layers;
-     extra thickness comes from the bloom, not from this rim. */
-  filter: drop-shadow(1.1px 0 0 rgb(255 255 255 / 54%))
-    drop-shadow(-1.1px 0 0 rgb(255 255 255 / 54%)) drop-shadow(0 1.1px 0 rgb(255 255 255 / 54%))
-    drop-shadow(0 -1.1px 0 rgb(255 255 255 / 54%));
+  top: 50%;
+  left: 50%;
+  width: min(720px, 62vw);
+  height: auto;
+  aspect-ratio: 807 / 505;
+  /* The filter region is 240% of this box, so the blur would be clipped at the
+     SVG's own edges without this. */
+  overflow: visible;
+  /* `overflow: visible` alone is not enough: the filter's 240% region is still
+     intersected with the SVG viewport, so the halo gets cropped at the box edge
+     (measured: a hard black band that cut the bottom rim off). Widening the
+     viewBox by 40% on every side and shifting the root into the middle lets the
+     blur land inside the painted area; the artwork coordinates then start at
+     (W*0.4, H*0.4) instead of (0, 0). */
+  --glow-pad-x: 322.8px;
+  --glow-pad-y: 202px;
+  transform: translate(-50%, -50%);
   pointer-events: none;
+  z-index: 0;
 }
 
-/* The soft outer bloom, split out of the rim for the same reason as the header's:
-   the rim layer is masked, and its mask caps the halo's reach, so the falloff has
-   to live on an unmasked layer to actually spread. Percentages again, so the bloom
-   scales with the artwork at every breakpoint rather than being pinned to the one
-   size the header happens to render at. Radii run one step above the header's: the
-   footer artwork is smaller, so an identical bloom would read weaker. */
-.site-footer .brand-logo-frame > picture::after {
-  content: "";
-  position: absolute;
-  /* inset: 0, NOT a percentage bleed. Percentages on inset resolve against the
-     containing block's WIDTH for all four sides, and this picture box is far wider
-     than it is tall, so a percentage bleed would spread sideways by ~100px while
-     spreading vertically by ~2px and the bloom would collapse into a flat smear.
-     Growth has to come from blur instead, which is what makes this resize-proof:
-     every blur digit is a fraction of the layer, so it scales with the artwork. */
-  inset: 0;
-  /* contain, the SAME scale as the rim and the mark. A bloom is the artwork's own
-     glyph shape blurred, so the transparent holes of the real letterforms have to sit
-     exactly over the opaque glyphs of the halo; if the halo's artwork were scaled any
-     differently, its glyphs would poke through those holes and the mark would read as
-     a doubled, ghosted image. Scaling is therefore not a lever here - only the blur
-     radii and alphas below are. */
-  background: url("/web/portal/xlab-logo.webp") no-repeat center / contain;
-  z-index: 1;
-  filter: drop-shadow(0 0 2.8px rgb(255 255 255 / 34%))
-    drop-shadow(0 0 6.6px rgb(255 255 255 / 24%)) drop-shadow(0 0 12px rgb(255 255 255 / 11%));
-  pointer-events: none;
+/* The SVG root paints its glow first and its silhouette grid-aligned on top.
+   Without this the blur half-covers the crisp edge and the rim reads as a soft
+   haze riding over the letters instead of a clean outline around them. */
+.world-logo-glow {
+  paint-order: stroke;
 }
+
+/* The glow silhouette, drawn white. brightness() drives the muted-teal strokes
+   to true white; saturate(0) removes the teal cast so the lift lands on neutral
+   white rather than brighter teal. contrast() nudges the strokes apart from the
+   faint watermark texture in the source so only the letterforms bloom.
+   Only this layer is brightened - the foreground .world-logo-art below is left
+   untouched so the wordmark keeps its original colour. */
+.world-logo-glow .world-logo-glow-art {
+  filter: brightness(2.35) saturate(0) contrast(1.08);
+}
+
+/* The foreground wordmark: no filter at all, so the artwork's own colours show
+   through. Its only job is to sit exactly over the glow silhouette. */
+.world-logo-glow .world-logo-art {
+  filter: none;
+}
+
+/* The glow itself. Applied to the SVG root so it sees the `<image>` above as
+   SourceGraphic. */
+.world-logo-glow {
+  filter: url("#world-logo-glow-filter");
+}
+
+/* NOT ported: the header brand mark (.portal-header-brand .xlab-logo-crop) and
+   the footer mark (.site-footer .brand-logo-frame) keep their own small halo
+   rules. Both were built on the same CSS-mask mechanism described above and are
+   due the same rewrite; they are left alone here so this change stays confined
+   to the hero. */
+
 .portal-header-actions {
-  position: fixed;
-  /* Matches the XLab header on /about: pills sit 50px from the top, 72px from
-     the right edge, with a 35.75px gutter between them. */
-  top: 50px;
-  right: 72px;
-  display: flex;
-  align-items: center;
-  gap: 35.75px;
-  font-family: "Be Vietnam Pro", sans-serif;
+position: fixed;
+/* Matches the XLab header on /about: pills sit 50px from the top, 72px from
+   the right edge, with a 35.75px gutter between them. */
+top: 50px;
+right: 72px;
+display: flex;
+align-items: center;
+gap: 35.75px;
+font-family: "Be Vietnam Pro", sans-serif;
+font-size: 14px;
+}
+
+html:not([lang="vi"]) .portal-header-actions {
+gap: 35.75px;
+}
+
+/* The controls fade into place as the curtain lifts; they never travel, so the
+ buttons read as appearing rather than sliding up from below the header. The
+ parent carries the delay so both controls stay in lockstep with the curtain. */
+.portal-header-actions {
+opacity: 0;
+transition: opacity 0.8s 0.9s cubic-bezier(0.35, 0, 0, 1);
+}
+
+html.is-ready:not(.is-lusion-section-preloading) .portal-header-actions {
+opacity: 1;
+}
+
+.portal-language-control {
+/* Mirrors the /about header pill: dark ink chrome with the same corner
+   radius as the XLab controls. The teal tokens stay for the hover state. */
+--portal-brand-teal: #57b5b4;
+--portal-brand-teal-deep: #237478;
+position: relative;
+display: block;
+width: 5.514em;
+height: 3.2em;
+flex: 0 0 auto;
+font-size: 1em;
+}
+
+.portal-language-trigger {
+display: flex;
+align-items: center;
+justify-content: center;
+position: relative;
+width: 100%;
+height: 100%;
+box-sizing: border-box;
+border: none;
+border-radius: 6.25em;
+padding: 0 1.125em 0 1.625em;
+color: #fff;
+background: rgb(43 46 58);
+font-family: inherit;
+font-size: inherit;
+font-weight: 500;
+line-height: 1;
+text-transform: uppercase;
+text-align: center;
+cursor: pointer;
+overflow: hidden;
+transition:
+  background-color 0.4s,
+  color 0.4s;
+}
+
+.portal-language-trigger:hover {
+background: var(--portal-brand-teal, #57b5b4);
+color: #fff;
+}
+
+.portal-language-trigger[aria-expanded="true"] {
+background: rgb(43 46 58);
+outline: none;
+}
+
+.portal-language-trigger:focus-visible,
+.portal-language-options [role="option"]:focus-visible,
+.portal-category-panel a:focus-visible {
+outline: 2px solid #c1ff00;
+outline-offset: 3px;
+}
+
+.portal-language-inner {
+display: flex;
+flex-direction: row;
+align-items: center;
+justify-content: center;
+position: relative;
+gap: 0.625em;
+white-space: nowrap;
+}
+
+/* The /about pill carries no arrow glyph -- just the label and a two-dot
+ indicator -- so the portal matches that structure exactly. */
+#portal-language-current {
+transition: none;
+}
+
+.portal-language-dots {
+position: relative;
+flex: 0 0 auto;
+width: 1.15em;
+height: 1.15em;
+transform: translateZ(0) rotate(180deg);
+transition: transform 0.4s cubic-bezier(0.4, 0, 0.1, 1);
+}
+
+.portal-language-dot {
+position: absolute;
+display: inline-block;
+top: 50%;
+width: 0.3125em;
+height: 0.3125em;
+border-radius: 100%;
+background: currentColor;
+transform: translateY(-50%);
+}
+
+.portal-language-dot:first-child {
+left: 0.1em;
+}
+
+.portal-language-dot:last-child {
+right: 0.1em;
+}
+
+@media (hover: hover) {
+.portal-language-trigger:hover .portal-language-dots,
+.portal-language-trigger[aria-expanded="true"] .portal-language-dots {
+  transform: translateY(-0.1em) translateZ(0) rotate(270deg);
+}
+}
+
+.portal-language-options {
+position: absolute;
+top: calc(100% + 0.55em);
+right: 0;
+z-index: 58;
+display: flex;
+flex-direction: column;
+--portal-language-gutter: max(5vw, 40px);
+width: 12em;
+max-width: calc(100vw - var(--portal-language-gutter) - var(--portal-language-gutter));
+min-width: 0;
+box-sizing: border-box;
+gap: 0;
+padding: 0.65em 0.3125em;
+border-radius: 0.625em;
+background: #fff;
+color: #080808;
+box-shadow: 0 12px 30px rgb(0 0 0 / 12%);
+font-size: 1.142857em;
+}
+
+.portal-language-options[hidden] {
+display: none !important;
+}
+
+.portal-language-options [role="option"] {
+display: block;
+position: relative;
+width: 100%;
+min-height: 44px;
+box-sizing: border-box;
+border: 0;
+border-radius: 6.25em;
+padding: 0.7em 1.3em;
+color: inherit;
+background: transparent;
+font-family: inherit;
+font-size: 1.1em;
+font-weight: 400;
+line-height: 1;
+text-align: left;
+text-transform: uppercase;
+cursor: pointer;
+transition:
+  background-color 0.3s,
+  color 0.3s;
+}
+
+.portal-language-options [role="option"]::after {
+content: "";
+position: absolute;
+top: calc(50% - 0.2em);
+right: 1.55em;
+width: 0.4em;
+height: 0.4em;
+border-radius: 50%;
+background: currentColor;
+opacity: 0;
+transform: scale(0);
+transition:
+  opacity 0.2s,
+  transform 0.2s;
+}
+
+.portal-language-options [role="option"][aria-selected="true"]::after {
+opacity: 1;
+transform: scale(1);
+}
+
+.portal-language-options [role="option"]:hover {
+background: rgb(0 0 0 / 4.5%);
+}
+
+.portal-category-menu {
+position: relative;
+}
+
+.portal-category-trigger {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+width: auto;
+/* Pins the desktop pill to /about's measured 140.56px box; the label alone
+   would render a few px narrow because this trigger keeps its dots child. */
+min-width: 10.04em;
+height: 3.2em;
+box-sizing: border-box;
+border: none;
+border-radius: 6.25em;
+padding: 0 1.125em 0 1.625em;
+color: #000;
+background: #e4e6ef;
+font-family: inherit;
+/* /about keeps the trigger at 14px so the pill lands on 140.56x44.8 at desktop. */
+font-size: 1em;
+font-weight: 500;
+line-height: 1.15;
+list-style: none;
+cursor: pointer;
+user-select: none;
+transition:
+  transform 0.8s 1s cubic-bezier(0.35, 0, 0, 1),
+  color 0.4s,
+  background-color 0.4s;
+}
+
+.portal-category-trigger:hover,
+.portal-category-menu.is-open > .portal-category-trigger {
+color: #000;
+background: #fff;
+}
+
+.portal-category-trigger:focus-visible {
+outline: none;
+}
+
+.portal-category-trigger-inner {
+display: flex;
+align-items: center;
+justify-content: center;
+position: relative;
+right: 0.1em;
+gap: 0.625em;
+overflow: hidden;
+background: transparent;
+}
+
+.portal-category-label-viewport {
+position: relative;
+display: block;
+overflow: hidden;
+height: 1.2em;
+line-height: 1.2em;
+white-space: nowrap;
+}
+
+.portal-category-label-current,
+.portal-category-label-close {
+transition: transform 0.3s cubic-bezier(0.4, 0, 0.1, 1);
+}
+
+.portal-category-label-current {
+display: block;
+}
+
+.portal-category-label-close {
+position: absolute;
+top: 0;
+left: 0;
+transform: translate3d(0, 100%, 0);
+}
+
+.portal-category-menu.is-open > .portal-category-trigger .portal-category-label-current {
+transform: translate3d(0, -100%, 0);
+}
+
+.portal-category-menu.is-open > .portal-category-trigger .portal-category-label-close {
+transform: translateZ(0);
+}
+
+.portal-category-dots {
+position: relative;
+flex: 0 0 auto;
+width: 1.15em;
+height: 1.15em;
+transform: translateZ(0) rotate(180deg);
+transition: transform 0.4s cubic-bezier(0.4, 0, 0.1, 1);
+}
+
+.portal-category-dot {
+position: absolute;
+display: inline-block;
+top: 50%;
+width: 0.3125em;
+height: 0.3125em;
+border-radius: 100%;
+background: currentColor;
+transform: translateY(-50%);
+}
+
+.portal-category-dot:first-child {
+left: 0.1em;
+}
+
+.portal-category-dot:last-child {
+right: 0.1em;
+}
+
+.portal-category-trigger:hover .portal-category-dots,
+.portal-category-menu.is-open > .portal-category-trigger .portal-category-dots {
+transform: translateY(-0.1em) translateZ(0) rotate(270deg);
+}
+
+.portal-category-panel {
+position: absolute;
+--portal-category-gutter: clamp(20px, 4vw, 34px);
+top: 3.6em;
+right: 0;
+z-index: 57;
+display: flex;
+flex-direction: column;
+width: 19.38em;
+max-width: calc(100vw - var(--portal-category-gutter) - var(--portal-category-gutter));
+box-sizing: border-box;
+gap: 0;
+padding: clamp(0.25em, 0.45vw, 0.375em);
+border: 0;
+border-radius: 0.625em;
+background: #fff;
+color: #080808;
+opacity: 0;
+visibility: hidden;
+transform: translate3d(0, 5.5em, 0) rotate(3.5deg);
+pointer-events: none;
+will-change: transform, opacity;
+/* Lusion staggers its four menu containers with --open-delay: index/50s and
+   --close-delay: |index - count|/50s. This panel is a single container, so
+   that formula resolves to no delay on either side and the slide starts on
+   the very next frame. */
+transition:
+  transform 0.5s cubic-bezier(0.4, 0, 0.1, 1),
+  opacity 0.5s cubic-bezier(0.4, 0, 0.1, 1),
+  visibility 0s linear 0.5s;
+}
+
+.portal-category-menu.is-open > .portal-category-panel {
+opacity: 1;
+visibility: visible;
+transform: translateZ(0);
+pointer-events: auto;
+transition:
+  transform 0.5s cubic-bezier(0.4, 0, 0.1, 1),
+  opacity 0.5s cubic-bezier(0.4, 0, 0.1, 1),
+  visibility 0s linear;
+}
+
+.portal-category-menu.is-open > .portal-category-panel a {
+pointer-events: auto;
+}
+
+.portal-category-panel a {
+display: block;
+position: relative;
+min-height: clamp(40px, 4.6vw, 48px);
+box-sizing: border-box;
+overflow: hidden;
+width: 100%;
+border-radius: 0;
+padding: 0.9em 1.625em;
+color: inherit;
+font-family: "Be Vietnam Pro", ui-sans-serif, sans-serif;
+font-size: clamp(15px, 1vw, 24px);
+font-weight: 400;
+line-height: 1.45;
+text-transform: uppercase;
+text-decoration: none;
+pointer-events: none;
+}
+
+.portal-category-panel a::before {
+content: "";
+position: absolute;
+top: calc(50% - 0.25em);
+right: 2em;
+width: 0.5em;
+height: 0.5em;
+border-radius: 50%;
+background: #000;
+transform: scale(0);
+transition: transform 0.3s cubic-bezier(0.4, 0, 0.1, 1);
+}
+
+.portal-category-panel a[aria-current="page"]::before {
+transform: scale(1);
+}
+
+.portal-category-panel a[aria-current="page"]:hover::before {
+transform: scale(0);
+}
+
+.header-menu-link-background {
+position: absolute;
+inset: 0;
+width: 100%;
+height: 100%;
+border-radius: 6.25em;
+/* Same XLab lockup teal as the language trigger, declared on .portal-language-control. */
+background: var(--portal-brand-teal-deep, #237478);
+opacity: 0;
+transform: scale(0.85);
+transition:
+  opacity 0.3s,
+  transform 0.4s cubic-bezier(0.4, 0, 0.1, 1);
+}
+
+.header-menu-link-inner {
+display: block;
+position: relative;
+/* One token drives the clip height, the label roll distance, and the clone
+   offset, so the three can never disagree.
+   The label's painted box is ~1.28x its line box (the display face and the
+   Vietnamese diacritics both overshoot), so a roll distance of 100% of the
+   line box leaves the clone overlapping the label and the text renders
+   twice for the whole roll. 1.28 clears it with a hair of margin. */
+--header-menu-link-font-size: 1.625em;
+--header-menu-link-line-height: 1.3;
+--header-menu-link-roll: 128%;
+height: calc(
+  var(--header-menu-link-font-size) * var(--header-menu-link-line-height) *
+    var(--header-menu-link-roll) / 100%
+);
+overflow: hidden;
+}
+
+.header-menu-link-text,
+.header-menu-link-text-clone {
+display: inline-block;
+position: relative;
+z-index: 1;
+font-size: var(--header-menu-link-font-size);
+line-height: var(--header-menu-link-line-height);
+text-transform: uppercase;
+transition:
+  color 0.4s,
+  transform 0.4s cubic-bezier(0.4, 0, 0.1, 1);
+}
+
+.header-menu-link-text-clone {
+position: absolute;
+top: 0;
+left: 0;
+/* Parked exactly one roll distance below the label so it stays clipped. */
+transform: translate3d(0, var(--header-menu-link-roll), 0);
+}
+
+.header-menu-link-svg {
+position: absolute;
+top: calc(50% - 0.75em);
+right: 0;
+width: 1.5em;
+height: 1.5em;
+transform: scale(0);
+transition:
+  color 0.4s,
+  transform 0.2s cubic-bezier(0.4, 0, 0.1, 1);
+}
+
+@media (hover: hover) {
+.portal-category-panel a:hover,
+.portal-category-panel a:focus-visible {
+  color: var(--header-text-color, #000);
+}
+
+.portal-category-panel a:hover .header-menu-link-text,
+.portal-category-panel a:focus-visible .header-menu-link-text {
+  /* Same distance the clone travels, so the two labels swap cleanly. */
+  transform: translate3d(0, calc(-1 * var(--header-menu-link-roll)), 0);
+}
+
+.portal-category-panel a:hover .header-menu-link-text-clone,
+.portal-category-panel a:focus-visible .header-menu-link-text-clone {
+  transform: translateZ(0);
+}
+
+.portal-category-panel a:hover .header-menu-link-background,
+.portal-category-panel a:focus-visible .header-menu-link-background {
+  opacity: 0.1;
+  transform: scale(1);
+}
+
+.portal-category-panel a:hover .header-menu-link-svg,
+.portal-category-panel a:focus-visible .header-menu-link-svg {
+  transform: scale(1);
+}
+
+.portal-category-panel a:hover .header-menu-link-svg,
+.portal-category-panel a:focus-visible .header-menu-link-svg {
+  transition:
+    color 0.4s,
+    transform 0.2s 0.2s cubic-bezier(0.4, 0, 0.1, 1);
+}
+}
+
+@media (max-width: 812px) {
+.portal-header {
+  /* Same breakpoint the XLab header uses: the wordmark stays at 80px and the
+     pills collapse to the square DANH MÃƒÂ¡Ã‚Â»Ã‚Â¤C button with the label clipped. */
+  --portal-lusion-gutter: clamp(15px, 5.07vw, 25px);
+  --portal-lusion-unit: clamp(12px, 3.245vw, 16px);
+  grid-template-columns: 80px minmax(0, 1fr) auto;
+  min-height: 0;
+  padding: var(--portal-lusion-gutter) var(--portal-lusion-gutter) 18px;
+}
+
+.portal-header-brand {
+  width: 80px;
+}
+
+.portal-header-actions {
+  top: var(--portal-lusion-gutter);
+  right: var(--portal-lusion-gutter);
+  align-self: start;
+  gap: 22px;
+  margin-right: 0;
+  /* The /about pills stay at a flat 14px at every width, so the controls keep
+     their own fixed size instead of inheriting the fluid header unit. */
   font-size: 14px;
 }
 
 html:not([lang="vi"]) .portal-header-actions {
-  gap: 35.75px;
-}
-
-/* The controls fade into place as the curtain lifts; they never travel, so the
-   buttons read as appearing rather than sliding up from below the header. The
-   parent carries the delay so both controls stay in lockstep with the curtain. */
-.portal-header-actions {
-  opacity: 0;
-  transition: opacity 0.8s 0.9s cubic-bezier(0.35, 0, 0, 1);
-}
-
-html.is-ready:not(.is-lusion-section-preloading) .portal-header-actions {
-  opacity: 1;
+  gap: 22px;
 }
 
 .portal-language-control {
-  /* Mirrors the /about header pill: dark ink chrome with the same corner
-     radius as the XLab controls. The teal tokens stay for the hover state. */
-  --portal-brand-teal: #57b5b4;
-  --portal-brand-teal-deep: #237478;
-  position: relative;
-  display: block;
+  /* /about keeps the wide VI pill on mobile; only the menu button squares up. */
   width: 5.514em;
-  height: 3.2em;
+  height: auto;
   flex: 0 0 auto;
   font-size: 1em;
 }
 
 .portal-language-trigger {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
   width: 100%;
-  height: 100%;
-  box-sizing: border-box;
-  border: none;
-  border-radius: 6.25em;
+  min-width: 0;
+  height: 3.2em;
+  min-height: 44px;
   padding: 0 1.125em 0 1.625em;
-  color: #fff;
-  background: rgb(43 46 58);
-  font-family: inherit;
-  font-size: inherit;
-  font-weight: 500;
-  line-height: 1;
-  text-transform: uppercase;
-  text-align: center;
-  cursor: pointer;
-  overflow: hidden;
-  transition:
-    background-color 0.4s,
-    color 0.4s;
-}
-
-.portal-language-trigger:hover {
-  background: var(--portal-brand-teal, #57b5b4);
-  color: #fff;
+  font-size: 1em;
 }
 
 .portal-language-trigger[aria-expanded="true"] {
@@ -4248,680 +4810,187 @@ html.is-ready:not(.is-lusion-section-preloading) .portal-header-actions {
   outline: none;
 }
 
-.portal-language-trigger:focus-visible,
-.portal-language-options [role="option"]:focus-visible,
-.portal-category-panel a:focus-visible {
-  outline: 2px solid #c1ff00;
-  outline-offset: 3px;
-}
-
-.portal-language-inner {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  gap: 0.625em;
-  white-space: nowrap;
-}
-
-/* The /about pill carries no arrow glyph -- just the label and a two-dot
-   indicator -- so the portal matches that structure exactly. */
-#portal-language-current {
-  transition: none;
-}
-
-.portal-language-dots {
-  position: relative;
-  flex: 0 0 auto;
-  width: 1.15em;
-  height: 1.15em;
-  transform: translateZ(0) rotate(180deg);
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.1, 1);
-}
-
-.portal-language-dot {
-  position: absolute;
-  display: inline-block;
-  top: 50%;
-  width: 0.3125em;
-  height: 0.3125em;
-  border-radius: 100%;
-  background: currentColor;
-  transform: translateY(-50%);
-}
-
-.portal-language-dot:first-child {
-  left: 0.1em;
-}
-
-.portal-language-dot:last-child {
-  right: 0.1em;
-}
-
-@media (hover: hover) {
-  .portal-language-trigger:hover .portal-language-dots,
-  .portal-language-trigger[aria-expanded="true"] .portal-language-dots {
-    transform: translateY(-0.1em) translateZ(0) rotate(270deg);
-  }
-}
-
 .portal-language-options {
-  position: absolute;
   top: calc(100% + 0.55em);
   right: 0;
-  z-index: 58;
-  display: flex;
-  flex-direction: column;
-  --portal-language-gutter: max(5vw, 40px);
   width: 12em;
-  max-width: calc(100vw - var(--portal-language-gutter) - var(--portal-language-gutter));
+  max-width: calc(100vw - var(--portal-lusion-gutter) - var(--portal-lusion-gutter));
   min-width: 0;
-  box-sizing: border-box;
-  gap: 0;
   padding: 0.65em 0.3125em;
-  border-radius: 0.625em;
-  background: #fff;
-  color: #080808;
-  box-shadow: 0 12px 30px rgb(0 0 0 / 12%);
   font-size: 1.142857em;
 }
 
-.portal-language-options[hidden] {
-  display: none !important;
-}
-
 .portal-language-options [role="option"] {
-  display: block;
-  position: relative;
-  width: 100%;
   min-height: 44px;
-  box-sizing: border-box;
-  border: 0;
-  border-radius: 6.25em;
   padding: 0.7em 1.3em;
-  color: inherit;
-  background: transparent;
-  font-family: inherit;
   font-size: 1.1em;
-  font-weight: 400;
-  line-height: 1;
-  text-align: left;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition:
-    background-color 0.3s,
-    color 0.3s;
 }
 
 .portal-language-options [role="option"]::after {
-  content: "";
-  position: absolute;
-  top: calc(50% - 0.2em);
   right: 1.55em;
-  width: 0.4em;
-  height: 0.4em;
-  border-radius: 50%;
-  background: currentColor;
-  opacity: 0;
-  transform: scale(0);
-  transition:
-    opacity 0.2s,
-    transform 0.2s;
-}
-
-.portal-language-options [role="option"][aria-selected="true"]::after {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.portal-language-options [role="option"]:hover {
-  background: rgb(0 0 0 / 4.5%);
 }
 
 .portal-category-menu {
-  position: relative;
+  font-size: inherit;
 }
 
 .portal-category-trigger {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: auto;
-  /* Pins the desktop pill to /about's measured 140.56px box; the label alone
-     would render a few px narrow because this trigger keeps its dots child. */
-  min-width: 10.04em;
+  width: 3.2em;
+  min-width: 44px;
   height: 3.2em;
-  box-sizing: border-box;
-  border: none;
+  min-height: 44px;
+  padding: 0;
   border-radius: 6.25em;
-  padding: 0 1.125em 0 1.625em;
-  color: #000;
-  background: #e4e6ef;
-  font-family: inherit;
-  /* /about keeps the trigger at 14px so the pill lands on 140.56x44.8 at desktop. */
   font-size: 1em;
-  font-weight: 500;
-  line-height: 1.15;
-  list-style: none;
-  cursor: pointer;
-  user-select: none;
-  transition:
-    transform 0.8s 1s cubic-bezier(0.35, 0, 0, 1),
-    color 0.4s,
-    background-color 0.4s;
-}
-
-.portal-category-trigger:hover,
-.portal-category-menu.is-open > .portal-category-trigger {
-  color: #000;
-  background: #fff;
-}
-
-.portal-category-trigger:focus-visible {
-  outline: none;
-}
-
-.portal-category-trigger-inner {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  right: 0.1em;
-  gap: 0.625em;
-  overflow: hidden;
-  background: transparent;
 }
 
 .portal-category-label-viewport {
-  position: relative;
-  display: block;
-  overflow: hidden;
-  height: 1.2em;
-  line-height: 1.2em;
-  white-space: nowrap;
-}
-
-.portal-category-label-current,
-.portal-category-label-close {
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.1, 1);
-}
-
-.portal-category-label-current {
-  display: block;
-}
-
-.portal-category-label-close {
-  position: absolute;
-  top: 0;
-  left: 0;
-  transform: translate3d(0, 100%, 0);
-}
-
-.portal-category-menu.is-open > .portal-category-trigger .portal-category-label-current {
-  transform: translate3d(0, -100%, 0);
-}
-
-.portal-category-menu.is-open > .portal-category-trigger .portal-category-label-close {
-  transform: translateZ(0);
+  display: none;
 }
 
 .portal-category-dots {
-  position: relative;
-  flex: 0 0 auto;
-  width: 1.15em;
-  height: 1.15em;
-  transform: translateZ(0) rotate(180deg);
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.1, 1);
+  font-size: 1.4em;
 }
 
-.portal-category-dot {
-  position: absolute;
-  display: inline-block;
-  top: 50%;
-  width: 0.3125em;
-  height: 0.3125em;
-  border-radius: 100%;
-  background: currentColor;
-  transform: translateY(-50%);
-}
-
-.portal-category-dot:first-child {
-  left: 0.1em;
-}
-
-.portal-category-dot:last-child {
-  right: 0.1em;
-}
-
-.portal-category-trigger:hover .portal-category-dots,
 .portal-category-menu.is-open > .portal-category-trigger .portal-category-dots {
-  transform: translateY(-0.1em) translateZ(0) rotate(270deg);
+  transform: translate(0.05em) translateY(-0.1em) translateZ(0) rotate(270deg);
 }
 
 .portal-category-panel {
-  position: absolute;
-  --portal-category-gutter: clamp(20px, 4vw, 34px);
-  top: 3.6em;
+  top: calc(
+    var(--portal-lusion-gutter) + var(--portal-lusion-unit) + var(--portal-lusion-unit) +
+      var(--portal-lusion-unit)
+  );
   right: 0;
-  z-index: 57;
-  display: flex;
-  flex-direction: column;
-  width: 19.38em;
-  max-width: calc(100vw - var(--portal-category-gutter) - var(--portal-category-gutter));
-  box-sizing: border-box;
-  gap: 0;
-  padding: clamp(0.25em, 0.45vw, 0.375em);
-  border: 0;
+  width: calc(100vw - var(--portal-lusion-gutter) - var(--portal-lusion-gutter));
+  max-width: calc(100vw - var(--portal-lusion-gutter) - var(--portal-lusion-gutter));
+  padding: 1em 0.3125em;
   border-radius: 0.625em;
-  background: #fff;
-  color: #080808;
-  opacity: 0;
-  visibility: hidden;
-  transform: translate3d(0, 5.5em, 0) rotate(3.5deg);
-  pointer-events: none;
-  will-change: transform, opacity;
-  /* Lusion staggers its four menu containers with --open-delay: index/50s and
-     --close-delay: |index - count|/50s. This panel is a single container, so
-     that formula resolves to no delay on either side and the slide starts on
-     the very next frame. */
-  transition:
-    transform 0.5s cubic-bezier(0.4, 0, 0.1, 1),
-    opacity 0.5s cubic-bezier(0.4, 0, 0.1, 1),
-    visibility 0s linear 0.5s;
-}
-
-.portal-category-menu.is-open > .portal-category-panel {
-  opacity: 1;
-  visibility: visible;
-  transform: translateZ(0);
-  pointer-events: auto;
-  transition:
-    transform 0.5s cubic-bezier(0.4, 0, 0.1, 1),
-    opacity 0.5s cubic-bezier(0.4, 0, 0.1, 1),
-    visibility 0s linear;
-}
-
-.portal-category-menu.is-open > .portal-category-panel a {
-  pointer-events: auto;
+  font-size: var(--portal-lusion-unit);
 }
 
 .portal-category-panel a {
   display: block;
-  position: relative;
-  min-height: clamp(40px, 4.6vw, 48px);
-  box-sizing: border-box;
-  overflow: hidden;
-  width: 100%;
+  min-height: 0;
   border-radius: 0;
   padding: 0.9em 1.625em;
-  color: inherit;
-  font-family: "Be Vietnam Pro", ui-sans-serif, sans-serif;
-  font-size: clamp(15px, 1vw, 24px);
-  font-weight: 400;
+  font-size: 1em;
   line-height: 1.45;
-  text-transform: uppercase;
-  text-decoration: none;
-  pointer-events: none;
 }
 
-.portal-category-panel a::before {
-  content: "";
-  position: absolute;
-  top: calc(50% - 0.25em);
-  right: 2em;
-  width: 0.5em;
-  height: 0.5em;
-  border-radius: 50%;
-  background: #000;
-  transform: scale(0);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.1, 1);
-}
-
-.portal-category-panel a[aria-current="page"]::before {
-  transform: scale(1);
-}
-
-.portal-category-panel a[aria-current="page"]:hover::before {
-  transform: scale(0);
-}
-
-.header-menu-link-background {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 6.25em;
-  /* Same XLab lockup teal as the language trigger, declared on .portal-language-control. */
-  background: var(--portal-brand-teal-deep, #237478);
-  opacity: 0;
-  transform: scale(0.85);
-  transition:
-    opacity 0.3s,
-    transform 0.4s cubic-bezier(0.4, 0, 0.1, 1);
-}
-
-.header-menu-link-inner {
+.portal-category-panel .header-menu-link-text,
+.portal-category-panel .header-menu-link-text-clone {
   display: block;
-  position: relative;
-  /* One token drives the clip height, the label roll distance, and the clone
-     offset, so the three can never disagree.
-     The label's painted box is ~1.28x its line box (the display face and the
-     Vietnamese diacritics both overshoot), so a roll distance of 100% of the
-     line box leaves the clone overlapping the label and the text renders
-     twice for the whole roll. 1.28 clears it with a hair of margin. */
-  --header-menu-link-font-size: 1.625em;
-  --header-menu-link-line-height: 1.3;
-  --header-menu-link-roll: 128%;
-  height: calc(
-    var(--header-menu-link-font-size) * var(--header-menu-link-line-height) *
-      var(--header-menu-link-roll) / 100%
-  );
-  overflow: hidden;
+  font-size: 1.25em;
+  line-height: 1.6;
 }
-
-.header-menu-link-text,
-.header-menu-link-text-clone {
-  display: inline-block;
-  position: relative;
-  z-index: 1;
-  font-size: var(--header-menu-link-font-size);
-  line-height: var(--header-menu-link-line-height);
-  text-transform: uppercase;
-  transition:
-    color 0.4s,
-    transform 0.4s cubic-bezier(0.4, 0, 0.1, 1);
-}
-
-.header-menu-link-text-clone {
-  position: absolute;
-  top: 0;
-  left: 0;
-  /* Parked exactly one roll distance below the label so it stays clipped. */
-  transform: translate3d(0, var(--header-menu-link-roll), 0);
-}
-
-.header-menu-link-svg {
-  position: absolute;
-  top: calc(50% - 0.75em);
-  right: 0;
-  width: 1.5em;
-  height: 1.5em;
-  transform: scale(0);
-  transition:
-    color 0.4s,
-    transform 0.2s cubic-bezier(0.4, 0, 0.1, 1);
-}
-
-@media (hover: hover) {
-  .portal-category-panel a:hover,
-  .portal-category-panel a:focus-visible {
-    color: var(--header-text-color, #000);
-  }
-
-  .portal-category-panel a:hover .header-menu-link-text,
-  .portal-category-panel a:focus-visible .header-menu-link-text {
-    /* Same distance the clone travels, so the two labels swap cleanly. */
-    transform: translate3d(0, calc(-1 * var(--header-menu-link-roll)), 0);
-  }
-
-  .portal-category-panel a:hover .header-menu-link-text-clone,
-  .portal-category-panel a:focus-visible .header-menu-link-text-clone {
-    transform: translateZ(0);
-  }
-
-  .portal-category-panel a:hover .header-menu-link-background,
-  .portal-category-panel a:focus-visible .header-menu-link-background {
-    opacity: 0.1;
-    transform: scale(1);
-  }
-
-  .portal-category-panel a:hover .header-menu-link-svg,
-  .portal-category-panel a:focus-visible .header-menu-link-svg {
-    transform: scale(1);
-  }
-
-  .portal-category-panel a:hover .header-menu-link-svg,
-  .portal-category-panel a:focus-visible .header-menu-link-svg {
-    transition:
-      color 0.4s,
-      transform 0.2s 0.2s cubic-bezier(0.4, 0, 0.1, 1);
-  }
-}
-
-@media (max-width: 812px) {
-  .portal-header {
-    /* Same breakpoint the XLab header uses: the wordmark stays at 80px and the
-       pills collapse to the square DANH Má»¤C button with the label clipped. */
-    --portal-lusion-gutter: clamp(15px, 5.07vw, 25px);
-    --portal-lusion-unit: clamp(12px, 3.245vw, 16px);
-    grid-template-columns: 80px minmax(0, 1fr) auto;
-    min-height: 0;
-    padding: var(--portal-lusion-gutter) var(--portal-lusion-gutter) 18px;
-  }
-
-  .portal-header-brand {
-    width: 80px;
-  }
-
-  .portal-header-actions {
-    top: var(--portal-lusion-gutter);
-    right: var(--portal-lusion-gutter);
-    align-self: start;
-    gap: 22px;
-    margin-right: 0;
-    /* The /about pills stay at a flat 14px at every width, so the controls keep
-       their own fixed size instead of inheriting the fluid header unit. */
-    font-size: 14px;
-  }
-
-  html:not([lang="vi"]) .portal-header-actions {
-    gap: 22px;
-  }
-
-  .portal-language-control {
-    /* /about keeps the wide VI pill on mobile; only the menu button squares up. */
-    width: 5.514em;
-    height: auto;
-    flex: 0 0 auto;
-    font-size: 1em;
-  }
-
-  .portal-language-trigger {
-    width: 100%;
-    min-width: 0;
-    height: 3.2em;
-    min-height: 44px;
-    padding: 0 1.125em 0 1.625em;
-    font-size: 1em;
-  }
-
-  .portal-language-trigger[aria-expanded="true"] {
-    background: rgb(43 46 58);
-    outline: none;
-  }
-
-  .portal-language-options {
-    top: calc(100% + 0.55em);
-    right: 0;
-    width: 12em;
-    max-width: calc(100vw - var(--portal-lusion-gutter) - var(--portal-lusion-gutter));
-    min-width: 0;
-    padding: 0.65em 0.3125em;
-    font-size: 1.142857em;
-  }
-
-  .portal-language-options [role="option"] {
-    min-height: 44px;
-    padding: 0.7em 1.3em;
-    font-size: 1.1em;
-  }
-
-  .portal-language-options [role="option"]::after {
-    right: 1.55em;
-  }
-
-  .portal-category-menu {
-    font-size: inherit;
-  }
-
-  .portal-category-trigger {
-    width: 3.2em;
-    min-width: 44px;
-    height: 3.2em;
-    min-height: 44px;
-    padding: 0;
-    border-radius: 6.25em;
-    font-size: 1em;
-  }
-
-  .portal-category-label-viewport {
-    display: none;
-  }
-
-  .portal-category-dots {
-    font-size: 1.4em;
-  }
-
-  .portal-category-menu.is-open > .portal-category-trigger .portal-category-dots {
-    transform: translate(0.05em) translateY(-0.1em) translateZ(0) rotate(270deg);
-  }
-
-  .portal-category-panel {
-    top: calc(
-      var(--portal-lusion-gutter) + var(--portal-lusion-unit) + var(--portal-lusion-unit) +
-        var(--portal-lusion-unit)
-    );
-    right: 0;
-    width: calc(100vw - var(--portal-lusion-gutter) - var(--portal-lusion-gutter));
-    max-width: calc(100vw - var(--portal-lusion-gutter) - var(--portal-lusion-gutter));
-    padding: 1em 0.3125em;
-    border-radius: 0.625em;
-    font-size: var(--portal-lusion-unit);
-  }
-
-  .portal-category-panel a {
-    display: block;
-    min-height: 0;
-    border-radius: 0;
-    padding: 0.9em 1.625em;
-    font-size: 1em;
-    line-height: 1.45;
-  }
-
-  .portal-category-panel .header-menu-link-text,
-  .portal-category-panel .header-menu-link-text-clone {
-    display: block;
-    font-size: 1.25em;
-    line-height: 1.6;
-  }
 }
 
 html[lang="vi"] .portal-category-panel a {
-  padding: 0.9em 1.625em;
-  line-height: 1.45;
+padding: 0.9em 1.625em;
+line-height: 1.45;
 }
 
 html[lang="vi"] .portal-category-panel {
-  --header-menu-link-font-size: 1.25em;
+--header-menu-link-font-size: 1.25em;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .portal-header-actions {
-    transition-duration: 0.01ms;
-    transition-delay: 0ms;
-  }
+.portal-header-actions {
+  transition-duration: 0.01ms;
+  transition-delay: 0ms;
+}
 
-  .portal-language-control,
-  .portal-category-trigger {
-    transform: none;
-  }
+.portal-language-control,
+.portal-category-trigger {
+  transform: none;
+}
 
-  .portal-language-dots,
-  .portal-language-trigger:hover .portal-language-dots,
-  .portal-language-trigger[aria-expanded="true"] .portal-language-dots {
-    transform: translateZ(0) rotate(180deg);
-    transition-duration: 0.01ms;
-  }
+.portal-language-dots,
+.portal-language-trigger:hover .portal-language-dots,
+.portal-language-trigger[aria-expanded="true"] .portal-language-dots {
+  transform: translateZ(0) rotate(180deg);
+  transition-duration: 0.01ms;
+}
 
-  .portal-language-trigger:hover .portal-language-dots,
-  .portal-language-trigger[aria-expanded="true"] .portal-language-dots {
-    transform: translateY(-0.1em) translateZ(0) rotate(270deg);
-  }
+.portal-language-trigger:hover .portal-language-dots,
+.portal-language-trigger[aria-expanded="true"] .portal-language-dots {
+  transform: translateY(-0.1em) translateZ(0) rotate(270deg);
+}
 
-  #portal-language-current,
-  .portal-language-trigger:hover #portal-language-current,
-  .portal-language-trigger[aria-expanded="true"] #portal-language-current {
-    transition-duration: 0.01ms;
-    transition-delay: 0ms;
-  }
+#portal-language-current,
+.portal-language-trigger:hover #portal-language-current,
+.portal-language-trigger[aria-expanded="true"] #portal-language-current {
+  transition-duration: 0.01ms;
+  transition-delay: 0ms;
+}
 
-  .portal-category-panel,
-  .portal-category-panel a,
-  .portal-category-panel a::before,
-  .portal-category-panel .header-menu-link-background,
-  .portal-category-panel .header-menu-link-text,
-  .portal-category-panel .header-menu-link-text-clone,
-  .portal-category-panel .header-menu-link-svg {
-    transition-duration: 0.01ms;
-    transition-delay: 0ms;
-  }
+.portal-category-panel,
+.portal-category-panel a,
+.portal-category-panel a::before,
+.portal-category-panel .header-menu-link-background,
+.portal-category-panel .header-menu-link-text,
+.portal-category-panel .header-menu-link-text-clone,
+.portal-category-panel .header-menu-link-svg {
+  transition-duration: 0.01ms;
+  transition-delay: 0ms;
+}
 }
 
 /* Center and scale the Portal opening copy across viewport sizes. */
 .app-shell:has(> main > .hero.hero-world) .world-copy {
-  top: 50%;
-  right: auto;
-  left: 50%;
-  width: min(1320px, calc(100vw - clamp(40px, 8vw, 120px)));
-  translate: -50% -50%;
-  text-align: left;
+top: 50%;
+right: auto;
+left: 50%;
+width: min(1320px, calc(100vw - clamp(40px, 8vw, 120px)));
+translate: -50% -50%;
+text-align: left;
 }
 
 .app-shell:has(> main > .hero.hero-world) .world-copy h1 {
-  justify-items: start;
+justify-items: start;
 }
 
 .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line {
-  transform-origin: left center;
+transform-origin: left center;
 }
 
 .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--lead {
-  margin-left: 0;
-  font-size: clamp(44px, 5.2vw, 80px);
+margin-left: 0;
+font-size: clamp(44px, 5.2vw, 80px);
 }
 
 .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--final {
-  margin-left: 0;
-  font-size: clamp(88px, 12vw, 216px);
+margin-left: 0;
+font-size: clamp(88px, 12vw, 216px);
 }
 
 .app-shell:has(> main > .hero.hero-world) .world-lede {
-  max-width: min(52ch, 100%);
-  margin: clamp(14px, 1.6vw, 24px) 0 0 4px;
-  font-size: clamp(16px, 1.15vw, 20px);
-  text-align: left;
+max-width: min(52ch, 100%);
+margin: clamp(14px, 1.6vw, 24px) 0 0 4px;
+font-size: clamp(16px, 1.15vw, 20px);
+text-align: left;
 }
 
 @media (max-width: 760px) {
-  .app-shell:has(> main > .hero.hero-world) .world-copy {
-    width: calc(100vw - clamp(36px, 9vw, 68px));
-  }
+.app-shell:has(> main > .hero.hero-world) .world-copy {
+  width: calc(100vw - clamp(36px, 9vw, 68px));
+}
 
-  .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--lead {
-    font-size: clamp(48px, 10vw, 72px);
-  }
+.app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--lead {
+  font-size: clamp(48px, 10vw, 72px);
+}
 
-  .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--final {
-    font-size: clamp(60px, 18.5vw, 144px);
-  }
+.app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--final {
+  font-size: clamp(60px, 18.5vw, 144px);
+}
 
-  .app-shell:has(> main > .hero.hero-world) .world-lede {
-    font-size: clamp(15px, 3.2vw, 20px);
-  }
+.app-shell:has(> main > .hero.hero-world) .world-lede {
+  font-size: clamp(15px, 3.2vw, 20px);
+}
 
-  .app-shell:has(> main > .hero.hero-world) .world-lede > span {
-    margin-inline: 0;
-    text-align: left;
-  }
+.app-shell:has(> main > .hero.hero-world) .world-lede > span {
+  margin-inline: 0;
+  text-align: left;
+}
 }

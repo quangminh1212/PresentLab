@@ -1,0 +1,4932 @@
+/* XLab World: an original WebGL exploration layer for the client portal. */
+.hero.hero-world {
+  display: block;
+  min-height: 0;
+  padding: 24px 0 38px;
+}
+
+.world-stage {
+  position: relative;
+  min-height: min(820px, calc(100svh - 128px));
+  overflow: hidden;
+  isolation: isolate;
+  perspective: 1200px;
+  border: 1px solid rgb(140 232 216 / 24%);
+  border-radius: 32px;
+  background: #03070d;
+  box-shadow:
+    0 42px 100px rgb(0 0 0 / 34%),
+    inset 0 1px 0 rgb(255 255 255 / 8%),
+    inset 0 0 80px rgb(21 190 173 / 7%);
+}
+
+.world-space-image,
+.world-water-video,
+.world-canvas,
+.world-atmosphere,
+.world-scanlines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.world-space-image {
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 68% 24%, rgb(91 94 255 / 29%), transparent 20%),
+    radial-gradient(ellipse at 54% 57%, rgb(0 187 203 / 25%), transparent 41%),
+    radial-gradient(ellipse at 80% 86%, rgb(235 77 171 / 19%), transparent 34%),
+    radial-gradient(circle at 18% 22%, rgb(110 71 214 / 18%), transparent 24%),
+    linear-gradient(145deg, #01030a 0%, #050819 50%, #10071e 100%);
+  background-blend-mode: screen, screen, screen, screen, normal;
+  background-size:
+    150% 150%,
+    145% 145%,
+    130% 130%,
+    170% 170%,
+    100% 100%;
+  filter: saturate(1.12) contrast(1.08) brightness(0.72);
+  opacity: 0.96;
+  transform: translate3d(
+      calc(
+        var(--parallax-x, 0px) * -3.2 + var(--cosmic-shift-x, 0px) + var(--world-image-shift-x, 0px)
+      ),
+      calc(
+        var(--parallax-y, 0px) * -3.2 + var(--cosmic-shift-y, 0px) + var(--world-image-shift-y, 0px)
+      ),
+      0
+    )
+    rotateX(var(--world-image-tilt-y, 0deg)) rotateY(var(--world-image-tilt-x, 0deg))
+    scale(var(--world-image-scale, 1.12));
+  transform-origin: center;
+  transform-style: preserve-3d;
+  will-change: transform, background-position, filter;
+  animation: world-image-drift 26s ease-in-out infinite alternate;
+}
+
+.world-water-video {
+  z-index: 0;
+  object-fit: cover;
+  object-position: center;
+  pointer-events: none;
+  opacity: 0;
+  background: #03131b;
+  filter: saturate(1.12) contrast(1.08) brightness(0.68);
+  transform: translate3d(
+      calc(
+        var(--parallax-x, 0px) * -2.4 + var(--water-shift-x, 0px) + var(--world-image-shift-x, 0px)
+      ),
+      calc(
+        var(--parallax-y, 0px) * -2.4 + var(--water-shift-y, 0px) + var(--world-image-shift-y, 0px)
+      ),
+      0
+    )
+    rotateX(var(--world-image-tilt-y, 0deg)) rotateY(var(--world-image-tilt-x, 0deg))
+    scale(var(--world-image-scale, 1.08));
+  transform-origin: center;
+  will-change: transform, filter;
+  transition: opacity 260ms ease;
+}
+
+.world-space-image::before,
+.world-space-image::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+}
+
+.world-space-image::before {
+  background: radial-gradient(
+    circle at var(--world-pointer-x, 50%) var(--world-pointer-y, 50%),
+    rgb(143 255 238 / 30%) 0,
+    rgb(91 226 255 / 13%) 9%,
+    transparent 28%
+  );
+  mix-blend-mode: screen;
+  opacity: var(--world-pointer-intensity, 0);
+  transform: scale(1.05);
+  transition: opacity 260ms ease;
+}
+
+.world-space-image::after {
+  background:
+    linear-gradient(120deg, transparent 22%, rgb(125 255 238 / 8%) 47%, transparent 67%),
+    radial-gradient(ellipse at 52% 42%, transparent 34%, rgb(0 0 0 / 26%) 100%);
+  mix-blend-mode: screen;
+  opacity: 0.28;
+  animation: world-image-shimmer 11s ease-in-out infinite alternate;
+}
+
+.world-atmosphere {
+  transform: translate3d(
+      calc(var(--parallax-x, 0px) * -0.9 + var(--cosmic-shift-x, 0px) * -0.34),
+      calc(var(--parallax-y, 0px) * -0.9 + var(--cosmic-shift-y, 0px) * -0.34),
+      0
+    )
+    scale(1.03);
+  will-change: transform;
+}
+
+.world-canvas {
+  z-index: 1;
+  display: block;
+  pointer-events: none;
+  background: transparent;
+  transition: opacity 260ms ease;
+}
+
+.world-atmosphere {
+  z-index: 2;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 57% 55%, rgb(70 247 221 / 10%), transparent 22%),
+    radial-gradient(circle at 83% 25%, rgb(120 111 255 / 12%), transparent 24%),
+    radial-gradient(circle at 24% 86%, rgb(255 143 98 / 9%), transparent 25%),
+    linear-gradient(120deg, transparent 35%, rgb(49 111 142 / 8%) 55%, transparent 75%);
+  mix-blend-mode: screen;
+}
+
+.world-scanlines {
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0.35;
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0,
+    transparent 3px,
+    rgb(194 255 247 / 5%) 4px,
+    transparent 5px
+  );
+  mask-image: linear-gradient(180deg, transparent, black 18%, black 82%, transparent);
+}
+
+.world-scanlines::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent, rgb(101 233 213 / 8%), transparent 65%);
+  content: "";
+  animation: world-scan 9s linear infinite;
+}
+
+.world-copy {
+  position: absolute;
+  top: clamp(62px, 10vh, 112px);
+  left: clamp(28px, 6vw, 92px);
+  z-index: 5;
+  width: min(600px, 48%);
+  transition:
+    opacity 420ms ease,
+    transform 420ms ease;
+}
+
+.world-copy::before {
+  position: absolute;
+  z-index: -1;
+  inset: -34px -48px -34px -28px;
+  background: radial-gradient(ellipse at 34% 35%, rgb(3 9 17 / 88%), transparent 70%);
+  content: "";
+  pointer-events: none;
+}
+
+.world-copy h1 {
+  max-width: 680px;
+  margin: 23px 0 25px;
+  color: #ecfffb;
+  font-size: clamp(47px, 6.2vw, 94px);
+  font-weight: 760;
+  letter-spacing: -0.085em;
+  line-height: 0.91;
+  text-shadow: 0 15px 50px rgb(0 0 0 / 32%);
+}
+
+.world-copy h1 em {
+  background: linear-gradient(100deg, #e8fff9 0%, #6bf2db 48%, #a8a5ff 100%);
+  background-clip: text;
+  color: transparent;
+  text-shadow: none;
+}
+
+.world-lede {
+  max-width: 490px;
+  margin: 0;
+  color: rgb(213 236 235 / 70%);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.world-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 31px;
+}
+
+.world-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 26px;
+  min-height: 48px;
+  padding: 0 15px 0 18px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.world-button b {
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.world-button:hover {
+  transform: translateY(-3px);
+}
+
+.world-button-primary {
+  background: #70eed9;
+  color: #031318;
+  box-shadow: 0 12px 32px rgb(101 233 213 / 18%);
+}
+
+.world-button-primary:hover {
+  background: #a0f8e8;
+}
+
+.world-button-ghost {
+  border-color: rgb(207 238 235 / 25%);
+  background: rgb(7 20 31 / 58%);
+  color: #dff8f3;
+  backdrop-filter: blur(18px);
+}
+
+.world-button-ghost:hover {
+  border-color: rgb(101 233 213 / 60%);
+  background: rgb(101 233 213 / 9%);
+  color: #83f3df;
+}
+
+.world-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(90px, 1fr));
+  gap: 16px;
+  max-width: 520px;
+  margin-top: 56px;
+  padding-top: 17px;
+  border-top: 1px solid rgb(193 230 225 / 18%);
+}
+
+.world-stats span {
+  display: grid;
+  gap: 8px;
+}
+
+.world-stats strong {
+  color: #eafff8;
+  font-size: 18px;
+  font-weight: 690;
+  letter-spacing: -0.06em;
+}
+
+.world-stats small {
+  color: rgb(185 215 213 / 58%);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+
+.world-hud,
+.world-locations,
+.world-media-credit {
+  z-index: 6;
+}
+
+.world-hud {
+  position: absolute;
+  inset: 22px 28px auto;
+  color: rgb(194 240 234 / 56%);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  pointer-events: none;
+  text-transform: uppercase;
+}
+
+.world-hud-top,
+.world-coordinates {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.world-hud-top {
+  padding-bottom: 13px;
+  border-bottom: 1px solid rgb(194 240 234 / 15%);
+}
+
+.world-hud-top span:first-child {
+  color: #81efdc;
+}
+
+.world-hud-top i,
+.world-target-readout i {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  margin-right: 7px;
+  border-radius: 50%;
+  background: #ffae76;
+  box-shadow: 0 0 13px rgb(255 174 118 / 95%);
+}
+
+.world-coordinates {
+  position: absolute;
+  top: 52px;
+  right: 0;
+  left: 0;
+}
+
+.world-coordinates b {
+  color: #bffcf1;
+  font-weight: 700;
+}
+
+.world-reticle {
+  position: absolute;
+  top: 44vh;
+  left: 53%;
+  width: 64px;
+  height: 64px;
+  border: 1px solid rgb(115 249 222 / 23%);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.world-reticle::before,
+.world-reticle::after {
+  position: absolute;
+  background: rgb(115 249 222 / 34%);
+  content: "";
+}
+
+.world-reticle::before {
+  top: 50%;
+  right: -14px;
+  left: -14px;
+  height: 1px;
+}
+
+.world-reticle::after {
+  top: -14px;
+  bottom: -14px;
+  left: 50%;
+  width: 1px;
+}
+
+.world-reticle i,
+.world-reticle b,
+.world-reticle em {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+}
+
+.world-reticle i {
+  inset: 22px;
+  background: #79f4de;
+  box-shadow: 0 0 20px rgb(121 244 222 / 90%);
+}
+
+.world-reticle b,
+.world-reticle em {
+  inset: 11px;
+  border: 1px dashed rgb(121 244 222 / 44%);
+}
+
+.world-reticle em {
+  inset: 7px;
+  border-color: rgb(255 174 118 / 32%);
+  transform: rotate(45deg);
+}
+
+.world-target-readout {
+  position: absolute;
+  top: 97px;
+  right: 0;
+  display: grid;
+  gap: 6px;
+  min-width: 164px;
+  padding: 12px 13px;
+  border: 1px solid rgb(121 244 222 / 17%);
+  background: rgb(3 15 24 / 46%);
+  backdrop-filter: blur(16px);
+}
+
+.world-target-readout small {
+  color: rgb(194 240 234 / 45%);
+  font-size: 7px;
+}
+
+.world-target-readout strong {
+  color: #cffff5;
+  font-size: 10px;
+}
+
+.world-target-readout span {
+  color: rgb(194 240 234 / 44%);
+  font-size: 7px;
+  letter-spacing: 0.08em;
+}
+
+.world-target-readout span i {
+  width: 4px;
+  height: 4px;
+  margin-right: 4px;
+  background: #72ebd7;
+  box-shadow: none;
+}
+
+.world-locations {
+  position: absolute;
+  top: 126px;
+  right: 28px;
+  display: grid;
+  gap: 8px;
+  width: min(248px, 24%);
+}
+
+.world-location {
+  display: grid;
+  grid-template-columns: 26px 1fr 18px;
+  align-items: center;
+  gap: 9px;
+  min-height: 61px;
+  padding: 8px 10px;
+  border: 1px solid rgb(193 230 225 / 14%);
+  border-radius: 10px;
+  background: rgb(6 19 31 / 58%);
+  color: rgb(222 248 243 / 60%);
+  text-align: left;
+  backdrop-filter: blur(16px);
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.world-location:hover,
+.world-location.is-active {
+  border-color: rgb(115 249 222 / 46%);
+  background: rgb(25 101 99 / 31%);
+  color: #ddfff7;
+  transform: translateX(-5px);
+}
+
+.world-location-index {
+  color: #71efd9;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 9px;
+}
+
+.world-location span:nth-child(2) {
+  display: grid;
+  gap: 6px;
+}
+
+.world-location strong {
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+}
+
+.world-location small {
+  color: rgb(194 240 234 / 43%);
+  font-size: 8px;
+}
+
+.world-location b {
+  color: #82f0dc;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.world-media-credit {
+  position: absolute;
+  right: 30px;
+  bottom: 30px;
+  color: rgb(194 240 234 / 38%);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 7px;
+  letter-spacing: 0.12em;
+  text-decoration: none;
+  transition: color 180ms ease;
+}
+
+.world-media-credit:hover,
+.world-media-credit:focus-visible {
+  color: #83f2df;
+}
+
+.world-stage.world-fallback {
+  background:
+    radial-gradient(circle at 74% 34%, rgb(80 245 218 / 19%), transparent 25%),
+    linear-gradient(135deg, #06121d, #061c29 52%, #17152c);
+}
+
+html[data-theme="light"] .world-stage {
+  border-color: rgb(0 129 126 / 25%);
+  background: #eaf6f4;
+  box-shadow:
+    0 42px 100px rgb(21 91 96 / 14%),
+    inset 0 1px 0 rgb(255 255 255 / 80%),
+    inset 0 0 80px rgb(21 190 173 / 9%);
+}
+
+html[data-theme="light"] .world-copy::before {
+  background: radial-gradient(ellipse at 34% 35%, rgb(238 253 250 / 92%), transparent 70%);
+}
+
+html[data-theme="light"] .world-copy h1 {
+  color: #072a31;
+  text-shadow: 0 15px 50px rgb(27 93 91 / 14%);
+}
+
+html[data-theme="light"] .world-lede {
+  color: rgb(13 61 66 / 68%);
+}
+
+html[data-theme="light"] .world-button-ghost,
+html[data-theme="light"] .world-location,
+html[data-theme="light"] .world-target-readout {
+  border-color: rgb(0 129 126 / 22%);
+  background: rgb(255 255 255 / 54%);
+  color: #0d4a4e;
+}
+
+html[data-theme="light"] .world-stats strong,
+html[data-theme="light"] .world-target-readout strong {
+  color: #093e45;
+}
+
+html[data-theme="light"] .world-stats small,
+html[data-theme="light"] .world-hud,
+html[data-theme="light"] .world-control-copy,
+html[data-theme="light"] .world-location small {
+  color: rgb(12 71 75 / 56%);
+}
+
+@keyframes world-scan {
+  0% {
+    transform: translateY(-35%);
+  }
+
+  100% {
+    transform: translateY(35%);
+  }
+}
+
+@media (max-width: 980px) {
+  .world-copy {
+    width: min(600px, 59%);
+  }
+
+  .world-locations {
+    width: min(224px, 28%);
+  }
+
+  .world-location {
+    grid-template-columns: 22px 1fr;
+  }
+
+  .world-location b {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .hero.hero-world {
+    padding: 16px 0 26px;
+  }
+
+  .world-stage {
+    min-height: 710px;
+    border-radius: 23px;
+  }
+
+  .world-copy {
+    top: 60px;
+    right: 24px;
+    left: 24px;
+    width: auto;
+  }
+
+  .world-copy h1 {
+    margin-top: 17px;
+    font-size: clamp(43px, 12vw, 68px);
+  }
+
+  .world-lede {
+    max-width: 460px;
+    font-size: 13px;
+  }
+
+  .world-stats {
+    max-width: 470px;
+    margin-top: 34px;
+  }
+
+  .world-hud {
+    inset: 17px 18px auto;
+  }
+
+  .world-hud-top span:nth-child(2),
+  .world-coordinates,
+  .world-reticle,
+  .world-target-readout {
+    display: none;
+  }
+
+  .world-locations {
+    top: auto;
+    right: 18px;
+    bottom: 123px;
+    left: 18px;
+    grid-template-columns: repeat(3, 1fr);
+    width: auto;
+  }
+
+  .world-location {
+    display: block;
+    min-height: 53px;
+    padding: 8px 9px;
+  }
+
+  .world-location-index {
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .world-location strong {
+    display: block;
+    overflow: hidden;
+    font-size: 7px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .world-location small {
+    display: none;
+  }
+
+  .world-media-credit {
+    right: 18px;
+    bottom: 31px;
+    font-size: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .world-stage {
+    min-height: 660px;
+  }
+
+  .world-copy {
+    top: 55px;
+  }
+
+  .world-copy h1 {
+    font-size: clamp(39px, 12.5vw, 57px);
+  }
+
+  .world-lede {
+    font-size: 12px;
+    line-height: 1.55;
+  }
+
+  .world-actions {
+    margin-top: 21px;
+  }
+
+  .world-button {
+    min-height: 42px;
+    padding-left: 13px;
+    font-size: 8px;
+  }
+
+  .world-stats {
+    gap: 9px;
+    margin-top: 25px;
+  }
+
+  .world-stats strong {
+    font-size: 15px;
+  }
+
+  .world-stats small {
+    font-size: 7px;
+  }
+
+  .world-locations {
+    bottom: 111px;
+  }
+
+  .world-location {
+    min-height: 48px;
+    padding: 7px;
+  }
+
+  .world-location-index {
+    font-size: 8px;
+  }
+
+  .world-location strong {
+    font-size: 6px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-scanlines::after {
+    animation: none;
+  }
+}
+
+/* Final polish: keep the slide story readable over the cosmic field. */
+.world-stage {
+  border-color: rgb(145 244 226 / 30%);
+  border-radius: 28px;
+  background:
+    radial-gradient(ellipse at 70% 34%, rgb(73 74 170 / 24%), transparent 31%),
+    radial-gradient(ellipse at 22% 78%, rgb(0 156 171 / 17%), transparent 34%),
+    radial-gradient(ellipse at 94% 94%, rgb(190 58 107 / 13%), transparent 29%),
+    linear-gradient(145deg, #01030a 0%, #05091a 48%, #11081f 100%);
+}
+
+.world-atmosphere {
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 67% 50%, rgb(70 247 221 / 12%), transparent 25%),
+    radial-gradient(ellipse at 88% 22%, rgb(120 111 255 / 17%), transparent 28%),
+    radial-gradient(ellipse at 18% 91%, rgb(255 105 132 / 9%), transparent 27%),
+    linear-gradient(118deg, transparent 24%, rgb(61 92 185 / 10%) 51%, transparent 76%);
+}
+
+.world-atmosphere::before {
+  position: absolute;
+  inset: -35%;
+  background:
+    radial-gradient(ellipse at 37% 54%, rgb(93 53 190 / 33%) 0%, transparent 37%),
+    radial-gradient(ellipse at 72% 64%, rgb(8 188 191 / 24%) 0%, transparent 34%),
+    conic-gradient(
+      from 225deg at 48% 50%,
+      transparent 0 38%,
+      rgb(138 65 220 / 17%) 49%,
+      transparent 60% 100%
+    );
+  content: "";
+  filter: blur(52px) saturate(120%);
+  opacity: 0.8;
+  transform: rotate(-12deg) scale(1.08);
+  animation: world-nebula-drift 22s ease-in-out infinite alternate;
+}
+
+.world-atmosphere::after {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      ellipse at 50% 48%,
+      transparent 12%,
+      rgb(84 101 216 / 11%) 42%,
+      transparent 70%
+    ),
+    radial-gradient(ellipse at 56% 58%, transparent 35%, rgb(0 0 0 / 22%) 100%);
+  content: "";
+  opacity: 0.9;
+  animation: world-space-bloom 15s ease-in-out infinite alternate;
+}
+
+.world-stage::after {
+  position: absolute;
+  z-index: 4;
+  inset: 0;
+  background:
+    radial-gradient(
+      ellipse at 54% 42%,
+      transparent 24%,
+      rgb(1 3 12 / 12%) 68%,
+      rgb(0 0 0 / 42%) 100%
+    ),
+    linear-gradient(180deg, transparent 55%, rgb(1 4 12 / 26%) 100%);
+  content: "";
+  pointer-events: none;
+}
+
+.world-scanlines {
+  opacity: 0.22;
+}
+
+.world-copy {
+  width: min(700px, 52%);
+  margin-left: -22px;
+  padding: 18px 28px 24px;
+  border-left: 1px solid rgb(122 244 224 / 20%);
+  background: linear-gradient(90deg, rgb(2 7 12 / 96%) 0%, rgb(2 7 12 / 86%) 62%, transparent 100%);
+  backdrop-filter: blur(3px);
+}
+
+.world-copy::before {
+  inset: -26px -90px -30px -30px;
+  background: linear-gradient(90deg, rgb(2 7 12 / 84%), rgb(2 7 12 / 30%) 70%, transparent);
+}
+
+.world-copy h1 {
+  max-width: 680px;
+  margin-top: 20px;
+  margin-bottom: 23px;
+  font-size: clamp(44px, 4.9vw, 72px);
+  line-height: 0.94;
+}
+
+.world-lede {
+  max-width: 470px;
+  color: rgb(222 242 239 / 74%);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.world-actions {
+  margin-top: 27px;
+}
+
+.world-stats {
+  max-width: 500px;
+  margin-top: 42px;
+}
+
+.world-hud-top {
+  padding-bottom: 11px;
+  border-color: rgb(194 240 234 / 18%);
+}
+
+.world-reticle {
+  width: 54px;
+  height: 54px;
+  opacity: 0.78;
+}
+
+.world-reticle i {
+  inset: 19px;
+}
+
+.world-reticle b,
+.world-reticle em {
+  inset: 9px;
+}
+
+.world-reticle em {
+  inset: 6px;
+}
+
+.world-target-readout {
+  top: 87px;
+  min-width: 154px;
+  padding: 10px 12px;
+  border-color: rgb(121 244 222 / 22%);
+  background: rgb(3 15 24 / 60%);
+}
+
+.world-locations {
+  top: 112px;
+  right: 24px;
+  gap: 7px;
+  width: min(232px, 23%);
+}
+
+.world-location {
+  min-height: 56px;
+  border-color: rgb(193 230 225 / 17%);
+  background: rgb(4 16 26 / 62%);
+}
+
+.world-location:hover,
+.world-location.is-active {
+  transform: translateX(-4px);
+}
+
+html[data-theme="light"] .world-stage {
+  background:
+    radial-gradient(ellipse at 70% 34%, rgb(100 105 212 / 14%), transparent 31%),
+    radial-gradient(ellipse at 22% 78%, rgb(16 156 171 / 10%), transparent 34%),
+    linear-gradient(140deg, #f3fbfa 0%, #e7f3f2 54%, #edf1fb 100%);
+}
+
+html[data-theme="light"] .world-atmosphere {
+  background:
+    radial-gradient(ellipse at 67% 50%, rgb(29 182 169 / 10%), transparent 25%),
+    radial-gradient(ellipse at 88% 22%, rgb(120 111 255 / 11%), transparent 28%),
+    radial-gradient(ellipse at 18% 91%, rgb(255 105 132 / 7%), transparent 27%);
+  mix-blend-mode: multiply;
+}
+
+html[data-theme="light"] .world-atmosphere::before {
+  background:
+    radial-gradient(ellipse at 37% 54%, rgb(126 100 204 / 17%) 0%, transparent 37%),
+    radial-gradient(ellipse at 72% 64%, rgb(8 188 191 / 14%) 0%, transparent 34%);
+  opacity: 0.55;
+}
+
+html[data-theme="light"] .world-atmosphere::after {
+  background: radial-gradient(
+    ellipse at 50% 48%,
+    transparent 12%,
+    rgb(84 101 216 / 8%) 42%,
+    transparent 70%
+  );
+}
+
+html[data-theme="light"] .world-stage::after {
+  background:
+    radial-gradient(
+      ellipse at 54% 42%,
+      transparent 24%,
+      rgb(12 67 72 / 5%) 68%,
+      rgb(12 67 72 / 14%) 100%
+    ),
+    linear-gradient(180deg, transparent 55%, rgb(12 67 72 / 7%) 100%);
+}
+
+@keyframes world-nebula-drift {
+  0% {
+    transform: rotate(-12deg) translate3d(-2%, -1%, 0) scale(1.08);
+  }
+
+  100% {
+    transform: rotate(-6deg) translate3d(3%, 2%, 0) scale(1.14);
+  }
+}
+
+@keyframes world-space-bloom {
+  0% {
+    opacity: 0.62;
+    transform: scale(0.98);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+html[data-theme="light"] .world-copy {
+  border-color: rgb(0 129 126 / 20%);
+  background: linear-gradient(
+    90deg,
+    rgb(243 251 250 / 95%) 0%,
+    rgb(243 251 250 / 82%) 62%,
+    transparent 100%
+  );
+}
+
+html[data-theme="light"] .world-copy::before {
+  background: linear-gradient(
+    90deg,
+    rgb(243 251 250 / 86%),
+    rgb(243 251 250 / 26%) 70%,
+    transparent
+  );
+}
+
+@media (max-width: 760px) {
+  .world-locations {
+    top: auto;
+    right: 18px;
+    bottom: 123px;
+    left: 18px;
+    width: auto;
+  }
+
+  .world-copy {
+    width: auto;
+    margin-left: 0;
+    padding: 10px 0 0;
+    border-left: 0;
+    background: none;
+    backdrop-filter: none;
+  }
+
+  .world-copy::before {
+    inset: -20px -26px -24px;
+    background: linear-gradient(
+      180deg,
+      rgb(2 7 12 / 94%) 0%,
+      rgb(2 7 12 / 84%) 78%,
+      transparent 100%
+    );
+  }
+
+  .world-copy h1 {
+    margin-top: 16px;
+    font-size: clamp(40px, 11.6vw, 64px);
+  }
+
+  .world-lede {
+    max-width: 420px;
+    font-size: 12.5px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-atmosphere::before,
+  .world-atmosphere::after {
+    animation: none;
+  }
+}
+
+/* Cosmic studio pass: keep the opening world cinematic in both themes. */
+.world-stage {
+  border-color: rgb(143 246 228 / 36%);
+  background:
+    radial-gradient(ellipse at 75% 16%, rgb(93 83 255 / 26%), transparent 30%),
+    radial-gradient(ellipse at 20% 76%, rgb(0 190 204 / 20%), transparent 32%),
+    radial-gradient(ellipse at 92% 92%, rgb(219 57 136 / 17%), transparent 28%),
+    linear-gradient(145deg, #01030a 0%, #050717 47%, #120621 100%);
+  box-shadow:
+    0 48px 120px rgb(0 0 0 / 48%),
+    inset 0 1px 0 rgb(255 255 255 / 10%),
+    inset 0 0 110px rgb(67 236 222 / 9%);
+}
+
+.world-stage::before {
+  position: absolute;
+  z-index: 2;
+  inset: -28%;
+  background:
+    radial-gradient(ellipse at 26% 38%, rgb(117 79 235 / 24%) 0%, transparent 32%),
+    radial-gradient(ellipse at 72% 68%, rgb(0 218 205 / 17%) 0%, transparent 30%),
+    conic-gradient(
+      from 210deg at 54% 48%,
+      transparent 0 38%,
+      rgb(96 71 219 / 15%) 46%,
+      transparent 56% 100%
+    );
+  content: "";
+  filter: blur(54px) saturate(130%);
+  mix-blend-mode: screen;
+  opacity: 0.82;
+  pointer-events: none;
+  transform: rotate(-9deg) scale(1.08);
+  animation: world-cosmic-flow 28s ease-in-out infinite alternate;
+}
+
+.world-atmosphere {
+  background:
+    radial-gradient(ellipse at 58% 48%, rgb(54 247 224 / 14%), transparent 24%),
+    radial-gradient(ellipse at 86% 21%, rgb(117 111 255 / 20%), transparent 28%),
+    radial-gradient(ellipse at 15% 88%, rgb(255 89 145 / 12%), transparent 27%),
+    linear-gradient(118deg, transparent 18%, rgb(65 89 190 / 12%) 51%, transparent 79%);
+  mix-blend-mode: screen;
+  opacity: 0.94;
+}
+
+.world-atmosphere::before {
+  background:
+    radial-gradient(ellipse at 35% 48%, rgb(111 56 220 / 38%) 0%, transparent 36%),
+    radial-gradient(ellipse at 74% 62%, rgb(0 201 207 / 28%) 0%, transparent 33%),
+    radial-gradient(ellipse at 55% 20%, rgb(61 112 250 / 16%) 0%, transparent 27%),
+    conic-gradient(
+      from 220deg at 49% 50%,
+      transparent 0 34%,
+      rgb(164 75 230 / 20%) 44%,
+      transparent 54% 100%
+    );
+  filter: blur(58px) saturate(135%);
+  opacity: 0.9;
+  transform: rotate(-11deg) scale(1.12);
+  animation: world-cosmic-flow 24s ease-in-out infinite alternate-reverse;
+}
+
+.world-atmosphere::after {
+  background:
+    radial-gradient(
+      ellipse at 51% 48%,
+      transparent 10%,
+      rgb(87 103 239 / 14%) 35%,
+      transparent 68%
+    ),
+    repeating-conic-gradient(
+      from 214deg at 51% 49%,
+      rgb(122 101 255 / 7%) 0deg 1deg,
+      transparent 1deg 12deg
+    ),
+    radial-gradient(ellipse at 53% 55%, transparent 32%, rgb(0 0 0 / 38%) 100%);
+  mix-blend-mode: screen;
+  opacity: 0.94;
+  animation: world-cosmic-pulse 16s ease-in-out infinite alternate;
+}
+
+.world-stage::after {
+  background:
+    radial-gradient(
+      ellipse at 54% 41%,
+      transparent 21%,
+      rgb(1 3 12 / 15%) 64%,
+      rgb(0 0 0 / 52%) 100%
+    ),
+    linear-gradient(180deg, transparent 48%, rgb(1 4 12 / 32%) 100%);
+}
+
+.world-scanlines {
+  opacity: 0.14;
+}
+
+html[data-theme="light"] .world-stage {
+  border-color: rgb(143 246 228 / 36%);
+  background:
+    radial-gradient(ellipse at 75% 16%, rgb(93 83 255 / 26%), transparent 30%),
+    radial-gradient(ellipse at 20% 76%, rgb(0 190 204 / 20%), transparent 32%),
+    radial-gradient(ellipse at 92% 92%, rgb(219 57 136 / 17%), transparent 28%),
+    linear-gradient(145deg, #01030a 0%, #050717 47%, #120621 100%);
+  box-shadow:
+    0 48px 120px rgb(0 0 0 / 48%),
+    inset 0 1px 0 rgb(255 255 255 / 10%),
+    inset 0 0 110px rgb(67 236 222 / 9%);
+}
+
+html[data-theme="light"] .world-atmosphere {
+  background:
+    radial-gradient(ellipse at 58% 48%, rgb(54 247 224 / 14%), transparent 24%),
+    radial-gradient(ellipse at 86% 21%, rgb(117 111 255 / 20%), transparent 28%),
+    radial-gradient(ellipse at 15% 88%, rgb(255 89 145 / 12%), transparent 27%),
+    linear-gradient(118deg, transparent 18%, rgb(65 89 190 / 12%) 51%, transparent 79%);
+  mix-blend-mode: screen;
+}
+
+html[data-theme="light"] .world-copy {
+  border-color: rgb(122 244 224 / 22%);
+  background: linear-gradient(90deg, rgb(2 7 12 / 96%) 0%, rgb(2 7 12 / 84%) 62%, transparent 100%);
+}
+
+html[data-theme="light"] .world-copy::before {
+  background: linear-gradient(90deg, rgb(2 7 12 / 86%), rgb(2 7 12 / 28%) 70%, transparent);
+}
+
+html[data-theme="light"] .world-copy h1 {
+  color: #ecfffb;
+  text-shadow: 0 15px 50px rgb(0 0 0 / 32%);
+}
+
+html[data-theme="light"] .world-copy h1 em {
+  background: linear-gradient(100deg, #e8fff9 0%, #6bf2db 48%, #a8a5ff 100%);
+  background-clip: text;
+  color: transparent;
+  text-shadow: none;
+}
+
+html[data-theme="light"] .world-lede {
+  color: rgb(213 236 235 / 74%);
+}
+
+html[data-theme="light"] .world-button-ghost,
+html[data-theme="light"] .world-location,
+html[data-theme="light"] .world-target-readout {
+  border-color: rgb(193 230 225 / 18%);
+  background: rgb(4 16 26 / 64%);
+  color: rgb(222 248 243 / 76%);
+}
+
+html[data-theme="light"] .world-stats strong,
+html[data-theme="light"] .world-target-readout strong {
+  color: #eafff8;
+}
+
+html[data-theme="light"] .world-stats small,
+html[data-theme="light"] .world-hud,
+html[data-theme="light"] .world-control-copy,
+html[data-theme="light"] .world-location small {
+  color: rgb(194 240 234 / 56%);
+}
+
+@keyframes world-cosmic-flow {
+  0% {
+    transform: rotate(-11deg) translate3d(-2%, -1%, 0) scale(1.08);
+  }
+
+  100% {
+    transform: rotate(-5deg) translate3d(3%, 2%, 0) scale(1.16);
+  }
+}
+
+@keyframes world-image-drift {
+  0% {
+    background-position:
+      42% 40%,
+      54% 47%,
+      58% 54%,
+      38% 52%,
+      center;
+    filter: saturate(1.04) contrast(1.05) brightness(0.66);
+  }
+
+  50% {
+    background-position:
+      58% 50%,
+      48% 55%,
+      70% 47%,
+      54% 44%,
+      center;
+    filter: saturate(1.18) contrast(1.1) brightness(0.74);
+  }
+
+  100% {
+    background-position:
+      72% 62%,
+      62% 46%,
+      48% 63%,
+      66% 58%,
+      center;
+    filter: saturate(1.26) contrast(1.12) brightness(0.7);
+  }
+}
+
+@keyframes world-image-shimmer {
+  0% {
+    opacity: 0.14;
+    transform: translate3d(-3%, -1%, 0) scale(1.02);
+  }
+
+  100% {
+    opacity: 0.38;
+    transform: translate3d(3%, 2%, 0) scale(1.08);
+  }
+}
+
+@keyframes world-cosmic-pulse {
+  0% {
+    opacity: 0.62;
+    transform: scale(0.98);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1.045);
+  }
+}
+
+@media (max-width: 760px) {
+  html[data-theme="light"] .world-copy {
+    border-left: 0;
+    background: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-stage::before,
+  .world-atmosphere::before,
+  .world-atmosphere::after,
+  .world-space-image,
+  .world-space-image::after,
+  .world-stage.is-world-pulsing .world-space-image::before {
+    animation: none;
+  }
+}
+
+/* CSS water palette stays available while the local photographic clip loads. */
+.world-stage {
+  border-color: rgb(224 244 235 / 36%);
+  background: linear-gradient(180deg, #a9d1d0 0%, #d5dfd1 39%, #5d9c99 48%, #1b555d 100%);
+  box-shadow:
+    0 48px 120px rgb(13 42 45 / 34%),
+    inset 0 1px 0 rgb(255 255 255 / 22%),
+    inset 0 -90px 120px rgb(4 42 47 / 18%);
+}
+
+.world-space-image {
+  background:
+    radial-gradient(ellipse at 75% 12%, rgb(255 227 174 / 34%), transparent 18%),
+    radial-gradient(ellipse at 31% 30%, rgb(255 255 255 / 10%), transparent 27%),
+    linear-gradient(180deg, #a7d1d1 0%, #d9e1d2 38%, #6ea8a0 48%, #235e64 100%),
+    linear-gradient(180deg, #a7d1d1 0%, #1d5860 100%);
+  background-blend-mode: screen, screen, normal, normal;
+  background-size:
+    175% 170%,
+    145% 145%,
+    180% 180%,
+    100% 100%;
+  filter: saturate(0.92) contrast(1.03) brightness(0.96);
+  opacity: 0.98;
+}
+
+.world-space-image::after {
+  background:
+    linear-gradient(180deg, rgb(255 245 215 / 10%), transparent 30%),
+    radial-gradient(ellipse at 54% 41%, transparent 28%, rgb(5 39 43 / 25%) 100%);
+  mix-blend-mode: soft-light;
+  opacity: 0.38;
+  animation: world-lake-haze 18s ease-in-out infinite alternate;
+}
+
+.world-stage::before {
+  background:
+    radial-gradient(ellipse at 76% 17%, rgb(255 220 167 / 18%), transparent 24%),
+    linear-gradient(180deg, rgb(255 255 255 / 6%), transparent 36%, rgb(11 63 68 / 12%) 100%);
+  filter: blur(24px);
+  mix-blend-mode: screen;
+  opacity: 0.56;
+  transform: scale(1.04);
+  animation: world-lake-haze 20s ease-in-out infinite alternate;
+}
+
+.world-atmosphere {
+  background:
+    radial-gradient(ellipse at 74% 18%, rgb(255 224 177 / 12%), transparent 19%),
+    linear-gradient(180deg, rgb(245 255 242 / 8%), transparent 37%, rgb(3 46 52 / 15%) 100%);
+  mix-blend-mode: screen;
+  opacity: 0.6;
+}
+
+.world-atmosphere::before {
+  background: radial-gradient(ellipse at 60% 38%, rgb(255 244 211 / 8%), transparent 35%);
+  filter: blur(30px);
+  opacity: 0.7;
+  transform: scale(1.06);
+  animation: world-lake-haze 24s ease-in-out infinite alternate-reverse;
+}
+
+.world-atmosphere::after {
+  background: linear-gradient(180deg, transparent 20%, rgb(2 31 36 / 18%) 100%);
+  mix-blend-mode: multiply;
+  opacity: 0.62;
+  animation: none;
+}
+
+.world-stage::after {
+  background:
+    radial-gradient(
+      ellipse at 56% 43%,
+      transparent 28%,
+      rgb(4 35 40 / 8%) 70%,
+      rgb(2 22 29 / 32%) 100%
+    ),
+    linear-gradient(180deg, transparent 48%, rgb(1 27 34 / 14%) 100%);
+}
+
+.world-scanlines {
+  opacity: 0;
+}
+
+html[data-theme="light"] .world-stage {
+  border-color: rgb(226 244 236 / 38%);
+  background: linear-gradient(180deg, #a9d1d0 0%, #d5dfd1 39%, #5d9c99 48%, #1b555d 100%);
+  box-shadow:
+    0 48px 120px rgb(13 42 45 / 26%),
+    inset 0 1px 0 rgb(255 255 255 / 26%),
+    inset 0 -90px 120px rgb(4 42 47 / 16%);
+}
+
+@keyframes world-lake-haze {
+  0% {
+    opacity: 0.3;
+    transform: translate3d(-1%, -0.5%, 0) scale(1.03);
+  }
+
+  100% {
+    opacity: 0.68;
+    transform: translate3d(1.5%, 1%, 0) scale(1.08);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-stage::before,
+  .world-atmosphere::before,
+  .world-space-image,
+  .world-space-image::after {
+    animation: none;
+  }
+}
+
+/* Full-bleed cosmic scene: the world owns the viewport below the compact header. */
+.app-shell:has(.hero-world) {
+  overflow-x: clip;
+}
+
+.hero.hero-world {
+  width: 100vw;
+  min-height: max(640px, calc(100svh - 86px));
+  margin-inline: calc(50% - 50vw);
+  padding: 0;
+}
+
+.hero.hero-world .world-stage {
+  width: 100%;
+  height: max(640px, calc(100svh - 86px));
+  min-height: max(640px, calc(100svh - 86px));
+  border-right: 0;
+  border-left: 0;
+  border-radius: 0;
+  box-shadow:
+    0 36px 90px rgb(0 0 0 / 42%),
+    inset 0 1px 0 rgb(255 255 255 / 11%),
+    inset 0 0 110px rgb(67 236 222 / 9%);
+}
+
+@media (max-width: 760px) {
+  .hero.hero-world {
+    min-height: max(660px, calc(100svh - 76px));
+  }
+
+  .hero.hero-world .world-stage {
+    height: max(660px, calc(100svh - 76px));
+    min-height: max(660px, calc(100svh - 76px));
+  }
+
+  .world-space-image {
+    background-position: 64% center;
+  }
+}
+
+.world-stage.is-focused .world-copy {
+  opacity: 0.86;
+  transform: translateY(-5px);
+}
+
+.world-stage.is-focused .world-copy:hover,
+.world-stage.is-focused .world-copy:focus-within {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-space-image,
+  .world-atmosphere {
+    transform: none;
+  }
+}
+
+/* Water-stage base treatment for the local clip and its WebGL compositor. */
+.world-stage {
+  border-color: rgb(112 246 224 / 38%);
+  background:
+    radial-gradient(ellipse at 70% 9%, rgb(154 255 236 / 17%), transparent 22%),
+    radial-gradient(ellipse at 18% 84%, rgb(0 167 191 / 20%), transparent 35%),
+    linear-gradient(158deg, #010912 0%, #031b28 48%, #062e38 100%);
+  box-shadow:
+    0 48px 120px rgb(0 0 0 / 48%),
+    inset 0 1px 0 rgb(229 255 247 / 12%),
+    inset 0 0 110px rgb(47 245 216 / 11%);
+}
+
+/* Keep the local clip visible under the transparent Three.js water surface. */
+.world-water-video {
+  opacity: 0;
+}
+
+.world-space-image {
+  z-index: 1;
+}
+
+.world-canvas {
+  z-index: 3;
+}
+
+.world-stage.is-video-water .world-water-video {
+  opacity: 0.9;
+}
+
+.world-stage.is-video-water .world-space-image {
+  opacity: 0.24;
+  mix-blend-mode: screen;
+}
+
+.world-stage.is-video-water .world-canvas {
+  opacity: 1;
+}
+
+.world-stage.is-video-water .world-water-video {
+  opacity: 1;
+  object-position: 100% 100%;
+  filter: hue-rotate(32deg) saturate(1.12) contrast(1.08) brightness(0.94);
+  transform: scale(1.6);
+  transform-origin: right bottom;
+}
+
+.world-stage.is-video-water .world-space-image {
+  opacity: 0;
+}
+
+.world-stage.is-video-water.is-threejs-water .world-canvas {
+  opacity: 1;
+}
+
+.world-stage.is-video-water .world-atmosphere {
+  opacity: 0.12;
+  mix-blend-mode: soft-light;
+}
+
+.world-stage.is-video-water .world-reticle {
+  display: none;
+}
+
+.world-stage.is-video-water .world-scanlines {
+  opacity: 0;
+}
+
+.world-stage.is-video-water::before {
+  opacity: 0.12;
+}
+
+.world-stage.is-video-water::after {
+  background: linear-gradient(180deg, rgb(2 12 18 / 4%), rgb(2 10 16 / 18%));
+}
+
+.world-space-image {
+  background:
+    radial-gradient(ellipse at 68% 9%, rgb(214 237 255 / 30%), transparent 14%),
+    radial-gradient(ellipse at 36% 42%, rgb(55 147 255 / 20%), transparent 34%),
+    repeating-linear-gradient(
+      164deg,
+      transparent 0 21px,
+      rgb(135 199 255 / 9%) 22px,
+      transparent 24px 45px
+    ),
+    linear-gradient(180deg, #030b1b 0%, #123b70 54%, #04152e 100%);
+  background-blend-mode: screen, screen, screen, normal;
+  background-size:
+    175% 170%,
+    145% 145%,
+    180% 180%,
+    100% 100%;
+  filter: saturate(1.12) contrast(1.07) brightness(0.84);
+  opacity: 0.96;
+  transform: translate3d(
+      calc(
+        var(--parallax-x, 0px) * -2.4 + var(--water-shift-x, 0px) + var(--world-image-shift-x, 0px)
+      ),
+      calc(
+        var(--parallax-y, 0px) * -2.4 + var(--water-shift-y, 0px) + var(--world-image-shift-y, 0px)
+      ),
+      0
+    )
+    rotateX(var(--world-image-tilt-y, 0deg)) rotateY(var(--world-image-tilt-x, 0deg))
+    scale(var(--world-image-scale, 1.08));
+  animation: world-water-drift 22s ease-in-out infinite alternate;
+}
+
+.world-space-image::before {
+  background: radial-gradient(
+    circle at var(--world-pointer-x, 50%) var(--world-pointer-y, 50%),
+    rgb(211 235 255 / 11%) 0,
+    rgb(95 171 255 / 6%) 8%,
+    transparent 24%
+  );
+  mix-blend-mode: screen;
+  opacity: var(--world-pointer-intensity, 0);
+  transform: scale(1.04);
+}
+
+.world-space-image::after {
+  background:
+    repeating-linear-gradient(
+      172deg,
+      transparent 0 37px,
+      rgb(194 224 255 / 13%) 38px,
+      transparent 41px 76px
+    ),
+    linear-gradient(120deg, transparent 15%, rgb(98 166 255 / 15%) 47%, transparent 72%),
+    radial-gradient(ellipse at 52% 42%, transparent 30%, rgb(0 0 0 / 34%) 100%);
+  mix-blend-mode: screen;
+  opacity: 0.26;
+  animation: world-water-glint 12s ease-in-out infinite alternate;
+}
+
+.world-stage.is-world-pulsing .world-space-image::before {
+  animation: none;
+}
+
+.world-stage::before {
+  background:
+    radial-gradient(ellipse at 38% 58%, rgb(17 219 208 / 18%) 0%, transparent 34%),
+    radial-gradient(ellipse at 76% 20%, rgb(145 255 231 / 12%) 0%, transparent 24%),
+    repeating-linear-gradient(
+      161deg,
+      transparent 0 34px,
+      rgb(104 247 222 / 6%) 35px 37px,
+      transparent 38px 78px
+    );
+  filter: blur(30px) saturate(125%);
+  mix-blend-mode: screen;
+  opacity: 0.68;
+  transform: rotate(-5deg) scale(1.08);
+  animation: world-water-caustics 24s ease-in-out infinite alternate;
+}
+
+.world-atmosphere {
+  background:
+    radial-gradient(ellipse at 66% 12%, rgb(211 255 242 / 15%), transparent 19%),
+    radial-gradient(ellipse at 17% 78%, rgb(0 172 205 / 14%), transparent 28%),
+    linear-gradient(180deg, rgb(169 255 235 / 7%), transparent 38%, rgb(0 9 19 / 22%));
+  mix-blend-mode: screen;
+  opacity: 0.46;
+}
+
+.world-atmosphere::before {
+  background:
+    repeating-linear-gradient(
+      164deg,
+      transparent 0 26px,
+      rgb(137 255 232 / 8%) 28px 30px,
+      transparent 32px 66px
+    ),
+    radial-gradient(ellipse at 58% 40%, rgb(32 223 210 / 16%) 0%, transparent 34%);
+  filter: blur(26px) saturate(130%);
+  opacity: 0.72;
+  transform: rotate(-6deg) scale(1.1);
+  animation: world-water-caustics 20s ease-in-out infinite alternate-reverse;
+}
+
+.world-atmosphere::after {
+  background:
+    radial-gradient(
+      ellipse at 58% 45%,
+      transparent 12%,
+      rgb(121 246 225 / 10%) 44%,
+      transparent 72%
+    ),
+    linear-gradient(180deg, transparent 20%, rgb(0 5 14 / 32%) 100%);
+  mix-blend-mode: screen;
+  opacity: 0.82;
+  animation: world-water-glint 17s ease-in-out infinite alternate;
+}
+
+.world-stage::after {
+  background:
+    radial-gradient(
+      ellipse at 54% 42%,
+      transparent 24%,
+      rgb(0 7 15 / 10%) 64%,
+      rgb(0 2 8 / 46%) 100%
+    ),
+    linear-gradient(180deg, transparent 47%, rgb(0 5 12 / 25%) 100%);
+}
+
+.world-scanlines {
+  opacity: 0.1;
+}
+
+html[data-theme="light"] .world-stage {
+  border-color: rgb(0 170 159 / 31%);
+  background:
+    radial-gradient(ellipse at 70% 9%, rgb(175 255 238 / 28%), transparent 22%),
+    radial-gradient(ellipse at 18% 84%, rgb(0 167 191 / 18%), transparent 35%),
+    linear-gradient(158deg, #06212b 0%, #0c5360 48%, #082b39 100%);
+  box-shadow:
+    0 48px 120px rgb(16 73 80 / 22%),
+    inset 0 1px 0 rgb(255 255 255 / 32%),
+    inset 0 0 110px rgb(47 245 216 / 15%);
+}
+
+html[data-theme="light"] .world-atmosphere {
+  background:
+    radial-gradient(ellipse at 66% 12%, rgb(211 255 242 / 22%), transparent 19%),
+    radial-gradient(ellipse at 17% 78%, rgb(0 172 205 / 16%), transparent 28%),
+    linear-gradient(180deg, rgb(169 255 235 / 10%), transparent 38%, rgb(0 25 36 / 24%));
+}
+
+html[data-theme="light"] .world-atmosphere::before {
+  background:
+    repeating-linear-gradient(
+      164deg,
+      transparent 0 26px,
+      rgb(137 255 232 / 11%) 28px 30px,
+      transparent 32px 66px
+    ),
+    radial-gradient(ellipse at 58% 40%, rgb(32 223 210 / 19%) 0%, transparent 34%);
+}
+
+html[data-theme="light"] .world-atmosphere::after,
+html[data-theme="light"] .world-stage::after {
+  background:
+    radial-gradient(
+      ellipse at 58% 45%,
+      transparent 12%,
+      rgb(121 246 225 / 12%) 44%,
+      transparent 72%
+    ),
+    linear-gradient(180deg, transparent 20%, rgb(0 30 39 / 22%) 100%);
+}
+
+@keyframes world-water-drift {
+  0% {
+    background-position:
+      56% 12%,
+      40% 46%,
+      38% 48%,
+      center;
+    filter: saturate(1.08) contrast(1.04) brightness(0.76);
+  }
+
+  50% {
+    background-position:
+      69% 16%,
+      52% 42%,
+      55% 52%,
+      center;
+    filter: saturate(1.18) contrast(1.08) brightness(0.86);
+  }
+
+  100% {
+    background-position:
+      78% 8%,
+      62% 56%,
+      70% 44%,
+      center;
+    filter: saturate(1.24) contrast(1.1) brightness(0.8);
+  }
+}
+
+@keyframes world-water-glint {
+  0% {
+    opacity: 0.16;
+    transform: translate3d(-2%, -1%, 0) scale(1.02);
+  }
+
+  100% {
+    opacity: 0.42;
+    transform: translate3d(3%, 2%, 0) scale(1.08);
+  }
+}
+
+@keyframes world-water-caustics {
+  0% {
+    transform: rotate(-6deg) translate3d(-2%, -1%, 0) scale(1.08);
+  }
+
+  100% {
+    transform: rotate(-1deg) translate3d(3%, 2%, 0) scale(1.16);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-stage::before,
+  .world-atmosphere::before,
+  .world-atmosphere::after,
+  .world-space-image,
+  .world-space-image::after,
+  .world-stage.is-world-pulsing .world-space-image::before {
+    animation: none;
+  }
+}
+
+/* An ocean-blue horizon ties the moving water to the dark Lusion scene below. */
+.world-stage {
+  border-color: rgb(140 194 236 / 26%);
+  background:
+    radial-gradient(ellipse at 76% 38%, rgb(89 171 237 / 28%), transparent 26%),
+    linear-gradient(
+      180deg,
+      #06172a 0%,
+      #0a3765 25%,
+      #3f89c7 38%,
+      #1767a2 42%,
+      #124a78 49%,
+      #082744 66%,
+      #020e1d 100%
+    );
+  box-shadow:
+    0 36px 90px rgb(0 0 0 / 55%),
+    inset 0 1px 0 rgb(255 255 255 / 7%);
+}
+
+.world-stage::before,
+.world-stage::after {
+  display: none;
+}
+
+html[data-theme="light"] .world-stage {
+  border-color: rgb(140 194 236 / 26%);
+  background:
+    radial-gradient(ellipse at 76% 38%, rgb(89 171 237 / 28%), transparent 26%),
+    linear-gradient(
+      180deg,
+      #06172a 0%,
+      #0a3765 25%,
+      #3f89c7 38%,
+      #1767a2 42%,
+      #124a78 49%,
+      #082744 66%,
+      #020e1d 100%
+    );
+  box-shadow:
+    0 36px 90px rgb(0 0 0 / 55%),
+    inset 0 1px 0 rgb(255 255 255 / 7%);
+}
+
+/* Keep the full-screen ocean scene framed by the XLab navigation and palette. */
+.app-shell:has(> main > .hero.hero-world) {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar {
+  position: absolute;
+  z-index: 20;
+  top: 18px;
+  left: 50%;
+  width: min(1360px, calc(100% - 64px));
+  min-height: 68px;
+  margin: 0;
+  padding: 8px 13px 8px 16px;
+  transform: translateX(-50%);
+  border: 1px solid rgb(195 218 255 / 26%);
+  border-radius: 999px;
+  background: linear-gradient(115deg, rgb(4 18 43 / 78%), rgb(9 37 79 / 62%));
+  box-shadow:
+    0 18px 54px rgb(0 21 30 / 22%),
+    inset 0 1px 0 rgb(255 255 255 / 12%);
+  color: #effdfa;
+  backdrop-filter: blur(24px) saturate(135%);
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .brand strong,
+.app-shell:has(> main > .hero.hero-world) > .topbar .topnav-link,
+.app-shell:has(> main > .hero.hero-world) > .topbar .locale-picker,
+.app-shell:has(> main > .hero.hero-world) > .topbar .theme-toggle {
+  color: #effdfa;
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .brand small {
+  color: rgb(218 244 240 / 64%);
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .topnav-link:hover,
+.app-shell:has(> main > .hero.hero-world) > .topbar .topnav-link.is-active {
+  border-color: rgb(157 198 255 / 40%);
+  background: rgb(74 139 236 / 18%);
+  color: #d4e7ff;
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .locale-picker,
+.app-shell:has(> main > .hero.hero-world) > .topbar .theme-toggle {
+  border-color: rgb(195 218 255 / 24%);
+  background: rgb(6 25 58 / 66%);
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .menu-button {
+  border-color: rgb(195 218 255 / 26%);
+  background: rgb(6 25 58 / 70%);
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .menu-button span {
+  background: #e0edff;
+}
+
+.app-shell:has(> main > .hero.hero-world) > main > .hero.hero-world {
+  width: 100%;
+  min-height: 100svh;
+  margin: 0;
+  padding: 0;
+}
+
+.app-shell:has(> main > .hero.hero-world) #templates,
+.app-shell:has(> main > .hero.hero-world) #process {
+  scroll-margin-top: 0;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-stage {
+  width: 100%;
+  height: max(100svh, 660px);
+  min-height: max(100svh, 660px);
+  border-radius: 0;
+  filter: grayscale(1);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-hud {
+  display: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy {
+  top: clamp(112px, 14vh, 144px);
+  left: clamp(28px, 5vw, 76px);
+  width: min(650px, 49%);
+  margin: 0;
+  padding: clamp(24px, 3vw, 38px);
+  border: 1px solid rgb(191 216 255 / 24%);
+  border-radius: 28px;
+  background: linear-gradient(138deg, rgb(4 20 49 / 82%), rgb(7 37 83 / 68%));
+  box-shadow:
+    0 28px 78px rgb(0 14 43 / 34%),
+    inset 0 1px 0 rgb(255 255 255 / 11%);
+  backdrop-filter: blur(22px) saturate(125%);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy::before {
+  display: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy h1 {
+  font-size: clamp(42px, 4.3vw, 60px);
+  color: #f1f7ff;
+  letter-spacing: -0.055em;
+  line-height: 1;
+  text-shadow: 0 12px 42px rgb(0 7 14 / 28%);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy h1 em {
+  background-image: linear-gradient(100deg, #edf6ff 0%, #78baff 52%, #a7b5ff 100%);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-lede {
+  color: rgb(229 239 255 / 84%);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy .search-field {
+  height: 54px;
+  margin-top: 22px;
+  padding-inline: 16px;
+  border-color: rgb(173 205 255 / 44%);
+  border-radius: 15px;
+  background: linear-gradient(115deg, rgb(4 16 42 / 88%), rgb(9 35 78 / 82%));
+  box-shadow:
+    0 14px 32px rgb(0 14 45 / 26%),
+    inset 0 1px 0 rgb(255 255 255 / 9%);
+  backdrop-filter: blur(18px);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy .search-field:focus-within {
+  border-color: rgb(143 190 255 / 90%);
+  box-shadow:
+    0 0 0 3px rgb(83 148 246 / 18%),
+    0 16px 36px rgb(0 14 45 / 32%);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy .search-icon {
+  color: #a8ccff;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy .search-field input {
+  color: #f1f6ff;
+  font-size: 13px;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy .search-field input::placeholder {
+  color: rgb(202 220 250 / 62%);
+}
+
+.world-search-shortcuts {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 11px;
+}
+
+.world-search-shortcuts-label {
+  margin-right: 3px;
+  color: rgb(203 220 249 / 64%);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.world-search-chip {
+  min-height: 27px;
+  padding: 4px 10px;
+  border: 1px solid rgb(162 195 244 / 25%);
+  border-radius: 999px;
+  background: rgb(7 28 67 / 62%);
+  color: rgb(223 236 255 / 88%);
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.world-search-chip:hover {
+  transform: translateY(-1px);
+  border-color: rgb(157 196 255 / 64%);
+  background: rgb(54 105 186 / 48%);
+  color: #fff;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-stats {
+  margin-top: 25px;
+  border-color: rgb(196 216 249 / 23%);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-stats strong {
+  color: #f0fff9;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-stats small {
+  color: rgb(211 226 250 / 74%);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-button-primary {
+  border-color: rgb(229 241 255 / 72%);
+  background: linear-gradient(110deg, #b9d8ff, #7eb5ff);
+  box-shadow:
+    0 12px 32px rgb(42 111 211 / 34%),
+    0 0 0 1px rgb(6 28 73 / 24%);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-button-primary:hover {
+  background: linear-gradient(110deg, #d5e7ff, #a2cbff);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-locations {
+  top: 112px;
+  right: clamp(20px, 3vw, 42px);
+  width: min(260px, 22%);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-location {
+  min-height: 64px;
+  border-color: rgb(188 212 255 / 28%);
+  background: linear-gradient(130deg, rgb(5 25 58 / 84%), rgb(9 43 91 / 72%));
+  color: rgb(237 244 255 / 88%);
+  box-shadow:
+    0 14px 32px rgb(0 22 30 / 18%),
+    inset 0 1px 0 rgb(255 255 255 / 8%);
+  backdrop-filter: blur(20px) saturate(130%);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-location:hover,
+.app-shell:has(> main > .hero.hero-world) .world-location.is-active {
+  border-color: rgb(155 195 255 / 66%);
+  background: linear-gradient(130deg, rgb(27 82 157 / 78%), rgb(12 48 106 / 84%));
+  color: #f2f7ff;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-location small {
+  color: rgb(211 226 250 / 72%);
+}
+
+@media (max-width: 980px) {
+  .app-shell:has(> main > .hero.hero-world) .world-copy {
+    width: min(620px, 58%);
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-locations {
+    width: min(230px, 27%);
+  }
+}
+
+@media (max-width: 760px) {
+  .app-shell:has(> main > .hero.hero-world) > .topbar {
+    top: 10px;
+    width: calc(100% - 24px);
+    min-height: 62px;
+    margin: 0;
+    padding: 6px 10px;
+    border-radius: 20px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy {
+    top: 92px;
+    right: 14px;
+    left: 14px;
+    width: auto;
+    padding: 20px 18px 21px;
+    border-radius: 22px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 {
+    margin: 15px 0 17px;
+    font-size: clamp(35px, 9.5vw, 43px);
+    line-height: 1.02;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-lede {
+    font-size: 13px;
+    line-height: 1.58;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy .search-field {
+    height: 46px;
+    margin-top: 16px;
+    padding-inline: 12px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-search-shortcuts {
+    gap: 5px;
+    margin-top: 9px;
+  }
+
+  .world-search-chip {
+    min-height: 25px;
+    padding: 3px 8px;
+    font-size: 9px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-actions {
+    gap: 8px;
+    margin-top: 18px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-stats {
+    gap: 9px;
+    margin-top: 19px;
+    padding-top: 14px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-locations {
+    top: auto;
+    right: 14px;
+    bottom: 74px;
+    left: 14px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: auto;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy,
+  .app-shell:has(> main > .hero.hero-world) .world-location,
+  .app-shell:has(> main > .hero.hero-world) > .topbar {
+    backdrop-filter: blur(12px) saturate(120%);
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-location strong {
+    font-size: clamp(8px, 2.3vw, 9px);
+    letter-spacing: 0.05em;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-stats small {
+    font-size: 7px;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-shell:has(> main > .hero.hero-world) > .topbar {
+    top: 9px;
+    left: 50%;
+    width: calc(100% - 18px);
+    min-height: 58px;
+    margin: 0;
+    padding: 5px 8px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .brand-logo-frame {
+    width: 66px;
+    height: 38px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .brand-copy small {
+    display: none;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy {
+    top: 82px;
+    right: 10px;
+    left: 10px;
+    padding: 17px 16px 18px;
+    border-radius: 19px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 {
+    font-size: clamp(31px, 8.6vw, 36px);
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy .search-field {
+    height: 42px;
+    margin-top: 12px;
+    padding-inline: 10px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-search-shortcuts {
+    flex-wrap: nowrap;
+    gap: 4px;
+    margin-top: 8px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-search-shortcuts::-webkit-scrollbar {
+    display: none;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-search-shortcuts-label {
+    display: none;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-search-chip {
+    flex: 0 0 auto;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-stats {
+    gap: 7px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-stats small {
+    font-size: 7px;
+    letter-spacing: 0.06em;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-locations {
+    right: 10px;
+    left: 10px;
+    bottom: 64px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell:has(> main > .hero.hero-world) .world-location {
+    transition: none;
+  }
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .topnav-link[href="#process"] {
+  display: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-hud,
+.app-shell:has(> main > .hero.hero-world) .world-locations {
+  display: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) > main > .hero.hero-world {
+  width: 100%;
+  height: 100svh;
+  min-height: 100svh;
+  margin: 0;
+  padding: 0;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-stage {
+  width: 100%;
+  height: 100svh;
+  min-height: 100svh;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) > main > .signal-rail,
+.app-shell:has(> main > .hero.hero-world) > main > .journey-section,
+.app-shell:has(> main > .hero.hero-world) > main > .process-section {
+  display: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) > main > .lusion-home-section {
+  width: 100%;
+  height: 100svh;
+  min-height: 100svh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  background: #000;
+}
+
+.app-shell:has(> main > .hero.hero-world)
+  > main
+  > .lusion-home-section
+  > :not(.lusion-home-content) {
+  display: none !important;
+}
+
+.lusion-home-content {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 100svh;
+  overflow: hidden;
+  background: #02070b;
+  opacity: var(--lusion-handoff-opacity, 0);
+  transform: translate3d(0, var(--lusion-handoff-offset, 6vh), 0);
+}
+
+.lusion-home-frame {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #02070b;
+}
+
+html:has(.app-shell > main > .hero.hero-world):not(.is-lusion-section-active)
+  .app-shell:has(> main > .hero.hero-world)
+  > main
+  > .lusion-home-section {
+  overflow: visible;
+}
+
+html:has(.app-shell > main > .hero.hero-world):not(.is-lusion-section-active)
+  .app-shell:has(> main > .hero.hero-world)
+  .lusion-home-content {
+  overflow: visible;
+  background: transparent;
+  opacity: 1;
+}
+
+html:has(.app-shell > main > .hero.hero-world):not(.is-lusion-section-active)
+  .app-shell:has(> main > .hero.hero-world)
+  .lusion-home-content
+  > :not(#ui) {
+  opacity: var(--lusion-handoff-opacity, 0) !important;
+}
+
+html:has(.app-shell > main > .hero.hero-world):not(.is-lusion-section-active)
+  .app-shell:has(> main > .hero.hero-world)
+  .lusion-home-frame {
+  pointer-events: none;
+}
+
+html:has(.app-shell > main > .hero.hero-world):not(.is-lusion-section-active)
+  .app-shell:has(> main > .hero.hero-world)
+  .lusion-home-content
+  > #ui
+  > :not(#header) {
+  opacity: var(--lusion-handoff-opacity, 0) !important;
+}
+
+html:has(.app-shell > main > .hero.hero-world):not(.is-lusion-section-active)
+  .app-shell:has(> main > .hero.hero-world)
+  .lusion-home-content
+  #header {
+  position: fixed !important;
+  top: calc(
+    0px - var(--lusion-scene-offset, 100svh) - var(--lusion-handoff-offset, 6vh)
+  ) !important;
+}
+
+html:has(.app-shell > main > .hero.hero-world):not(.is-lusion-section-active)
+  .app-shell:has(> main > .hero.hero-world)
+  .lusion-home-content
+  #header-right-menu-btn,
+html:has(.app-shell > main > .hero.hero-world):not(.is-lusion-section-active)
+  .app-shell:has(> main > .hero.hero-world)
+  .lusion-home-content
+  #lusion-language-trigger {
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  transform: none !important;
+}
+
+/* Keep the adopted Lusion header out of the way while the Portal header is visible. */
+html.is-ready:has(.app-shell > main > .hero.hero-world):not(.is-lusion-section-active):not(
+    .is-lusion-section-preloading
+  ):not(.is-astronaut-scene-visible)
+  .app-shell:has(> main > .hero.hero-world)
+  .lusion-home-content
+  #header {
+  display: none !important;
+}
+
+.app-shell:has(> main > .hero.hero-world) .lusion-home-content > #canvas,
+.app-shell:has(> main > .hero.hero-world) .lusion-home-content > #ui,
+.app-shell:has(> main > .hero.hero-world) .lusion-home-content > #input-blocker,
+.app-shell:has(> main > .hero.hero-world) .lusion-home-content > #transition-overlay,
+.app-shell:has(> main > .hero.hero-world) .lusion-home-content > #preloader,
+.app-shell:has(> main > .hero.hero-world) .lusion-home-content > #scroll-indicator,
+.app-shell:has(> main > .hero.hero-world) .lusion-home-content > #video-overlay {
+  position: absolute;
+}
+
+.app-shell:has(> main > .hero.hero-world) .lusion-home-content > #ui {
+  inset: 0;
+  height: 100%;
+}
+
+/* The embedded Lusion page already includes the footer for this full-screen route. */
+.app-shell:has(> main > .hero.hero-world) > .site-footer {
+  display: none !important;
+}
+
+html:has(.app-shell > main > .hero.hero-world) {
+  scroll-snap-type: y mandatory;
+  scroll-padding-block: 0;
+}
+
+html:has(.app-shell > main > .hero.hero-world).is-section-transitioning {
+  scroll-snap-type: none !important;
+  scroll-behavior: auto !important;
+}
+
+.app-shell:has(> main > .hero.hero-world) > main > .hero.hero-world,
+.app-shell:has(> main > .hero.hero-world) > main > .lusion-home-section {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:has(.app-shell > main > .hero.hero-world) {
+    scroll-snap-type: none;
+  }
+}
+
+/* Let the water fall into the dark Lusion scene through a shared silver horizon. */
+.app-shell:has(> main > .hero.hero-world) .world-stage::after {
+  display: block;
+  background:
+    linear-gradient(
+      180deg,
+      transparent 52%,
+      rgb(8 9 12 / 12%) 66%,
+      rgb(3 4 6 / 62%) 88%,
+      rgb(0 0 0 / 98%) 100%
+    ),
+    radial-gradient(
+      ellipse at 56% 43%,
+      transparent 28%,
+      rgb(15 16 19 / 7%) 70%,
+      rgb(0 0 0 / 35%) 100%
+    );
+  pointer-events: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) > main > .lusion-home-section {
+  position: relative;
+  isolation: isolate;
+  background: #02070b;
+}
+
+@media (max-width: 760px) {
+  .app-shell:has(> main > .hero.hero-world) .world-stage::after {
+    background:
+      linear-gradient(180deg, transparent 58%, rgb(8 9 12 / 15%) 72%, rgb(0 0 0 / 94%) 100%),
+      radial-gradient(
+        ellipse at 56% 43%,
+        transparent 28%,
+        rgb(15 16 19 / 7%) 70%,
+        rgb(0 0 0 / 35%) 100%
+      );
+  }
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-stage.world-fallback {
+  background:
+    radial-gradient(ellipse at 52% 39%, rgb(116 193 244 / 26%), transparent 22%),
+    linear-gradient(
+      180deg,
+      #1a3e63 0%,
+      #0f3458 34%,
+      #3f89bd 41%,
+      #165789 53%,
+      #10365b 68%,
+      #07152a 100%
+    );
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-stage.world-fallback .world-canvas,
+.app-shell:has(> main > .hero.hero-world) .world-stage.world-fallback .world-space-image,
+.app-shell:has(> main > .hero.hero-world) .world-stage.world-fallback .world-atmosphere,
+.app-shell:has(> main > .hero.hero-world) .world-stage.world-fallback .world-scanlines {
+  display: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-stage.world-fallback::before {
+  display: block;
+  position: absolute;
+  z-index: 5;
+  inset: 38% -18% -16%;
+  background:
+    repeating-linear-gradient(
+      176deg,
+      transparent 0 14px,
+      rgb(244 249 255 / 30%) 15px 18px,
+      transparent 19px 34px
+    ),
+    repeating-linear-gradient(
+      183deg,
+      transparent 0 22px,
+      rgb(171 192 211 / 22%) 23px 27px,
+      transparent 28px 48px
+    );
+  background-size:
+    210% 100%,
+    190% 100%;
+  content: "";
+  filter: blur(2px);
+  opacity: 0.72;
+  pointer-events: none;
+  animation: world-css-water-flow 11s ease-in-out infinite alternate;
+}
+
+@keyframes world-css-water-flow {
+  from {
+    background-position:
+      0% 0%,
+      100% 0%;
+  }
+
+  to {
+    background-position:
+      100% 12%,
+      0% -8%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell:has(> main > .hero.hero-world) .world-stage.world-fallback::before {
+    animation: none;
+  }
+}
+
+/* Editorial water hero with a navigation that matches the Lusion page below. */
+.app-shell:has(> main > .hero.hero-world) {
+  --world-title-size: clamp(40px, 3.8vw, 56px);
+  --world-body-size: clamp(16px, 1vw, 18px);
+  --world-cue-size: clamp(12px, 0.82vw, 14px);
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar {
+  position: absolute;
+  z-index: 20;
+  top: clamp(30px, 4vw, 50px);
+  right: max(5vw, 40px);
+  left: max(5vw, 40px);
+  width: auto;
+  max-width: none;
+  min-height: 54px;
+  margin: 0;
+  padding: 0;
+  transform: none;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: #fff;
+  backdrop-filter: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar,
+.app-shell:has(> main > .hero.hero-world) .world-copy,
+.app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
+  font-family: Aeonik, "Be Vietnam Pro", ui-sans-serif, sans-serif;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+body.menu-open {
+  overflow: hidden;
+}
+
+/* Aeonik has no Vietnamese horn letters, so the whole line stays one grotesque. */
+html[lang="vi"] .app-shell:has(> main > .hero.hero-world) > .topbar,
+html[lang="vi"] .app-shell:has(> main > .hero.hero-world) .world-copy,
+html[lang="vi"] .app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
+  font-family: "Be Vietnam Pro", Aeonik, sans-serif;
+}
+
+html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) > .topbar,
+html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy,
+html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
+  font-family: Aeonik, system-ui, "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", sans-serif;
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar::before,
+.app-shell:has(> main > .hero.hero-world) > .topbar::after {
+  display: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .brand {
+  position: relative;
+  z-index: 2;
+  gap: 0;
+  color: #fff;
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .brand-logo-frame {
+  width: 100px;
+  height: 40px;
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .brand-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: left center;
+  filter: brightness(0) invert(1);
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .topnav-link,
+.app-shell:has(> main > .hero.hero-world) > .topbar .locale-picker,
+.app-shell:has(> main > .hero.hero-world) > .topbar .theme-toggle {
+  color: #fff;
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .topnav {
+  display: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .topnav.is-open {
+  position: fixed;
+  z-index: 1;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: clamp(22px, 4vh, 40px);
+  padding: clamp(110px, 15vh, 156px) clamp(24px, 6vw, 108px) 72px;
+  background: rgb(2 4 7 / 94%);
+  backdrop-filter: blur(18px) saturate(110%);
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .topnav-link {
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: rgb(255 255 255 / 88%);
+  font-size: clamp(24px, 4vw, 48px);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  text-transform: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .topnav-link:hover,
+.app-shell:has(> main > .hero.hero-world) > .topbar .topnav-link.is-active {
+  border: 0;
+  background: none;
+  color: #fff;
+  text-decoration: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .theme-toggle {
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .locale-picker {
+  min-height: 52.2px;
+  padding: 0 0 0 13px;
+  border: 1px solid rgb(255 255 255 / 18%);
+  border-radius: 999px;
+  background: #2b2e3a;
+  box-shadow: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .locale-picker select {
+  border: 0;
+  background: transparent;
+  color: #fff;
+  font-size: clamp(14px, 0.875vw, 16.31px);
+  font-weight: 500;
+  letter-spacing: normal;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .locale-globe,
+.app-shell:has(> main > .hero.hero-world) > .topbar .theme-toggle-icon,
+.app-shell:has(> main > .hero.hero-world) > .topbar .theme-toggle-track {
+  display: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .theme-toggle-label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .menu-button {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 10.2px;
+  width: auto;
+  height: 52.2px;
+  min-width: 44px;
+  min-height: 52.2px;
+  padding: 0 18.35px 0 26.5px;
+  border: 0;
+  border-radius: 999px;
+  background: #e4e6ef;
+  box-shadow: none;
+  color: #080808;
+  font-size: clamp(14px, 0.875vw, 16.31px);
+  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: uppercase;
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .menu-button .menu-button-label {
+  display: block;
+  width: auto;
+  height: auto;
+  margin: 0;
+  background: none;
+  color: inherit;
+  line-height: 1;
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .menu-button .menu-button-dots {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0;
+  width: 18.75px;
+  height: 18.75px;
+  margin: 0;
+  background: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .menu-button-dots i {
+  display: block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #080808;
+}
+
+.app-shell:has(> main > .hero.hero-world) > main > .hero.hero-world {
+  width: 100%;
+  min-height: 100svh;
+  margin: 0;
+  padding: 0;
+  background: #02070b;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-stage {
+  width: 100%;
+  height: max(100svh, 660px);
+  min-height: max(100svh, 660px);
+  border-radius: 0;
+  opacity: var(--water-handoff-opacity, 1);
+  transform: translate3d(0, var(--water-handoff-offset, 0vh), 0);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-hud,
+.app-shell:has(> main > .hero.hero-world) .world-locations {
+  display: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy {
+  top: clamp(102px, calc(7.2vh + 56px), 118px);
+  right: auto;
+  left: clamp(72px, 25vw, 420px);
+  width: min(700px, 52vw);
+  margin: 0;
+  padding: 0;
+  transform: none;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  animation: lusion-intro-reveal 760ms ease-out both;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy::before,
+.app-shell:has(> main > .hero.hero-world) .world-copy .eyebrow,
+.app-shell:has(> main > .hero.hero-world) .world-search-field,
+.app-shell:has(> main > .hero.hero-world) .world-search-shortcuts,
+.app-shell:has(> main > .hero.hero-world) .world-actions,
+.app-shell:has(> main > .hero.hero-world) .world-stats {
+  display: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy h1 {
+  max-width: none;
+  margin: 0;
+  color: #f0f1fa;
+  font-size: var(--world-title-size);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.06;
+  text-shadow: 0 1px 16px rgb(0 0 0 / 28%);
+  text-wrap: balance;
+}
+
+@media (min-width: 761px) {
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 br {
+    display: none;
+  }
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy h1 em {
+  background: none;
+  background-image: none;
+  background-clip: border-box;
+  color: #f4f2ef;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.08em;
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  text-shadow: 0 2px 20px rgb(0 0 0 / 48%);
+  -webkit-background-clip: border-box;
+  -webkit-text-fill-color: #f4f2ef;
+  -webkit-text-stroke: 0;
+}
+
+html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy h1 em {
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: inherit;
+  -webkit-text-fill-color: currentColor;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-lede {
+  max-width: 34em;
+  margin: 0.85em 0 0;
+  color: rgb(240 241 250 / 82%);
+  font-size: var(--world-body-size);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.55;
+  text-shadow: 0 1px 12px rgb(0 0 0 / 32%);
+}
+
+.world-scroll-cue {
+  position: absolute;
+  z-index: 7;
+  bottom: clamp(24px, 4.2vh, 42px);
+  left: 50%;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7em;
+  color: rgb(240 241 250 / 84%);
+  font-size: var(--world-cue-size);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+  text-decoration: none;
+  text-transform: uppercase;
+  transform: translateX(-50%);
+  animation: lusion-cue-reveal 700ms 260ms ease-out both;
+}
+
+.world-scroll-cue-mark {
+  position: relative;
+  display: block;
+  width: 0.85em;
+  height: 0.85em;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+}
+
+.world-scroll-cue-mark::before,
+.world-scroll-cue-mark::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: block;
+  background: currentColor;
+  content: "";
+  transform: translate(-50%, -50%);
+}
+
+.world-scroll-cue-mark::before {
+  width: 1px;
+  height: 0.85em;
+}
+
+.world-scroll-cue-mark::after {
+  width: 0.85em;
+  height: 1px;
+}
+
+.world-scroll-cue-mark i {
+  display: none;
+}
+
+.world-scroll-cue:hover {
+  color: #fff;
+}
+
+.app-shell:has(> main > .hero.hero-world) .scroll-progress {
+  display: none;
+}
+
+@keyframes lusion-intro-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes lusion-cue-reveal {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 980px) {
+  .app-shell:has(> main > .hero.hero-world) .world-copy {
+    left: clamp(72px, 25vw, 420px);
+    width: min(700px, 52vw);
+  }
+}
+
+@media (max-width: 760px) {
+  .app-shell:has(> main > .hero.hero-world) {
+    --world-body-size: 15px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) > .topbar {
+    top: 20px;
+    right: 18px;
+    left: 18px;
+    width: auto;
+    min-height: 0;
+    padding: 0;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) > .topbar .brand-logo-frame {
+    width: 42px;
+    height: 28px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) > .topbar .topnav {
+    display: none;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy {
+    top: clamp(106px, 15vh, 136px);
+    right: 22px;
+    left: 22px;
+    width: auto;
+    transform: none;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 {
+    max-width: 15em;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) > .topbar .brand-logo-frame {
+    width: 80px;
+    height: 32px;
+    padding: 0;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) > .topbar .menu-button {
+    width: auto;
+    height: 44px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-lede {
+    max-width: 28em;
+    margin-top: 0.7em;
+    line-height: 1.55;
+  }
+
+  .world-scroll-cue {
+    bottom: 24px;
+    letter-spacing: 0.02em;
+  }
+}
+
+@media (max-width: 420px) {
+  .app-shell:has(> main > .hero.hero-world) {
+    --world-title-size: clamp(24px, 6vw, 26px);
+    --world-body-size: 14px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy {
+    right: 20px;
+    left: 20px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 {
+    letter-spacing: -0.04em;
+    text-wrap: wrap;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 br {
+    display: inline;
+  }
+}
+
+@media (max-width: 360px) {
+  .app-shell:has(> main > .hero.hero-world) {
+    --world-title-size: 26px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy {
+    top: clamp(120px, 17vh, 136px);
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 {
+    text-wrap: wrap;
+  }
+}
+
+@media (max-height: 540px) and (max-width: 760px) {
+  .app-shell:has(> main > .hero.hero-world) {
+    --world-title-size: clamp(24px, 6vw, 30px);
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy {
+    top: 82px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-lede {
+    margin-top: 10px;
+  }
+
+  .world-scroll-cue {
+    bottom: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell:has(> main > .hero.hero-world) .world-copy,
+  .world-scroll-cue {
+    animation: none;
+  }
+}
+
+/* Lusion-inspired type scale and editorial details for the Portal water hero. */
+.app-shell:has(> main > .hero.hero-world) .world-stage {
+  filter: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-space-image {
+  filter: grayscale(1) saturate(1.12) contrast(1.08) brightness(0.72);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-water-video {
+  filter: grayscale(1) contrast(1.08) brightness(0.68);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-canvas,
+.app-shell:has(> main > .hero.hero-world) .world-atmosphere,
+.app-shell:has(> main > .hero.hero-world) .world-scanlines {
+  filter: grayscale(1);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy {
+  top: clamp(148px, 18.5vh, 184px);
+  left: clamp(28px, 9.4vw, 148px);
+  width: min(1230px, 82vw);
+  isolation: isolate;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy::after {
+  position: absolute;
+  z-index: 0;
+  top: -0.58em;
+  right: -0.16em;
+  color: transparent;
+  content: "01";
+  font-size: clamp(220px, 27vw, 410px);
+  font-weight: 600;
+  letter-spacing: -0.14em;
+  line-height: 1;
+  opacity: 0.32;
+  pointer-events: none;
+  -webkit-text-stroke: 1px rgb(255 255 255 / 28%);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-kicker {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 18px 4px;
+  color: #defdf8;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  line-height: 1.3;
+  text-transform: uppercase;
+  text-shadow: 0 2px 16px rgb(0 0 0 / 76%);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-kicker::before {
+  width: 30px;
+  height: 2px;
+  flex: 0 0 auto;
+  background: #67f0dd;
+  box-shadow: 0 0 16px rgb(103 240 221 / 80%);
+  content: "";
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy h1 {
+  position: relative;
+  z-index: 1;
+  display: block;
+  max-width: 100%;
+  font-size: clamp(52px, 5.3vw, 82px);
+  font-weight: 600;
+  letter-spacing: -0.068em;
+  line-height: 0.99;
+  text-wrap: balance;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy h1 > span {
+  display: block;
+  color: #f6f7fb;
+  font-size: 0.76em;
+  font-weight: 500;
+  letter-spacing: -0.058em;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy h1 > br {
+  display: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy h1 em {
+  display: block;
+  margin: 0.025em 0 0 0.25em;
+  background-image: linear-gradient(100deg, #65f4df 0%, #b2fff1 43%, #aebaff 100%);
+  background-clip: text;
+  color: transparent;
+  font-family: inherit;
+  font-size: 1em;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: -0.072em;
+  text-shadow: 0 3px 30px rgb(0 0 0 / 38%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+html[lang="zh-CN"] .app-shell:has(> main > .hero.hero-world) .world-copy h1 em {
+  font-family: inherit;
+  font-style: normal;
+  font-weight: 600;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-lede {
+  position: relative;
+  z-index: 1;
+  margin: 1.1em 0 0 4px;
+  color: rgb(244 247 252 / 90%);
+  font-size: clamp(15px, 1.05vw, 18px);
+  text-shadow: 0 2px 15px rgb(0 0 0 / 76%);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
+  gap: 14px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.17em;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark {
+  width: 34px;
+  height: 34px;
+  border-color: rgb(101 244 223 / 55%);
+  color: #72f3de;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark::before,
+.app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark::after,
+.app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark i {
+  background: #72f3de;
+}
+
+@media (max-width: 980px) {
+  .app-shell:has(> main > .hero.hero-world) .world-copy {
+    left: 7.5vw;
+    width: 87vw;
+  }
+}
+
+@media (max-width: 760px) {
+  .app-shell:has(> main > .hero.hero-world) .world-copy {
+    top: clamp(108px, 15vh, 136px);
+    left: 22px;
+    right: 22px;
+    width: auto;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy::after {
+    display: none;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 {
+    font-size: clamp(34px, 8.8vw, 43px);
+    line-height: 1.02;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 > span {
+    font-size: 0.82em;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 em {
+    margin-left: 0.16em;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-kicker {
+    gap: 8px;
+    margin-bottom: 15px;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-kicker::before {
+    width: 18px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-lede {
+    margin-top: 0.9em;
+    font-size: 14px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
+    bottom: 26px;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark {
+    width: 29px;
+    height: 29px;
+  }
+}
+
+/* Compact Lusion-style masthead: brand left, language and menu right. */
+.app-shell:has(> main > .hero.hero-world) > .topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .topnav {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: clamp(18px, 2.2vw, 34px);
+  margin-left: auto;
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .topnav:not(.is-open) .topnav-link,
+.app-shell:has(> main > .hero.hero-world) > .topbar .topnav:not(.is-open) .theme-toggle {
+  display: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .topnav.is-open .topnav-link {
+  display: block !important;
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .topnav:not(.is-open) .locale-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0 0 0 13px;
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .topnav:not(.is-open) .locale-picker::after {
+  width: 6px;
+  height: 6px;
+  border-right: 1px solid currentColor;
+  border-bottom: 1px solid currentColor;
+  content: "";
+  opacity: 0.85;
+  transform: translateY(-2px) rotate(45deg);
+}
+
+.app-shell:has(> main > .hero.hero-world) > .topbar .locale-picker select {
+  padding: 0;
+  appearance: none;
+}
+
+@media (max-width: 812px) {
+  .app-shell:has(> main > .hero.hero-world) > .topbar {
+    top: 25px;
+    right: 25px;
+    left: 25px;
+    min-height: 44.8px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) > .topbar .topnav:not(.is-open) {
+    position: static;
+    flex-direction: row;
+    gap: 16px;
+    padding: 0;
+    background: transparent;
+    backdrop-filter: none;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) > .topbar .brand-logo-frame {
+    width: 80px;
+    height: 44px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) > .topbar .locale-picker {
+    min-height: 44.8px;
+    padding-left: 10px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) > .topbar .topnav:not(.is-open) .locale-picker {
+    padding-left: 10px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) > .topbar .locale-picker select {
+    width: 29px;
+    min-width: 0;
+    max-width: 29px;
+    flex: 0 0 29px;
+    font-size: 14px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) > .topbar .topnav:not(.is-open) .locale-picker select {
+    width: 29px;
+    min-width: 0;
+    max-width: 29px;
+    flex: 0 0 29px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) > .topbar .menu-button {
+    width: 44.8px;
+    height: 44.8px;
+    min-width: 44.8px;
+    min-height: 44.8px;
+    padding: 0;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) > .topbar .menu-button .menu-button-label {
+    display: none;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) > .topbar .menu-button .menu-button-dots {
+    width: 22.5px;
+    height: 22.5px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) > .topbar .menu-button-dots i {
+    width: 6px;
+    height: 6px;
+  }
+}
+
+@media (max-width: 400px) {
+  .app-shell:has(> main > .hero.hero-world) > .topbar {
+    top: 15px;
+    right: 15px;
+    left: 15px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell:has(> main > .hero.hero-world) .world-stage,
+  .app-shell:has(> main > .hero.hero-world) .lusion-home-content {
+    transform: none;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-stage,
+  .app-shell:has(> main > .hero.hero-world) .lusion-home-content {
+    opacity: 1;
+  }
+}
+
+/* Quiet, two-line display type and softly blurred blue water for the Portal hero. */
+.app-shell:has(> main > .hero.hero-world) .world-space-image {
+  filter: grayscale(1) saturate(0.78) contrast(0.88) brightness(0.9) blur(0.45px);
+  opacity: 0.88;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-water-video {
+  filter: saturate(1.22) contrast(0.88) brightness(0.84) blur(0.45px);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-canvas {
+  filter: saturate(1.22) contrast(0.82) brightness(0.94) blur(1.4px);
+  opacity: 0.68;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-atmosphere {
+  filter: grayscale(1);
+  opacity: 0.68;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-scanlines {
+  filter: grayscale(1);
+  opacity: 0.08;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-stage::after {
+  background:
+    linear-gradient(90deg, rgb(8 11 16 / 14%) 0%, transparent 68%),
+    linear-gradient(180deg, rgb(242 244 248 / 11%) 0%, transparent 42%, rgb(0 0 0 / 30%) 100%),
+    radial-gradient(ellipse at 52% 42%, transparent 30%, rgb(24 28 35 / 14%) 100%);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy {
+  top: clamp(148px, 18.5vh, 184px);
+  left: clamp(28px, 9.4vw, 148px);
+  width: min(1230px, 82vw);
+  isolation: isolate;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy::after {
+  opacity: 0.16;
+  -webkit-text-stroke: 1px rgb(255 255 255 / 22%);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy h1 {
+  display: grid;
+  justify-items: start;
+  margin: 0;
+  font-size: clamp(72px, 8.8vw, 126px);
+  font-family: "XLAB Form Display", "Be Vietnam Pro", Aeonik, sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.04;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line {
+  display: block;
+  max-width: 100%;
+  transform-origin: left center;
+  animation: world-title-thought-in 860ms cubic-bezier(0.2, 0.75, 0.25, 1) 80ms both;
+  animation-play-state: paused;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--lead {
+  margin: 0 0 0.02em 0.05em;
+  color: #f2f3f5;
+  font-size: clamp(40px, 4.8vw, 68px);
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  line-height: 1.12;
+  animation-delay: 90ms;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--final {
+  margin: 0.035em 0 0 0.02em;
+  background-image: linear-gradient(100deg, #b3e8df 0%, #d4e9e6 54%, #c8d0eb 100%);
+  background-position: 0% 50%;
+  background-size: 185% 100%;
+  background-clip: text;
+  color: transparent;
+  font-size: clamp(88px, 10vw, 152px);
+  font-style: normal;
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 1.08;
+  max-width: 100%;
+  text-shadow: 0 2px 24px rgb(0 0 0 / 28%);
+  animation:
+    world-title-form-in 980ms cubic-bezier(0.2, 0.75, 0.25, 1) 220ms both,
+    world-form-light-pass 1480ms cubic-bezier(0.4, 0, 0.2, 1) 320ms both;
+  animation-play-state: paused, paused;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+html[lang="zh-CN"]
+  .app-shell:has(> main > .hero.hero-world)
+  .world-copy
+  h1
+  > .world-title-line--final {
+  background-image: linear-gradient(100deg, #b3e8df 0%, #d4e9e6 54%, #c8d0eb 100%);
+  background-clip: text;
+  color: transparent;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-lede {
+  max-width: min(52ch, 100%);
+  margin: 1em 0 0 4px;
+  color: rgb(241 243 247 / 78%);
+  font-size: clamp(14px, 1vw, 16px);
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.5;
+  text-wrap: pretty;
+  text-shadow: 0 2px 12px rgb(0 0 0 / 30%);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-lede > span {
+  display: block;
+  animation: world-copy-line-in 620ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+  animation-play-state: paused;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-lede > span:first-child {
+  animation-delay: 780ms;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-lede > span:last-child {
+  animation-delay: 960ms;
+}
+
+html.is-ready .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line,
+html.is-ready .app-shell:has(> main > .hero.hero-world) .world-lede > span,
+html.is-ready .app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark {
+  animation-play-state: running;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
+  gap: 10px;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark {
+  animation: world-arrow-nudge 1.8s ease-in-out infinite;
+  animation-play-state: paused;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark::before {
+  top: 12px;
+  width: 1px;
+  height: 17px;
+  background: #72f3de;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark::after {
+  top: 19px;
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid #72f3de;
+  border-bottom: 1.5px solid #72f3de;
+  background: transparent;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+@keyframes world-arrow-nudge {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(4px);
+  }
+}
+
+@keyframes world-title-thought-in {
+  from {
+    clip-path: inset(-0.16em 100% -0.16em -0.08em);
+    filter: blur(9px);
+    letter-spacing: 0.08em;
+    opacity: 0;
+    transform: translate3d(-0.04em, 0.1em, 0);
+  }
+
+  68% {
+    filter: blur(0);
+    opacity: 1;
+  }
+
+  to {
+    clip-path: inset(-0.16em -0.08em);
+    letter-spacing: -0.025em;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes world-title-form-in {
+  from {
+    clip-path: inset(100% -0.12em -0.12em -0.08em);
+    filter: blur(12px);
+    letter-spacing: 0.02em;
+    opacity: 0;
+    transform: translate3d(0, 0.14em, 0) scale(0.96, 0.94);
+  }
+
+  64% {
+    clip-path: inset(-0.12em -0.08em);
+    filter: blur(0);
+    opacity: 1;
+  }
+
+  to {
+    clip-path: inset(-0.12em -0.08em);
+    letter-spacing: -0.045em;
+    transform: translate3d(0, 0, 0) scale(1, 1);
+  }
+}
+
+@keyframes world-form-light-pass {
+  from {
+    background-position: 0% 50%;
+  }
+
+  to {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes world-copy-line-in {
+  from {
+    filter: blur(4px);
+    opacity: 0;
+    transform: translate3d(0, 0.55em, 0);
+  }
+
+  70% {
+    filter: blur(0);
+    opacity: 1;
+  }
+
+  to {
+    filter: blur(0);
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@media (max-width: 980px) {
+  .app-shell:has(> main > .hero.hero-world) .world-copy {
+    left: 7.5vw;
+    width: 87vw;
+  }
+}
+
+@media (max-width: 760px) {
+  .app-shell:has(> main > .hero.hero-world) .world-copy {
+    top: clamp(132px, 17vh, 146px);
+    left: 22px;
+    right: 22px;
+    width: auto;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy::after {
+    display: none;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 {
+    font-size: clamp(54px, 15vw, 68px);
+    line-height: 1.05;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--lead {
+    font-size: clamp(39px, 8.8vw, 52px);
+    animation-duration: 740ms;
+    animation-delay: 70ms;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--final {
+    margin-top: 0.06em;
+    font-size: clamp(68px, 17.3vw, 90px);
+    line-height: 1.08;
+    animation-duration: 840ms, 1180ms;
+    animation-delay: 170ms, 250ms;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-lede {
+    max-width: 28em;
+    margin-top: 0.9em;
+    font-size: clamp(13px, 3.7vw, 14px);
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-lede > span {
+    animation-duration: 560ms;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-lede > span:first-child {
+    animation-delay: 650ms;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-lede > span:last-child {
+    animation-delay: 810ms;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
+    bottom: 26px;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark {
+    width: 29px;
+    height: 29px;
+  }
+}
+
+@media (max-width: 360px) {
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--lead {
+    font-size: clamp(36px, 10vw, 40px);
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--final {
+    font-size: clamp(60px, 17vw, 68px);
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-lede {
+    max-width: 100%;
+  }
+}
+
+@media (max-height: 620px) {
+  .app-shell:has(> main > .hero.hero-world) > main > .hero.hero-world,
+  .app-shell:has(> main > .hero.hero-world) .world-stage {
+    height: 100svh;
+    min-height: 100svh;
+  }
+}
+
+@media (max-height: 620px) and (max-width: 760px) {
+  .app-shell:has(> main > .hero.hero-world) .world-copy {
+    top: 132px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--lead {
+    font-size: clamp(36px, 8.8vw, 48px);
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--final {
+    font-size: clamp(62px, 17vw, 90px);
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-lede {
+    margin-top: 12px;
+    font-size: 12px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-lede > span:last-child {
+    animation-delay: 760ms;
+  }
+}
+
+@media (max-height: 620px) and (min-width: 761px) {
+  .app-shell:has(> main > .hero.hero-world) .world-copy {
+    top: 108px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--lead {
+    font-size: 48px;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--final {
+    font-size: clamp(80px, 9.5vw, 118px);
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-lede {
+    margin-top: 14px;
+    font-size: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line,
+  .app-shell:has(> main > .hero.hero-world) .world-lede,
+  .app-shell:has(> main > .hero.hero-world) .world-lede > span,
+  .app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark {
+    animation: none;
+  }
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy {
+  left: clamp(42px, 11.1vw, 172px);
+}
+
+@media (max-width: 980px) {
+  .app-shell:has(> main > .hero.hero-world) .world-copy {
+    left: 9.5vw;
+  }
+}
+
+@media (max-width: 760px) {
+  .app-shell:has(> main > .hero.hero-world) .world-copy {
+    left: 22px;
+    top: clamp(120px, calc(50vh - 93px), 330px);
+  }
+
+  html[lang="vi"] .app-shell:has(> main > .hero.hero-world) .world-lede > span:last-child {
+    max-width: 18em;
+  }
+}
+
+@media (min-width: 521px) and (max-width: 760px) {
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--lead {
+    font-size: clamp(52px, 8.8vw, 64px);
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--final {
+    font-size: clamp(100px, 18vw, 128px);
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-lede {
+    font-size: clamp(16px, 2.5vw, 18px);
+  }
+}
+
+@media (max-width: 420px) {
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--final {
+    font-size: clamp(50px, 16vw, 64px);
+  }
+}
+
+/* Keep the water light readable while parking the hero in the same near-black
+   key as the Lusion sections below; the silver horizon stays at mid-height. */
+.app-shell:has(> main > .hero.hero-world) .world-stage {
+  border-color: rgb(140 194 236 / 16%);
+  background:
+    radial-gradient(ellipse at 76% 38%, rgb(140 232 216 / 8%), transparent 26%),
+    linear-gradient(
+      180deg,
+      #03070b 0%,
+      #050f19 25%,
+      #223747 38%,
+      #0c1c2c 42%,
+      #081624 49%,
+      #05101a 66%,
+      #02070b 100%
+    );
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-space-image {
+  filter: grayscale(1) saturate(0.78) contrast(0.96) brightness(0.26) blur(0.45px);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-water-video {
+  filter: saturate(0.9) contrast(0.94) brightness(0.32) blur(0.45px);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-canvas {
+  filter: saturate(0.6) contrast(0.94) brightness(0.46) blur(2.2px);
+  opacity: 0.5;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-stage::after {
+  background:
+    linear-gradient(90deg, rgb(2 7 11 / 44%) 0%, transparent 68%),
+    linear-gradient(
+      180deg,
+      rgb(2 7 11 / 84%) 0%,
+      rgb(2 7 11 / 58%) 34%,
+      rgb(2 7 11 / 56%) 58%,
+      rgb(0 0 0 / 62%) 100%
+    ),
+    radial-gradient(ellipse at 52% 42%, transparent 34%, rgb(0 0 0 / 54%) 100%);
+}
+
+/* Keep the XLab header pinned over the full-screen scenes. */
+.portal-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 20;
+  display: grid;
+  /* Mirrors the XLab site header on /about: the wordmark sits on the base
+     padding grid, and the two pill controls float at the top-right. */
+  grid-template-columns: 80px minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 20px;
+  /* Matches the 146px XLab header box on /about so the wordmark centres at the
+     same y (58.4) instead of hugging the top padding line. */
+  min-height: 146px;
+  padding: 27px clamp(22px, 4.4vw, 56px);
+  color: #1c1d25;
+  background: transparent;
+}
+
+html:not(.is-ready) .portal-header {
+  z-index: 102;
+  visibility: hidden;
+}
+
+html.is-lusion-section-preloading .portal-header {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+html:not(.is-ready) .portal-header,
+html:not(.is-ready) .portal-header * {
+  pointer-events: none;
+}
+
+.portal-header-brand {
+  display: block;
+  width: 80px;
+  line-height: 0;
+}
+
+/* Same crop lockup the XLab header uses on /about: the webp carries padding
+   above the wordmark, so a window clips it to the mark's own bounds.
+   The window is deliberately WIDER and TALLER than the mark, because it is the only
+   thing that bounds the halo: the halo layers are `inset: 0` boxes exactly this size,
+   so every side needs its share of slack between the ink and the edge or the glow is
+   sliced off flat there. Measured: with a 1.5px rim plus a 10px bloom the light wants
+   ~8px of room per side, and cutting it to 2px killed the ring in exactly the two
+   directions that had least slack.
+   The width is 96px against an 80px mark, and the extra 16px is all on the left: the
+   artwork's ink runs flush to its own right edge (last inked column 777 of 807, only
+   ~3.1px of clearance at this size) while it carries ~18px of dead margin on the left,
+   so an 80px window cut the halo off dead straight down the right of the wordmark.
+   The mark sits at left 16px, which is exactly that dead margin, so its position on
+   screen is unchanged - the window just now has clearance on both sides.
+   The box is 32px tall against a 25.27px mark, and offset -3.4px so the mark lands
+   centred (see the img below). */
+.portal-header-brand .xlab-logo-crop {
+  display: block;
+  position: relative;
+  flex: 0 0 96px;
+  width: 96px;
+  height: 32px;
+  /* No overflow: hidden here on purpose. The crop window still has to clip the
+     artwork's padding, but it must NOT clip the halo: a clipped child is cut off
+     dead straight at the box edge, which turned the bloom into a hard rectangle.
+     So the img clips itself (see below) and the ::before/::after halo layers are
+     left free to bleed. */
+}
+
+.portal-header-brand .xlab-logo-crop img {
+  position: absolute;
+  /* -3.4px, and the arithmetic is the whole point of the window's height: the clipped
+     mark is 25.27px tall and the box is 32px, so centring it means (32 - 25.27) / 2 =
+     3.37px of slack above the mark's top edge. The mark's top edge inside the artwork
+     is at 6.9px below the element's own top, so the element has to sit at
+     3.4 - 6.9 = -3.5px for the ink to come out centred.
+     The previous -6.8px paired with the old 32px-tall window, where the slack really
+     was (32 - (48.97 - 6.8)) / 2 = -5.1px - i.e. it hung below the middle, which is
+     the same off-centre complaint the halo was already making. */
+  top: -3.5px;
+  /* 16px, not 0: the window's left edge is where the halo's 16px of even bleed comes
+     from, so the mark has to sit that far in or the left bleed shrinks to nothing. */
+  left: 16px;
+  display: block;
+  width: 80px;
+  height: auto;
+  max-width: none;
+  /* The artwork is NOT white: its brightest pixel is rgb(96,144,138) at luminance
+     133 - a muted teal. Rendered as-is the wordmark peaks at ~111 against the
+     near-black stage, and any halo traced from it is capped at that same 133.
+     brightness() pushes the artwork to a true white; saturate(0) kills the teal
+     cast so the lift lands on neutral white instead of a brighter teal. */
+  filter: brightness(2.35) saturate(0) contrast(1.08);
+  /* The crop window's job, done on the artwork itself now that the box no longer
+     clips. The artwork is 807x505 and the ink runs its full height (verified row by
+     row), so there is no "last row of ink" to slice back to; what has to go is the
+     padding above the mark and the empty tail below it.
+     top 6.9px is where the mark's top edge sits inside the element, so slicing there
+     puts the ink flush to the element's own top.
+     bottom 42.2px leaves 25.27px of ink: at the 80px render the mark spans y
+     6.90..48.97 of the artwork, i.e. 42.07px of ink below the 6.9px cut, and the
+     element is 50.05px tall, so 50.05 - 42.07 = 7.98px wanted, and 50.05 - 7.98 =
+     42.07 turns into 42.2 once rounded to the tenth. The two values therefore satisfy
+     6.9 + 42.2 = 49.1, not 50.05: the leftover ~0.95px is the window's own bottom
+     slack, which is why the numbers look "one step short" of the artwork height and
+     are correct anyway. */
+  clip-path: inset(6.9px 0 42.2px 0);
+}
+
+/* Halo around the wordmark: ONE even ring, the same width on all four sides.
+   ---------------------------------------------------------------------------
+   The bug was not the amount of glow, it was the SHAPE of the glow. Both halo
+   layers painted a full copy of the artwork with `background: contain`, and both
+   sat above the `img`, so what the eye received was three near-identical copies
+   of the mark stacked on top of each other (img, ::after, ::before), each already
+   lifted by `brightness(2.35)`. Three white copies over one another have no depth
+   left: the letterforms fuse together into a flat white blob. That is the
+   "trong chán" the design was complaining about. And because the glow hung off
+   those same FILLED silhouettes, every bit of light landed on the letters rather
+   than outboard of them, so no border ever appeared.
+
+   The fix is therefore structural: exactly ONE layer draws ink, and the halo is a
+   hole in the middle. A `mask` is the primitive that subtracts a shape, and here
+   both shapes are the same image at two scales:
+     layer 1 - the artwork at `contain`, covering the whole interior;
+     layer 2 - the artwork, SUBTRACTED, deleting the mark's own outline and
+               everything inside it.
+   What survives is the band between the two, i.e. a ring traced from the
+   silhouette itself. Nothing is offset, so the width is the same on all four
+   sides - the "cùng 1 kích cỡ" the design asks for. Offsets are what produced the
+   previously measured 7.58px bottom against 2.58px right: an offset slides a copy
+   sideways, thickening one side and thinning the other. A scale difference pushes
+   all four sides outward together.
+
+   A masked element cannot carry its own drop-shadow - the mask gates the filter
+   output as well, measured at only 0.8/1.8/1.8/1.8px of reach, i.e. nothing- so
+   the glow is not a shadow here. Two layers with two jobs:
+     ::after  - the wide, soft, UNMASKED bloom that spills outward;
+     ::before - the crisp ring, MASKED so it cannot flood the counters. */
+
+/* --- the crisp ring: a masked outline of the mark ------------------------- */
+.portal-header-brand .xlab-logo-crop::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  /* The artwork's own silhouette, drawn white: the ring hugs the letterforms, so
+     no ring stroke ever crosses a letter. */
+  background: url("/web/portal/xlab-logo.webp") no-repeat center / contain;
+  filter: brightness(2.35) saturate(0) contrast(1.08);
+  /* Two mask layers, listed TOP first. Layer 1 is the artwork scaled UP (auto
+     106%) so its opaque area comfortably covers the mark plus a margin; layer 2
+     is the artwork at the mark's own size. `mask-composite` is a PER-LAYER
+     property describing how that layer combines with everything already
+     accumulated BELOW it, so the operator belongs on layer 1:
+       layer 1 = source-out  =>  layer1 MINUS layer2  =  margin band only;
+       layer 2 = add         =>  paint the mark normally, into the accumulator.
+     The band that survives is 3% of the mark on the long axis and 2% on the short
+     axis - about 2.4px and 1.5px at the 80px render - which is the near-even ring
+     the design is after. The two percentages differ only because the artwork is
+     807x505: equal percentages would give a proportionally thicker ring on the
+     long axis, and a ring that is visibly heavier left/right than top/bottom is
+     the same complaint the old offset chain earned. */
+  -webkit-mask-image:
+    url("/web/portal/xlab-logo.webp"),
+    url("/web/portal/xlab-logo.webp");
+  mask-image:
+    url("/web/portal/xlab-logo.webp"),
+    url("/web/portal/xlab-logo.webp");
+  -webkit-mask-repeat: no-repeat, no-repeat;
+  mask-repeat: no-repeat, no-repeat;
+  -webkit-mask-position: center, center;
+  mask-position: center, center;
+  -webkit-mask-size: auto 106%, auto 104%;
+  mask-size: auto 106%, auto 104%;
+  -webkit-mask-composite: source-out, source-over;
+  mask-composite: subtract, add;
+  pointer-events: none;
+}
+
+/* --- the soft bloom: the same silhouette, blurred -------------------------
+   Deliberately UNMASKED, so the blur is free to spill outward in every
+   direction. The blur is what makes the halo read as light instead of as a
+   painted line, and a Gaussian blur has no direction, so this cannot reintroduce
+   the left/right imbalance the old offset chain had. The interior is covered by
+   the real mark, which sits above this layer at z-index 3. */
+.portal-header-brand .xlab-logo-crop::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: url("/web/portal/xlab-logo.webp") no-repeat center / contain;
+  /* The lift matches the mark's lift exactly, so the bloom is the same white as
+     the ink; blur() then spreads that silhouette. This replaces the old
+     4-pass drop-shadow chain - whose arguments included a 4th "spread" value that
+     drop-shadow() does not accept, so Chromium discarded the whole declaration.
+     That is why the halo never appeared however carefully it was tuned. */
+  filter: brightness(2.35) saturate(0) contrast(1.08) blur(1.6px);
+  /* Low, because the ring is the crisp part; the bloom only has to give it air. */
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* --- the mark, and the ONLY layer that draws ink, is the img rule ABOVE this
+   block. It sits above both halo layers (z-index is not needed on it: it is the
+   earlier sibling and both pseudo layers are positioned, so the paint order is
+   already img, then ::after, then ::before). Its filter is just the white lift,
+   with deliberately no drop-shadow - a second glow at a different width would
+   break the even border the ring exists to create. */
+.site-footer .brand-logo-frame > picture {
+position: relative;
+}
+
+.site-footer .brand-logo-frame > picture::before {
+content: "";
+position: absolute;
+inset: 0;
+background: url("/web/portal/xlab-logo.webp") no-repeat center / contain;
+/* Percentages resolve against the layer, so the grow scales with the artwork at
+every breakpoint. 110% funds the 1.1px rim on the same "grow grows with the rim"
+rule the header uses: at 1:1 the mask deletes the halo's own overhang and the
+outline vanishes. Growing it further does NOT make the halo thicker, though -
+that only enlarges the artwork the mask is cut from, so the rim scales with it
+and the glow stays pinched. Thickness comes from the ::after bloom below. */
+-webkit-mask-image: url("/web/portal/xlab-logo.webp");
+-webkit-mask-size: 110% auto;
+-webkit-mask-position: center;
+-webkit-mask-repeat: no-repeat;
+mask-image: url("/web/portal/xlab-logo.webp");
+mask-size: 110% auto;
+mask-position: center;
+mask-repeat: no-repeat;
+/* Above the bloom layer below, so the crisp rim is not washed out by it. */
+z-index: 2;
+/* Hard rim only, matching the header: the graded falloff moved to the unmasked
+`::after` bloom below, where the mask cannot shear it off. The four offsets sit
+at 1.1px against the header's 1px and the alpha one step higher (54% vs 52%),
+because this artwork is smaller and an identical rim would read weaker.
+1.1px is still held under the ~1.25px counter ceiling that governs both layers;
+extra thickness comes from the bloom, not from this rim. */
+filter: drop-shadow(1.1px 0 0 rgb(255 255 255 / 54%))
+drop-shadow(-1.1px 0 0 rgb(255 255 255 / 54%)) drop-shadow(0 1.1px 0 rgb(255 255 255 / 54%))
+drop-shadow(0 -1.1px 0 rgb(255 255 255 / 54%));
+pointer-events: none;
+}
+
+/* The soft outer bloom, split out of the rim for the same reason as the header's:
+the rim layer is masked, and its mask caps the halo's reach, so the falloff has
+to live on an unmasked layer to actually spread. Percentages again, so the bloom
+scales with the artwork at every breakpoint rather than being pinned to the one
+size the header happens to render at. Radii run one step above the header's: the
+footer artwork is smaller, so an identical bloom would read weaker. */
+.site-footer .brand-logo-frame > picture::after {
+content: "";
+position: absolute;
+/* inset: 0, NOT a percentage bleed. Percentages on inset resolve against the
+containing block's WIDTH for all four sides, and this picture box is far wider
+than it is tall, so a percentage bleed would spread sideways by ~100px while
+spreading vertically by ~2px and the bloom would collapse into a flat smear.
+Growth has to come from blur instead, which is what makes this resize-proof:
+every blur digit is a fraction of the layer, so it scales with the artwork. */
+inset: 0;
+/* contain, the SAME scale as the rim and the mark. A bloom is the artwork's own
+glyph shape blurred, so the transparent holes of the real letterforms have to sit
+     exactly over the opaque glyphs of the halo; if the halo's artwork were scaled any
+     differently, its glyphs would poke through those holes and the mark would read as
+     a doubled, ghosted image. Scaling is therefore not a lever here - only the blur
+     radii and alphas below are. */
+background: url("/web/portal/xlab-logo.webp") no-repeat center / contain;
+z-index: 1;
+filter: drop-shadow(0 0 2.8px rgb(255 255 255 / 34%))
+    drop-shadow(0 0 6.6px rgb(255 255 255 / 24%)) drop-shadow(0 0 12px rgb(255 255 255 / 11%));
+pointer-events: none;
+}
+
+.portal-header-actions {
+position: fixed;
+/* Matches the XLab header on /about: pills sit 50px from the top, 72px from
+   the right edge, with a 35.75px gutter between them. */
+top: 50px;
+right: 72px;
+display: flex;
+align-items: center;
+gap: 35.75px;
+font-family: "Be Vietnam Pro", sans-serif;
+font-size: 14px;
+}
+
+html:not([lang="vi"]) .portal-header-actions {
+gap: 35.75px;
+}
+
+/* The controls fade into place as the curtain lifts; they never travel, so the
+ buttons read as appearing rather than sliding up from below the header. The
+ parent carries the delay so both controls stay in lockstep with the curtain. */
+.portal-header-actions {
+opacity: 0;
+transition: opacity 0.8s 0.9s cubic-bezier(0.35, 0, 0, 1);
+}
+
+html.is-ready:not(.is-lusion-section-preloading) .portal-header-actions {
+opacity: 1;
+}
+
+.portal-language-control {
+/* Mirrors the /about header pill: dark ink chrome with the same corner
+   radius as the XLab controls. The teal tokens stay for the hover state. */
+--portal-brand-teal: #57b5b4;
+--portal-brand-teal-deep: #237478;
+position: relative;
+display: block;
+width: 5.514em;
+height: 3.2em;
+flex: 0 0 auto;
+font-size: 1em;
+}
+
+.portal-language-trigger {
+display: flex;
+align-items: center;
+justify-content: center;
+position: relative;
+width: 100%;
+height: 100%;
+box-sizing: border-box;
+border: none;
+border-radius: 6.25em;
+padding: 0 1.125em 0 1.625em;
+color: #fff;
+background: rgb(43 46 58);
+font-family: inherit;
+font-size: inherit;
+font-weight: 500;
+line-height: 1;
+text-transform: uppercase;
+text-align: center;
+cursor: pointer;
+overflow: hidden;
+transition:
+  background-color 0.4s,
+  color 0.4s;
+}
+
+.portal-language-trigger:hover {
+background: var(--portal-brand-teal, #57b5b4);
+color: #fff;
+}
+
+.portal-language-trigger[aria-expanded="true"] {
+background: rgb(43 46 58);
+outline: none;
+}
+
+.portal-language-trigger:focus-visible,
+.portal-language-options [role="option"]:focus-visible,
+.portal-category-panel a:focus-visible {
+outline: 2px solid #c1ff00;
+outline-offset: 3px;
+}
+
+.portal-language-inner {
+display: flex;
+flex-direction: row;
+align-items: center;
+justify-content: center;
+position: relative;
+gap: 0.625em;
+white-space: nowrap;
+}
+
+/* The /about pill carries no arrow glyph -- just the label and a two-dot
+ indicator -- so the portal matches that structure exactly. */
+#portal-language-current {
+transition: none;
+}
+
+.portal-language-dots {
+position: relative;
+flex: 0 0 auto;
+width: 1.15em;
+height: 1.15em;
+transform: translateZ(0) rotate(180deg);
+transition: transform 0.4s cubic-bezier(0.4, 0, 0.1, 1);
+}
+
+.portal-language-dot {
+position: absolute;
+display: inline-block;
+top: 50%;
+width: 0.3125em;
+height: 0.3125em;
+border-radius: 100%;
+background: currentColor;
+transform: translateY(-50%);
+}
+
+.portal-language-dot:first-child {
+left: 0.1em;
+}
+
+.portal-language-dot:last-child {
+right: 0.1em;
+}
+
+@media (hover: hover) {
+.portal-language-trigger:hover .portal-language-dots,
+.portal-language-trigger[aria-expanded="true"] .portal-language-dots {
+  transform: translateY(-0.1em) translateZ(0) rotate(270deg);
+}
+}
+
+.portal-language-options {
+position: absolute;
+top: calc(100% + 0.55em);
+right: 0;
+z-index: 58;
+display: flex;
+flex-direction: column;
+--portal-language-gutter: max(5vw, 40px);
+width: 12em;
+max-width: calc(100vw - var(--portal-language-gutter) - var(--portal-language-gutter));
+min-width: 0;
+box-sizing: border-box;
+gap: 0;
+padding: 0.65em 0.3125em;
+border-radius: 0.625em;
+background: #fff;
+color: #080808;
+box-shadow: 0 12px 30px rgb(0 0 0 / 12%);
+font-size: 1.142857em;
+}
+
+.portal-language-options[hidden] {
+display: none !important;
+}
+
+.portal-language-options [role="option"] {
+display: block;
+position: relative;
+width: 100%;
+min-height: 44px;
+box-sizing: border-box;
+border: 0;
+border-radius: 6.25em;
+padding: 0.7em 1.3em;
+color: inherit;
+background: transparent;
+font-family: inherit;
+font-size: 1.1em;
+font-weight: 400;
+line-height: 1;
+text-align: left;
+text-transform: uppercase;
+cursor: pointer;
+transition:
+  background-color 0.3s,
+  color 0.3s;
+}
+
+.portal-language-options [role="option"]::after {
+content: "";
+position: absolute;
+top: calc(50% - 0.2em);
+right: 1.55em;
+width: 0.4em;
+height: 0.4em;
+border-radius: 50%;
+background: currentColor;
+opacity: 0;
+transform: scale(0);
+transition:
+  opacity 0.2s,
+  transform 0.2s;
+}
+
+.portal-language-options [role="option"][aria-selected="true"]::after {
+opacity: 1;
+transform: scale(1);
+}
+
+.portal-language-options [role="option"]:hover {
+background: rgb(0 0 0 / 4.5%);
+}
+
+.portal-category-menu {
+position: relative;
+}
+
+.portal-category-trigger {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+width: auto;
+/* Pins the desktop pill to /about's measured 140.56px box; the label alone
+   would render a few px narrow because this trigger keeps its dots child. */
+min-width: 10.04em;
+height: 3.2em;
+box-sizing: border-box;
+border: none;
+border-radius: 6.25em;
+padding: 0 1.125em 0 1.625em;
+color: #000;
+background: #e4e6ef;
+font-family: inherit;
+/* /about keeps the trigger at 14px so the pill lands on 140.56x44.8 at desktop. */
+font-size: 1em;
+font-weight: 500;
+line-height: 1.15;
+list-style: none;
+cursor: pointer;
+user-select: none;
+transition:
+  transform 0.8s 1s cubic-bezier(0.35, 0, 0, 1),
+  color 0.4s,
+  background-color 0.4s;
+}
+
+.portal-category-trigger:hover,
+.portal-category-menu.is-open > .portal-category-trigger {
+color: #000;
+background: #fff;
+}
+
+.portal-category-trigger:focus-visible {
+outline: none;
+}
+
+.portal-category-trigger-inner {
+display: flex;
+align-items: center;
+justify-content: center;
+position: relative;
+right: 0.1em;
+gap: 0.625em;
+overflow: hidden;
+background: transparent;
+}
+
+.portal-category-label-viewport {
+position: relative;
+display: block;
+overflow: hidden;
+height: 1.2em;
+line-height: 1.2em;
+white-space: nowrap;
+}
+
+.portal-category-label-current,
+.portal-category-label-close {
+transition: transform 0.3s cubic-bezier(0.4, 0, 0.1, 1);
+}
+
+.portal-category-label-current {
+display: block;
+}
+
+.portal-category-label-close {
+position: absolute;
+top: 0;
+left: 0;
+transform: translate3d(0, 100%, 0);
+}
+
+.portal-category-menu.is-open > .portal-category-trigger .portal-category-label-current {
+transform: translate3d(0, -100%, 0);
+}
+
+.portal-category-menu.is-open > .portal-category-trigger .portal-category-label-close {
+transform: translateZ(0);
+}
+
+.portal-category-dots {
+position: relative;
+flex: 0 0 auto;
+width: 1.15em;
+height: 1.15em;
+transform: translateZ(0) rotate(180deg);
+transition: transform 0.4s cubic-bezier(0.4, 0, 0.1, 1);
+}
+
+.portal-category-dot {
+position: absolute;
+display: inline-block;
+top: 50%;
+width: 0.3125em;
+height: 0.3125em;
+border-radius: 100%;
+background: currentColor;
+transform: translateY(-50%);
+}
+
+.portal-category-dot:first-child {
+left: 0.1em;
+}
+
+.portal-category-dot:last-child {
+right: 0.1em;
+}
+
+.portal-category-trigger:hover .portal-category-dots,
+.portal-category-menu.is-open > .portal-category-trigger .portal-category-dots {
+transform: translateY(-0.1em) translateZ(0) rotate(270deg);
+}
+
+.portal-category-panel {
+position: absolute;
+--portal-category-gutter: clamp(20px, 4vw, 34px);
+top: 3.6em;
+right: 0;
+z-index: 57;
+display: flex;
+flex-direction: column;
+width: 19.38em;
+max-width: calc(100vw - var(--portal-category-gutter) - var(--portal-category-gutter));
+box-sizing: border-box;
+gap: 0;
+padding: clamp(0.25em, 0.45vw, 0.375em);
+border: 0;
+border-radius: 0.625em;
+background: #fff;
+color: #080808;
+opacity: 0;
+visibility: hidden;
+transform: translate3d(0, 5.5em, 0) rotate(3.5deg);
+pointer-events: none;
+will-change: transform, opacity;
+/* Lusion staggers its four menu containers with --open-delay: index/50s and
+   --close-delay: |index - count|/50s. This panel is a single container, so
+   that formula resolves to no delay on either side and the slide starts on
+   the very next frame. */
+transition:
+  transform 0.5s cubic-bezier(0.4, 0, 0.1, 1),
+  opacity 0.5s cubic-bezier(0.4, 0, 0.1, 1),
+  visibility 0s linear 0.5s;
+}
+
+.portal-category-menu.is-open > .portal-category-panel {
+opacity: 1;
+visibility: visible;
+transform: translateZ(0);
+pointer-events: auto;
+transition:
+  transform 0.5s cubic-bezier(0.4, 0, 0.1, 1),
+  opacity 0.5s cubic-bezier(0.4, 0, 0.1, 1),
+  visibility 0s linear;
+}
+
+.portal-category-menu.is-open > .portal-category-panel a {
+pointer-events: auto;
+}
+
+.portal-category-panel a {
+display: block;
+position: relative;
+min-height: clamp(40px, 4.6vw, 48px);
+box-sizing: border-box;
+overflow: hidden;
+width: 100%;
+border-radius: 0;
+padding: 0.9em 1.625em;
+color: inherit;
+font-family: "Be Vietnam Pro", ui-sans-serif, sans-serif;
+font-size: clamp(15px, 1vw, 24px);
+font-weight: 400;
+line-height: 1.45;
+text-transform: uppercase;
+text-decoration: none;
+pointer-events: none;
+}
+
+.portal-category-panel a::before {
+content: "";
+position: absolute;
+top: calc(50% - 0.25em);
+right: 2em;
+width: 0.5em;
+height: 0.5em;
+border-radius: 50%;
+background: #000;
+transform: scale(0);
+transition: transform 0.3s cubic-bezier(0.4, 0, 0.1, 1);
+}
+
+.portal-category-panel a[aria-current="page"]::before {
+transform: scale(1);
+}
+
+.portal-category-panel a[aria-current="page"]:hover::before {
+transform: scale(0);
+}
+
+.header-menu-link-background {
+position: absolute;
+inset: 0;
+width: 100%;
+height: 100%;
+border-radius: 6.25em;
+/* Same XLab lockup teal as the language trigger, declared on .portal-language-control. */
+background: var(--portal-brand-teal-deep, #237478);
+opacity: 0;
+transform: scale(0.85);
+transition:
+  opacity 0.3s,
+  transform 0.4s cubic-bezier(0.4, 0, 0.1, 1);
+}
+
+.header-menu-link-inner {
+display: block;
+position: relative;
+/* One token drives the clip height, the label roll distance, and the clone
+   offset, so the three can never disagree.
+   The label's painted box is ~1.28x its line box (the display face and the
+   Vietnamese diacritics both overshoot), so a roll distance of 100% of the
+   line box leaves the clone overlapping the label and the text renders
+   twice for the whole roll. 1.28 clears it with a hair of margin. */
+--header-menu-link-font-size: 1.625em;
+--header-menu-link-line-height: 1.3;
+--header-menu-link-roll: 128%;
+height: calc(
+  var(--header-menu-link-font-size) * var(--header-menu-link-line-height) *
+    var(--header-menu-link-roll) / 100%
+);
+overflow: hidden;
+}
+
+.header-menu-link-text,
+.header-menu-link-text-clone {
+display: inline-block;
+position: relative;
+z-index: 1;
+font-size: var(--header-menu-link-font-size);
+line-height: var(--header-menu-link-line-height);
+text-transform: uppercase;
+transition:
+  color 0.4s,
+  transform 0.4s cubic-bezier(0.4, 0, 0.1, 1);
+}
+
+.header-menu-link-text-clone {
+position: absolute;
+top: 0;
+left: 0;
+/* Parked exactly one roll distance below the label so it stays clipped. */
+transform: translate3d(0, var(--header-menu-link-roll), 0);
+}
+
+.header-menu-link-svg {
+position: absolute;
+top: calc(50% - 0.75em);
+right: 0;
+width: 1.5em;
+height: 1.5em;
+transform: scale(0);
+transition:
+  color 0.4s,
+  transform 0.2s cubic-bezier(0.4, 0, 0.1, 1);
+}
+
+@media (hover: hover) {
+.portal-category-panel a:hover,
+.portal-category-panel a:focus-visible {
+  color: var(--header-text-color, #000);
+}
+
+.portal-category-panel a:hover .header-menu-link-text,
+.portal-category-panel a:focus-visible .header-menu-link-text {
+  /* Same distance the clone travels, so the two labels swap cleanly. */
+  transform: translate3d(0, calc(-1 * var(--header-menu-link-roll)), 0);
+}
+
+.portal-category-panel a:hover .header-menu-link-text-clone,
+.portal-category-panel a:focus-visible .header-menu-link-text-clone {
+  transform: translateZ(0);
+}
+
+.portal-category-panel a:hover .header-menu-link-background,
+.portal-category-panel a:focus-visible .header-menu-link-background {
+  opacity: 0.1;
+  transform: scale(1);
+}
+
+.portal-category-panel a:hover .header-menu-link-svg,
+.portal-category-panel a:focus-visible .header-menu-link-svg {
+  transform: scale(1);
+}
+
+.portal-category-panel a:hover .header-menu-link-svg,
+.portal-category-panel a:focus-visible .header-menu-link-svg {
+  transition:
+    color 0.4s,
+    transform 0.2s 0.2s cubic-bezier(0.4, 0, 0.1, 1);
+}
+}
+
+@media (max-width: 812px) {
+.portal-header {
+  /* Same breakpoint the XLab header uses: the wordmark stays at 80px and the
+     pills collapse to the square DANH Má»¤C button with the label clipped. */
+  --portal-lusion-gutter: clamp(15px, 5.07vw, 25px);
+  --portal-lusion-unit: clamp(12px, 3.245vw, 16px);
+  grid-template-columns: 80px minmax(0, 1fr) auto;
+  min-height: 0;
+  padding: var(--portal-lusion-gutter) var(--portal-lusion-gutter) 18px;
+}
+
+.portal-header-brand {
+  width: 80px;
+}
+
+.portal-header-actions {
+  top: var(--portal-lusion-gutter);
+  right: var(--portal-lusion-gutter);
+  align-self: start;
+  gap: 22px;
+  margin-right: 0;
+  /* The /about pills stay at a flat 14px at every width, so the controls keep
+     their own fixed size instead of inheriting the fluid header unit. */
+  font-size: 14px;
+}
+
+html:not([lang="vi"]) .portal-header-actions {
+  gap: 22px;
+}
+
+.portal-language-control {
+  /* /about keeps the wide VI pill on mobile; only the menu button squares up. */
+  width: 5.514em;
+  height: auto;
+  flex: 0 0 auto;
+  font-size: 1em;
+}
+
+.portal-language-trigger {
+  width: 100%;
+  min-width: 0;
+  height: 3.2em;
+  min-height: 44px;
+  padding: 0 1.125em 0 1.625em;
+  font-size: 1em;
+}
+
+.portal-language-trigger[aria-expanded="true"] {
+  background: rgb(43 46 58);
+  outline: none;
+}
+
+.portal-language-options {
+  top: calc(100% + 0.55em);
+  right: 0;
+  width: 12em;
+  max-width: calc(100vw - var(--portal-lusion-gutter) - var(--portal-lusion-gutter));
+  min-width: 0;
+  padding: 0.65em 0.3125em;
+  font-size: 1.142857em;
+}
+
+.portal-language-options [role="option"] {
+  min-height: 44px;
+  padding: 0.7em 1.3em;
+  font-size: 1.1em;
+}
+
+.portal-language-options [role="option"]::after {
+  right: 1.55em;
+}
+
+.portal-category-menu {
+  font-size: inherit;
+}
+
+.portal-category-trigger {
+  width: 3.2em;
+  min-width: 44px;
+  height: 3.2em;
+  min-height: 44px;
+  padding: 0;
+  border-radius: 6.25em;
+  font-size: 1em;
+}
+
+.portal-category-label-viewport {
+  display: none;
+}
+
+.portal-category-dots {
+  font-size: 1.4em;
+}
+
+.portal-category-menu.is-open > .portal-category-trigger .portal-category-dots {
+  transform: translate(0.05em) translateY(-0.1em) translateZ(0) rotate(270deg);
+}
+
+.portal-category-panel {
+  top: calc(
+    var(--portal-lusion-gutter) + var(--portal-lusion-unit) + var(--portal-lusion-unit) +
+      var(--portal-lusion-unit)
+  );
+  right: 0;
+  width: calc(100vw - var(--portal-lusion-gutter) - var(--portal-lusion-gutter));
+  max-width: calc(100vw - var(--portal-lusion-gutter) - var(--portal-lusion-gutter));
+  padding: 1em 0.3125em;
+  border-radius: 0.625em;
+  font-size: var(--portal-lusion-unit);
+}
+
+.portal-category-panel a {
+  display: block;
+  min-height: 0;
+  border-radius: 0;
+  padding: 0.9em 1.625em;
+  font-size: 1em;
+  line-height: 1.45;
+}
+
+.portal-category-panel .header-menu-link-text,
+.portal-category-panel .header-menu-link-text-clone {
+  display: block;
+  font-size: 1.25em;
+  line-height: 1.6;
+}
+}
+
+html[lang="vi"] .portal-category-panel a {
+padding: 0.9em 1.625em;
+line-height: 1.45;
+}
+
+html[lang="vi"] .portal-category-panel {
+--header-menu-link-font-size: 1.25em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+.portal-header-actions {
+  transition-duration: 0.01ms;
+  transition-delay: 0ms;
+}
+
+.portal-language-control,
+.portal-category-trigger {
+  transform: none;
+}
+
+.portal-language-dots,
+.portal-language-trigger:hover .portal-language-dots,
+.portal-language-trigger[aria-expanded="true"] .portal-language-dots {
+  transform: translateZ(0) rotate(180deg);
+  transition-duration: 0.01ms;
+}
+
+.portal-language-trigger:hover .portal-language-dots,
+.portal-language-trigger[aria-expanded="true"] .portal-language-dots {
+  transform: translateY(-0.1em) translateZ(0) rotate(270deg);
+}
+
+#portal-language-current,
+.portal-language-trigger:hover #portal-language-current,
+.portal-language-trigger[aria-expanded="true"] #portal-language-current {
+  transition-duration: 0.01ms;
+  transition-delay: 0ms;
+}
+
+.portal-category-panel,
+.portal-category-panel a,
+.portal-category-panel a::before,
+.portal-category-panel .header-menu-link-background,
+.portal-category-panel .header-menu-link-text,
+.portal-category-panel .header-menu-link-text-clone,
+.portal-category-panel .header-menu-link-svg {
+  transition-duration: 0.01ms;
+  transition-delay: 0ms;
+}
+}
+
+/* Center and scale the Portal opening copy across viewport sizes. */
+.app-shell:has(> main > .hero.hero-world) .world-copy {
+top: 50%;
+right: auto;
+left: 50%;
+width: min(1320px, calc(100vw - clamp(40px, 8vw, 120px)));
+translate: -50% -50%;
+text-align: left;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy h1 {
+justify-items: start;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line {
+transform-origin: left center;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--lead {
+margin-left: 0;
+font-size: clamp(44px, 5.2vw, 80px);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--final {
+margin-left: 0;
+font-size: clamp(88px, 12vw, 216px);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-lede {
+max-width: min(52ch, 100%);
+margin: clamp(14px, 1.6vw, 24px) 0 0 4px;
+font-size: clamp(16px, 1.15vw, 20px);
+text-align: left;
+}
+
+@media (max-width: 760px) {
+.app-shell:has(> main > .hero.hero-world) .world-copy {
+  width: calc(100vw - clamp(36px, 9vw, 68px));
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--lead {
+  font-size: clamp(48px, 10vw, 72px);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--final {
+  font-size: clamp(60px, 18.5vw, 144px);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-lede {
+  font-size: clamp(15px, 3.2vw, 20px);
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-lede > span {
+  margin-inline: 0;
+  text-align: left;
+}
+}

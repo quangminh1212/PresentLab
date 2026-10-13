@@ -117,10 +117,10 @@
             <span class="portal-category-trigger-inner" aria-hidden="true">
               <span class="portal-category-label-viewport">
                 <span class="portal-category-label-current" data-i18n="categoriesLabel"
-                  >Danh mục</span
+                  >DANH MỤC</span
                 >
                 <span class="portal-category-label-close" data-i18n="categoriesCloseLabel"
-                  >Đóng</span
+                  >ĐÓNG</span
                 >
               </span>
               <span class="portal-category-dots">
@@ -261,6 +261,111 @@
           aria-labelledby="hero-title"
           data-motion-scene="library"
         >
+          <!-- The XLab wordmark that rings the copy below. It is plain markup
+               rather than generated CSS because the halo has to be a real,
+               individually filterable element: an SVG <filter> reads the
+               element's own painted pixels, so a ::before/::after halo could
+               only ever be the artwork pasted underneath the artwork, which is
+               exactly the flat "second copy" look this replaces.
+
+               Everything below is filtered on the server-side GPU pass BEFORE
+               any masking happens (the SVG filter runs first, the CSS mask
+               gates the result), which is what lets the halo reach past the
+               artwork's own edges instead of being pinned to them.
+
+               aria-hidden + fill="none": this is pure decoration and is not
+               readable text, so screen readers skip it and the browser has
+               nothing to lay out.
+
+               No preserveAspectRatio="none" here on purpose. The SVG carries a
+               fixed 720x451 CSS box, matching the artwork's own 807:505 ratio
+               (807/505 = 1.598, 720/451 = 1.597), so the viewBox maps 1:1 and
+               the glow stays isotropic. Stretching the viewport instead scaled
+               the artwork non-uniformly AND destroyed the rim's even width.
+
+               The viewBox is deliberately WIDER than the artwork: 180% of it,
+               starting at -40%, so the artwork sits in the middle with a 40%
+               margin on every side. An SVG filter's output is intersected with
+               the viewport no matter what `overflow` says, so a halo wider than
+               the artwork's own box was being cut off dead straight at the
+               envelope edge. The margin gives the blur somewhere to land. The
+               matching --glow-pad-x/--glow-pad-y in CSS are what keep the 720px
+               box meaning "the artwork", not "the padded envelope". -->
+          <svg
+            class="world-logo-glow"
+            aria-hidden="true"
+            focusable="false"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="-322.8 -202 1452.6 909"
+          >
+            <defs>
+              <filter
+                id="world-logo-glow-filter"
+                x="-70%"
+                y="-70%"
+                width="240%"
+                height="240%"
+                color-interpolation-filters="sRGB"
+              >
+                <!-- Stage 1: the untouched artwork, kept for the foreground
+                     merge below so the wordmark renders in its own colour. -->
+                <feComponentTransfer in="SourceGraphic" result="art" />
+                <!-- Stage 1b: flatten the antialiased edge of the artwork so
+                     the blur below starts from a solid silhouette. The first
+                     step lands at the 20% alpha stop, which spans the whole
+                     soft edge, so it snaps to fully solid rather than half
+                     solid. -->
+                <feComponentTransfer in="SourceGraphic" result="ink">
+                  <feFuncA type="table" tableValues="0 0 0 0.5 1 1" />
+                </feComponentTransfer>
+                <!-- Stage 2: one isotropic blur, so a single stdDeviation is
+                     the rim width on every side by construction. -->
+                <feGaussianBlur in="ink" stdDeviation="1.6" result="soft" />
+                <!-- Stage 3: lift the long Gaussian tail so the rim holds its
+                     strength out to a defined edge instead of fading to
+                     nothing a pixel from the letters. -->
+                <feComponentTransfer in="soft" result="halo">
+                  <feFuncA type="table" tableValues="0 0 0 0.78 1 1" />
+                </feComponentTransfer>
+                <!-- Stage 4: white glow underneath, crisp original-colour
+                     artwork on top. "art" is the untouched source, so the
+                     wordmark keeps its own colour and only the silhouette
+                     behind it is forced white (the CSS rule on
+                     .world-logo-glow-art applies the saturate(0) that strips
+                     the teal). Order matters: glow first, art last. -->
+                <feMerge>
+                  <feMergeNode in="halo" />
+                  <feMergeNode in="art" />
+                </feMerge>
+              </filter>
+            </defs>
+            <!-- Both copies are pinned to (322.8, 202), which is 40% into the
+                 padded viewBox, so they land dead centre of the envelope at the
+                 artwork's native 807x505 size. preserveAspectRatio="none" is a
+                 no-op here (source and destination are both 807x505) but keeps
+                 the intent explicit. -->
+            <!-- Glow copy: same pixels, forced to a white silhouette in CSS.
+                 aria-hidden is inherited from the parent svg. -->
+            <image
+              class="world-logo-glow-art"
+              href="/web/portal/xlab-logo.webp"
+              x="322.8"
+              y="202"
+              width="807"
+              height="505"
+              preserveAspectRatio="none"
+            />
+            <!-- Foreground copy: unfiltered, untouched, original colour. -->
+            <image
+              class="world-logo-art"
+              href="/web/portal/xlab-logo.webp"
+              x="322.8"
+              y="202"
+              width="807"
+              height="505"
+              preserveAspectRatio="none"
+            />
+          </svg>
           <div class="world-stage" data-xlab-world data-parallax-stage tabindex="0">
             <canvas
               class="world-canvas"
