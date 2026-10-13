@@ -3969,6 +3969,24 @@ html:not(.is-ready) .portal-header * {
      left free to bleed. */
 }
 
+.portal-header-brand .xlab-logo-crop::before {
+  content: "";
+  position: absolute;
+  inset: -9px -12px;
+  z-index: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse,
+    transparent 42%,
+    rgb(255 255 255 / 12%) 50%,
+    rgb(255 255 255 / 34%) 57%,
+    rgb(255 255 255 / 12%) 66%,
+    transparent 76%
+  );
+  filter: blur(3px);
+  pointer-events: none;
+}
+
 .portal-header-brand .xlab-logo-crop img {
   position: absolute;
   /* The mark's rendered box. The artwork is 807x505, so 80px wide renders 50.05px
@@ -3978,6 +3996,7 @@ html:not(.is-ready) .portal-header * {
   top: -9.02px;
   /* Centred in the 96px window: (96 - 80) / 2 = 8px. */
   left: 8px;
+  z-index: 1;
   display: block;
   width: 80px;
   height: 50.05px;
