@@ -3906,12 +3906,12 @@ html.is-ready .app-shell:has(> main > .hero.hero-world) .world-scroll-cue-mark {
   width: 100%;
   z-index: 20;
   display: grid;
-  /* Mirrors the XLab site header on /about: the wordmark sits on the base
-     padding grid, and the two pill controls float at the top-right. */
+  /* Mirrors the XLab site header on /about: the controls sit on the base
+     padding grid, with the two pill controls floating at the top-right. */
   grid-template-columns: 80px minmax(0, 1fr) auto;
   align-items: center;
   column-gap: 20px;
-  /* Matches the 146px XLab header box on /about so the wordmark centres at the
+  /* Matches the 146px XLab header box on /about so the controls centre at the
      same y (58.4) instead of hugging the top padding line. */
   min-height: 146px;
   padding: 27px clamp(22px, 4.4vw, 56px);
@@ -3932,6 +3932,145 @@ html.is-lusion-section-preloading .portal-header {
 html:not(.is-ready) .portal-header,
 html:not(.is-ready) .portal-header * {
   pointer-events: none;
+}
+
+
+/* Halo around the XLab wordmark, on the is-ready hero.
+   ===========================================================================
+   WHERE THIS LIVES. The magnified wordmark at the top of the hero page is
+   marked up in index.html as `<svg class="world-logo-glow">`, placed inside
+   `.hero.hero-world` immediately BEFORE `.world-stage`. It is NOT the footer
+   mark - that is a separately sized copy of the same artwork and this SVG
+   deliberately does not share its rules.
+
+   WHAT IT IS. The artwork is warmed up with `brightness()` + `saturate(0)` so
+   the strokes come out white, and then an SVG `<filter>` turns that white
+   silhouette into a glow and merges it back under the strokes. The glow's
+   thickness comes from ONE `feGaussianBlur` radius applied in the SVG's user
+   space, so the rim is the same width on every side by construction. Nothing
+   here uses drop-shadow, mask-size, transform or clip-path.
+
+   WHY AN SVG FILTER RATHER THAN A CSS MASK - the measurement, not a preference.
+   The design this replaces grew a CSS mask beyond the artwork so the surplus
+   would read as a rim. It cannot work on this file, and the reason is in the
+   artwork, not in the CSS: per-column count of alpha>128 of the source PNG,
+   sampled every 20px (.artifacts/alpha-profile.cjs on web/portal/xlab-logo.png,
+   807x505) reads
+
+       x=0:4  20:51  40:100  60:149  80:199  100:241 ... 760:240  780:217  800:0
+
+   so the LEFT edge fades in over ~100 artwork px while the RIGHT edge is a hard
+   cut of ~20px. A uniformly enlarged mask therefore paints a rim immediately on
+   the right and along the top/bottom long edges but stays buried under the ink
+   on the left. Measured on the live page with the box aligned to the ink
+   (left: -8px, mask-size 106px 66.332px, mask-position: center) at three scan
+   rows: L +10.00 R -0.50 at every row, i.e. 10px of rim on the left and none on
+   the right. Sliding the box only trades the two edges (left: -4px measured
+   L +2.50..+6.00 / R +3.50), and mask-position slides the whole mask so it can
+   never widen one edge without narrowing the other.
+
+   Worse, and decisive: the surplus wraps to the left and the top but never
+   reaches the bottom at all. Raw per-pixel luminance on the captured frame
+   (.artifacts/probe-out.cjs reading .artifacts/raydump.png, no thresholds):
+   every sample of row y=94 - five px below the ink floor - reads 7.2-7.5, which
+   is the header's own background, while col x=105 puts the only white run at
+   y 54..80, ABOVE the ink, and row y=52 shows a broken, intermittent top rim.
+   Cross-checked by counting newly-bright pixels per band
+   (.artifacts/floodmap.cjs, 8x4 grid, clip 124x64 css at dpr 2):
+   band top 2329, letter body 1 1883, letter body 2 1076, band bottom 0.
+
+   An SVG filter sidesteps all of it, because blur is computed from the ALREADY
+   COMPOSITED silhouette: the alpha ramp is a property of the artwork's edges, so
+   it no longer matters whether the ramp is 20px or 100px long. The filter reads
+   the element's own painted pixels, which is also why this cannot be a
+   pseudo-element: ::before can only paste a second copy of the artwork BEHIND
+   the artwork, and a flat second copy is exactly the muddy look being fixed.
+
+   THE FILTER, stage by stage (all four stages in one `<filter>`):
+     1. SourceGraphic comes in as the white silhouette. feComponentTransfer with
+        tableValues="0 0.35 1 1" snaps alpha up so the antialiased artwork edge
+        becomes a solid edge BEFORE blurring - without it the glow inherits the
+        artwork's own soft edge and reads as haze rather than a rim.
+     2. feGaussianBlur stdDeviation="1.6" in the 807x505 viewBox. The viewBox is
+        mapped onto the rendered box with preserveAspectRatio="none", so one user
+        unit of blur becomes (renderedWidth / 807) CSS px: at a 720px-wide render
+        that is 0.89px of blur, i.e. a rim roughly 1.3-1.8px wide depending on how
+        you count the shoulder - a hairline that reads as a clean outline rather
+        than a smear.
+     3. The second feComponentTransfer with tableValues="0 0.9 1 1" is the step
+        that makes it look like a rim instead of a halo. A bare Gaussian falls off
+        as a long tail, so its outermost 20% is invisible mush; ramping alpha up
+        near the top of the range pushes the tail to near-opaque and cuts it off,
+        converting the smear into a defined edge.
+     4. feMerge drops the sharp `ink` back on top of `halo`. That ordering is
+        what keeps the letterforms crisp: the glow is only ever seen in the
+        margin the strokes do not cover.
+   `color-interpolation-filters="sRGB"` is required, not cosmetic: in the default
+   linearRGB the transfer tables would act on linearised alpha and the rim would
+   come out dull grey. The filter region is widened to -40%/180% because the
+   default region clips at 10% and would shear the glow off.
+
+   The artwork is painted white through the `<image>` rule below rather than
+   `fill=` on the SVG: an `<image>` has no fill, and the source PNG's brightest
+   pixel is rgb(96,144,138) at luminance 133 - a muted teal - so it needs the
+   same lift the glow layer uses (`brightness(2.35) saturate(0)`) to reach
+   white. `preserveAspectRatio="none"` on the `<image>` too, so the artwork's
+   807x505 pixels map 1:1 onto the viewBox and the CSS box alone decides size.
+
+   Positioning: the SVG is `position: absolute` inside the hero, and the hero
+   itself is `position: relative`. `z-index: 0` with no stacking context of its
+   own puts it behind the hero copy while keeping it above the stage. */
+
+.world-logo-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(720px, 62vw);
+  height: auto;
+  aspect-ratio: 807 / 505;
+  /* The filter region is 240% of this box, so the blur would be clipped at the
+     SVG's own edges without this. */
+  overflow: visible;
+  /* `overflow: visible` alone is not enough: the filter's 240% region is still
+     intersected with the SVG viewport, so the halo gets cropped at the box edge
+     (measured: a hard black band that cut the bottom rim off). Widening the
+     viewBox by 40% on every side and shifting the root into the middle lets the
+     blur land inside the painted area; the artwork coordinates then start at
+     (W*0.4, H*0.4) instead of (0, 0). */
+  --glow-pad-x: 322.8px;
+  --glow-pad-y: 202px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* The SVG root paints its glow first and its silhouette grid-aligned on top.
+   Without this the blur half-covers the crisp edge and the rim reads as a soft
+   haze riding over the letters instead of a clean outline around them. */
+.world-logo-glow {
+  paint-order: stroke;
+}
+
+/* The glow silhouette, drawn white. brightness() drives the muted-teal strokes
+   to true white; saturate(0) removes the teal cast so the lift lands on neutral
+   white rather than brighter teal. contrast() nudges the strokes apart from the
+   faint watermark texture in the source so only the letterforms bloom.
+   Only this layer is brightened - the foreground .world-logo-art below is left
+   untouched so the wordmark keeps its original colour. */
+.world-logo-glow .world-logo-glow-art {
+  filter: brightness(2.35) saturate(0) contrast(1.08);
+}
+
+/* The foreground wordmark: no filter at all, so the artwork's own colours show
+   through. Its only job is to sit exactly over the glow silhouette. */
+.world-logo-glow .world-logo-art {
+  filter: none;
+}
+
+/* The glow itself. Applied to the SVG root so it sees the `<image>` above as
+   SourceGraphic. */
+.world-logo-glow {
+  filter: url("#world-logo-glow-filter");
 }
 
 .portal-header-brand {
@@ -4109,149 +4248,11 @@ html:not(.is-ready) .portal-header * {
     drop-shadow(0 0 26px rgb(255 255 255 / 9%));
 }
 
-/* Halo around the XLab wordmark, on the is-ready hero.
-   ===========================================================================
-   WHERE THIS LIVES. The magnified wordmark at the top of the hero page is
-   marked up in index.html as `<svg class="world-logo-glow">`, placed inside
-   `.hero.hero-world` immediately BEFORE `.world-stage`. It is NOT the header
-   logo (`.portal-header-brand .xlab-logo-crop`, a 80x50.05px mark clipped to
-   the middle 32px) and NOT the footer mark - those are separately sized copies
-   of the same artwork and this SVG deliberately does not share their rules.
-
-   WHAT IT IS. The artwork is warmed up with `brightness()` + `saturate(0)` so
-   the strokes come out white, and then an SVG `<filter>` turns that white
-   silhouette into a glow and merges it back under the strokes. The glow's
-   thickness comes from ONE `feGaussianBlur` radius applied in the SVG's user
-   space, so the rim is the same width on every side by construction. Nothing
-   here uses drop-shadow, mask-size, transform or clip-path.
-
-   WHY AN SVG FILTER RATHER THAN A CSS MASK - the measurement, not a preference.
-   The design this replaces grew a CSS mask beyond the artwork so the surplus
-   would read as a rim. It cannot work on this file, and the reason is in the
-   artwork, not in the CSS: per-column count of alpha>128 of the source PNG,
-   sampled every 20px (.artifacts/alpha-profile.cjs on web/portal/xlab-logo.png,
-   807x505) reads
-
-       x=0:4  20:51  40:100  60:149  80:199  100:241 ... 760:240  780:217  800:0
-
-   so the LEFT edge fades in over ~100 artwork px while the RIGHT edge is a hard
-   cut of ~20px. A uniformly enlarged mask therefore paints a rim immediately on
-   the right and along the top/bottom long edges but stays buried under the ink
-   on the left. Measured on the live page with the box aligned to the ink
-   (left: -8px, mask-size 106px 66.332px, mask-position: center) at three scan
-   rows: L +10.00 R -0.50 at every row, i.e. 10px of rim on the left and none on
-   the right. Sliding the box only trades the two edges (left: -4px measured
-   L +2.50..+6.00 / R +3.50), and mask-position slides the whole mask so it can
-   never widen one edge without narrowing the other.
-
-   Worse, and decisive: the surplus wraps to the left and the top but never
-   reaches the bottom at all. Raw per-pixel luminance on the captured frame
-   (.artifacts/probe-out.cjs reading .artifacts/raydump.png, no thresholds):
-   every sample of row y=94 - five px below the ink floor - reads 7.2-7.5, which
-   is the header's own background, while col x=105 puts the only white run at
-   y 54..80, ABOVE the ink, and row y=52 shows a broken, intermittent top rim.
-   Cross-checked by counting newly-bright pixels per band
-   (.artifacts/floodmap.cjs, 8x4 grid, clip 124x64 css at dpr 2):
-   band top 2329, letter body 1 1883, letter body 2 1076, band bottom 0.
-
-   An SVG filter sidesteps all of it, because blur is computed from the ALREADY
-   COMPOSITED silhouette: the alpha ramp is a property of the artwork's edges, so
-   it no longer matters whether the ramp is 20px or 100px long. The filter reads
-   the element's own painted pixels, which is also why this cannot be a
-   pseudo-element: ::before can only paste a second copy of the artwork BEHIND
-   the artwork, and a flat second copy is exactly the muddy look being fixed.
-
-   THE FILTER, stage by stage (all four stages in one `<filter>`):
-     1. SourceGraphic comes in as the white silhouette. feComponentTransfer with
-        tableValues="0 0.35 1 1" snaps alpha up so the antialiased artwork edge
-        becomes a solid edge BEFORE blurring - without it the glow inherits the
-        artwork's own soft edge and reads as haze rather than a rim.
-     2. feGaussianBlur stdDeviation="1.6" in the 807x505 viewBox. The viewBox is
-        mapped onto the rendered box with preserveAspectRatio="none", so one user
-        unit of blur becomes (renderedWidth / 807) CSS px: at a 720px-wide render
-        that is 0.89px of blur, i.e. a rim roughly 1.3-1.8px wide depending on how
-        you count the shoulder - a hairline that reads as a clean outline rather
-        than a smear.
-     3. The second feComponentTransfer with tableValues="0 0.9 1 1" is the step
-        that makes it look like a rim instead of a halo. A bare Gaussian falls off
-        as a long tail, so its outermost 20% is invisible mush; ramping alpha up
-        near the top of the range pushes the tail to near-opaque and cuts it off,
-        converting the smear into a defined edge.
-     4. feMerge drops the sharp `ink` back on top of `halo`. That ordering is
-        what keeps the letterforms crisp: the glow is only ever seen in the
-        margin the strokes do not cover.
-   `color-interpolation-filters="sRGB"` is required, not cosmetic: in the default
-   linearRGB the transfer tables would act on linearised alpha and the rim would
-   come out dull grey. The filter region is widened to -40%/180% because the
-   default region clips at 10% and would shear the glow off.
-
-   The artwork is painted white through the `<image>` rule below rather than
-   `fill=` on the SVG: an `<image>` has no fill, and the source PNG's brightest
-   pixel is rgb(96,144,138) at luminance 133 - a muted teal - so it needs the
-   same lift the header logo uses (`brightness(2.35) saturate(0)`) to reach
-   white. `preserveAspectRatio="none"` on the `<image>` too, so the artwork's
-   807x505 pixels map 1:1 onto the viewBox and the CSS box alone decides size.
-
-   Positioning: the SVG is `position: absolute` inside the hero, and the hero
-   itself is `position: relative`. `z-index: 0` with no stacking context of its
-   own puts it behind the hero copy while keeping it above the stage. */
-.world-logo-glow {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: min(720px, 62vw);
-  height: auto;
-  aspect-ratio: 807 / 505;
-  /* The filter region is 240% of this box, so the blur would be clipped at the
-     SVG's own edges without this. */
-  overflow: visible;
-  /* `overflow: visible` alone is not enough: the filter's 240% region is still
-     intersected with the SVG viewport, so the halo gets cropped at the box edge
-     (measured: a hard black band that cut the bottom rim off). Widening the
-     viewBox by 40% on every side and shifting the root into the middle lets the
-     blur land inside the painted area; the artwork coordinates then start at
-     (W*0.4, H*0.4) instead of (0, 0). */
-  --glow-pad-x: 322.8px;
-  --glow-pad-y: 202px;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* The SVG root paints its glow first and its silhouette grid-aligned on top.
-   Without this the blur half-covers the crisp edge and the rim reads as a soft
-   haze riding over the letters instead of a clean outline around them. */
-.world-logo-glow {
-  paint-order: stroke;
-}
-
-/* The glow silhouette, drawn white. brightness() drives the muted-teal strokes
-   to true white; saturate(0) removes the teal cast so the lift lands on neutral
-   white rather than brighter teal. contrast() nudges the strokes apart from the
-   faint watermark texture in the source so only the letterforms bloom.
-   Only this layer is brightened - the foreground .world-logo-art below is left
-   untouched so the wordmark keeps its original colour. */
-.world-logo-glow .world-logo-glow-art {
-  filter: brightness(2.35) saturate(0) contrast(1.08);
-}
-
-/* The foreground wordmark: no filter at all, so the artwork's own colours show
-   through. Its only job is to sit exactly over the glow silhouette. */
-.world-logo-glow .world-logo-art {
-  filter: none;
-}
-
-/* The glow itself. Applied to the SVG root so it sees the `<image>` above as
-   SourceGraphic. */
-.world-logo-glow {
-  filter: url("#world-logo-glow-filter");
-}
-
-/* NOT ported: the header brand mark (.portal-header-brand .xlab-logo-crop) and
-   the footer mark (.site-footer .brand-logo-frame) keep their own small halo
-   rules. Both were built on the same CSS-mask mechanism described above and are
-   due the same rewrite; they are left alone here so this change stays confined
-   to the hero. */
+/* NOT ported: the footer mark (.site-footer .brand-logo-frame) keeps its own
+   small halo rules. It was built on the same CSS-mask mechanism described above
+   and is due the same rewrite; it is left alone here so this change stays
+   confined to the hero. The header brand mark above is exempt: it never used the
+   mask mechanism - it draws its halo with `drop-shadow()` on the ::after copy. */
 
 .portal-header-actions {
 position: fixed;

@@ -1,5 +1,3 @@
-import { XLAB_LOCKUP, drawXlabLetters } from "./xlab-wordmark.js";
-
 if ("scrollRestoration" in window.history) {
   window.history.scrollRestoration = "manual";
 }
@@ -2880,13 +2878,7 @@ function easeLusionExpo(value) {
   return progress < 0.5 ? 2 ** (20 * progress - 10) / 2 : (2 - 2 ** (-20 * progress + 10)) / 2;
 }
 
-function drawLusionPageCurtain(
-  canvas,
-  progress,
-  lineTransformRatio,
-  brandRevealRatio,
-  contentShowRatio,
-) {
+function drawLusionPageCurtain(canvas, progress, lineTransformRatio, contentShowRatio) {
   if (!canvas) return;
 
   const width = window.innerWidth + 2;
@@ -2927,13 +2919,6 @@ function drawLusionPageCurtain(
   context.translate(barUnit * transform * diagonal, -barUnit * 0.5 * transform * diagonal);
   context.scale(scale, scale);
 
-  const markBounds = { left: -1.5, right: 1.5, top: -2, bottom: 2 };
-  const { xWidth, aWidth, glyphHeight, textGap, letterGap } = XLAB_LOCKUP;
-  const xLeft = markBounds.left - textGap - xWidth;
-  const aLeft = markBounds.right + textGap;
-  const bLeft = aLeft + aWidth + letterGap;
-  const glyphTop = markBounds.bottom - glyphHeight;
-
   const line = clampUnit(lineTransformRatio);
   if (line === 0) {
     context.fillStyle = "#333";
@@ -2961,15 +2946,6 @@ function drawLusionPageCurtain(
     context.globalCompositeOperation = "source-over";
     context.globalAlpha = 1 - transform;
     context.fillRect(0, 0, 2, 1);
-    context.restore();
-  }
-
-  if (brandRevealRatio > 0) {
-    context.translate(line, -1.5 * line);
-    context.save();
-    context.globalAlpha = clampUnit(brandRevealRatio) * (1 - transform);
-    context.fillStyle = "#fff";
-    drawXlabLetters(context, xLeft, aLeft, bLeft, glyphTop);
     context.restore();
   }
 
@@ -3036,10 +3012,7 @@ function startPageCurtain(libraryReady) {
   const maximumDuration = 20_000;
   const startProgressDuration = 250;
   const markTransformDuration = 1000;
-  const brandRevealDuration = 180;
-  const brandHoldDuration = 2000;
-  const brandHideDuration = 180;
-  const contentShowDelay = brandHoldDuration + brandHideDuration;
+  const contentShowDelay = 2000;
   const contentShowDuration = 1000;
   const startedAt = performance.now();
   let previousFrameAt = startedAt;
@@ -3047,7 +3020,7 @@ function startPageCurtain(libraryReady) {
   let isReady = false;
   let isFinishing = false;
   let markStartedAt = 0;
-  let brandHoldStartedAt = 0;
+  let holdStartedAt = 0;
   let percentToStartAt = 0;
   let pageHasLoaded = document.readyState === "complete";
   let fontsAreReady = false;
@@ -3120,24 +3093,16 @@ function startPageCurtain(libraryReady) {
     const loadRatio = percentToStart * 0.3 + (progress / 100) * 0.7;
     const percent = Math.floor(loadRatio * 100);
     let lineTransformRatio = 0;
-    let brandRevealRatio = 0;
     let contentShowRatio = 0;
     if (loadRatio >= 1) {
       if (!markStartedAt) markStartedAt = now;
       const markElapsed = now - markStartedAt;
       lineTransformRatio = easeLusionExpo(markElapsed / markTransformDuration);
-      brandRevealRatio = clampUnit((markElapsed - markTransformDuration) / brandRevealDuration);
-      if (brandRevealRatio >= 1 && !brandHoldStartedAt) {
-        brandHoldStartedAt = now;
+      if (!holdStartedAt) {
+        holdStartedAt = now;
       }
-      if (brandHoldStartedAt) {
-        const brandHoldElapsed = now - brandHoldStartedAt;
-        const brandHideRatio = clampUnit(
-          (brandHoldElapsed - brandHoldDuration) / brandHideDuration,
-        );
-        brandRevealRatio = 1 - brandHideRatio;
-        contentShowRatio = clampUnit((brandHoldElapsed - contentShowDelay) / contentShowDuration);
-      }
+      const holdElapsed = now - holdStartedAt;
+      contentShowRatio = clampUnit((holdElapsed - contentShowDelay) / contentShowDuration);
     }
 
     updateLusionPageCurtainDigits(
@@ -3147,13 +3112,7 @@ function startPageCurtain(libraryReady) {
       contentShowRatio,
     );
 
-    drawLusionPageCurtain(
-      elements.curtainCanvas,
-      loadRatio,
-      lineTransformRatio,
-      brandRevealRatio,
-      contentShowRatio,
-    );
+    drawLusionPageCurtain(elements.curtainCanvas, loadRatio, lineTransformRatio, contentShowRatio);
 
     if (contentShowRatio >= 1 && !isFinishing) {
       window.clearTimeout(completionFallback);
