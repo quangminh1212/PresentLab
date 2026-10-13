@@ -3972,18 +3972,14 @@ html:not(.is-ready) .portal-header * {
 .portal-header-brand .xlab-logo-crop::before {
   content: "";
   position: absolute;
-  inset: -9px -12px;
+  inset: 0;
   z-index: 0;
-  border-radius: 50%;
-  background: radial-gradient(
-    ellipse,
-    transparent 42%,
-    rgb(255 255 255 / 12%) 50%,
-    rgb(255 255 255 / 34%) 57%,
-    rgb(255 255 255 / 12%) 66%,
-    transparent 76%
-  );
-  filter: blur(3px);
+  background-image: url("/web/portal/xlab-logo.webp");
+  background-repeat: no-repeat;
+  background-size: 80px auto;
+  background-position: 8px -9.02px;
+  filter: drop-shadow(0 0 1px rgb(255 255 255 / 96%))
+    drop-shadow(0 0 3px rgb(255 255 255 / 48%));
   pointer-events: none;
 }
 
