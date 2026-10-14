@@ -5095,6 +5095,45 @@ text-align: left;
   pointer-events: none;
 }
 
+.app-shell:has(> main > .hero.hero-world) > main > .hero.hero-world::after {
+  position: absolute;
+  z-index: 2;
+  top: calc(clamp(136px, 23vh, 170px) - 9px);
+  left: clamp(18px, 6vw, 92px);
+  width: 14px;
+  height: 8px;
+  border-top: 1px solid rgb(26 32 40 / 24%);
+  border-left: 1px solid rgb(26 32 40 / 24%);
+  content: "";
+  pointer-events: none;
+}
+
+@media (max-width: 480px) {
+  .app-shell:has(> main > .hero.hero-world) .world-stage::before {
+    right: -18px;
+    width: 18px;
+  }
+}
+
+@media (max-width: 812px) {
+  .app-shell:has(> main > .hero.hero-world) > main > .hero.hero-world::after {
+    top: calc(clamp(204px, 28vh, 238px) - 9px);
+    left: clamp(20px, 5.8vw, 40px);
+  }
+}
+
+@media (max-width: 480px) {
+  .app-shell:has(> main > .hero.hero-world) > main > .hero.hero-world::after {
+    left: 18px;
+  }
+}
+
+@media (max-width: 812px) and (max-height: 620px) {
+  .app-shell:has(> main > .hero.hero-world) > main > .hero.hero-world::after {
+    top: 163px;
+  }
+}
+
 .app-shell:has(> main > .hero.hero-world) .world-stage-sweep {
   position: absolute;
   z-index: 4;
@@ -5352,4 +5391,60 @@ html:has(.app-shell > main > .hero.hero-world) .portal-category-menu.is-open > .
   .app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
     bottom: -30px;
   }
+}
+
+/* A quiet ripple marker gives the pale margin a purpose without adding copy. */
+.app-shell:has(> main > .hero.hero-world) .world-stage-sweep {
+  display: none;
+}
+
+.app-shell:has(> main > .hero.hero-world) .world-stage::before {
+  inset: auto;
+  position: absolute;
+  z-index: 5;
+  top: 50%;
+  right: clamp(-74px, -5.8vw, -18px);
+  display: block;
+  width: clamp(18px, 5.8vw, 74px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgb(87 181 180 / 66%) 0 1px, transparent 1.8px),
+    radial-gradient(
+      circle,
+      transparent 26%,
+      rgb(26 32 40 / 10%) 27% 28%,
+      transparent 29%
+    ),
+    radial-gradient(
+      circle,
+      transparent 47%,
+      rgb(26 32 40 / 18%) 48% 49%,
+      transparent 50%
+    );
+  content: "";
+  opacity: 0.85;
+  animation: none;
+  filter: none;
+  mix-blend-mode: normal;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.app-shell:has(> main > .hero.hero-world) > main > .hero.hero-world::before {
+  position: absolute;
+  z-index: 2;
+  bottom: clamp(40px, 6vh, 54px);
+  left: clamp(18px, 6vw, 92px);
+  display: block;
+  width: 8px;
+  height: 8px;
+  background:
+    radial-gradient(circle, rgb(87 181 180 / 70%) 0 1px, transparent 1.5px),
+    linear-gradient(rgb(26 32 40 / 24%), rgb(26 32 40 / 24%)) center / 1px 100%
+      no-repeat,
+    linear-gradient(rgb(26 32 40 / 24%), rgb(26 32 40 / 24%)) center / 100% 1px
+      no-repeat;
+  content: "";
+  pointer-events: none;
 }
