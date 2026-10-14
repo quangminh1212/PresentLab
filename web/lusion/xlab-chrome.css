@@ -1,11 +1,7 @@
 /* XLab chrome shared by every page: header overrides, footer contact panel,
    scroll affordances. Home-only layout rules stay in home-scroll.css. */
 
-/* The About page opens directly into its own immersive section. */
-html:has(#about-who) #header,
-html:has(#about-who) #lusion-language-switcher {
-  display: none !important;
-}
+/* Keep the shared XLab header visible on About, like the homepage. */
 
 /* The sound toggle is not part of the XLab header. */
 #header-right-sound-btn {
