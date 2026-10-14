@@ -4102,25 +4102,8 @@ html:not(.is-ready) .portal-header * {
   flex: 0 0 96px;
   width: 96px;
   height: 32px;
-  /* No overflow: hidden here on purpose. The crop window still has to clip the
-     artwork's padding, but it must NOT clip the halo: a clipped child is cut off
-     dead straight at the box edge, which turned the bloom into a hard rectangle.
-     So the img clips itself (see below) and the ::before/::after halo layers are
-     left free to bleed. */
-}
-
-.portal-header-brand .xlab-logo-crop::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background-image: url("/web/portal/xlab-logo.webp");
-  background-repeat: no-repeat;
-  background-size: 80px auto;
-  background-position: 8px -9.02px;
-  filter: drop-shadow(0 0 1px rgb(255 255 255 / 96%))
-    drop-shadow(0 0 3px rgb(255 255 255 / 48%));
-  pointer-events: none;
+  /* Leave overflow visible so the logo's own drop-shadow can bloom past the
+     crop window without being cut into a hard rectangle. */
 }
 
 .portal-header-brand .xlab-logo-crop img {
@@ -4139,14 +4122,16 @@ html:not(.is-ready) .portal-header * {
   max-width: none;
   /* Lift the dark wordmark for the near-black header while preserving its teal
      accent. */
-  filter: brightness(2.35) contrast(1.08);
+  filter: brightness(2.35) contrast(1.08)
+    drop-shadow(0 0 1px rgb(255 255 255 / 96%))
+    drop-shadow(0 0 3px rgb(255 255 255 / 48%));
   /* The artwork's ink runs the full 807x505 canvas (measured: ink columns 3..799,
      rows 0..504), so there is no padding to trim and any inset() only cuts into
      real letterforms. The mark is 50.05px tall and the row is 32px, so the img
      clips ITSELF to the band the row can show: 9.02px off the top and bottom leaves
      50.05 - 18.04 = 32.01px. It clips itself rather than letting the window clip it
-     because the window must stay unclipped - see the halo layers, whose band has to
-     bleed outward past the window's edges. */
+      because the window must stay unclipped so the image's halo can bleed outward
+      past the window's edges. */
   clip-path: inset(9.02px 0 9.02px 0);
 }
 
@@ -4252,8 +4237,8 @@ html:not(.is-ready) .portal-header * {
 /* NOT ported: the footer mark (.site-footer .brand-logo-frame) keeps its own
    small halo rules. It was built on the same CSS-mask mechanism described above
    and is due the same rewrite; it is left alone here so this change stays
-   confined to the hero. The header brand mark above is exempt: it never used the
-   mask mechanism - it draws its halo with `drop-shadow()` on the ::after copy. */
+   confined to the hero. The header brand mark keeps its contour halo on the logo
+   image itself. */
 
 .portal-header-actions {
 position: fixed;
@@ -5284,7 +5269,8 @@ text-align: left;
 }
 
 html:has(.app-shell > main > .hero.hero-world) .portal-header-brand .xlab-logo-crop img {
-  filter: none;
+  filter: drop-shadow(0 0 1px rgb(255 255 255 / 96%))
+    drop-shadow(0 0 3px rgb(255 255 255 / 48%));
 }
 
 html:has(.app-shell > main > .hero.hero-world) .portal-language-trigger {
