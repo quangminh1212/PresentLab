@@ -4,12 +4,12 @@ An animated, 10-slide HTML concept deck for a fictional city-discovery experienc
 
 ## Open the deck
 
-Open [`deck.html`](../../../examples/sau-10/deck.html) in a browser. Scroll, swipe, or use the arrow keys, Page Up/Down, Home, and End. The floating controls appear on hover or keyboard focus.
+Open [`sau-10.html`](../../../examples/sau-10.html) in a browser. Scroll, swipe, or use the arrow keys, Page Up/Down, Home, and End. The floating controls appear on hover or keyboard focus.
 
 ## Project notes
 
 - This is a concept project, not a description of a real product. Stops and times on slide 7 are illustrative.
-- The ten images embedded in `deck.html` are generated concept artwork. They do not document real venues or events.
+- The ten images embedded in `sau-10.html` are generated concept artwork. They do not document real venues or events.
 - CSS motion runs in the browser version. PresentLab's deterministic PNG, PDF, and PPTX renderer disables animation, so those exports are static.
 
 ## Visual prompt set
@@ -59,6 +59,6 @@ Avoid: concert stadium scale, exaggerated lasers, cyberpunk neon, perfectly stag
 From the repository root, run `npm run build`, then:
 
 ```powershell
-node dist/cli.js validate --input examples/sau-10/deck.html
-node dist/cli.js render --input examples/sau-10/deck.html --output .artifacts/sau-10 --format png,pdf,pptx
+node dist/cli.js validate --input examples/sau-10.html
+node dist/cli.js render --input examples/sau-10.html --output .artifacts/sau-10 --format png,pdf,pptx
 ```

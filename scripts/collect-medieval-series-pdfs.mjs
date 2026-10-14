@@ -33,7 +33,7 @@ for (const [slug, fileStem, title] of decks) {
   const sourceStat = await stat(source);
   if (sourceStat.size < 100_000) throw new Error(`Unexpectedly small PDF for ${slug}: ${sourceStat.size} bytes`);
   await copyFile(source, target);
-  const html = `../../../examples/medieval-series/${slug}/deck.html`;
+  const html = `../../../examples/${slug}.html`;
   index.push(`- [${title}](${fileStem}.pdf) · 20 trang · [HTML project](${html})`);
 }
 

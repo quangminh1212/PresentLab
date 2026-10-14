@@ -6,7 +6,7 @@
 **Medium:** Tranh tường; phần lớn được chuyển sang vải canvas  
 **Visual treatment:** Romanesque · trục chính diện, mảng phẳng và xanh đậm
 
-Standalone animated HTML presentation with 20 slides. Open [deck.html](../../../../examples/medieval-series/03-taull/deck.html) in a browser; use the arrow keys, Page Up/Down, Home/End, or the on-screen controls. The PDF export is static; transitions and reveal animations remain in the HTML.
+Standalone animated HTML presentation with 20 slides. Open [03-taull.html](../../../../examples/03-taull.html) in a browser; use the arrow keys, Page Up/Down, Home/End, or the on-screen controls. The PDF export is static; transitions and reveal animations remain in the HTML.
 
 ## Slide outline
 

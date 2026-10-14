@@ -29,8 +29,8 @@ npx playwright install chromium
 npm run verify:all
 npm run gallery:build
 npm run build
-node dist/cli.js render --input examples/aurora/deck.html --output .artifacts/aurora --format png,pdf,pptx
-node dist/cli.js catalog --input examples/aurora/deck.html --output .artifacts/aurora-catalog --format html,pdf
+node dist/cli.js render --input examples/aurora.html --output .artifacts/aurora --format png,pdf,pptx
+node dist/cli.js catalog --input examples/aurora.html --output .artifacts/aurora-catalog --format html,pdf
 ```
 
 The generated artifact directories are intentionally ignored by Git.

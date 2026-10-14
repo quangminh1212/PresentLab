@@ -10,7 +10,7 @@ import { openBrowserDeck } from "../../src/core/browser.js";
 import { inspectDeckFile } from "../../src/core/inspect.js";
 import { renderDeck } from "../../src/core/render.js";
 
-const example = resolve("examples/aurora/deck.html");
+const example = resolve("examples/aurora.html");
 
 describe("Chromium artifact smoke test", () => {
   it("renders PNG, PDF, PPTX, and catalog outputs", async () => {

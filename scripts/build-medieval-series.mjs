@@ -3,8 +3,15 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const outputRoot = join(root, "examples", "medieval-series");
-const sourceAssets = join(root, "examples", "medieval-10", "assets");
+const outputRoot = join(root, "examples");
+const docsRoot = join(root, "docs", "examples", "medieval-series");
+
+async function embeddedArtwork(slug) {
+  const html = await readFile(join(outputRoot, `${slug}.html`), "utf8");
+  const match = html.match(/data:image\/[^;]+;base64,([A-Za-z0-9+/=]+)/);
+  if (!match) throw new Error(`No embedded artwork found in ${slug}.html`);
+  return match[1];
+}
 
 const S = (kind, kicker, title, body, points = []) => ({
   kind,
@@ -703,7 +710,7 @@ function projectReadme(deck) {
   const sources = deck.sources.map(([label, url]) => `- [${label}](${url})`).join("\n");
   return `# ${deck.shortTitle} — ${deck.title}\n\n` +
     `**Artwork:** ${deck.work}  \n**Maker:** ${deck.maker}  \n**Date:** ${deck.date}  \n**Medium:** ${deck.medium}  \n**Visual treatment:** ${deck.styleName}\n\n` +
-    `Standalone animated HTML presentation with 20 slides. Open deck.html in a browser; use the arrow keys, Page Up/Down, Home/End, or the on-screen controls. The PDF export is static; transitions and reveal animations remain in the HTML.\n\n` +
+    `Standalone animated HTML presentation with 20 slides. Open [${deck.slug}.html](../../../../examples/${deck.slug}.html) in a browser; use the arrow keys, Page Up/Down, Home/End, or the on-screen controls. The PDF export is static; transitions and reveal animations remain in the HTML.\n\n` +
     `## Slide outline\n\n${outline}\n\n## Sources\n\n${sources}\n\n` +
     `The artwork background is an original concept illustration made for the earlier PresentLab medieval-art project. It is not a reproduction or photographic record of the historical work.\n`;
 }
@@ -711,27 +718,25 @@ function projectReadme(deck) {
 function indexHtml(cards) {
   return `<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mười bộ slide · Nghệ thuật Trung cổ</title><style>
     *{box-sizing:border-box}body{margin:0;background:#161714;color:#f0e8d8;font-family:'Segoe UI',Arial,sans-serif}main{max-width:1420px;margin:auto;padding:72px 48px 96px}.eyebrow{color:#d1ad61;font-size:13px;font-weight:800;letter-spacing:.2em;text-transform:uppercase}h1{max-width:920px;margin:18px 0 14px;font:500 clamp(48px,7vw,92px)/.98 Georgia,serif;letter-spacing:-.05em}.intro{max-width:680px;color:#beb6a5;font-size:19px;line-height:1.55}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;margin-top:54px;background:#4b463b;border:1px solid #4b463b}.card{min-height:235px;padding:28px 30px;background:linear-gradient(120deg,rgba(22,23,20,.97),rgba(22,23,20,.8));text-decoration:none;color:inherit;display:flex;flex-direction:column;justify-content:space-between;transition:background .35s ease,transform .35s ease}.card:hover{background:linear-gradient(120deg,rgba(40,37,30,.96),rgba(22,23,20,.78));transform:translateY(-2px)}.num{color:#d1ad61;font-size:13px;letter-spacing:.14em}.card h2{font:500 clamp(28px,3.5vw,42px)/1.05 Georgia,serif;letter-spacing:-.03em;margin:22px 0 8px}.card p{margin:0;color:#beb6a5;font-size:15px;line-height:1.45}.open{align-self:flex-end;color:#d1ad61;font-size:12px;text-transform:uppercase;letter-spacing:.15em}footer{margin-top:34px;color:#928b7c;font-size:14px}@media(max-width:760px){main{padding:40px 22px 64px}.grid{grid-template-columns:1fr}.card{min-height:195px}}
-  </style></head><body><main><p class="eyebrow">PRESENTLAB · 10 PROJECTS · 20 SLIDES EACH</p><h1>Mười thế giới của nghệ thuật Trung cổ.</h1><p class="intro">Mười bộ trình chiếu độc lập, mỗi bộ theo một ngôn ngữ thị giác riêng và kể sâu hơn về một tác phẩm hoặc truyền thống. Mở HTML để xem animation; PDF là bản tĩnh để lưu và đọc.</p><section class="grid" aria-label="Mười project"><!--CARDS--></section><footer>Project files: examples/medieval-series · PDF exports: output/pdf/medieval-series</footer></main></body></html>`.replace("<!--CARDS-->", cards.join("\n"));
+  </style></head><body><main><p class="eyebrow">PRESENTLAB · 10 PROJECTS · 20 SLIDES EACH</p><h1>Mười thế giới của nghệ thuật Trung cổ.</h1><p class="intro">Mười bộ trình chiếu độc lập, mỗi bộ theo một ngôn ngữ thị giác riêng và kể sâu hơn về một tác phẩm hoặc truyền thống. Mở HTML để xem animation; PDF là bản tĩnh để lưu và đọc.</p><section class="grid" aria-label="Mười project"><!--CARDS--></section><footer>Project HTML files: examples/ · PDF exports: output/pdf/medieval-series</footer></main></body></html>`.replace("<!--CARDS-->", cards.join("\n"));
 }
 
-await mkdir(outputRoot, { recursive: true });
+await mkdir(docsRoot, { recursive: true });
 const cards = [];
 for (const deck of decks) {
   if (deck.slides.length !== 20) throw new Error(`${deck.slug} has ${deck.slides.length} slides; expected 20.`);
-  const sourcePath = join(sourceAssets, deck.artwork);
-  const image = await readFile(sourcePath);
-  const artData = image.toString("base64");
-  const projectDir = join(outputRoot, deck.slug);
-  await mkdir(projectDir, { recursive: true });
-  await writeFile(join(projectDir, "deck.html"), deckHtml(deck, artData), "utf8");
-  await writeFile(join(projectDir, "PROJECT.md"), projectReadme(deck), "utf8");
+  const artData = await embeddedArtwork(deck.slug);
+  const projectDocsDir = join(docsRoot, deck.slug);
+  await mkdir(projectDocsDir, { recursive: true });
+  await writeFile(join(outputRoot, `${deck.slug}.html`), deckHtml(deck, artData), "utf8");
+  await writeFile(join(projectDocsDir, "PROJECT.md"), projectReadme(deck), "utf8");
   const cardStyle = `style="--accent:${deck.theme.accent};--accent2:${deck.theme.accent2}"`;
-  cards.push(`<a class="card" ${cardStyle} href="./${deck.slug}/deck.html"><div><span class="num">${deck.slug.slice(0, 2)} · 20 SLIDES</span><h2>${escapeHtml(deck.title)}</h2><p>${escapeHtml(deck.work)}<br>${escapeHtml(deck.styleName)}</p></div><span class="open">Mở project ↗</span></a>`);
+  cards.push(`<a class="card" ${cardStyle} href="./${deck.slug}.html"><div><span class="num">${deck.slug.slice(0, 2)} · 20 SLIDES</span><h2>${escapeHtml(deck.title)}</h2><p>${escapeHtml(deck.work)}<br>${escapeHtml(deck.styleName)}</p></div><span class="open">Mở project ↗</span></a>`);
 }
 
-await writeFile(join(outputRoot, "index.html"), indexHtml(cards), "utf8");
-  await writeFile(join(outputRoot, "README.md"), `# Mười bộ slide: nghệ thuật Trung cổ\n\n` +
-  `Mỗi thư mục con là một project độc lập: deck.html chứa 20 trang, animation và ảnh concept được nhúng trực tiếp; PROJECT.md có slide outline và nguồn tham khảo. Mở index.html để vào từng deck.\n\n` +
-  `PDF tĩnh được xuất vào output/pdf/medieval-series/. Animation chỉ chạy trong HTML. Mỗi bộ giữ một phong cách riêng dựa trên bộ concept art trước đó.\n`, "utf8");
+await writeFile(join(outputRoot, "medieval-series.html"), indexHtml(cards), "utf8");
+await writeFile(join(docsRoot, "README.md"), `# Medieval art slide series\n\n` +
+  `Each deck is a standalone HTML file in the examples directory. Project outlines and sources are saved alongside this README. Open [medieval-series.html](../../../examples/medieval-series.html) to browse all decks.\n\n` +
+  `Static PDFs are exported to output/pdf/medieval-series/. Animations run in the HTML presentations.\n`, "utf8");
 
 console.log(`Built ${decks.length} standalone decks (${decks.reduce((sum, deck) => sum + deck.slides.length, 0)} slides) in ${outputRoot}`);

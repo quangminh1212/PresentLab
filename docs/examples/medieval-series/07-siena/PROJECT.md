@@ -6,7 +6,7 @@
 **Medium:** Tempera trên gỗ, nền vàng  
 **Visual treatment:** Siena Gothic · vàng lá, nét thanh và chuyển động uốn
 
-Standalone animated HTML presentation with 20 slides. Open [deck.html](../../../../examples/medieval-series/07-siena/deck.html) in a browser; use the arrow keys, Page Up/Down, Home/End, or the on-screen controls. The PDF export is static; transitions and reveal animations remain in the HTML.
+Standalone animated HTML presentation with 20 slides. Open [07-siena.html](../../../../examples/07-siena.html) in a browser; use the arrow keys, Page Up/Down, Home/End, or the on-screen controls. The PDF export is static; transitions and reveal animations remain in the HTML.
 
 ## Slide outline
 

@@ -6,7 +6,7 @@
 **Medium:** Len thêu trên các dải vải lanh ghép nối  
 **Visual treatment:** Tranh thêu kể chuyện · đường ngang, len màu và nhịp nối
 
-Standalone animated HTML presentation with 20 slides. Open [deck.html](../../../../examples/medieval-series/04-bayeux/deck.html) in a browser; use the arrow keys, Page Up/Down, Home/End, or the on-screen controls. The PDF export is static; transitions and reveal animations remain in the HTML.
+Standalone animated HTML presentation with 20 slides. Open [04-bayeux.html](../../../../examples/04-bayeux.html) in a browser; use the arrow keys, Page Up/Down, Home/End, or the on-screen controls. The PDF export is static; transitions and reveal animations remain in the HTML.
 
 ## Slide outline
 
