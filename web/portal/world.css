@@ -3929,6 +3929,14 @@ html.is-lusion-section-preloading .portal-header {
   pointer-events: none;
 }
 
+/* Once the embedded Lusion section fills the viewport, keep its native header
+   and hide the Portal overlay header above it. */
+html.is-lusion-section-active .portal-header {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
 html:not(.is-ready) .portal-header,
 html:not(.is-ready) .portal-header * {
   pointer-events: none;
