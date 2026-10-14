@@ -93,7 +93,6 @@ for (const pagePath of xlabPageFiles) {
     (_match, name, quote, value) => `${name}=${quote}${replaceBrandText(value)}${quote}`,
   );
   html = html.replace(/>([^<>]*)</g, (_match, text) => `>${replaceBrandText(text)}<`);
-  html = html.replace(/\bhref=("|')\/\1/gi, (_match, quote) => `href=${quote}/lusion/${quote}`);
   await writeFile(pagePath, html);
 }
 
@@ -114,10 +113,6 @@ lusionHomeSource = lusionHomeSource.replace(
 lusionHomeSource = lusionHomeSource.replace(
   />([^<>]*)</g,
   (_match, text) => `>${replaceBrandText(text)}<`,
-);
-lusionHomeSource = lusionHomeSource.replace(
-  /\bhref=("|')\/\1/gi,
-  (_match, quote) => `href=${quote}/lusion/${quote}`,
 );
 const lusionBody = lusionHomeSource.match(/<body\b[^>]*>([\s\S]*?)<\/body>/i)?.[1];
 if (!lusionBody) {

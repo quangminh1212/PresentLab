@@ -356,6 +356,15 @@ const server = createServer(async (request, response) => {
     return;
   }
 
+  if (
+    /^\/lusion\/?$/i.test(requestUrl.pathname) &&
+    !requestUrl.searchParams.has("water-page-embed")
+  ) {
+    response.writeHead(308, { "Cache-Control": "no-store", Location: "/" });
+    response.end();
+    return;
+  }
+
   let pathname;
   try {
     pathname = decodeURIComponent(requestUrl.pathname);

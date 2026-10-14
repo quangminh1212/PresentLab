@@ -3,6 +3,20 @@
   "buildCommand": "npm run vercel:build",
   "outputDirectory": "public",
   "cleanUrls": true,
+  "redirects": [
+    {
+      "source": "/lusion",
+      "missing": [{ "type": "query", "key": "water-page-embed" }],
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/lusion/",
+      "missing": [{ "type": "query", "key": "water-page-embed" }],
+      "destination": "/",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     { "source": "/", "destination": "/index.html" },
     { "source": "/portal", "destination": "/index.html" },
