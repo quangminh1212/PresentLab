@@ -6,10 +6,9 @@
 
   const style = document.createElement("style");
   style.textContent =
-    // XLab palette: --xlab-ink is lifted off pure black so the page reads as the
-    // logo's near-black rather than a flat #000; --xlab-teal is the accent block
-    // inside the X of /web/portal/xlab-logo.png.
-    ":root{--xlab-ink:#1A2028;--xlab-teal:#237478}" +
+    // XLab palette: keep Lusion's dark sections pure black, with teal sampled
+    // from the accent block inside the X of /web/portal/xlab-logo.png.
+    ":root{--xlab-ink:#000;--xlab-teal:#237478}" +
     // Flat page background for the DOM/CSS layer.
     "html,body{background-color:var(--xlab-ink)!important}" +
     // The Lusion engine paints the fixed #canvas from --color-black / --color-off-white,
