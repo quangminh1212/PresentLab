@@ -3288,7 +3288,7 @@ function bindWaterToLusionScroll() {
     const active = Math.abs(bounds.top) <= 2 && bounds.bottom >= window.innerHeight - 2;
     const wasActive = pageRoot.classList.contains("is-lusion-section-active");
     pageRoot.classList.toggle("is-lusion-section-active", active);
-    frameDocument()?.documentElement.classList.toggle("is-lusion-section-active", active);
+    frameDocument()?.documentElement?.classList.toggle("is-lusion-section-active", active);
     if (active && !wasActive) refreshLusionCanvas();
     if (!active && lusionCanvasResizeTimer) {
       window.clearTimeout(lusionCanvasResizeTimer);
