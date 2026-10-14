@@ -4787,7 +4787,9 @@ transition:
 
 .portal-header-brand {
   width: 80px;
-  transform: translateY(-6px);
+  /* The pills are fixed above the grid row on mobile; lower the wordmark to
+     share their visual centerline. */
+  transform: translateY(2px);
 }
 
 .portal-header-actions {
