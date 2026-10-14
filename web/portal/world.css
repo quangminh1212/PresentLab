@@ -4077,6 +4077,7 @@ html:not(.is-ready) .portal-header * {
   display: block;
   width: 80px;
   line-height: 0;
+  transform: translateY(-8px);
 }
 
 /* Same crop lockup the XLab header uses on /about: the webp carries padding
@@ -4256,9 +4257,9 @@ html:not(.is-ready) .portal-header * {
 
 .portal-header-actions {
 position: fixed;
-/* Matches the XLab header on /about: pills sit 50px from the top, 72px from
-   the right edge, with a 35.75px gutter between them. */
-top: 50px;
+/* Matches the XLab header on /about horizontally, with the pills raised to
+   sit closer to the water hero. */
+top: 42px;
 right: 72px;
 display: flex;
 align-items: center;
@@ -4786,10 +4787,11 @@ transition:
 
 .portal-header-brand {
   width: 80px;
+  transform: translateY(-6px);
 }
 
 .portal-header-actions {
-  top: var(--portal-lusion-gutter);
+  top: max(10px, calc(var(--portal-lusion-gutter) - 6px));
   right: var(--portal-lusion-gutter);
   align-self: start;
   gap: 22px;
