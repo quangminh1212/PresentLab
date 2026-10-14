@@ -5162,7 +5162,7 @@ text-align: left;
 .app-shell:has(> main > .hero.hero-world) .world-copy {
   position: absolute;
   z-index: 5;
-  top: clamp(28px, 6vh, 58px);
+  top: 50%;
   right: auto;
   left: clamp(28px, 5vw, 70px);
   width: min(82%, 900px);
@@ -5174,7 +5174,7 @@ text-align: left;
   box-shadow: none;
   color: #1a2028;
   backdrop-filter: none;
-  translate: none;
+  translate: 0 -50%;
   animation: none;
   pointer-events: none;
 }
@@ -5344,7 +5344,6 @@ html:has(.app-shell > main > .hero.hero-world) .portal-category-menu.is-open > .
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-copy {
-    top: clamp(24px, 4.5vh, 38px);
     left: clamp(20px, 4vw, 32px);
     width: calc(100% - clamp(40px, 8vw, 64px));
   }
@@ -5387,7 +5386,7 @@ html:has(.app-shell > main > .hero.hero-world) .portal-category-menu.is-open > .
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-copy {
-    top: 20px;
+    top: 50%;
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
