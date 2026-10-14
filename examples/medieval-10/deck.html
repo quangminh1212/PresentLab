@@ -1,0 +1,1891 @@
+<!doctype html>
+<html
+  lang="vi"
+  data-pl-format="16:9"
+  data-pl-title="Mười thế giới — Nghệ thuật Trung cổ"
+  data-pl-author="PresentLab concept project"
+  data-pl-theme="gothic-illuminated"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Mười trang trình chiếu, mười ngôn ngữ thị giác lấy cảm hứng từ nghệ thuật Trung cổ."
+    />
+    <title>Mười thế giới — Nghệ thuật Trung cổ</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --paper: #f6f0e6;
+        --paper-deep: #e7dac2;
+        --ink: #27231e;
+        --muted: #756c5f;
+        --gold: #c9a95f;
+        --gold-deep: #8d6d36;
+        --blue: #1b2d53;
+        --blue-soft: #314c77;
+        --red: #8d383e;
+        --green: #536346;
+        --line: rgb(39 35 30 / 22%);
+        --serif: "Baskerville", "Palatino Linotype", Georgia, serif;
+        --sans: "Segoe UI", Arial, sans-serif;
+        --ease: cubic-bezier(0.2, 0.75, 0.2, 1);
+        font-family: var(--sans);
+        background: #171713;
+        color: var(--ink);
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        scroll-snap-type: y mandatory;
+        scrollbar-color: var(--gold) #171713;
+      }
+
+      body {
+        margin: 0;
+        overflow-x: hidden;
+        background: #171713;
+        color: var(--ink);
+      }
+
+      h1,
+      h2,
+      h3,
+      p,
+      figure {
+        margin: 0;
+      }
+
+      button {
+        color: inherit;
+        font: inherit;
+      }
+
+      .pl-slide {
+        position: relative;
+        display: flex;
+        width: 100vw;
+        height: 100vh;
+        min-height: 660px;
+        overflow: hidden;
+        isolation: isolate;
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
+      }
+
+      .slide-art {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .eyebrow,
+      .work-meta,
+      .folio,
+      .micro-label {
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.17em;
+        line-height: 1.4;
+        text-transform: uppercase;
+      }
+
+      .eyebrow {
+        margin-bottom: 22px;
+      }
+
+      .headline,
+      .subhead,
+      .display-number {
+        font-family: var(--serif);
+        font-weight: 500;
+      }
+
+      .headline {
+        font-size: clamp(54px, 6.9vw, 112px);
+        letter-spacing: -0.055em;
+        line-height: 0.94;
+        text-wrap: balance;
+      }
+
+      .subhead {
+        font-size: clamp(48px, 5.1vw, 82px);
+        letter-spacing: -0.05em;
+        line-height: 0.98;
+        text-wrap: balance;
+      }
+
+      .body-copy {
+        max-width: 550px;
+        margin-top: 22px;
+        font-size: clamp(17px, 1.35vw, 22px);
+        line-height: 1.5;
+      }
+
+      .work-meta {
+        display: block;
+        margin-top: 28px;
+        color: var(--muted);
+        letter-spacing: 0.1em;
+      }
+
+      .folio {
+        position: absolute;
+        z-index: 8;
+        right: 44px;
+        bottom: 34px;
+        color: currentColor;
+        opacity: 0.7;
+      }
+
+      .reveal {
+        opacity: 1;
+        transform: none;
+      }
+
+      @keyframes rise-in {
+        from {
+          opacity: 0;
+          transform: translate3d(0, 28px, 0);
+        }
+        to {
+          opacity: 1;
+          transform: translate3d(0, 0, 0);
+        }
+      }
+
+      @keyframes open-folio {
+        from {
+          clip-path: inset(0 100% 0 0);
+          transform: scale(1.055);
+        }
+        to {
+          clip-path: inset(0);
+          transform: scale(1);
+        }
+      }
+
+      @keyframes gilded-breathe {
+        0%,
+        100% {
+          opacity: 0.34;
+          transform: scale(0.94);
+        }
+        50% {
+          opacity: 0.78;
+          transform: scale(1.02);
+        }
+      }
+
+      @keyframes register-arrive {
+        from {
+          opacity: 0;
+          transform: translateX(34px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes thread-unspool {
+        from {
+          transform: scaleX(0);
+        }
+        to {
+          transform: scaleX(1);
+        }
+      }
+
+      @keyframes rose-turn {
+        from {
+          opacity: 0.5;
+          transform: rotate(-8deg) scale(0.94);
+        }
+        to {
+          opacity: 1;
+          transform: rotate(0) scale(1);
+        }
+      }
+
+      @keyframes fresco-settle {
+        from {
+          transform: scale(1.09);
+          filter: saturate(0.76);
+        }
+        to {
+          transform: scale(1);
+          filter: saturate(1);
+        }
+      }
+
+      @keyframes season-mark {
+        from {
+          opacity: 0;
+          transform: translateY(12px) scale(0.82);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      @keyframes detail-ping {
+        0% {
+          box-shadow: 0 0 0 0 rgb(211 172 92 / 55%);
+        }
+        100% {
+          box-shadow: 0 0 0 20px rgb(211 172 92 / 0%);
+        }
+      }
+
+      @keyframes wing-open {
+        from {
+          opacity: 0;
+          transform: perspective(800px) rotateY(-12deg);
+        }
+        to {
+          opacity: 1;
+          transform: perspective(800px) rotateY(0);
+        }
+      }
+
+      .is-active .reveal {
+        animation: rise-in 760ms var(--ease) var(--delay, 0ms) both;
+      }
+
+      .is-active .slide-art {
+        animation: open-folio 1050ms var(--ease) 100ms both;
+      }
+
+      /* 01 — Insular manuscript / Book of Kells */
+      .slide-01 {
+        align-items: center;
+        background: #10180f;
+        color: #fff6df;
+      }
+
+      .slide-01::before {
+        position: absolute;
+        z-index: -1;
+        inset: 0;
+        background:
+          linear-gradient(90deg, rgb(8 13 8 / 87%) 0%, rgb(8 13 8 / 64%) 36%, transparent 76%),
+          linear-gradient(0deg, rgb(8 13 8 / 65%), transparent 34%);
+        content: "";
+      }
+
+      .cover-image {
+        position: absolute;
+        z-index: -2;
+        inset: 0;
+      }
+
+      .cover-image img {
+        object-position: center 46%;
+      }
+
+      .cover-copy {
+        width: min(1060px, 72%);
+        margin-left: 5.8vw;
+        margin-right: auto;
+      }
+
+      .cover-copy .eyebrow {
+        color: #e8c875;
+      }
+
+      .cover-copy .headline {
+        max-width: 930px;
+        font-size: clamp(68px, 9.5vw, 154px);
+      }
+
+      .cover-copy .headline em {
+        color: #e8c875;
+        font-style: normal;
+      }
+
+      .cover-copy .body-copy {
+        max-width: 540px;
+        color: rgb(255 246 223 / 83%);
+      }
+
+      .cover-frame {
+        position: absolute;
+        z-index: 4;
+        inset: 24px;
+        border: 1px solid rgb(232 200 117 / 58%);
+        pointer-events: none;
+      }
+
+      .cover-frame::before,
+      .cover-frame::after {
+        position: absolute;
+        width: 56px;
+        height: 56px;
+        border: 2px solid #e8c875;
+        content: "";
+      }
+
+      .cover-frame::before {
+        top: -2px;
+        left: -2px;
+        border-right: 0;
+        border-bottom: 0;
+      }
+
+      .cover-frame::after {
+        right: -2px;
+        bottom: -2px;
+        border-top: 0;
+        border-left: 0;
+      }
+
+      .kells-mark {
+        position: absolute;
+        top: 50%;
+        right: 10%;
+        width: clamp(150px, 20vw, 320px);
+        aspect-ratio: 1;
+        border: 1px solid rgb(232 200 117 / 70%);
+        border-radius: 50%;
+        box-shadow:
+          0 0 0 14px rgb(232 200 117 / 8%),
+          0 0 0 30px rgb(232 200 117 / 5%);
+        animation: gilded-breathe 7s ease-in-out infinite;
+        transform: translateY(-50%);
+      }
+
+      .kells-mark::before,
+      .kells-mark::after {
+        position: absolute;
+        inset: 13%;
+        border: 1px solid rgb(232 200 117 / 44%);
+        border-radius: 42% 58% 48% 52%;
+        content: "";
+        transform: rotate(45deg);
+      }
+
+      .kells-mark::after {
+        transform: rotate(-45deg);
+      }
+
+      .cover-credit {
+        display: inline-flex;
+        gap: 12px;
+        align-items: center;
+        margin-top: 34px;
+        color: #e8c875;
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .cover-credit::before {
+        width: 40px;
+        border-top: 1px solid currentColor;
+        content: "";
+      }
+
+      .cover-how {
+        display: block;
+        margin-top: 42px;
+        color: rgb(255 246 223 / 66%);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+      }
+
+      /* 02 — Byzantine icon */
+      .slide-02 {
+        align-items: center;
+        padding: 7vh 8vw;
+        background:
+          radial-gradient(circle at 27% 48%, rgb(201 169 95 / 18%), transparent 34%),
+          var(--paper);
+      }
+
+      .icon-layout {
+        display: grid;
+        grid-template-columns: 1fr 0.82fr;
+        gap: 8vw;
+        align-items: center;
+        width: 100%;
+        max-width: 1450px;
+        margin: auto;
+      }
+
+      .icon-frame {
+        position: relative;
+        width: min(100%, 680px);
+        aspect-ratio: 1.2;
+        margin: auto;
+        padding: 15px;
+        background: linear-gradient(135deg, #ad843b, #f1da91 45%, #856328);
+        box-shadow: 0 28px 68px rgb(61 44 16 / 24%);
+      }
+
+      .icon-frame img {
+        border: 2px solid #f0db9b;
+      }
+
+      .icon-halo {
+        position: absolute;
+        top: 12%;
+        left: 50%;
+        width: 31%;
+        aspect-ratio: 1;
+        border: 2px solid rgb(246 218 147 / 82%);
+        border-radius: 50%;
+        box-shadow: 0 0 50px rgb(246 218 147 / 42%);
+        animation: gilded-breathe 5s ease-in-out infinite;
+        transform: translateX(-50%);
+      }
+
+      .icon-copy {
+        max-width: 600px;
+      }
+
+      .icon-copy .eyebrow {
+        color: var(--gold-deep);
+      }
+
+      .icon-copy .subhead {
+        color: #332512;
+      }
+
+      .icon-copy .body-copy {
+        color: #5b5042;
+      }
+
+      .icon-facts {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px 24px;
+        margin-top: 34px;
+        padding-top: 21px;
+        border-top: 1px solid rgb(141 109 54 / 42%);
+      }
+
+      .icon-facts div {
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.45;
+      }
+
+      .icon-facts strong {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--ink);
+        font-size: 12px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      /* 03 — Romanesque apse fresco */
+      .slide-03 {
+        align-items: center;
+        background: #202a39;
+        color: #fff4d8;
+      }
+
+      .taull-art {
+        position: absolute;
+        z-index: -2;
+        inset: 0 0 0 27%;
+      }
+
+      .slide-03::before {
+        position: absolute;
+        z-index: -1;
+        inset: 0;
+        background: linear-gradient(90deg, #192230 0%, rgb(25 34 48 / 94%) 32%, rgb(25 34 48 / 20%) 74%, rgb(25 34 48 / 7%));
+        content: "";
+      }
+
+      .taull-copy {
+        width: 55%;
+        margin-left: 7vw;
+      }
+
+      .taull-copy .eyebrow {
+        color: #e2bf70;
+      }
+
+      .taull-copy .headline {
+        max-width: 770px;
+        font-size: clamp(58px, 7vw, 112px);
+      }
+
+      .taull-copy .body-copy {
+        max-width: 490px;
+        color: rgb(255 244 216 / 78%);
+      }
+
+      .register-stack {
+        display: grid;
+        gap: 9px;
+        width: 380px;
+        margin-top: 30px;
+        border-left: 2px solid #ddb85f;
+      }
+
+      .register {
+        padding: 10px 16px;
+        border-bottom: 1px solid rgb(255 244 216 / 20%);
+        color: #f6eedb;
+        font-size: 14px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .register span {
+        display: inline-block;
+        width: 44px;
+        color: #ddb85f;
+        font-family: var(--serif);
+        font-size: 24px;
+      }
+
+      .is-active .register {
+        animation: register-arrive 600ms var(--ease) var(--delay, 0ms) both;
+      }
+
+      /* 04 — Bayeux narrative embroidery */
+      .slide-04 {
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        padding: 6vh 7vw 7vh;
+        background: #eee0c6;
+        color: #382e24;
+      }
+
+      .bayeux-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 50px;
+        align-items: end;
+        margin-bottom: 24px;
+      }
+
+      .bayeux-head .eyebrow {
+        color: #845338;
+      }
+
+      .bayeux-head .subhead {
+        max-width: 810px;
+      }
+
+      .embroidery-tag {
+        max-width: 310px;
+        color: #746450;
+        font-size: 15px;
+        line-height: 1.45;
+      }
+
+      .bayeux-strip {
+        position: relative;
+        min-height: 0;
+        border: 14px solid #cbb891;
+        background: #cbb891;
+        box-shadow: 0 20px 40px rgb(73 50 27 / 18%);
+      }
+
+      .bayeux-strip img {
+        object-position: center 50%;
+      }
+
+      .bayeux-strip::before,
+      .bayeux-strip::after {
+        position: absolute;
+        z-index: 2;
+        right: 0;
+        left: 0;
+        height: 8px;
+        background: repeating-linear-gradient(90deg, #873b37 0 18px, #d5bd7a 18px 32px, #536246 32px 46px);
+        content: "";
+      }
+
+      .bayeux-strip::before {
+        top: -12px;
+      }
+
+      .bayeux-strip::after {
+        bottom: -12px;
+      }
+
+      .thread-path {
+        position: absolute;
+        right: 7%;
+        bottom: -36px;
+        left: 7%;
+        height: 2px;
+        background: #9b5644;
+        transform-origin: left center;
+      }
+
+      .is-active .thread-path {
+        animation: thread-unspool 1250ms var(--ease) 200ms both;
+      }
+
+      .bayeux-steps {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        padding-top: 27px;
+      }
+
+      .bayeux-step {
+        position: relative;
+        padding-top: 15px;
+        border-top: 1px solid rgb(79 61 40 / 40%);
+        color: #675743;
+        font-size: 15px;
+        line-height: 1.35;
+      }
+
+      .bayeux-step::before {
+        position: absolute;
+        top: -6px;
+        left: 0;
+        width: 10px;
+        height: 10px;
+        border: 2px solid #eee0c6;
+        border-radius: 50%;
+        background: #9b5644;
+        box-shadow: 0 0 0 1px #9b5644;
+        content: "";
+      }
+
+      .bayeux-step strong {
+        display: block;
+        margin-bottom: 5px;
+        color: #382e24;
+        font-family: var(--serif);
+        font-size: 22px;
+        font-weight: 600;
+      }
+
+      .is-active .bayeux-step {
+        animation: rise-in 620ms var(--ease) var(--delay, 0ms) both;
+      }
+
+      /* 05 — Chartres rose window */
+      .slide-05 {
+        display: grid;
+        grid-template-columns: 0.78fr 1.2fr 0.72fr;
+        gap: 34px;
+        align-items: center;
+        padding: 7vh 6vw;
+        background:
+          radial-gradient(circle at 57% 52%, #31426b 0, #111b31 48%, #080e18 100%);
+        color: #f8f0db;
+      }
+
+      .chartres-copy {
+        position: relative;
+        z-index: 2;
+        align-self: start;
+        padding-top: 6vh;
+      }
+
+      .chartres-copy .eyebrow {
+        color: #edcb78;
+      }
+
+      .chartres-copy .subhead {
+        max-width: 480px;
+        font-size: clamp(48px, 5vw, 80px);
+      }
+
+      .chartres-copy .body-copy {
+        color: rgb(248 240 219 / 73%);
+      }
+
+      .rose-frame {
+        position: relative;
+        width: min(46vw, 650px);
+        aspect-ratio: 1;
+        justify-self: center;
+        border: 1px solid rgb(241 204 116 / 56%);
+        border-radius: 50%;
+        box-shadow: 0 0 60px rgb(66 120 205 / 22%);
+      }
+
+      .rose-frame img {
+        border-radius: 50%;
+        object-position: center;
+      }
+
+      .rose-frame::before,
+      .rose-frame::after {
+        position: absolute;
+        z-index: 2;
+        inset: -14px;
+        border: 1px solid rgb(241 204 116 / 32%);
+        border-radius: 50%;
+        pointer-events: none;
+        content: "";
+      }
+
+      .rose-frame::after {
+        inset: 8%;
+        border-color: rgb(255 255 255 / 25%);
+      }
+
+      .is-active .rose-frame {
+        animation: rose-turn 1000ms var(--ease) both;
+      }
+
+      .glass-notes {
+        display: grid;
+        gap: 22px;
+        align-self: center;
+      }
+
+      .glass-note {
+        padding-left: 15px;
+        border-left: 2px solid var(--note-color);
+      }
+
+      .glass-note strong {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--note-color);
+        font-size: 12px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+
+      .glass-note span {
+        color: rgb(248 240 219 / 76%);
+        font-size: 15px;
+        line-height: 1.4;
+      }
+
+      /* 06 — Giotto's human scale */
+      .slide-06 {
+        align-items: end;
+        padding: 8vh 7vw;
+        background: #17254a;
+        color: #fffaf0;
+      }
+
+      .giotto-art {
+        position: absolute;
+        z-index: -2;
+        inset: 0;
+      }
+
+      .giotto-art img {
+        object-position: center 42%;
+      }
+
+      .slide-06::before {
+        position: absolute;
+        z-index: -1;
+        inset: 0;
+        background:
+          linear-gradient(0deg, rgb(8 14 28 / 88%) 0%, rgb(8 14 28 / 52%) 30%, transparent 72%),
+          linear-gradient(90deg, rgb(12 20 38 / 35%), transparent 68%);
+        content: "";
+      }
+
+      .is-active .giotto-art img {
+        animation: fresco-settle 1800ms var(--ease) both;
+      }
+
+      .giotto-copy {
+        max-width: 870px;
+      }
+
+      .giotto-copy .eyebrow {
+        color: #efd68e;
+      }
+
+      .giotto-copy .headline {
+        max-width: 880px;
+        font-size: clamp(60px, 7.4vw, 120px);
+      }
+
+      .giotto-copy .body-copy {
+        max-width: 600px;
+        color: rgb(255 250 240 / 85%);
+      }
+
+      .diagonal-rule {
+        position: absolute;
+        top: 0;
+        right: 17%;
+        width: 1px;
+        height: 52%;
+        background: linear-gradient(transparent, rgb(239 214 142 / 85%), transparent);
+        transform: rotate(36deg);
+        transform-origin: top;
+      }
+
+      /* 07 — Sienese Gothic */
+      .slide-07 {
+        align-items: center;
+        padding: 8vh 7vw;
+        background:
+          radial-gradient(ellipse at 27% 52%, #f9edc8, #e4cf93 76%);
+        color: #3f2c21;
+      }
+
+      .simone-layout {
+        display: grid;
+        grid-template-columns: 0.82fr 1.18fr;
+        gap: 6vw;
+        align-items: center;
+        width: 100%;
+        max-width: 1460px;
+        margin: auto;
+      }
+
+      .simone-copy {
+        position: relative;
+        z-index: 2;
+      }
+
+      .simone-copy::before {
+        position: absolute;
+        top: -26px;
+        left: -25px;
+        width: 70px;
+        height: 70px;
+        border-top: 1px solid #9f7b39;
+        border-left: 1px solid #9f7b39;
+        content: "";
+      }
+
+      .simone-copy .eyebrow {
+        color: #8b2f36;
+      }
+
+      .simone-copy .subhead {
+        max-width: 540px;
+      }
+
+      .simone-copy .body-copy {
+        color: #66523b;
+      }
+
+      .simone-art {
+        position: relative;
+        height: min(69vh, 680px);
+        padding: 11px;
+        background: linear-gradient(145deg, #aa853f, #f5df9b 45%, #9a7330);
+        box-shadow: 0 22px 58px rgb(67 44 23 / 23%);
+      }
+
+      .simone-art img {
+        border: 1px solid #f3dfa2;
+      }
+
+      .simone-caption {
+        display: flex;
+        justify-content: space-between;
+        gap: 18px;
+        margin-top: 14px;
+        color: #67563a;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .simone-flourish {
+        position: absolute;
+        z-index: 2;
+        top: 18%;
+        left: 44%;
+        width: 46%;
+        height: 1px;
+        background: #a93539;
+        transform: rotate(-14deg);
+        transform-origin: left;
+      }
+
+      /* 08 — International Gothic calendar miniature */
+      .slide-08 {
+        align-items: center;
+        padding: 7vh 7vw;
+        background: #e9e0cf;
+        color: #302a21;
+      }
+
+      .calendar-layout {
+        display: grid;
+        grid-template-columns: 1.28fr 0.72fr;
+        gap: 7vw;
+        align-items: center;
+        width: 100%;
+        max-width: 1450px;
+        margin: auto;
+      }
+
+      .calendar-page {
+        position: relative;
+        padding: 25px;
+        background: #f8f2e5;
+        box-shadow: 0 24px 58px rgb(54 45 30 / 20%);
+      }
+
+      .calendar-page::before {
+        position: absolute;
+        z-index: 2;
+        inset: 10px;
+        border: 1px solid rgb(155 119 57 / 70%);
+        pointer-events: none;
+        content: "";
+      }
+
+      .calendar-page img {
+        height: min(54vh, 500px);
+        object-position: center 48%;
+      }
+
+      .season-wheel {
+        position: absolute;
+        right: -22px;
+        bottom: -24px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 7px;
+        width: 124px;
+        height: 124px;
+        padding: 13px;
+        border: 1px solid #9b7739;
+        border-radius: 50%;
+        background: #f1e4c3;
+        box-shadow: 0 8px 22px rgb(54 45 30 / 18%);
+      }
+
+      .season-wheel span {
+        display: block;
+        border-radius: 50% 50% 4px 50%;
+        background: var(--season-color);
+        opacity: 0.4;
+      }
+
+      .is-active .season-wheel span {
+        animation: season-mark 480ms var(--ease) var(--delay, 0ms) both;
+      }
+
+      .calendar-copy .eyebrow {
+        color: #8a6437;
+      }
+
+      .calendar-copy .subhead {
+        max-width: 560px;
+      }
+
+      .calendar-copy .body-copy {
+        color: #625848;
+      }
+
+      .calendar-rail {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        margin-top: 28px;
+      }
+
+      .calendar-rail span {
+        padding: 11px 5px;
+        border-top: 1px solid #a68a54;
+        color: #706247;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-align: center;
+        text-transform: uppercase;
+      }
+
+      /* 09 — Early Netherlandish oil painting */
+      .slide-09 {
+        align-items: center;
+        background: #151812;
+        color: #f6eedc;
+      }
+
+      .van-eyck-art {
+        position: absolute;
+        z-index: -2;
+        inset: 0 0 0 30%;
+      }
+
+      .van-eyck-art img {
+        object-position: 53% center;
+      }
+
+      .slide-09::before {
+        position: absolute;
+        z-index: -1;
+        inset: 0;
+        background: linear-gradient(90deg, #151812 0%, #151812 31%, rgb(21 24 18 / 78%) 48%, rgb(21 24 18 / 5%) 85%);
+        content: "";
+      }
+
+      .van-eyck-copy {
+        width: 42%;
+        margin-left: 6.5vw;
+      }
+
+      .van-eyck-copy .eyebrow {
+        color: #d5b55c;
+      }
+
+      .van-eyck-copy .subhead {
+        font-size: clamp(50px, 5.5vw, 88px);
+      }
+
+      .van-eyck-copy .body-copy {
+        color: rgb(246 238 220 / 76%);
+      }
+
+      .detail-pin {
+        position: absolute;
+        z-index: 3;
+        display: grid;
+        width: 34px;
+        height: 34px;
+        place-items: center;
+        border: 1px solid #f2d488;
+        border-radius: 50%;
+        background: rgb(28 28 21 / 82%);
+        color: #f2d488;
+        font-family: var(--serif);
+        font-size: 17px;
+      }
+
+      .detail-pin::after {
+        position: absolute;
+        inset: -4px;
+        border: 1px solid rgb(242 212 136 / 85%);
+        border-radius: inherit;
+        content: "";
+      }
+
+      .is-active .detail-pin {
+        animation: detail-ping 1.2s ease-out var(--delay, 0ms) 2;
+      }
+
+      .pin-one {
+        top: 25%;
+        right: 31%;
+      }
+
+      .pin-two {
+        top: 54%;
+        right: 16%;
+      }
+
+      .pin-three {
+        right: 42%;
+        bottom: 22%;
+      }
+
+      .detail-key {
+        position: absolute;
+        right: 6.5vw;
+        bottom: 8vh;
+        display: flex;
+        gap: 13px;
+        color: #f6eedc;
+        font-size: 12px;
+        letter-spacing: 0.11em;
+        text-transform: uppercase;
+      }
+
+      .detail-key span::before {
+        display: inline-block;
+        width: 7px;
+        height: 7px;
+        margin: 0 7px 1px 0;
+        border-radius: 50%;
+        background: #d5b55c;
+        content: "";
+      }
+
+      /* 10 — Early Netherlandish triptych */
+      .slide-10 {
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        gap: 15px;
+        padding: 5vh 7vw 6vh;
+        background:
+          radial-gradient(ellipse at 50% 37%, #45312d, #1d1819 76%);
+        color: #f5ead4;
+      }
+
+      .merode-head {
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.7fr);
+        gap: 32px;
+        align-items: end;
+      }
+
+      .merode-head .eyebrow {
+        margin-bottom: 10px;
+        color: #ddb96b;
+      }
+
+      .merode-head .subhead {
+        font-size: clamp(48px, 5.2vw, 82px);
+        max-width: 850px;
+      }
+
+      .merode-head p {
+        max-width: 390px;
+        margin-bottom: 12px;
+        color: rgb(245 234 212 / 76%);
+        font-size: 16px;
+        line-height: 1.45;
+      }
+
+      .triptych {
+        display: grid;
+        grid-template-columns: 0.63fr 1.1fr 0.63fr;
+        gap: 12px;
+        min-height: 0;
+        width: min(100%, 1190px);
+        margin: 0 auto;
+        padding: 15px;
+        background: linear-gradient(115deg, #8e703c, #e4c77d 50%, #8a6830);
+        box-shadow: 0 22px 55px rgb(0 0 0 / 38%);
+      }
+
+      .triptych-panel {
+        position: relative;
+        min-width: 0;
+        overflow: hidden;
+        border: 2px solid #ead598;
+        background: #b99c65;
+      }
+
+      .triptych-panel img {
+        position: absolute;
+        inset: 0;
+        width: 300%;
+        max-width: none;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .triptych-panel.left img {
+        left: 0;
+        object-position: left center;
+      }
+
+      .triptych-panel.center img {
+        left: -100%;
+        object-position: center center;
+      }
+
+      .triptych-panel.right img {
+        left: -200%;
+        object-position: right center;
+      }
+
+      .triptych-panel::after {
+        position: absolute;
+        inset: 0;
+        border: 1px solid rgb(54 35 18 / 40%);
+        pointer-events: none;
+        content: "";
+      }
+
+      .is-active .triptych-panel {
+        animation: wing-open 780ms var(--ease) var(--delay, 0ms) both;
+        transform-origin: left center;
+      }
+
+      .triptych-caption {
+        display: flex;
+        justify-content: space-between;
+        gap: 24px;
+        align-items: center;
+        color: #dbc78f;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .triptych-caption strong {
+        color: #f5ead4;
+        font-family: var(--serif);
+        font-size: 19px;
+        font-weight: 500;
+        letter-spacing: 0;
+        text-transform: none;
+      }
+
+      @media (max-width: 900px) {
+        .pl-slide {
+          min-height: 100svh;
+        }
+
+        .cover-copy {
+          width: 86%;
+          margin-left: 0;
+        }
+
+        .kells-mark {
+          top: 21%;
+          right: 3%;
+          opacity: 0.5;
+        }
+
+        .icon-layout,
+        .simone-layout,
+        .calendar-layout {
+          grid-template-columns: 1fr;
+          gap: 28px;
+        }
+
+        .icon-frame {
+          width: min(70vw, 420px);
+          max-height: 36vh;
+        }
+
+        .icon-copy,
+        .simone-copy,
+        .calendar-copy {
+          max-width: 720px;
+          margin: 0 auto;
+        }
+
+        .icon-copy .subhead,
+        .simone-copy .subhead,
+        .calendar-copy .subhead {
+          font-size: clamp(42px, 7vw, 68px);
+        }
+
+        .taull-art {
+          inset: 0 0 0 13%;
+        }
+
+        .taull-copy {
+          width: 76%;
+          margin-left: 5vw;
+        }
+
+        .register-stack {
+          width: min(360px, 85vw);
+        }
+
+        .bayeux-head {
+          display: block;
+        }
+
+        .bayeux-head .subhead {
+          max-width: 690px;
+        }
+
+        .embroidery-tag {
+          margin-top: 12px;
+        }
+
+        .slide-05 {
+          grid-template-columns: 0.8fr 1.1fr;
+        }
+
+        .chartres-copy {
+          grid-column: 1;
+          padding-top: 0;
+        }
+
+        .rose-frame {
+          grid-column: 2;
+          grid-row: 1 / span 2;
+          width: min(48vw, 510px);
+        }
+
+        .glass-notes {
+          grid-column: 1;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 12px;
+        }
+
+        .simone-art {
+          height: 40vh;
+        }
+
+        .calendar-page img {
+          height: 35vh;
+        }
+
+        .van-eyck-art {
+          left: 16%;
+        }
+
+        .van-eyck-copy {
+          width: 57%;
+          margin-left: 4vw;
+        }
+
+        .triptych {
+          width: 100%;
+          min-height: 38vh;
+          padding: 9px;
+          gap: 7px;
+        }
+
+        .triptych-caption {
+          flex-wrap: wrap;
+        }
+
+      }
+
+      @media (max-width: 620px) {
+        .pl-slide {
+          height: 100svh;
+          min-height: 620px;
+          padding: 34px 24px 72px;
+        }
+
+        .headline {
+          font-size: clamp(50px, 14vw, 76px);
+        }
+
+        .subhead {
+          font-size: clamp(42px, 12vw, 64px);
+        }
+
+        .body-copy {
+          font-size: 16px;
+        }
+
+        .folio {
+          right: 24px;
+          bottom: 24px;
+        }
+
+        .cover-copy {
+          width: 100%;
+        }
+
+        .cover-copy .headline {
+          font-size: clamp(56px, 16vw, 88px);
+        }
+
+        .kells-mark {
+          top: 17%;
+          right: 7%;
+          width: 125px;
+        }
+
+        .cover-frame {
+          inset: 12px;
+        }
+
+        .slide-02 {
+          gap: 17px;
+        }
+
+        .icon-layout {
+          gap: 18px;
+        }
+
+        .icon-frame {
+          width: min(75vw, 350px);
+          padding: 8px;
+        }
+
+        .icon-facts {
+          margin-top: 16px;
+          gap: 10px;
+        }
+
+        .taull-copy {
+          width: 92%;
+          margin-left: 0;
+        }
+
+        .slide-03::before {
+          background: linear-gradient(90deg, rgb(25 34 48 / 94%), rgb(25 34 48 / 58%) 72%, rgb(25 34 48 / 42%));
+        }
+
+        .slide-04 {
+          grid-template-rows: auto minmax(150px, 1fr) auto;
+        }
+
+        .bayeux-head {
+          margin-bottom: 14px;
+        }
+
+        .bayeux-strip {
+          border-width: 8px;
+        }
+
+        .bayeux-steps {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 11px 18px;
+          padding-top: 19px;
+        }
+
+        .bayeux-step {
+          font-size: 12px;
+        }
+
+        .bayeux-step strong {
+          font-size: 18px;
+        }
+
+        .slide-05 {
+          grid-template-columns: 1fr 0.9fr;
+          gap: 13px;
+          padding: 34px 22px 72px;
+        }
+
+        .chartres-copy .subhead {
+          font-size: clamp(38px, 11vw, 58px);
+        }
+
+        .rose-frame {
+          width: min(46vw, 260px);
+        }
+
+        .glass-notes {
+          grid-template-columns: 1fr;
+        }
+
+        .glass-note span {
+          font-size: 12px;
+        }
+
+        .giotto-copy .headline {
+          font-size: clamp(48px, 13vw, 72px);
+        }
+
+        .simone-layout,
+        .calendar-layout {
+          gap: 13px;
+        }
+
+        .simone-art {
+          height: 33vh;
+        }
+
+        .simone-caption {
+          font-size: 9px;
+        }
+
+        .calendar-page {
+          padding: 13px;
+        }
+
+        .calendar-page img {
+          height: 29vh;
+        }
+
+        .season-wheel {
+          right: -7px;
+          bottom: -10px;
+          width: 86px;
+          height: 86px;
+          padding: 9px;
+        }
+
+        .calendar-rail span {
+          font-size: 9px;
+        }
+
+        .van-eyck-art {
+          inset: 0;
+        }
+
+        .slide-09::before {
+          background: linear-gradient(90deg, rgb(21 24 18 / 84%), rgb(21 24 18 / 58%) 55%, rgb(21 24 18 / 18%));
+        }
+
+        .van-eyck-copy {
+          width: 87%;
+          margin-left: 0;
+        }
+
+        .pin-one {
+          top: 21%;
+          right: 23%;
+        }
+
+        .pin-two {
+          top: 52%;
+          right: 10%;
+        }
+
+        .pin-three {
+          right: 37%;
+          bottom: 19%;
+        }
+
+        .detail-key {
+          right: 22px;
+          bottom: 68px;
+          flex-direction: column;
+          gap: 6px;
+          font-size: 9px;
+        }
+
+        .slide-10 {
+          grid-template-rows: auto 1fr auto;
+          padding-top: 38px;
+        }
+
+        .merode-head {
+          display: block;
+        }
+
+        .merode-head .subhead {
+          font-size: clamp(42px, 12vw, 66px);
+        }
+
+        .merode-head p {
+          max-width: 420px;
+          margin-top: 8px;
+          font-size: 13px;
+        }
+
+        .triptych {
+          min-height: 29vh;
+          padding: 6px;
+          gap: 4px;
+        }
+
+        .triptych-caption {
+          gap: 8px;
+          font-size: 9px;
+        }
+
+        .triptych-caption strong {
+          font-size: 16px;
+        }
+
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+
+      @media print {
+        html,
+        body {
+          background: #fff;
+          scroll-snap-type: none;
+        }
+
+        .pl-slide {
+          break-after: page;
+          page-break-after: always;
+        }
+
+        .pl-slide:last-of-type {
+          break-after: auto;
+          page-break-after: auto;
+        }
+
+        *,
+        *::before,
+        *::after {
+          animation: none !important;
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="deck" id="deck" aria-label="Mười thế giới nghệ thuật Trung cổ">
+      <section class="pl-slide slide-01" data-pl-slide data-slide-id="kells-cover" aria-labelledby="slide-01-title">
+        <figure class="cover-image">
+          <img
+            class="slide-art"
+            src="assets/01-kells-illuminated.jpg"
+            alt="Minh họa concept thủ bản Celtic với hoa văn đan nút, xoắn ốc và sắc xanh lục, đỏ gạch, lam."
+          />
+        </figure>
+        <div class="cover-frame" aria-hidden="true"></div>
+        <div class="kells-mark" aria-hidden="true"></div>
+        <div class="cover-copy">
+          <p class="eyebrow reveal" style="--delay: 80ms">Mười lăng kính thị giác · thế kỷ VI–XV</p>
+          <h1 class="headline reveal" id="slide-01-title" style="--delay: 190ms">
+            Mười<br />
+            thế giới.<br />
+            <em>Một thời đại.</em>
+          </h1>
+          <p class="body-copy reveal" style="--delay: 310ms">
+            Nghệ thuật Trung cổ không có một gương mặt duy nhất. Mỗi chất liệu mở ra một cách nhìn khác về quyền lực, đức tin, thiên nhiên và con người.
+          </p>
+          <span class="cover-credit reveal" style="--delay: 420ms">Gợi từ thủ bản Book of Kells · folio 34r</span>
+          <span class="cover-how reveal" style="--delay: 520ms">Cuộn · vuốt · phím mũi tên để lật trang</span>
+        </div>
+        <span class="folio">01 / 10</span>
+      </section>
+
+      <section class="pl-slide slide-02" data-pl-slide data-slide-id="sinai-icon" aria-labelledby="slide-02-title">
+        <div class="icon-layout">
+          <figure class="icon-frame reveal" style="--delay: 100ms">
+            <img class="slide-art" src="assets/02-sinai-pantocrator.jpg" alt="Concept icon Byzantine với gương mặt nhìn thẳng trên nền vàng, gợi kỹ thuật encaustic Sinai." />
+            <span class="icon-halo" aria-hidden="true"></span>
+          </figure>
+          <div class="icon-copy">
+            <p class="eyebrow reveal" style="--delay: 170ms">02 · Icon Byzantine</p>
+            <h2 class="subhead reveal" id="slide-02-title" style="--delay: 260ms">Gương mặt<br />nhìn thẳng.</h2>
+            <p class="body-copy reveal" style="--delay: 360ms">
+              Trong icon <i>Christ Pantocrator</i> ở Sinai, ánh nhìn trực diện, bàn tay chúc phúc và nền vàng biến hình ảnh thành một điểm gặp gỡ.
+            </p>
+            <div class="icon-facts reveal" style="--delay: 460ms">
+              <div><strong>Tác phẩm gợi hứng</strong>Christ Pantocrator · Sinai</div>
+              <div><strong>Chất liệu lịch sử</strong>Encaustic trên gỗ</div>
+              <div><strong>Niên đại</strong>Nửa đầu thế kỷ VI</div>
+              <div><strong>Ngôn ngữ thị giác</strong>Trực diện · tĩnh · thiêng</div>
+            </div>
+          </div>
+        </div>
+        <span class="folio">02 / 10</span>
+      </section>
+
+      <section class="pl-slide slide-03" data-pl-slide data-slide-id="taull-fresco" aria-labelledby="slide-03-title">
+        <figure class="taull-art">
+          <img class="slide-art" src="assets/03-taull-fresco.jpg" alt="Concept tranh tường Romanesque với nhân vật trung tâm trong quầng hạnh nhân, nền lam và các dải hình." />
+        </figure>
+        <div class="taull-copy">
+          <p class="eyebrow reveal" style="--delay: 100ms">03 · Romanesque · Sant Climent de Taüll</p>
+          <h2 class="headline reveal" id="slide-03-title" style="--delay: 200ms">Một dáng hình.<br />Cả vũ trụ.</h2>
+          <p class="body-copy reveal" style="--delay: 330ms">
+            Tranh tường được đọc theo tầng: hình tượng chính ở trên, các nhân vật thánh ở giữa, dải trang trí khép lại bên dưới.
+          </p>
+          <div class="register-stack" aria-label="Ba tầng bố cục Romanesque">
+            <div class="register reveal" style="--delay: 420ms"><span>I</span> Hình tượng chính</div>
+            <div class="register reveal" style="--delay: 510ms"><span>II</span> Cộng đoàn nhân vật</div>
+            <div class="register reveal" style="--delay: 600ms"><span>III</span> Dải nền trang trí</div>
+          </div>
+        </div>
+        <span class="folio">03 / 10 · Sant Climent · khoảng 1123</span>
+      </section>
+
+      <section class="pl-slide slide-04" data-pl-slide data-slide-id="bayeux-embroidery" aria-labelledby="slide-04-title">
+        <header class="bayeux-head">
+          <div>
+            <p class="eyebrow reveal" style="--delay: 80ms">04 · Thêu Romanesque · Bayeux</p>
+            <h2 class="subhead reveal" id="slide-04-title" style="--delay: 170ms">Lịch sử chạy thành một dải.</h2>
+          </div>
+          <p class="embroidery-tag reveal" style="--delay: 280ms">
+            Đây là tranh thêu len trên vải lanh — tên gọi “tấm thảm Bayeux” dễ khiến ta quên mất từng mũi chỉ.
+          </p>
+        </header>
+        <figure class="bayeux-strip reveal" style="--delay: 250ms">
+          <img class="slide-art" src="assets/04-bayeux-embroidery.jpg" alt="Concept dải thêu len trên vải lanh, đoàn ngựa và thuyền đi qua ba tầng cảnh nằm ngang." />
+        </figure>
+        <div class="bayeux-steps" aria-label="Nhịp kể chuyện bằng dải thêu">
+          <div class="bayeux-step" style="--delay: 360ms"><strong>Khởi đầu</strong>Một lời hứa mở câu chuyện</div>
+          <div class="bayeux-step" style="--delay: 450ms"><strong>Chuyển động</strong>Nhân vật đi qua khung cảnh</div>
+          <div class="bayeux-step" style="--delay: 540ms"><strong>Cao trào</strong>Nhịp hình ảnh trở nên dồn dập</div>
+          <div class="bayeux-step" style="--delay: 630ms"><strong>Ký ức</strong>Toàn cảnh thành một bản kể</div>
+        </div>
+        <span class="thread-path" aria-hidden="true"></span>
+        <span class="folio">04 / 10</span>
+      </section>
+
+      <section class="pl-slide slide-05" data-pl-slide data-slide-id="chartres-rose" aria-labelledby="slide-05-title">
+        <div class="chartres-copy">
+          <p class="eyebrow reveal" style="--delay: 80ms">05 · Kính màu Gothic · Chartres</p>
+          <h2 class="subhead reveal" id="slide-05-title" style="--delay: 190ms">Ánh sáng<br />có cấu trúc.</h2>
+          <p class="body-copy reveal" style="--delay: 310ms">
+            Cửa sổ hoa biến cả bức tường thành một hình ảnh lớn, đọc từ tâm ra những vòng truyện và màu kính.
+          </p>
+        </div>
+        <figure class="rose-frame reveal" style="--delay: 180ms">
+          <img class="slide-art" src="assets/05-chartres-rose.jpg" alt="Concept cửa sổ hoa Gothic với các vòng kính xanh lam, đỏ ruby và hổ phách." />
+        </figure>
+        <div class="glass-notes">
+          <div class="glass-note reveal" style="--note-color:#7fb7ee;--delay:350ms"><strong>Lam Chartres</strong><span>Màu kính làm nền cho chiều sâu.</span></div>
+          <div class="glass-note reveal" style="--note-color:#ff776c;--delay:470ms"><strong>Đỏ ruby</strong><span>Nhịp màu chia các khoang tròn.</span></div>
+          <div class="glass-note reveal" style="--note-color:#efcf7a;--delay:590ms"><strong>Hoa hồng</strong><span>Một mặt phẳng trở thành tâm điểm.</span></div>
+        </div>
+        <span class="folio">05 / 10 · Chartres · khoảng 1200–1225</span>
+      </section>
+
+      <section class="pl-slide slide-06" data-pl-slide data-slide-id="giotto-fresco" aria-labelledby="slide-06-title">
+        <figure class="giotto-art">
+          <img class="slide-art" src="assets/06-giotto-fresco.jpg" alt="Concept bích họa với nhóm người chia tay trên sườn đồi, dáng người có khối và cử chỉ giàu cảm xúc." />
+        </figure>
+        <span class="diagonal-rule" aria-hidden="true"></span>
+        <div class="giotto-copy">
+          <p class="eyebrow reveal" style="--delay: 120ms">06 · Giotto · Cappella degli Scrovegni</p>
+          <h2 class="headline reveal" id="slide-06-title" style="--delay: 230ms">Cảm xúc<br />dựng nên<br />không gian.</h2>
+          <p class="body-copy reveal" style="--delay: 360ms">
+            Các dáng người nặng hơn, gần hơn; ánh nhìn và cử chỉ kéo mắt ta vào câu chuyện trên vách.
+          </p>
+          <span class="work-meta reveal" style="--delay: 470ms">Bích họa nhà nguyện · 1303–1305</span>
+        </div>
+        <span class="folio">06 / 10</span>
+      </section>
+
+      <section class="pl-slide slide-07" data-pl-slide data-slide-id="simone-martini" aria-labelledby="slide-07-title">
+        <div class="simone-layout">
+          <div class="simone-copy">
+            <p class="eyebrow reveal" style="--delay: 90ms">07 · Gothic Siena · Simone Martini & Lippo Memmi</p>
+            <h2 class="subhead reveal" id="slide-07-title" style="--delay: 200ms">Đường nét<br />biết múa.</h2>
+            <p class="body-copy reveal" style="--delay: 330ms">
+              Trong <i>Annunciation</i>, nền vàng, viền trang trí và chuyển động uyển chuyển tạo nên vẻ thanh lịch như nghi thức cung đình.
+            </p>
+            <span class="work-meta reveal" style="--delay: 440ms">Tác phẩm tại Uffizi · 1333</span>
+          </div>
+          <figure class="simone-art reveal" style="--delay: 140ms">
+            <img class="slide-art" src="assets/07-simone-annunciation.jpg" alt="Concept sơn trên nền vàng với hai nhân vật thanh mảnh, áo hoa văn và đường hoa uốn cong." />
+            <span class="simone-flourish" aria-hidden="true"></span>
+            <figcaption class="simone-caption"><span>Nét viền</span><span>Nền vàng</span><span>Nhịp cong</span></figcaption>
+          </figure>
+        </div>
+        <span class="folio">07 / 10</span>
+      </section>
+
+      <section class="pl-slide slide-08" data-pl-slide data-slide-id="tres-riches-heures" aria-labelledby="slide-08-title">
+        <div class="calendar-layout">
+          <figure class="calendar-page reveal" style="--delay: 120ms">
+            <img class="slide-art" src="assets/08-tres-riches-calendar.jpg" alt="Concept tiểu họa lịch mùa đông với lâu đài, người qua lại, đồi xa và sắc màu rực trên nền giấy." />
+            <span class="season-wheel" aria-hidden="true">
+              <span style="--season-color:#91a56b;--delay:330ms"></span>
+              <span style="--season-color:#d8ba66;--delay:420ms"></span>
+              <span style="--season-color:#b96c4b;--delay:510ms"></span>
+              <span style="--season-color:#627b9b;--delay:600ms"></span>
+            </span>
+          </figure>
+          <div class="calendar-copy">
+            <p class="eyebrow reveal" style="--delay: 100ms">08 · Tiểu họa sách giờ · Anh em Limbourg</p>
+            <h2 class="subhead reveal" id="slide-08-title" style="--delay: 220ms">Một cuốn lịch<br />thành cả thế giới.</h2>
+            <p class="body-copy reveal" style="--delay: 350ms">
+              <i>Très Riches Heures</i> đặt đời sống thường nhật cạnh lịch mùa, cung đình và vòng thời gian.
+            </p>
+            <div class="calendar-rail reveal" style="--delay: 460ms">
+              <span>Mùa xuân</span><span>Mùa hạ</span><span>Mùa thu</span><span>Mùa đông</span>
+            </div>
+            <span class="work-meta reveal" style="--delay: 560ms">Bản thảo cho Jean de Berry · thế kỷ XV</span>
+          </div>
+        </div>
+        <span class="folio">08 / 10</span>
+      </section>
+
+      <section class="pl-slide slide-09" data-pl-slide data-slide-id="arnolfini" aria-labelledby="slide-09-title">
+        <figure class="van-eyck-art">
+          <img class="slide-art" src="assets/09-van-eyck-interior.jpg" alt="Concept phòng thế kỷ XV với hai nhân vật, ánh sáng cửa sổ và gương lồi, theo kỹ thuật sơn dầu chi tiết." />
+        </figure>
+        <div class="van-eyck-copy">
+          <p class="eyebrow reveal" style="--delay: 100ms">09 · Sơn dầu Hà Lan · Jan van Eyck</p>
+          <h2 class="subhead reveal" id="slide-09-title" style="--delay: 220ms">Căn phòng<br />giữ cả thế giới.</h2>
+          <p class="body-copy reveal" style="--delay: 350ms">
+            <i>Arnolfini Portrait</i> mở ra chiều sâu qua ánh sáng cửa sổ, vật dụng được quan sát kỹ và chiếc gương lồi.
+          </p>
+          <span class="work-meta reveal" style="--delay: 470ms">Sơn dầu trên gỗ · 1434</span>
+        </div>
+        <span class="detail-pin pin-one reveal" style="--delay: 520ms" aria-hidden="true">1</span>
+        <span class="detail-pin pin-two reveal" style="--delay: 650ms" aria-hidden="true">2</span>
+        <span class="detail-pin pin-three reveal" style="--delay: 780ms" aria-hidden="true">3</span>
+        <div class="detail-key reveal" style="--delay: 700ms" aria-label="Các điểm quan sát"><span>Ánh sáng</span><span>Gương lồi</span><span>Chất liệu dầu</span></div>
+        <span class="folio">09 / 10</span>
+      </section>
+
+      <section class="pl-slide slide-10" data-pl-slide data-slide-id="merode-triptych" aria-labelledby="slide-10-title">
+        <header class="merode-head">
+          <div>
+            <p class="eyebrow reveal" style="--delay: 80ms">10 · Triptych Hà Lan · xưởng Robert Campin</p>
+          <h2 class="subhead reveal" id="slide-10-title" style="--delay: 170ms">Ba cánh cửa.<br />Một căn phòng.</h2>
+          </div>
+          <p class="reveal" style="--delay: 290ms">
+            Mérode Triptych đưa câu chuyện thiêng liêng vào một không gian sống thân thuộc — ba tấm mở thành một thế giới.
+          </p>
+        </header>
+        <div class="triptych" aria-label="Triptych concept gồm ba khung: nhà nguyện, căn phòng và xưởng mộc">
+          <figure class="triptych-panel left reveal" style="--delay: 340ms">
+            <img src="assets/10-merode-triptych.jpg" alt="Cánh trái của concept triptych, được cắt từ hình concept toàn bộ bộ ba." />
+          </figure>
+          <figure class="triptych-panel center reveal" style="--delay: 470ms">
+            <img src="assets/10-merode-triptych.jpg" alt="Cánh giữa của concept triptych, được cắt từ hình concept toàn bộ bộ ba." />
+          </figure>
+          <figure class="triptych-panel right reveal" style="--delay: 600ms">
+            <img src="assets/10-merode-triptych.jpg" alt="Cánh phải của concept triptych, được cắt từ hình concept toàn bộ bộ ba." />
+          </figure>
+        </div>
+        <div class="triptych-caption reveal" style="--delay: 720ms">
+          <span>Robert Campin · khoảng 1427–1432</span>
+          <strong>Không có một phong cách Trung cổ duy nhất.</strong>
+          <span>Dầu trên gỗ sồi · The Met Cloisters</span>
+        </div>
+        <span class="folio">10 / 10</span>
+      </section>
+    </main>
+
+    <script>
+      (() => {
+        const slides = Array.from(document.querySelectorAll("[data-pl-slide]"));
+        let current = 0;
+
+        function activate(index) {
+          current = Math.max(0, Math.min(slides.length - 1, index));
+          slides.forEach((slide, slideIndex) => {
+            slide.classList.toggle("is-active", slideIndex === current);
+          });
+        }
+
+        function goTo(index) {
+          const target = Math.max(0, Math.min(slides.length - 1, index));
+          activate(target);
+          slides[target].scrollIntoView({
+            behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+              ? "auto"
+              : "smooth",
+            block: "start",
+          });
+        }
+
+        document.addEventListener("keydown", (event) => {
+          if (event.altKey || event.ctrlKey || event.metaKey) return;
+          if (["ArrowRight", "ArrowDown", "PageDown", " "].includes(event.key)) {
+            event.preventDefault();
+            goTo(current + 1);
+          } else if (["ArrowLeft", "ArrowUp", "PageUp"].includes(event.key)) {
+            event.preventDefault();
+            goTo(current - 1);
+          } else if (event.key === "Home") {
+            goTo(0);
+          } else if (event.key === "End") {
+            goTo(slides.length - 1);
+          }
+        });
+
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting && entry.intersectionRatio >= 0.55) {
+                activate(slides.indexOf(entry.target));
+              }
+            });
+          },
+          { threshold: [0.55] },
+        );
+        slides.forEach((slide) => observer.observe(slide));
+        activate(0);
+      })();
+    </script>
+  </body>
+</html>
