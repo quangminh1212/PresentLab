@@ -5010,7 +5010,7 @@ text-align: left;
 }
 }
 
-/* Portal hero shares the Lusion home grid, palette, and framed media treatment. */
+/* Let the water scene carry the headline, like Lusion's immersive opening reel. */
 .app-shell:has(> main > .hero.hero-world) > main > .hero.hero-world {
   position: relative;
   display: block;
@@ -5090,8 +5090,8 @@ text-align: left;
   z-index: 2;
   border-radius: inherit;
   background:
-    linear-gradient(90deg, rgb(3 7 11 / 17%) 0%, transparent 42%),
-    linear-gradient(180deg, rgb(3 7 11 / 2%) 40%, rgb(2 5 9 / 18%) 100%);
+    linear-gradient(90deg, rgb(3 7 11 / 48%) 0%, rgb(3 7 11 / 21%) 38%, transparent 74%),
+    linear-gradient(180deg, rgb(3 7 11 / 14%) 0%, transparent 46%, rgb(2 5 9 / 18%) 100%);
   pointer-events: none;
 }
 
@@ -5099,20 +5099,21 @@ text-align: left;
   position: absolute;
   z-index: 4;
   top: 0;
-  left: -1.5%;
-  width: min(56%, 760px);
+  left: 60%;
+  width: min(44%, 620px);
   height: 100%;
   overflow: hidden;
   clip-path: inset(0 round clamp(14px, 1.2vw, 19px));
-  color: #237478;
-  opacity: 0.96;
+  color: #57b5b4;
+  opacity: 0.68;
+  filter: drop-shadow(0 0 8px rgb(87 181 180 / 42%));
   pointer-events: none;
 }
 
 .app-shell:has(> main > .hero.hero-world) .world-stage-sweep path {
   fill: none;
   stroke: currentColor;
-  stroke-width: 16px;
+  stroke-width: 4px;
   stroke-linecap: round;
   vector-effect: non-scaling-stroke;
 }
@@ -5120,10 +5121,10 @@ text-align: left;
 .app-shell:has(> main > .hero.hero-world) .world-copy {
   position: absolute;
   z-index: 5;
-  top: clamp(-108px, -15vh, -82px);
+  top: clamp(28px, 6vh, 58px);
   right: auto;
-  left: clamp(86px, 7.6vw, 116px);
-  width: min(720px, calc(100% - clamp(86px, 7.6vw, 116px) - 220px));
+  left: clamp(28px, 5vw, 70px);
+  width: min(82%, 900px);
   margin: 0;
   padding: 0;
   border: 0;
@@ -5144,23 +5145,24 @@ text-align: left;
 
 .app-shell:has(> main > .hero.hero-world) .world-copy h1 {
   display: flex;
-  align-items: baseline;
-  gap: 0.18em;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
   max-width: none;
   margin: 0;
-  color: #1a2028;
+  color: #f7f8f7;
   font-family: "Be Vietnam Pro", Aeonik, sans-serif;
-  font-size: clamp(26px, 2.15vw, 34px);
+  font-size: clamp(42px, 4.3vw, 66px);
   font-synthesis: none;
   font-weight: 400;
-  letter-spacing: -0.045em;
-  line-height: 1.08;
-  text-shadow: none;
-  text-wrap: nowrap;
+  letter-spacing: -0.06em;
+  line-height: 0.94;
+  text-shadow: 0 3px 26px rgb(0 7 14 / 30%);
+  text-wrap: balance;
 }
 
 .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line {
-  display: inline;
+  display: block;
   width: auto;
   max-width: none;
   margin: 0;
@@ -5178,7 +5180,7 @@ text-align: left;
 }
 
 .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--lead {
-  color: #1a2028;
+  color: #f7f8f7;
   font-size: inherit;
   font-weight: 400;
   letter-spacing: inherit;
@@ -5186,11 +5188,11 @@ text-align: left;
 }
 
 .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--final {
-  color: #237478;
-  font-size: inherit;
-  font-weight: 500;
-  letter-spacing: inherit;
-  line-height: inherit;
+  color: #8ce4dd;
+  font-size: clamp(72px, 8.8vw, 136px);
+  font-weight: 400;
+  letter-spacing: -0.075em;
+  line-height: 0.9;
   -webkit-text-fill-color: currentColor;
 }
 
@@ -5290,25 +5292,30 @@ html:has(.app-shell > main > .hero.hero-world) .portal-category-menu.is-open > .
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-stage-sweep {
-    left: -4%;
-    width: min(88%, 360px);
+    left: 58%;
+    width: min(42%, 300px);
     clip-path: inset(0 round 16px);
+    opacity: 0.48;
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-stage-sweep path {
-    stroke-width: 12px;
+    stroke-width: 2.5px;
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-copy {
-    top: clamp(-116px, -13.5vh, -86px);
-    left: 4px;
-    width: calc(100% - 8px);
+    top: clamp(24px, 4.5vh, 38px);
+    left: clamp(20px, 4vw, 32px);
+    width: calc(100% - clamp(40px, 8vw, 64px));
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-copy h1 {
-    gap: 0.15em;
-    font-size: clamp(20px, 5.7vw, 27px);
-    letter-spacing: -0.05em;
+    gap: 0.04em;
+    font-size: clamp(32px, 7vw, 50px);
+    line-height: 0.96;
+  }
+
+  .app-shell:has(> main > .hero.hero-world) .world-copy h1 > .world-title-line--final {
+    font-size: clamp(46px, 12vw, 76px);
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
@@ -5326,13 +5333,9 @@ html:has(.app-shell > main > .hero.hero-world) .portal-category-menu.is-open > .
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-stage-sweep {
-    left: -5%;
-    width: min(92%, 340px);
+    left: 58%;
+    width: min(42%, 260px);
     clip-path: inset(0 round 14px);
-  }
-
-  .app-shell:has(> main > .hero.hero-world) .world-stage-sweep path {
-    stroke-width: 9px;
   }
 }
 
@@ -5343,7 +5346,7 @@ html:has(.app-shell > main > .hero.hero-world) .portal-category-menu.is-open > .
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-copy {
-    top: -92px;
+    top: 20px;
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-scroll-cue {
