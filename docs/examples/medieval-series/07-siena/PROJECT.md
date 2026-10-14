@@ -36,4 +36,4 @@ Standalone animated HTML presentation with 20 slides. Open [07-siena.html](../..
 - [Uffizi Galleries, Annunciation by Simone Martini](https://www.uffizi.it/en/artworks/annunciation-with-st-margaret-and-st-ansanus)
 - [Uffizi Galleries, collection entry](https://www.uffizi.it/en/artworks/annunciation-with-st-margaret-and-st-ansanus)
 
-The artwork background is an original concept illustration made for the earlier PresentLab medieval-art project. It is not a reproduction or photographic record of the historical work.
+Each slide uses a distinct public-domain or Creative Commons artwork. Its source and license appear in the slide footer; images load on demand from Wikimedia Commons and are resized for presentation use.

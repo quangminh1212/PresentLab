@@ -36,4 +36,4 @@ Standalone animated HTML presentation with 20 slides. Open [08-tres-riches.html]
 - [Château de Chantilly, Très Riches Heures du duc de Berry](https://chateaudechantilly.fr/categ-collection/manuscrits/les-tres-riches-heures-du-duc-de-berry/)
 - [Château de Chantilly, Cabinet des Livres](https://chateaudechantilly.fr/chateau/le-cabinet-des-livres/)
 
-The artwork background is an original concept illustration made for the earlier PresentLab medieval-art project. It is not a reproduction or photographic record of the historical work.
+Each slide uses a distinct public-domain or Creative Commons artwork. Its source and license appear in the slide footer; images load on demand from Wikimedia Commons and are resized for presentation use.

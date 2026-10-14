@@ -36,4 +36,4 @@ Standalone animated HTML presentation with 20 slides. Open [05-chartres.html](..
 - [Cathédrale de Chartres, The 13th-century Cathedral](https://www.cathedrale-chartres.org/en/cathedrale/monument/architecture/the-13th-century-cathedral/)
 - [Cathédrale de Chartres, The stained-glass windows](https://www.cathedrale-chartres.org/en/cathedrale/monument/the-stained-glass-windows/)
 
-The artwork background is an original concept illustration made for the earlier PresentLab medieval-art project. It is not a reproduction or photographic record of the historical work.
+Each slide uses a distinct public-domain or Creative Commons artwork. Its source and license appear in the slide footer; images load on demand from Wikimedia Commons and are resized for presentation use.

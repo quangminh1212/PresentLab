@@ -36,4 +36,4 @@ Standalone animated HTML presentation with 20 slides. Open [10-merode.html](../.
 - [The Met, Annunciation Triptych (Merode Altarpiece)](https://www.metmuseum.org/art/collection/search/470304)
 - [The Met, Early Netherlandish Painting](https://www.metmuseum.org/toah/hd/enet/ho_32.100.36.htm)
 
-The artwork background is an original concept illustration made for the earlier PresentLab medieval-art project. It is not a reproduction or photographic record of the historical work.
+Each slide uses a distinct public-domain or Creative Commons artwork. Its source and license appear in the slide footer; images load on demand from Wikimedia Commons and are resized for presentation use.

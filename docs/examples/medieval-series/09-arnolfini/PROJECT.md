@@ -36,4 +36,4 @@ Standalone animated HTML presentation with 20 slides. Open [09-arnolfini.html](.
 - [National Gallery, The Arnolfini Portrait](https://www.nationalgallery.org.uk/paintings/jan-van-eyck-the-arnolfini-portrait)
 - [National Gallery, Jan van Eyck](https://www.nationalgallery.org.uk/artists/jan-van-eyck)
 
-The artwork background is an original concept illustration made for the earlier PresentLab medieval-art project. It is not a reproduction or photographic record of the historical work.
+Each slide uses a distinct public-domain or Creative Commons artwork. Its source and license appear in the slide footer; images load on demand from Wikimedia Commons and are resized for presentation use.

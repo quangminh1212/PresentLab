@@ -6,11 +6,37 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const outputRoot = join(root, "examples");
 const docsRoot = join(root, "docs", "examples", "medieval-series");
 
-async function embeddedArtwork(slug) {
+const decodeHtmlAttribute = (value = "") => value
+  .replace(/&quot;/g, '"')
+  .replace(/&#39;|&#x27;/gi, "'")
+  .replace(/&lt;/g, "<")
+  .replace(/&gt;/g, ">")
+  .replace(/&amp;/g, "&");
+
+async function embeddedArtworks(slug, expectedCount) {
   const html = await readFile(join(outputRoot, `${slug}.html`), "utf8");
-  const match = html.match(/data:image\/[^;]+;base64,([A-Za-z0-9+/=]+)/);
-  if (!match) throw new Error(`No embedded artwork found in ${slug}.html`);
-  return match[1];
+  const sections = [...html.matchAll(/<section\b[^>]*data-slide-id="([^"]+)"[^>]*>/g)];
+  const artworks = sections.map((sectionMatch) => {
+    const slideId = sectionMatch[1];
+    const tag = sectionMatch[0];
+    const url = tag.match(/data-art-url="([^"]+)"/);
+    const title = tag.match(/data-artwork-title="([^"]*)"/);
+    const artist = tag.match(/data-artwork-artist="([^"]*)"/);
+    const source = tag.match(/data-artwork-source="([^"]*)"/);
+    const license = tag.match(/data-artwork-license="([^"]*)"/);
+    return url && {
+      slideId,
+      url: decodeHtmlAttribute(url?.[1] || ""),
+      title: decodeHtmlAttribute(title?.[1] || ""),
+      artist: decodeHtmlAttribute(artist?.[1] || ""),
+      source: decodeHtmlAttribute(source?.[1] || ""),
+      license: decodeHtmlAttribute(license?.[1] || ""),
+    };
+  });
+  if (artworks.length !== expectedCount || artworks.some((art) => !art?.url)) {
+    throw new Error(`${slug}.html must contain one embedded artwork for each of its ${expectedCount} slides.`);
+  }
+  return artworks;
 }
 
 const S = (kind, kicker, title, body, points = []) => ({
@@ -36,7 +62,7 @@ const decks = [
     styleName: "Thủ bản Insular · giấy da, xanh khoáng và đỏ đất",
     theme: {
       paper: "#f3e9d5", ink: "#26372d", muted: "#6c6b58", accent: "#a94f35",
-      accent2: "#b28b43", deep: "#18291f", veil: "rgba(243,233,213,.93)",
+      accent2: "#b28b43", deep: "#18291f", veil: "rgba(243,233,213,.72)",
       serif: "Georgia, 'Palatino Linotype', serif", sans: "'Segoe UI', Arial, sans-serif",
     },
     sources: [
@@ -80,7 +106,7 @@ const decks = [
     styleName: "Icon Byzantine · vàng trầm, đối xứng và ánh nhìn trực diện",
     theme: {
       paper: "#1c1b1a", ink: "#f3e8c9", muted: "#b9a878", accent: "#c49a45",
-      accent2: "#8f3835", deep: "#11100f", veil: "rgba(28,27,26,.91)",
+      accent2: "#8f3835", deep: "#11100f", veil: "rgba(28,27,26,.72)",
       serif: "Georgia, 'Palatino Linotype', serif", sans: "'Segoe UI', Arial, sans-serif",
     },
     sources: [
@@ -124,7 +150,7 @@ const decks = [
     styleName: "Romanesque · trục chính diện, mảng phẳng và xanh đậm",
     theme: {
       paper: "#e9e1cd", ink: "#1d2c45", muted: "#5f6b70", accent: "#a85e39",
-      accent2: "#c29b51", deep: "#14243a", veil: "rgba(233,225,205,.93)",
+      accent2: "#c29b51", deep: "#14243a", veil: "rgba(233,225,205,.72)",
       serif: "Georgia, 'Palatino Linotype', serif", sans: "'Segoe UI', Arial, sans-serif",
     },
     sources: [
@@ -168,7 +194,7 @@ const decks = [
     styleName: "Tranh thêu kể chuyện · đường ngang, len màu và nhịp nối",
     theme: {
       paper: "#f2e6cf", ink: "#332b22", muted: "#776c59", accent: "#9f4b36",
-      accent2: "#6c7549", deep: "#282117", veil: "rgba(242,230,207,.93)",
+      accent2: "#6c7549", deep: "#282117", veil: "rgba(242,230,207,.72)",
       serif: "Georgia, 'Palatino Linotype', serif", sans: "'Segoe UI', Arial, sans-serif",
     },
     sources: [
@@ -212,7 +238,7 @@ const decks = [
     styleName: "Gothic · xanh kính màu, tia sáng và hình học hướng tâm",
     theme: {
       paper: "#e7e9e8", ink: "#1d2c48", muted: "#65717a", accent: "#a24742",
-      accent2: "#3c75a0", deep: "#132141", veil: "rgba(231,233,232,.92)",
+      accent2: "#3c75a0", deep: "#132141", veil: "rgba(231,233,232,.72)",
       serif: "Georgia, 'Palatino Linotype', serif", sans: "'Segoe UI', Arial, sans-serif",
     },
     sources: [
@@ -256,7 +282,7 @@ const decks = [
     styleName: "Fresco Padova · xanh lam, thạch cao ấm và cử chỉ rõ",
     theme: {
       paper: "#eee1d5", ink: "#302d2c", muted: "#766963", accent: "#8d3b38",
-      accent2: "#31577d", deep: "#263c56", veil: "rgba(238,225,213,.93)",
+      accent2: "#31577d", deep: "#263c56", veil: "rgba(238,225,213,.72)",
       serif: "Georgia, 'Palatino Linotype', serif", sans: "'Segoe UI', Arial, sans-serif",
     },
     sources: [
@@ -300,7 +326,7 @@ const decks = [
     styleName: "Siena Gothic · vàng lá, nét thanh và chuyển động uốn",
     theme: {
       paper: "#f3e9d5", ink: "#382e2c", muted: "#756b5d", accent: "#963e3c",
-      accent2: "#b5964d", deep: "#34272a", veil: "rgba(243,233,213,.93)",
+      accent2: "#b5964d", deep: "#34272a", veil: "rgba(243,233,213,.72)",
       serif: "Georgia, 'Palatino Linotype', serif", sans: "'Segoe UI', Arial, sans-serif",
     },
     sources: [
@@ -344,7 +370,7 @@ const decks = [
     styleName: "Tiểu họa cung đình · xanh trời, vàng và khung lịch",
     theme: {
       paper: "#f2ead8", ink: "#2b3035", muted: "#756d62", accent: "#3b6794",
-      accent2: "#b28d45", deep: "#29384f", veil: "rgba(242,234,216,.93)",
+      accent2: "#b28d45", deep: "#29384f", veil: "rgba(242,234,216,.72)",
       serif: "Georgia, 'Palatino Linotype', serif", sans: "'Segoe UI', Arial, sans-serif",
     },
     sources: [
@@ -388,7 +414,7 @@ const decks = [
     styleName: "Nội thất Flemish · ánh cửa sổ, gỗ tối và chi tiết soi gương",
     theme: {
       paper: "#e4ded3", ink: "#292a27", muted: "#66675e", accent: "#344c39",
-      accent2: "#9b573d", deep: "#1d211e", veil: "rgba(228,222,211,.93)",
+      accent2: "#9b573d", deep: "#1d211e", veil: "rgba(228,222,211,.72)",
       serif: "Georgia, 'Palatino Linotype', serif", sans: "'Segoe UI', Arial, sans-serif",
     },
     sources: [
@@ -432,7 +458,7 @@ const decks = [
     styleName: "Triptych Hà Lan · ba cánh, gỗ ấm và xanh lam–đỏ",
     theme: {
       paper: "#eee6d9", ink: "#30302f", muted: "#726a60", accent: "#3e5c85",
-      accent2: "#9d4540", deep: "#25282a", veil: "rgba(238,230,217,.93)",
+      accent2: "#9d4540", deep: "#25282a", veil: "rgba(238,230,217,.72)",
       serif: "Georgia, 'Palatino Linotype', serif", sans: "'Segoe UI', Arial, sans-serif",
     },
     sources: [
@@ -476,7 +502,7 @@ const css = `
     color-scheme: light;
     --paper: #eee7d8; --ink: #2d2b28; --muted: #71685c;
     --accent: #9d4b3d; --accent2: #b59650; --deep: #211f1b;
-    --veil: rgba(238,231,216,.93); --serif: Georgia, 'Palatino Linotype', serif;
+    --veil: rgba(238,231,216,.72); --serif: Georgia, 'Palatino Linotype', serif;
     --sans: 'Segoe UI', Arial, sans-serif; --art: none;
     font-family: var(--sans); color: var(--ink); background: var(--deep);
   }
@@ -518,6 +544,8 @@ const css = `
   .footer { display: flex; align-items: end; justify-content: space-between; gap: 32px; color: var(--muted); }
   .folio { color: var(--accent); letter-spacing: .12em; }
   .work-meta { max-width: 60%; text-align: right; font-family: var(--serif); font-size: 17px; line-height: 1.35; }
+  .art-credit { position: absolute; z-index: 4; right: 18px; bottom: 10px; max-width: 56%; overflow: hidden; padding: 3px 7px; border-radius: 3px; background: rgba(255,255,255,.82); color: #26372d; font: 10px/1.35 var(--sans); text-align: right; text-overflow: ellipsis; white-space: nowrap; }
+  .art-credit:hover { background: rgba(255,255,255,.96); }
   .points { display: flex; gap: 38px; max-width: 1160px; padding: 0; margin: 42px 0 0; list-style: none; }
   .points li { flex: 1; padding-top: 16px; border-top: 1px solid color-mix(in srgb, var(--accent) 55%, transparent); font-size: 21px; line-height: 1.42; color: var(--ink); }
   .points li::before { content: "0" counter(list-item); display: block; margin-bottom: 14px; color: var(--accent); font: 700 14px var(--sans); letter-spacing: .12em; }
@@ -598,6 +626,7 @@ const css = `
     .slide--split::after { width: 28%; opacity: .3; }
     .slide--sequence .footer { left: 32px; right: 32px; bottom: 50px; }
     .work-meta { font-size: 13px; }
+    .art-credit { right: 10px; bottom: 8px; max-width: 82%; font-size: 9px; }
     .cover-copy .slide-title { font-size: clamp(56px, 12vw, 86px); }
   }
   @media (prefers-reduced-motion: reduce) {
@@ -624,7 +653,7 @@ function pointsMarkup(points) {
   return `<ol class="points reveal">${points.map((point) => `<li>${escapeHtml(point)}</li>`).join("")}</ol>`;
 }
 
-function slideMarkup(deck, slide, index) {
+function slideMarkup(deck, slide, index, artwork) {
   const number = String(index + 1).padStart(2, "0");
   const kind = escapeHtml(slide.kind);
   const cover = slide.kind === "cover";
@@ -634,9 +663,13 @@ function slideMarkup(deck, slide, index) {
     ? `<ul class="sources reveal">${deck.sources.map(([label, url]) => `<li><a href="${escapeHtml(url)}">${escapeHtml(label)}</a></li>`).join("")}</ul>`
     : `<p class="slide-body reveal">${escapeHtml(slide.body)}</p>`;
   const endContent = sources
-    ? `<p class="slide-body reveal">Artwork images are original concept illustrations, not reproductions of the historical works.</p>`
+    ? `<p class="slide-body reveal">Mỗi slide có một hình ảnh tác phẩm riêng; tên, tác giả, nguồn và giấy phép được ghi dưới từng trang.</p>`
     : pointsMarkup(slide.points);
-  return `<section class="pl-slide slide--${kind}" data-pl-slide data-slide-id="${deck.slug}-${number}" aria-label="Trang ${number}: ${escapeHtml(slide.title)}">
+  const artworkCredit = [...[artwork.title, artwork.artist, artwork.license].filter(Boolean), "resized"].join(" · ");
+  const artworkCreditMarkup = artwork.source
+    ? `<a class="art-credit" href="${escapeHtml(artwork.source)}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(`${artworkCredit}. Resized and compressed for this slide.`)}">${escapeHtml(artworkCredit)}</a>`
+    : `<span class="art-credit">${escapeHtml(artworkCredit)}</span>`;
+  return `<section class="pl-slide slide--${kind}" data-pl-slide data-slide-id="${deck.slug}-${number}" style="--art:none" data-art-url="${escapeHtml(artwork.url)}" data-artwork-title="${escapeHtml(artwork.title)}" data-artwork-artist="${escapeHtml(artwork.artist)}" data-artwork-source="${escapeHtml(artwork.source)}" data-artwork-license="${escapeHtml(artwork.license)}" aria-label="Trang ${number}: ${escapeHtml(slide.title)}">
     <div class="inner">
       <div class="${contentClass}">
         <p class="eyebrow reveal">${escapeHtml(slide.kicker)}</p>
@@ -646,13 +679,14 @@ function slideMarkup(deck, slide, index) {
       </div>
       <footer class="footer"><span class="folio">${number} / 20</span><span class="work-meta">${escapeHtml(deck.shortTitle)} · ${escapeHtml(deck.date)}</span></footer>
     </div>
+    ${artworkCreditMarkup}
   </section>`;
 }
 
-function deckHtml(deck, artData) {
+function deckHtml(deck, artworks) {
   const themeStyle = Object.entries(deck.theme).map(([key, value]) => `--${key}:${value}`).join(";");
   return `<!doctype html>
-<html lang="vi" data-pl-format="16:9" data-pl-title="${escapeHtml(deck.title)}" data-pl-author="PresentLab concept project" data-pl-theme="${deck.style}" data-style="${deck.style}" style="${themeStyle};--art:url('data:image/jpeg;base64,${artData}')">
+<html lang="vi" data-pl-format="16:9" data-pl-title="${escapeHtml(deck.title)}" data-pl-author="PresentLab concept project" data-pl-theme="${deck.style}" data-style="${deck.style}" style="${themeStyle}">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -663,7 +697,7 @@ function deckHtml(deck, artData) {
 </head>
 <body>
   <main aria-label="${escapeHtml(deck.title)}">
-    ${deck.slides.map((slide, index) => slideMarkup(deck, slide, index)).join("\n")}
+    ${deck.slides.map((slide, index) => slideMarkup(deck, slide, index, artworks[index])).join("\n")}
   </main>
   <nav class="controls" aria-label="Điều hướng slide">
     <button class="control-button" id="previous" aria-label="Trang trước">←</button>
@@ -699,6 +733,15 @@ function deckHtml(deck, artData) {
         }
       }, { threshold: 0.52 });
       slides.forEach((slide, index) => { observer.observe(slide); if (index === 0) slide.classList.add("active"); });
+      const artworkObserver = new IntersectionObserver((entries, artworkObserver) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const url = entry.target.dataset.artUrl;
+          if (url) entry.target.style.setProperty("--art", "url(\"" + url + "\")");
+          artworkObserver.unobserve(entry.target);
+        }
+      }, { rootMargin: "100% 0px" });
+      slides.forEach((slide) => artworkObserver.observe(slide));
     })();
   </script>
 </body>
@@ -712,7 +755,7 @@ function projectReadme(deck) {
     `**Artwork:** ${deck.work}  \n**Maker:** ${deck.maker}  \n**Date:** ${deck.date}  \n**Medium:** ${deck.medium}  \n**Visual treatment:** ${deck.styleName}\n\n` +
     `Standalone animated HTML presentation with 20 slides. Open [${deck.slug}.html](../../../../examples/${deck.slug}.html) in a browser; use the arrow keys, Page Up/Down, Home/End, or the on-screen controls. The PDF export is static; transitions and reveal animations remain in the HTML.\n\n` +
     `## Slide outline\n\n${outline}\n\n## Sources\n\n${sources}\n\n` +
-    `The artwork background is an original concept illustration made for the earlier PresentLab medieval-art project. It is not a reproduction or photographic record of the historical work.\n`;
+    `Each slide uses a distinct public-domain or Creative Commons artwork. Its source and license appear in the slide footer; images load on demand from Wikimedia Commons and are resized for presentation use.\n`;
 }
 
 function indexHtml(cards) {
@@ -725,18 +768,18 @@ await mkdir(docsRoot, { recursive: true });
 const cards = [];
 for (const deck of decks) {
   if (deck.slides.length !== 20) throw new Error(`${deck.slug} has ${deck.slides.length} slides; expected 20.`);
-  const artData = await embeddedArtwork(deck.slug);
+  const artworks = await embeddedArtworks(deck.slug, deck.slides.length);
   const projectDocsDir = join(docsRoot, deck.slug);
   await mkdir(projectDocsDir, { recursive: true });
-  await writeFile(join(outputRoot, `${deck.slug}.html`), deckHtml(deck, artData), "utf8");
+  await writeFile(join(outputRoot, `${deck.slug}.html`), deckHtml(deck, artworks), "utf8");
   await writeFile(join(projectDocsDir, "PROJECT.md"), projectReadme(deck), "utf8");
   const cardStyle = `style="--accent:${deck.theme.accent};--accent2:${deck.theme.accent2}"`;
   cards.push(`<a class="card" ${cardStyle} href="./${deck.slug}.html"><div><span class="num">${deck.slug.slice(0, 2)} · 20 SLIDES</span><h2>${escapeHtml(deck.title)}</h2><p>${escapeHtml(deck.work)}<br>${escapeHtml(deck.styleName)}</p></div><span class="open">Mở project ↗</span></a>`);
 }
 
 await writeFile(join(outputRoot, "medieval-series.html"), indexHtml(cards), "utf8");
-await writeFile(join(docsRoot, "README.md"), `# Medieval art slide series\n\n` +
-  `Each deck is a standalone HTML file in the examples directory. Project outlines and sources are saved alongside this README. Open [medieval-series.html](../../../examples/medieval-series.html) to browse all decks.\n\n` +
-  `Static PDFs are exported to output/pdf/medieval-series/. Animations run in the HTML presentations.\n`, "utf8");
+await writeFile(join(docsRoot, "README.md"), `# Mười bộ slide: nghệ thuật Trung cổ\n\n` +
+  `Mỗi file HTML trong examples là một project độc lập, gồm 20 trang và animation. Mỗi trang dùng một tác phẩm khác nhau; tên tác phẩm, tác giả, giấy phép và liên kết nguồn được ghi ở chân trang. Ảnh tải theo nhu cầu từ Wikimedia Commons nên cần kết nối Internet. PROJECT.md chứa dàn ý slide và nguồn tham khảo. Mở [medieval-series.html](../../../examples/medieval-series.html) để vào từng deck.\n\n` +
+  `PDF tĩnh được xuất vào output/pdf/medieval-series/. Animation chỉ chạy trong HTML.\n`, "utf8");
 
 console.log(`Built ${decks.length} standalone decks (${decks.reduce((sum, deck) => sum + deck.slides.length, 0)} slides) in ${outputRoot}`);

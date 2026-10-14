@@ -36,4 +36,4 @@ Standalone animated HTML presentation with 20 slides. Open [01-kells.html](../..
 - [Trinity College Dublin, Chi-Rho page](https://www.visittrinity.ie/blog/symbolism-in-the-book-of-kells-the-chi-rho-page/)
 - [Trinity College Dublin Digital Collections, Book of Kells](https://digitalcollections.tcd.ie/)
 
-The artwork background is an original concept illustration made for the earlier PresentLab medieval-art project. It is not a reproduction or photographic record of the historical work.
+Each slide uses a distinct public-domain or Creative Commons artwork. Its source and license appear in the slide footer; images load on demand from Wikimedia Commons and are resized for presentation use.
