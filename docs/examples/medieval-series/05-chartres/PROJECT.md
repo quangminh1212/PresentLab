@@ -6,7 +6,7 @@
 **Medium:** Kính màu trong hệ kiến trúc Gothic  
 **Visual treatment:** Gothic · xanh kính màu, tia sáng và hình học hướng tâm
 
-Standalone animated HTML presentation with 20 slides. Open [05-chartres.html](../../../../examples/05-chartres.html) in a browser; use the arrow keys, Page Up/Down, Home/End, or the on-screen controls. The PDF export is static; transitions and reveal animations remain in the HTML.
+Standalone animated HTML presentation with 20 slides. Open [chartres-rose-window.html](../../../../examples/chartres-rose-window.html) in a browser; use the arrow keys, Page Up/Down, Home/End, or the on-screen controls. The PDF export is static; transitions and reveal animations remain in the HTML.
 
 ## Slide outline
 

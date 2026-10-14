@@ -6,7 +6,7 @@
 **Medium:** Thủ bản minh họa trên vellum  
 **Visual treatment:** Tiểu họa cung đình · xanh trời, vàng và khung lịch
 
-Standalone animated HTML presentation with 20 slides. Open [08-tres-riches.html](../../../../examples/08-tres-riches.html) in a browser; use the arrow keys, Page Up/Down, Home/End, or the on-screen controls. The PDF export is static; transitions and reveal animations remain in the HTML.
+Standalone animated HTML presentation with 20 slides. Open [tres-riches-heures.html](../../../../examples/tres-riches-heures.html) in a browser; use the arrow keys, Page Up/Down, Home/End, or the on-screen controls. The PDF export is static; transitions and reveal animations remain in the HTML.
 
 ## Slide outline
 

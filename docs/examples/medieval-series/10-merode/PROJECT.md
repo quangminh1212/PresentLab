@@ -6,7 +6,7 @@
 **Medium:** Sơn dầu trên gỗ sồi  
 **Visual treatment:** Triptych Hà Lan · ba cánh, gỗ ấm và xanh lam–đỏ
 
-Standalone animated HTML presentation with 20 slides. Open [10-merode.html](../../../../examples/10-merode.html) in a browser; use the arrow keys, Page Up/Down, Home/End, or the on-screen controls. The PDF export is static; transitions and reveal animations remain in the HTML.
+Standalone animated HTML presentation with 20 slides. Open [merode-triptych.html](../../../../examples/merode-triptych.html) in a browser; use the arrow keys, Page Up/Down, Home/End, or the on-screen controls. The PDF export is static; transitions and reveal animations remain in the HTML.
 
 ## Slide outline
 

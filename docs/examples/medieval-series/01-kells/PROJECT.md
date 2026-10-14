@@ -6,7 +6,7 @@
 **Medium:** Thủ bản Phúc Âm có minh họa  
 **Visual treatment:** Thủ bản Insular · giấy da, xanh khoáng và đỏ đất
 
-Standalone animated HTML presentation with 20 slides. Open [01-kells.html](../../../../examples/01-kells.html) in a browser; use the arrow keys, Page Up/Down, Home/End, or the on-screen controls. The PDF export is static; transitions and reveal animations remain in the HTML.
+Standalone animated HTML presentation with 20 slides. Open [book-of-kells.html](../../../../examples/book-of-kells.html) in a browser; use the arrow keys, Page Up/Down, Home/End, or the on-screen controls. The PDF export is static; transitions and reveal animations remain in the HTML.
 
 ## Slide outline
 

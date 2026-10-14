@@ -21,7 +21,7 @@ describe("MCP stdio contract", () => {
       const prompts = await client.listPrompts();
       const validation = await client.callTool({
         name: "presentlab_validate_deck",
-        arguments: { input: "examples/aurora.html" },
+        arguments: { input: "examples/aurora-design-system.html" },
       });
       const schema = await client.readResource({ uri: "presentlab://schema/deck" });
       const template = await client.readResource({ uri: "presentlab://templates/aurora" });

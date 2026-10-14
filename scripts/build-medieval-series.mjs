@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const outputRoot = join(root, "examples");
 const docsRoot = join(root, "docs", "examples", "medieval-series");
+const indexFileName = "bo-slide-nghe-thuat-trung-co.html";
 
 const decodeHtmlAttribute = (value = "") => value
   .replace(/&quot;/g, '"')
@@ -13,8 +14,8 @@ const decodeHtmlAttribute = (value = "") => value
   .replace(/&gt;/g, ">")
   .replace(/&amp;/g, "&");
 
-async function embeddedArtworks(slug, expectedCount) {
-  const html = await readFile(join(outputRoot, `${slug}.html`), "utf8");
+async function embeddedArtworks(slug, fileName, expectedCount) {
+  const html = await readFile(join(outputRoot, `${fileName}.html`), "utf8");
   const sections = [...html.matchAll(/<section\b[^>]*data-slide-id="([^"]+)"[^>]*>/g)];
   const artworks = sections.map((sectionMatch) => {
     const slideId = sectionMatch[1];
@@ -50,6 +51,7 @@ const S = (kind, kicker, title, body, points = []) => ({
 const decks = [
   {
     slug: "01-kells",
+    fileName: "book-of-kells",
     shortTitle: "Book of Kells",
     title: "Khi chữ biến thành hình",
     subtitle: "Đọc trang Chi-Rho trong Book of Kells",
@@ -94,6 +96,7 @@ const decks = [
   },
   {
     slug: "02-sinai",
+    fileName: "pantocrator-sinai",
     shortTitle: "Pantocrator Sinai",
     title: "Gương mặt nhìn thẳng",
     subtitle: "Christ Pantocrator tại tu viện St Catherine, Sinai",
@@ -138,6 +141,7 @@ const decks = [
   },
   {
     slug: "03-taull",
+    fileName: "sant-climent-taull",
     shortTitle: "Sant Climent de Taüll",
     title: "Vòm trời trong lòng đá",
     subtitle: "Christ in Majesty và tranh tường Romanesque ở Taüll",
@@ -182,6 +186,7 @@ const decks = [
   },
   {
     slug: "04-bayeux",
+    fileName: "bayeux-tapestry",
     shortTitle: "Bayeux Embroidery",
     title: "Lịch sử chạy theo đường kim",
     subtitle: "Một cuộc chinh phục được kể bằng len và vải lanh",
@@ -226,6 +231,7 @@ const decks = [
   },
   {
     slug: "05-chartres",
+    fileName: "chartres-rose-window",
     shortTitle: "Chartres Rose",
     title: "Ánh sáng cũng là kiến trúc",
     subtitle: "Cửa sổ kính màu và nhà thờ Chartres thế kỷ XIII",
@@ -270,6 +276,7 @@ const decks = [
   },
   {
     slug: "06-giotto",
+    fileName: "giotto-scrovegni-chapel",
     shortTitle: "Giotto at Padua",
     title: "Cơ thể bước vào không gian",
     subtitle: "Giotto và vòng tranh Scrovegni Chapel, Padova",
@@ -314,6 +321,7 @@ const decks = [
   },
   {
     slug: "07-siena",
+    fileName: "simone-martini-siena",
     shortTitle: "Simone Martini",
     title: "Vàng giữ lời chào lại",
     subtitle: "Annunciation của Simone Martini và Lippo Memmi, 1333",
@@ -358,6 +366,7 @@ const decks = [
   },
   {
     slug: "08-tres-riches",
+    fileName: "tres-riches-heures",
     shortTitle: "Très Riches Heures",
     title: "Một năm được vẽ như quyền lực",
     subtitle: "The Très Riches Heures du duc de Berry và lịch tháng trong sách",
@@ -402,6 +411,7 @@ const decks = [
   },
   {
     slug: "09-arnolfini",
+    fileName: "arnolfini-portrait",
     shortTitle: "Arnolfini Portrait",
     title: "Căn phòng khép kín, câu hỏi mở",
     subtitle: "Jan van Eyck và Arnolfini Portrait, 1434",
@@ -446,6 +456,7 @@ const decks = [
   },
   {
     slug: "10-merode",
+    fileName: "merode-triptych",
     shortTitle: "Mérode Triptych",
     title: "Đời thường mở thành nơi thiêng",
     subtitle: "The Annunciation Triptych và căn phòng cầu nguyện Flemish",
@@ -753,7 +764,7 @@ function projectReadme(deck) {
   const sources = deck.sources.map(([label, url]) => `- [${label}](${url})`).join("\n");
   return `# ${deck.shortTitle} — ${deck.title}\n\n` +
     `**Artwork:** ${deck.work}  \n**Maker:** ${deck.maker}  \n**Date:** ${deck.date}  \n**Medium:** ${deck.medium}  \n**Visual treatment:** ${deck.styleName}\n\n` +
-    `Standalone animated HTML presentation with 20 slides. Open [${deck.slug}.html](../../../../examples/${deck.slug}.html) in a browser; use the arrow keys, Page Up/Down, Home/End, or the on-screen controls. The PDF export is static; transitions and reveal animations remain in the HTML.\n\n` +
+    `Standalone animated HTML presentation with 20 slides. Open [${deck.fileName}.html](../../../../examples/${deck.fileName}.html) in a browser; use the arrow keys, Page Up/Down, Home/End, or the on-screen controls. The PDF export is static; transitions and reveal animations remain in the HTML.\n\n` +
     `## Slide outline\n\n${outline}\n\n## Sources\n\n${sources}\n\n` +
     `Each slide uses a distinct public-domain or Creative Commons artwork. Its source and license appear in the slide footer; images load on demand from Wikimedia Commons and are resized for presentation use.\n`;
 }
@@ -768,18 +779,18 @@ await mkdir(docsRoot, { recursive: true });
 const cards = [];
 for (const deck of decks) {
   if (deck.slides.length !== 20) throw new Error(`${deck.slug} has ${deck.slides.length} slides; expected 20.`);
-  const artworks = await embeddedArtworks(deck.slug, deck.slides.length);
+  const artworks = await embeddedArtworks(deck.slug, deck.fileName, deck.slides.length);
   const projectDocsDir = join(docsRoot, deck.slug);
   await mkdir(projectDocsDir, { recursive: true });
-  await writeFile(join(outputRoot, `${deck.slug}.html`), deckHtml(deck, artworks), "utf8");
+  await writeFile(join(outputRoot, `${deck.fileName}.html`), deckHtml(deck, artworks), "utf8");
   await writeFile(join(projectDocsDir, "PROJECT.md"), projectReadme(deck), "utf8");
   const cardStyle = `style="--accent:${deck.theme.accent};--accent2:${deck.theme.accent2}"`;
-  cards.push(`<a class="card" ${cardStyle} href="./${deck.slug}.html"><div><span class="num">${deck.slug.slice(0, 2)} · 20 SLIDES</span><h2>${escapeHtml(deck.title)}</h2><p>${escapeHtml(deck.work)}<br>${escapeHtml(deck.styleName)}</p></div><span class="open">Mở project ↗</span></a>`);
+  cards.push(`<a class="card" ${cardStyle} href="./${deck.fileName}.html"><div><span class="num">20 SLIDES</span><h2>${escapeHtml(deck.title)}</h2><p>${escapeHtml(deck.work)}<br>${escapeHtml(deck.styleName)}</p></div><span class="open">Mở project ↗</span></a>`);
 }
 
-await writeFile(join(outputRoot, "medieval-series.html"), indexHtml(cards), "utf8");
+await writeFile(join(outputRoot, indexFileName), indexHtml(cards), "utf8");
 await writeFile(join(docsRoot, "README.md"), `# Mười bộ slide: nghệ thuật Trung cổ\n\n` +
-  `Mỗi file HTML trong examples là một project độc lập, gồm 20 trang và animation. Mỗi trang dùng một tác phẩm khác nhau; tên tác phẩm, tác giả, giấy phép và liên kết nguồn được ghi ở chân trang. Ảnh tải theo nhu cầu từ Wikimedia Commons nên cần kết nối Internet. PROJECT.md chứa dàn ý slide và nguồn tham khảo. Mở [medieval-series.html](../../../examples/medieval-series.html) để vào từng deck.\n\n` +
+  `Mỗi file HTML trong examples là một project độc lập, gồm 20 trang và animation. Mỗi trang dùng một tác phẩm khác nhau; tên tác phẩm, tác giả, giấy phép và liên kết nguồn được ghi ở chân trang. Ảnh tải theo nhu cầu từ Wikimedia Commons nên cần kết nối Internet. PROJECT.md chứa dàn ý slide và nguồn tham khảo. Mở [bo-slide-nghe-thuat-trung-co.html](../../../examples/${indexFileName}) để vào từng deck.\n\n` +
   `PDF tĩnh được xuất vào output/pdf/medieval-series/. Animation chỉ chạy trong HTML.\n`, "utf8");
 
 console.log(`Built ${decks.length} standalone decks (${decks.reduce((sum, deck) => sum + deck.slides.length, 0)} slides) in ${outputRoot}`);

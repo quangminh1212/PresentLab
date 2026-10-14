@@ -4,11 +4,11 @@ Deck HTML 10 trang cho một triển lãm concept về 10 ngôn ngữ thị giá
 
 ## Mở và điều hướng
 
-Mở [`medieval-10.html`](../../../examples/medieval-10.html) trong trình duyệt. Dùng phím mũi tên, Page Up / Page Down, Home / End hoặc cuộn / vuốt trang. Bố cục co lại cho màn hình nhỏ; hiệu ứng tắt khi bật chế độ giảm chuyển động.
+Mở [`worlds-of-medieval-art.html`](../../../examples/worlds-of-medieval-art.html) trong trình duyệt. Dùng phím mũi tên, Page Up / Page Down, Home / End hoặc cuộn / vuốt trang. Bố cục co lại cho màn hình nhỏ; hiệu ứng tắt khi bật chế độ giảm chuyển động.
 
 ## Mười nguồn cảm hứng
 
-Ảnh concept được nhúng trực tiếp trong medieval-10.html dưới dạng data URI. Chúng diễn giải chất liệu và ngôn ngữ thị giác; không phải ảnh tư liệu, bản sao hay bản phục dựng các nguyên tác.
+Ảnh concept được nhúng trực tiếp trong worlds-of-medieval-art.html dưới dạng data URI. Chúng diễn giải chất liệu và ngôn ngữ thị giác; không phải ảnh tư liệu, bản sao hay bản phục dựng các nguyên tác.
 
 | Trang | Tác phẩm / truyền thống | Treatment của slide |
 | --- | --- | --- |
@@ -40,7 +40,7 @@ Lưu ý về tên gọi: Bayeux thường được gọi là “tấm thảm” 
 
 ## Tạo concept art
 
-Mỗi ảnh được tạo riêng bằng built-in ImageGen theo prompt dưới đây. Sau khi tạo, ảnh PNG được lưu ở thư mục ImageGen của môi trường và bản JPEG được nhúng dưới dạng data URI trong medieval-10.html để deck chạy độc lập. Không có ảnh ngoài mạng trong HTML.
+Mỗi ảnh được tạo riêng bằng built-in ImageGen theo prompt dưới đây. Sau khi tạo, ảnh PNG được lưu ở thư mục ImageGen của môi trường và bản JPEG được nhúng dưới dạng data URI trong worlds-of-medieval-art.html để deck chạy độc lập. Không có ảnh ngoài mạng trong HTML.
 
 ### Ảnh nhúng — 01-kells-illuminated.jpg
 
@@ -107,8 +107,8 @@ Create an original 16:9 landscape concept artwork for a Vietnamese presentation,
 Từ thư mục gốc:
 
 ~~~powershell
-node dist/cli.js validate --input examples/medieval-10.html
-node dist/cli.js render --input examples/medieval-10.html --output .artifacts/medieval-10 --format png,pdf,pptx
+node dist/cli.js validate --input examples/worlds-of-medieval-art.html
+node dist/cli.js render --input examples/worlds-of-medieval-art.html --output .artifacts/medieval-10 --format png,pdf,pptx
 ~~~
 
 Animation chạy trong bản HTML ở trình duyệt. Renderer hiện tại xuất PNG, PDF và PPTX tĩnh.

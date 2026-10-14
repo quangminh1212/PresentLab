@@ -7,16 +7,16 @@ const tempRoot = join(root, "tmp", "pdfs", "medieval-series-optimized");
 const outputRoot = join(root, "output", "pdf", "medieval-series");
 
 const decks = [
-  ["01-kells", "01-book-of-kells", "Khi chữ biến thành hình"],
-  ["02-sinai", "02-pantocrator-sinai", "Gương mặt nhìn thẳng"],
-  ["03-taull", "03-sant-climent-de-taull", "Vòm trời trong lòng đá"],
-  ["04-bayeux", "04-bayeux-embroidery", "Lịch sử chạy theo đường kim"],
-  ["05-chartres", "05-chartres-rose", "Ánh sáng cũng là kiến trúc"],
-  ["06-giotto", "06-giotto-scrovegni", "Cơ thể bước vào không gian"],
-  ["07-siena", "07-simone-martini-siena", "Vàng giữ lời chào lại"],
-  ["08-tres-riches", "08-tres-riches-heures", "Một năm được vẽ như quyền lực"],
-  ["09-arnolfini", "09-arnolfini-portrait", "Căn phòng khép kín, câu hỏi mở"],
-  ["10-merode", "10-merode-triptych", "Đời thường mở thành nơi thiêng"],
+  ["01-kells", "01-book-of-kells", "book-of-kells", "Khi chữ biến thành hình"],
+  ["02-sinai", "02-pantocrator-sinai", "pantocrator-sinai", "Gương mặt nhìn thẳng"],
+  ["03-taull", "03-sant-climent-de-taull", "sant-climent-taull", "Vòm trời trong lòng đá"],
+  ["04-bayeux", "04-bayeux-embroidery", "bayeux-tapestry", "Lịch sử chạy theo đường kim"],
+  ["05-chartres", "05-chartres-rose", "chartres-rose-window", "Ánh sáng cũng là kiến trúc"],
+  ["06-giotto", "06-giotto-scrovegni", "giotto-scrovegni-chapel", "Cơ thể bước vào không gian"],
+  ["07-siena", "07-simone-martini-siena", "simone-martini-siena", "Vàng giữ lời chào lại"],
+  ["08-tres-riches", "08-tres-riches-heures", "tres-riches-heures", "Một năm được vẽ như quyền lực"],
+  ["09-arnolfini", "09-arnolfini-portrait", "arnolfini-portrait", "Căn phòng khép kín, câu hỏi mở"],
+  ["10-merode", "10-merode-triptych", "merode-triptych", "Đời thường mở thành nơi thiêng"],
 ];
 
 await mkdir(outputRoot, { recursive: true });
@@ -27,13 +27,13 @@ const index = [
   "",
 ];
 
-for (const [slug, fileStem, title] of decks) {
+for (const [slug, fileStem, htmlFileName, title] of decks) {
   const source = join(tempRoot, slug, "deck.pdf");
   const target = join(outputRoot, `${fileStem}.pdf`);
   const sourceStat = await stat(source);
   if (sourceStat.size < 100_000) throw new Error(`Unexpectedly small PDF for ${slug}: ${sourceStat.size} bytes`);
   await copyFile(source, target);
-  const html = `../../../examples/${slug}.html`;
+  const html = `../../../examples/${htmlFileName}.html`;
   index.push(`- [${title}](${fileStem}.pdf) · 20 trang · [HTML project](${html})`);
 }
 
