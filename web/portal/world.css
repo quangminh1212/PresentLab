@@ -5055,7 +5055,7 @@ text-align: left;
   width: min(1640px, calc(100% - clamp(48px, 14vw, 216px)));
   height: clamp(250px, 42vh, 460px);
   min-height: 0;
-  margin: clamp(320px, 49vh, 410px) auto 0;
+  margin: clamp(280px, 43vh, 410px) auto 0;
   overflow: visible;
   border: 1px solid rgb(26 32 40 / 12%);
   border-radius: clamp(20px, 2vw, 32px);
@@ -5115,7 +5115,7 @@ text-align: left;
 
 /* The heading sits just above the water panel, matching the open spacing below. */
 .app-shell:has(> main > .hero.hero-world) .world-copy {
-  top: -214px;
+  top: -170px;
   right: 0;
   left: 0;
   width: auto;
@@ -5208,6 +5208,11 @@ text-align: left;
   animation: none;
 }
 
+.app-shell:has(> main > .hero.hero-world) .world-copy-kicker,
+.app-shell:has(> main > .hero.hero-world) .world-lede {
+  display: none;
+}
+
 .app-shell:has(> main > .hero.hero-world) .world-hud,
 .app-shell:has(> main > .hero.hero-world) .world-locations,
 .app-shell:has(> main > .hero.hero-world) .world-search-field,
@@ -5293,12 +5298,12 @@ html:has(.app-shell > main > .hero.hero-world) .portal-category-menu.is-open > .
   .app-shell:has(> main > .hero.hero-world) .world-stage {
     width: calc(100% - 32px);
     height: clamp(230px, 34vh, 340px);
-    margin-top: clamp(310px, 40vh, 350px);
+    margin-top: clamp(270px, 34vh, 320px);
     border-radius: 22px;
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-copy {
-    top: -228px;
+    top: -177px;
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-copy-kicker {
@@ -5336,11 +5341,11 @@ html:has(.app-shell > main > .hero.hero-world) .portal-category-menu.is-open > .
 @media (max-width: 420px) {
   .app-shell:has(> main > .hero.hero-world) .world-stage {
     height: clamp(220px, 33vh, 278px);
-    margin-top: 310px;
+    margin-top: 270px;
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-copy {
-    top: -230px;
+    top: -160px;
   }
 
   .app-shell:has(> main > .hero.hero-world) .world-copy h1 {
