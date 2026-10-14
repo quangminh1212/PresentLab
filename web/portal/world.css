@@ -5283,10 +5283,6 @@ text-align: left;
   outline-offset: 8px;
 }
 
-html:has(.app-shell > main > .hero.hero-world) .portal-header-brand .xlab-logo-crop::before {
-  display: none;
-}
-
 html:has(.app-shell > main > .hero.hero-world) .portal-header-brand .xlab-logo-crop img {
   filter: none;
 }
