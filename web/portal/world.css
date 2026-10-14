@@ -5448,3 +5448,15 @@ html:has(.app-shell > main > .hero.hero-world) .portal-category-menu.is-open > .
   content: "";
   pointer-events: none;
 }
+
+@media (max-width: 812px) {
+  .app-shell:has(> main > .hero.hero-world) > main > .hero.hero-world::before {
+    left: clamp(20px, 5.8vw, 40px);
+  }
+}
+
+@media (max-width: 480px) {
+  .app-shell:has(> main > .hero.hero-world) > main > .hero.hero-world::before {
+    left: 18px;
+  }
+}
