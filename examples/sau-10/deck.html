@@ -1,0 +1,1163 @@
+<!doctype html>
+<html
+  lang="vi"
+  data-pl-format="16:9"
+  data-pl-title="SAU 10 — Sài Gòn sau giờ"
+  data-pl-author="PresentLab concept project"
+  data-pl-theme="night-city"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="A 10-slide concept deck for SAU 10, a fictional after-dark city discovery experience."
+    />
+    <title>SAU 10 — Sài Gòn sau giờ</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --night: #07151e;
+        --night-soft: #0d202b;
+        --paper: #f2eee6;
+        --paper-deep: #e5dfd3;
+        --ink: #12232a;
+        --muted: #9aa7aa;
+        --ember: #ff9865;
+        --lime: #d0ef78;
+        --cyan: #79d8d1;
+        --gutter: clamp(30px, 8vw, 132px);
+        --ease: cubic-bezier(0.2, 0.75, 0.2, 1);
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: var(--night);
+        color: var(--paper);
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        scroll-snap-type: y mandatory;
+        scrollbar-color: var(--ember) var(--night);
+      }
+
+      body {
+        margin: 0;
+        overflow-x: hidden;
+        background: var(--night);
+        color: var(--paper);
+      }
+
+      button {
+        color: inherit;
+        font: inherit;
+      }
+
+      .pl-slide {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 100vw;
+        height: 100vh;
+        min-height: 600px;
+        padding: clamp(42px, 7vh, 82px) var(--gutter) clamp(62px, 8vh, 90px);
+        overflow: hidden;
+        isolation: isolate;
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      .slide-dark {
+        background: var(--night);
+        color: var(--paper);
+      }
+
+      .slide-paper {
+        background: var(--paper);
+        color: var(--ink);
+      }
+
+      .slide-lime {
+        background: var(--lime);
+        color: var(--ink);
+      }
+
+      .eyebrow {
+        margin-bottom: clamp(20px, 3vh, 34px);
+        color: var(--ember);
+        font-size: clamp(12px, 1vw, 15px);
+        font-weight: 800;
+        letter-spacing: 0.18em;
+        line-height: 1.2;
+        text-transform: uppercase;
+      }
+
+      .slide-paper .eyebrow,
+      .slide-lime .eyebrow {
+        color: #9e492e;
+      }
+
+      .headline {
+        max-width: 1120px;
+        font-size: clamp(54px, 8vw, 128px);
+        font-weight: 750;
+        letter-spacing: -0.075em;
+        line-height: 0.88;
+        text-wrap: balance;
+      }
+
+      .headline-small {
+        max-width: 820px;
+        font-size: clamp(46px, 6.3vw, 100px);
+      }
+
+      .lead {
+        max-width: 690px;
+        margin-top: clamp(22px, 3.5vh, 38px);
+        color: var(--muted);
+        font-size: clamp(18px, 1.8vw, 28px);
+        line-height: 1.4;
+      }
+
+      .slide-paper .lead,
+      .slide-lime .lead {
+        color: #526168;
+      }
+
+      .accent {
+        color: var(--ember);
+      }
+
+      .lime-accent {
+        color: var(--lime);
+      }
+
+      .slide-number {
+        position: absolute;
+        right: var(--gutter);
+        bottom: clamp(24px, 4vh, 42px);
+        color: currentColor;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        opacity: 0.64;
+      }
+
+      .reveal {
+        opacity: 1;
+        transform: none;
+      }
+
+      .pl-slide.is-active .reveal {
+        animation: rise-in 760ms var(--ease) var(--delay, 0ms) both;
+      }
+
+      @keyframes rise-in {
+        from {
+          opacity: 0;
+          transform: translate3d(0, 30px, 0);
+        }
+        to {
+          opacity: 1;
+          transform: translate3d(0, 0, 0);
+        }
+      }
+
+      .image-reveal {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .pl-slide.is-active .image-reveal {
+        animation: photo-open 1050ms var(--ease) 120ms both;
+      }
+
+      @keyframes photo-open {
+        from {
+          clip-path: inset(0 100% 0 0);
+          transform: scale(1.045);
+        }
+        to {
+          clip-path: inset(0 0 0 0);
+          transform: scale(1);
+        }
+      }
+
+      .cover {
+        justify-content: flex-end;
+        background: #071019;
+      }
+
+      .cover-photo,
+      .closing-photo {
+        position: absolute;
+        z-index: -2;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .cover::before,
+      .closing::before {
+        position: absolute;
+        z-index: -1;
+        inset: 0;
+        background:
+          linear-gradient(90deg, rgb(4 13 20 / 88%) 0%, rgb(4 13 20 / 58%) 44%, rgb(4 13 20 / 4%) 100%),
+          linear-gradient(0deg, rgb(4 13 20 / 62%), transparent 48%);
+        content: "";
+      }
+
+      .cover-copy {
+        position: relative;
+        max-width: 920px;
+        padding-bottom: clamp(8px, 4vh, 44px);
+      }
+
+      .cover-title {
+        display: flex;
+        align-items: baseline;
+        gap: 0.07em;
+        margin-left: -0.045em;
+        font-size: clamp(92px, 15vw, 238px);
+        font-weight: 800;
+        letter-spacing: -0.1em;
+        line-height: 0.76;
+      }
+
+      .cover-title span:last-child {
+        color: var(--ember);
+      }
+
+      .cover-deckline {
+        max-width: 630px;
+        margin-top: clamp(26px, 5vh, 52px);
+        color: #f4efe6;
+        font-size: clamp(22px, 2.2vw, 34px);
+        line-height: 1.24;
+      }
+
+      .cover-note {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: clamp(28px, 5vh, 48px);
+        color: #d6ddda;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+
+      .cover-note::before {
+        width: 34px;
+        height: 1px;
+        background: var(--ember);
+        content: "";
+      }
+
+      .split-scene {
+        display: grid;
+        grid-template-columns: minmax(0, 1.3fr) minmax(230px, 0.7fr);
+        gap: clamp(40px, 8vw, 130px);
+        align-items: center;
+      }
+
+      .time-note {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-height: 360px;
+        padding-left: clamp(24px, 4vw, 64px);
+        border-left: 1px solid rgb(18 35 42 / 24%);
+      }
+
+      .time-note strong {
+        color: #9e492e;
+        font-size: clamp(120px, 18vw, 270px);
+        font-weight: 650;
+        letter-spacing: -0.11em;
+        line-height: 0.72;
+      }
+
+      .time-note span {
+        margin-top: 26px;
+        font-size: clamp(16px, 1.4vw, 22px);
+        line-height: 1.35;
+      }
+
+      .question-row {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr auto 1fr;
+        align-items: center;
+        gap: clamp(16px, 3vw, 48px);
+        width: min(100%, 1120px);
+        margin-top: clamp(42px, 8vh, 86px);
+        border-top: 1px solid rgb(242 238 230 / 24%);
+      }
+
+      .question-row span {
+        padding-top: 20px;
+        color: #d8dfd9;
+        font-size: clamp(16px, 1.5vw, 23px);
+      }
+
+      .question-row i {
+        padding-top: 20px;
+        color: var(--ember);
+        font-style: normal;
+        font-size: 24px;
+      }
+
+      .insight-copy {
+        max-width: 1020px;
+      }
+
+      @keyframes rule-open {
+        from {
+          transform: scaleX(0);
+        }
+        to {
+          transform: scaleX(1);
+        }
+      }
+
+      .idea-layout {
+        display: grid;
+        grid-template-columns: 0.95fr 1.05fr;
+        gap: 10vw;
+        align-items: center;
+      }
+
+      .wordmark {
+        display: inline-flex;
+        align-items: baseline;
+        color: var(--ink);
+        font-size: clamp(82px, 14vw, 220px);
+        font-weight: 800;
+        letter-spacing: -0.105em;
+        line-height: 0.75;
+        white-space: nowrap;
+      }
+
+      .wordmark span:last-child {
+        color: #a24c31;
+      }
+
+      .idea-side {
+        max-width: 600px;
+        padding-left: clamp(28px, 5vw, 76px);
+        border-left: 1px solid rgb(18 35 42 / 24%);
+      }
+
+      .idea-side p {
+        color: #42535a;
+        font-size: clamp(22px, 2.2vw, 35px);
+        line-height: 1.26;
+      }
+
+      .idea-side strong {
+        display: block;
+        margin-top: 30px;
+        color: #9e492e;
+        font-size: clamp(13px, 1vw, 16px);
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+      }
+
+      .promise-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 250px;
+        gap: 7vw;
+        align-items: end;
+      }
+
+      .promise-index {
+        padding-bottom: 12px;
+        color: #334846;
+        font-size: clamp(14px, 1.1vw, 18px);
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        line-height: 1.6;
+        text-transform: uppercase;
+      }
+
+      .experience-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(300px, 0.8fr);
+        gap: clamp(36px, 7vw, 112px);
+        align-items: center;
+      }
+
+      .experience-list {
+        margin-top: clamp(30px, 5vh, 54px);
+        border-top: 1px solid rgb(18 35 42 / 25%);
+      }
+
+      .experience-list p {
+        display: grid;
+        grid-template-columns: 110px 1fr;
+        gap: 16px;
+        padding: 15px 0;
+        border-bottom: 1px solid rgb(18 35 42 / 20%);
+        color: #35474d;
+        font-size: clamp(16px, 1.35vw, 21px);
+        line-height: 1.3;
+      }
+
+      .experience-list b {
+        color: #a24c31;
+        font-size: 13px;
+        letter-spacing: 0.1em;
+      }
+
+      .photo-frame {
+        position: relative;
+        height: min(62vh, 560px);
+        min-height: 330px;
+        overflow: hidden;
+        background: #182b32;
+      }
+
+      .photo-caption {
+        position: absolute;
+        right: 16px;
+        bottom: 14px;
+        left: 16px;
+        color: white;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        text-shadow: 0 2px 18px rgb(0 0 0 / 70%);
+      }
+
+      .route-heading {
+        display: flex;
+        justify-content: space-between;
+        gap: 40px;
+        align-items: end;
+      }
+
+      .route-heading .lead {
+        max-width: 400px;
+        margin-bottom: 7px;
+        font-size: clamp(16px, 1.35vw, 21px);
+      }
+
+      .route {
+        position: relative;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 28px;
+        margin-top: clamp(52px, 11vh, 112px);
+      }
+
+      .route-line {
+        position: absolute;
+        top: 8px;
+        right: 0;
+        left: 0;
+        height: 1px;
+        background: rgb(242 238 230 / 28%);
+        transform: scaleX(1);
+        transform-origin: left center;
+      }
+
+      .pl-slide.is-active .route-line {
+        animation: rule-open 1250ms var(--ease) 240ms both;
+      }
+
+      .stop {
+        position: relative;
+        padding-top: 32px;
+      }
+
+      .stop::before {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 17px;
+        height: 17px;
+        border: 3px solid var(--ember);
+        border-radius: 50%;
+        background: var(--night);
+        content: "";
+      }
+
+      .stop time {
+        color: var(--ember);
+        font-size: clamp(14px, 1.1vw, 17px);
+        font-weight: 800;
+        letter-spacing: 0.1em;
+      }
+
+      .stop h3 {
+        max-width: 320px;
+        margin-top: 17px;
+        font-size: clamp(24px, 2.6vw, 40px);
+        letter-spacing: -0.055em;
+        line-height: 0.98;
+      }
+
+      .stop p {
+        max-width: 300px;
+        margin-top: 15px;
+        color: #a9b6b6;
+        font-size: clamp(15px, 1.3vw, 20px);
+        line-height: 1.38;
+      }
+
+      .adapt-layout {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 8vw;
+        align-items: center;
+      }
+
+      .adapt-points {
+        border-top: 1px solid rgb(18 35 42 / 25%);
+      }
+
+      .adapt-point {
+        display: grid;
+        grid-template-columns: 120px 1fr;
+        gap: 22px;
+        padding: 20px 0;
+        border-bottom: 1px solid rgb(18 35 42 / 20%);
+      }
+
+      .adapt-point span {
+        color: #9e492e;
+        font-size: 14px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .adapt-point p {
+        max-width: 410px;
+        color: #35474d;
+        font-size: clamp(17px, 1.4vw, 22px);
+        line-height: 1.35;
+      }
+
+      .voices {
+        justify-content: flex-end;
+        background: #08151f;
+      }
+
+      .voices-photo {
+        position: absolute;
+        z-index: -2;
+        inset: 0 0 0 42%;
+        width: 58%;
+        height: 100%;
+        object-fit: cover;
+        object-position: 42% center;
+      }
+
+      .voices::before {
+        position: absolute;
+        z-index: -1;
+        inset: 0;
+        background: linear-gradient(90deg, #08151f 0%, #08151f 43%, rgb(8 21 31 / 70%) 59%, rgb(8 21 31 / 10%) 100%);
+        content: "";
+      }
+
+      .voices-copy {
+        max-width: 840px;
+      }
+
+      .voices-copy .headline {
+        font-size: clamp(58px, 7.2vw, 114px);
+      }
+
+      .closing {
+        justify-content: center;
+        text-align: center;
+        background: #08151f;
+      }
+
+      .closing::before {
+        background:
+          linear-gradient(0deg, rgb(4 13 20 / 78%), rgb(4 13 20 / 24%)),
+          linear-gradient(90deg, rgb(4 13 20 / 32%), rgb(4 13 20 / 18%));
+      }
+
+      .closing-copy {
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+
+      .closing .headline {
+        margin: 0 auto;
+        font-size: clamp(58px, 9.4vw, 150px);
+      }
+
+      .closing .lead {
+        margin-right: auto;
+        margin-left: auto;
+        color: #d1d9d6;
+      }
+
+      .closing-brand {
+        display: block;
+        margin-top: clamp(32px, 6vh, 62px);
+        color: var(--ember);
+        font-size: 14px;
+        font-weight: 800;
+        letter-spacing: 0.2em;
+      }
+
+      .deck-controls {
+        position: fixed;
+        z-index: 10;
+        right: 28px;
+        bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 8px 10px 8px 14px;
+        border: 1px solid rgb(255 255 255 / 24%);
+        border-radius: 999px;
+        background: rgb(7 21 30 / 80%);
+        color: white;
+        opacity: 0;
+        transition: opacity 180ms ease;
+        backdrop-filter: blur(14px);
+      }
+
+      .deck-controls:hover,
+      .deck-controls:focus-within {
+        opacity: 1;
+      }
+
+      .deck-counter {
+        min-width: 70px;
+        color: #d7e1de;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-align: center;
+      }
+
+      .deck-controls button {
+        display: grid;
+        width: 34px;
+        height: 34px;
+        place-items: center;
+        border: 1px solid rgb(255 255 255 / 28%);
+        border-radius: 50%;
+        background: transparent;
+        cursor: pointer;
+        font-size: 16px;
+        line-height: 1;
+      }
+
+      .deck-controls button:hover {
+        border-color: var(--ember);
+        color: var(--ember);
+      }
+
+      .deck-progress {
+        position: fixed;
+        z-index: 9;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        height: 3px;
+        background: rgb(255 255 255 / 15%);
+        opacity: 0;
+        transform-origin: left center;
+        transition: opacity 180ms ease;
+      }
+
+      .deck-controls:hover + .deck-progress,
+      .deck-controls:focus-within + .deck-progress {
+        opacity: 1;
+      }
+
+      .deck-progress span {
+        display: block;
+        width: 100%;
+        height: 100%;
+        background: var(--ember);
+        transform: scaleX(0.1);
+        transform-origin: left center;
+        transition: transform 480ms var(--ease);
+      }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        clip-path: inset(50%);
+      }
+
+      @media (max-width: 820px) {
+        .pl-slide {
+          min-height: 540px;
+          padding-right: clamp(24px, 7vw, 54px);
+          padding-left: clamp(24px, 7vw, 54px);
+        }
+
+        .split-scene,
+        .idea-layout,
+        .promise-layout,
+        .experience-layout,
+        .adapt-layout {
+          grid-template-columns: 1fr;
+          gap: 34px;
+        }
+
+        .time-note {
+          min-height: auto;
+          padding: 0;
+          border: 0;
+        }
+
+        .time-note strong {
+          font-size: clamp(94px, 25vw, 160px);
+        }
+
+        .idea-side {
+          padding: 0;
+          border: 0;
+        }
+
+        .promise-index {
+          display: none;
+        }
+
+        .experience-layout {
+          grid-template-columns: minmax(0, 1fr) minmax(180px, 0.7fr);
+        }
+
+        .route {
+          gap: 16px;
+        }
+
+        .adapt-point {
+          grid-template-columns: 92px 1fr;
+        }
+
+        .voices-photo {
+          left: 22%;
+          width: 78%;
+        }
+      }
+
+      @media (max-width: 560px) {
+        .pl-slide {
+          height: 100svh;
+          min-height: 620px;
+        }
+
+        .cover-title {
+          font-size: clamp(78px, 24vw, 132px);
+        }
+
+        .question-row {
+          grid-template-columns: 1fr;
+          gap: 0;
+          margin-top: 34px;
+        }
+
+        .question-row span:not(:first-child),
+        .question-row i {
+          display: none;
+        }
+
+        .experience-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .photo-frame {
+          height: 25svh;
+          min-height: 180px;
+        }
+
+        .route-heading {
+          display: block;
+        }
+
+        .route-heading .lead {
+          margin-top: 18px;
+        }
+
+        .route {
+          grid-template-columns: 1fr;
+          gap: 19px;
+          margin-top: 26px;
+          padding-left: 24px;
+        }
+
+        .route-line {
+          top: 4px;
+          bottom: 8px;
+          left: 7px;
+          width: 1px;
+          height: auto;
+          transform: scaleY(1);
+          transform-origin: top center;
+        }
+
+        .pl-slide.is-active .route-line {
+          animation-name: vertical-open;
+        }
+
+        @keyframes vertical-open {
+          from { transform: scaleY(0); }
+          to { transform: scaleY(1); }
+        }
+
+        .stop {
+          padding-top: 0;
+        }
+
+        .stop::before {
+          top: 2px;
+          left: -24px;
+          width: 14px;
+          height: 14px;
+        }
+
+        .stop h3 {
+          margin-top: 6px;
+        }
+
+        .stop p {
+          margin-top: 5px;
+        }
+
+        .voices-photo {
+          inset: 0;
+          width: 100%;
+          opacity: 0.7;
+        }
+
+        .voices::before {
+          background: linear-gradient(90deg, rgb(8 21 31 / 92%), rgb(8 21 31 / 44%));
+        }
+
+        .deck-controls {
+          right: 12px;
+          bottom: 12px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          scroll-behavior: auto !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="deck" id="deck">
+      <section class="pl-slide cover" data-pl-slide data-slide-id="opening">
+        <img
+          class="cover-photo image-reveal"
+          src="assets/saigon-night-concept.png"
+          alt="Ảnh concept một con phố đêm phản chiếu ánh đèn ấm và xanh."
+        />
+        <div class="cover-copy">
+          <p class="eyebrow reveal" style="--delay: 80ms">Một concept trải nghiệm đô thị</p>
+          <h1 class="cover-title reveal" style="--delay: 180ms"><span>SAU</span><span>10</span></h1>
+          <p class="cover-deckline reveal" style="--delay: 300ms">
+            Một chiếc bản đồ cho những đêm chưa muốn về.
+          </p>
+          <p class="cover-note reveal" style="--delay: 420ms">Sài Gòn · City discovery · 2026</p>
+        </div>
+        <p class="slide-number">01 / 10</p>
+      </section>
+
+      <section class="pl-slide slide-paper" data-pl-slide data-slide-id="tension">
+        <div class="split-scene">
+          <div>
+            <p class="eyebrow reveal">02 / Tình huống</p>
+            <h2 class="headline headline-small reveal" style="--delay: 100ms">
+              Sài Gòn không tắt.<br />Ta chỉ hết ý tưởng để đi tiếp.
+            </h2>
+            <p class="lead reveal" style="--delay: 220ms">
+              Sau điểm hẹn đầu tiên, câu hỏi quen thuộc xuất hiện: giờ mình đi đâu nữa?
+            </p>
+          </div>
+          <div class="time-note reveal" style="--delay: 240ms">
+            <strong>22</strong>
+            <span>Giờ buổi tối có thể mở ra một câu chuyện khác.</span>
+          </div>
+        </div>
+        <p class="slide-number">02 / 10</p>
+      </section>
+
+      <section class="pl-slide slide-dark" data-pl-slide data-slide-id="insight">
+        <div class="insight-copy">
+          <p class="eyebrow reveal">03 / Khoảng trống</p>
+          <h2 class="headline reveal" style="--delay: 100ms">
+            Bản đồ biết <span class="accent">đường đi.</span><br />
+            Chưa biết <span class="lime-accent">nhịp đêm.</span>
+          </h2>
+          <p class="lead reveal" style="--delay: 220ms">
+            Mình có thể tìm từng quán, từng con phố. Khó hơn là nối chúng thành một tối vừa vặn.
+          </p>
+          <div class="question-row reveal" style="--delay: 300ms" aria-label="Ba lựa chọn cho buổi tối">
+            <span>Ăn ở đâu?</span><i>·</i><span>Nghe gì?</span><i>·</i><span>Rẽ lối nào?</span>
+          </div>
+        </div>
+        <p class="slide-number">03 / 10</p>
+      </section>
+
+      <section class="pl-slide slide-paper" data-pl-slide data-slide-id="idea">
+        <div class="idea-layout">
+          <div>
+            <p class="eyebrow reveal">04 / Ý tưởng</p>
+            <p class="wordmark reveal" aria-label="SAU 10" style="--delay: 100ms"><span>SAU</span><span>10</span></p>
+          </div>
+          <div class="idea-side reveal" style="--delay: 220ms">
+            <p>Một bản đồ bắt đầu từ cảm giác, rồi mới hiện ra đường đi.</p>
+            <strong>Chọn nhịp tối nay. Để phần còn lại mở ra.</strong>
+          </div>
+        </div>
+        <p class="slide-number">04 / 10</p>
+      </section>
+
+      <section class="pl-slide slide-lime" data-pl-slide data-slide-id="promise">
+        <div class="promise-layout">
+          <div>
+            <p class="eyebrow reveal">05 / Lời hứa</p>
+            <h2 class="headline reveal" style="--delay: 100ms">
+              Chọn một nhịp.<br />Bản đồ lo phần còn lại.
+            </h2>
+            <p class="lead reveal" style="--delay: 240ms">
+              Đủ rõ để bắt đầu. Đủ thoáng để cuộc vui được rẽ ngang.
+            </p>
+          </div>
+          <p class="promise-index reveal" style="--delay: 320ms">Tâm trạng<br />→ lộ trình<br />→ một tối đáng nhớ</p>
+        </div>
+        <p class="slide-number">05 / 10</p>
+      </section>
+
+      <section class="pl-slide slide-paper" data-pl-slide data-slide-id="experience">
+        <div class="experience-layout">
+          <div>
+            <p class="eyebrow reveal">06 / Trải nghiệm</p>
+            <h2 class="headline headline-small reveal" style="--delay: 100ms">
+              Một đêm<br />có ba nhịp.
+            </h2>
+            <div class="experience-list">
+              <p class="reveal" style="--delay: 200ms"><b>01 · ĂN</b><span>Một món nóng để bắt đầu.</span></p>
+              <p class="reveal" style="--delay: 280ms"><b>02 · NGHE</b><span>Một sân khấu nhỏ để nán lại.</span></p>
+              <p class="reveal" style="--delay: 360ms"><b>03 · ĐI</b><span>Một quãng phố để tự quyết.</span></p>
+            </div>
+          </div>
+          <figure class="photo-frame reveal" style="--delay: 180ms">
+            <img
+              class="image-reveal"
+              src="assets/night-food-concept.png"
+              alt="Ảnh concept một tô nóng được chuyền qua quầy ăn khuya."
+            />
+            <figcaption class="photo-caption">Một điểm dừng · bắt đầu bằng vị ấm</figcaption>
+          </figure>
+        </div>
+        <p class="slide-number">06 / 10</p>
+      </section>
+
+      <section class="pl-slide slide-dark" data-pl-slide data-slide-id="sample-route">
+        <div class="route-heading">
+          <div>
+            <p class="eyebrow reveal">07 / Lộ trình minh họa</p>
+            <h2 class="headline headline-small reveal" style="--delay: 100ms">
+              Chừa chỗ cho tình cờ.
+            </h2>
+          </div>
+          <p class="lead reveal" style="--delay: 220ms">
+            Ba điểm dừng giả lập. Không phải lịch trình cố định.
+          </p>
+        </div>
+        <div class="route" aria-label="Lộ trình mẫu gồm ba điểm dừng">
+          <div class="route-line" aria-hidden="true"></div>
+          <article class="stop reveal" style="--delay: 220ms">
+            <time>19:45</time>
+            <h3>Một món nóng</h3>
+            <p>Chọn nơi bắt đầu theo vị mình đang thèm.</p>
+          </article>
+          <article class="stop reveal" style="--delay: 360ms">
+            <time>21:00</time>
+            <h3>Âm nhạc trong hẻm</h3>
+            <p>Nán lại nếu giai điệu tối nay hợp ý.</p>
+          </article>
+          <article class="stop reveal" style="--delay: 500ms">
+            <time>22:20</time>
+            <h3>Đi thêm một đoạn</h3>
+            <p>Để con phố tiếp theo tự chọn câu chuyện.</p>
+          </article>
+        </div>
+        <p class="slide-number">07 / 10</p>
+      </section>
+
+      <section class="pl-slide slide-paper" data-pl-slide data-slide-id="flexibility">
+        <div class="adapt-layout">
+          <div>
+            <p class="eyebrow reveal">08 / Tính linh hoạt</p>
+            <h2 class="headline headline-small reveal" style="--delay: 100ms">
+              Giữ nhịp.<br /><span class="accent">Đổi đường.</span>
+            </h2>
+            <p class="lead reveal" style="--delay: 240ms">
+              Lộ trình tốt không khóa buổi tối vào một danh sách cứng.
+            </p>
+          </div>
+          <div class="adapt-points">
+            <div class="adapt-point reveal" style="--delay: 200ms">
+              <span>Khi đông</span>
+              <p>Gợi ý một điểm dừng yên hơn ở gần đó.</p>
+            </div>
+            <div class="adapt-point reveal" style="--delay: 300ms">
+              <span>Khi trễ</span>
+              <p>Mở một phương án khác để đêm không bị ngắt quãng.</p>
+            </div>
+            <div class="adapt-point reveal" style="--delay: 400ms">
+              <span>Khi vui</span>
+              <p>Cho phép bỏ qua gợi ý và cứ thế đi tiếp.</p>
+            </div>
+          </div>
+        </div>
+        <p class="slide-number">08 / 10</p>
+      </section>
+
+      <section class="pl-slide voices" data-pl-slide data-slide-id="local-voices">
+        <img
+          class="voices-photo image-reveal"
+          src="assets/night-music-concept.png"
+          alt="Ảnh concept một buổi diễn nhỏ trên phố, nhìn từ phía người nghe."
+        />
+        <div class="voices-copy">
+          <p class="eyebrow reveal">09 / Tiếng nói địa phương</p>
+          <h2 class="headline reveal" style="--delay: 100ms">
+            Không chỉ nơi đến.<br />Cả lý do để dừng.
+          </h2>
+          <p class="lead reveal" style="--delay: 240ms">
+            Người biết thành phố kể điều đáng nhớ nhất ở mỗi góc nhỏ. SAU 10 nối những câu chuyện ấy thành lời mời khám phá.
+          </p>
+        </div>
+        <p class="slide-number">09 / 10</p>
+      </section>
+
+      <section class="pl-slide closing" data-pl-slide data-slide-id="closing">
+        <img
+          class="closing-photo"
+          src="assets/saigon-night-concept.png"
+          alt="Ảnh concept đường phố đêm phản chiếu ánh đèn trong khung cảnh Sài Gòn tưởng tượng."
+          aria-hidden="true"
+        />
+        <div class="closing-copy">
+          <p class="eyebrow reveal">10 / 10 · Khép lại bằng một lời mời</p>
+          <h2 class="headline reveal" style="--delay: 120ms">
+            Tối nay,<br />cứ rẽ thêm một đoạn.
+          </h2>
+          <p class="lead reveal" style="--delay: 260ms">
+            SAU 10 — một concept về những đêm chưa muốn về.
+          </p>
+          <span class="closing-brand reveal" style="--delay: 380ms">SÀI GÒN · SAU 22H</span>
+        </div>
+        <p class="slide-number">10 / 10</p>
+      </section>
+    </main>
+
+    <nav class="deck-controls" aria-label="Điều khiển trình chiếu">
+      <span class="deck-counter"><span data-current-slide>01</span> / 10</span>
+      <button type="button" data-previous aria-label="Slide trước">←</button>
+      <button type="button" data-next aria-label="Slide tiếp theo">→</button>
+    </nav>
+    <div class="deck-progress" role="progressbar" aria-label="Tiến độ trình chiếu" aria-valuemin="1" aria-valuemax="10" aria-valuenow="1">
+      <span data-progress-fill></span>
+    </div>
+
+    <script>
+      const slides = [...document.querySelectorAll("[data-pl-slide]")];
+      const currentSlide = document.querySelector("[data-current-slide]");
+      const progress = document.querySelector(".deck-progress");
+      const progressFill = document.querySelector("[data-progress-fill]");
+      let activeIndex = 0;
+
+      function setActiveSlide(index) {
+        activeIndex = Math.max(0, Math.min(slides.length - 1, index));
+        const current = activeIndex + 1;
+        currentSlide.textContent = String(current).padStart(2, "0");
+        progress.setAttribute("aria-valuenow", String(current));
+        progressFill.style.transform = `scaleX(${current / slides.length})`;
+      }
+
+      function moveTo(index) {
+        const target = Math.max(0, Math.min(slides.length - 1, index));
+        slides[target].scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            const index = slides.indexOf(entry.target);
+            if (entry.isIntersecting) {
+              entry.target.classList.add("is-active");
+              setActiveSlide(index);
+            } else {
+              entry.target.classList.remove("is-active");
+            }
+          }
+        },
+        { threshold: 0.58 },
+      );
+
+      slides.forEach((slide) => observer.observe(slide));
+      document.querySelector("[data-previous]").addEventListener("click", () => moveTo(activeIndex - 1));
+      document.querySelector("[data-next]").addEventListener("click", () => moveTo(activeIndex + 1));
+
+      document.addEventListener("keydown", (event) => {
+        if (event.altKey || event.ctrlKey || event.metaKey) return;
+        const target = event.target;
+        if (target instanceof HTMLElement && target.closest("button, a, input, textarea, select")) return;
+
+        if (["ArrowDown", "ArrowRight", "PageDown", " "].includes(event.key)) {
+          event.preventDefault();
+          moveTo(activeIndex + 1);
+        } else if (["ArrowUp", "ArrowLeft", "PageUp"].includes(event.key)) {
+          event.preventDefault();
+          moveTo(activeIndex - 1);
+        } else if (event.key === "Home") {
+          moveTo(0);
+        } else if (event.key === "End") {
+          moveTo(slides.length - 1);
+        }
+      });
+    </script>
+  </body>
+</html>
