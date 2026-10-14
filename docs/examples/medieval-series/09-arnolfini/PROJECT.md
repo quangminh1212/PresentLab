@@ -6,7 +6,7 @@
 **Medium:** Sơn dầu trên gỗ sồi  
 **Visual treatment:** Nội thất Flemish · ánh cửa sổ, gỗ tối và chi tiết soi gương
 
-Standalone animated HTML presentation with 20 slides. Open deck.html in a browser; use the arrow keys, Page Up/Down, Home/End, or the on-screen controls. The PDF export is static; transitions and reveal animations remain in the HTML.
+Standalone animated HTML presentation with 20 slides. Open [deck.html](../../../../examples/medieval-series/09-arnolfini/deck.html) in a browser; use the arrow keys, Page Up/Down, Home/End, or the on-screen controls. The PDF export is static; transitions and reveal animations remain in the HTML.
 
 ## Slide outline
 

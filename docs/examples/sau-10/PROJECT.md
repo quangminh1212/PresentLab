@@ -4,19 +4,19 @@ An animated, 10-slide HTML concept deck for a fictional city-discovery experienc
 
 ## Open the deck
 
-Open `deck.html` in a browser. Scroll, swipe, or use the arrow keys, Page Up/Down, Home, and End. The floating controls appear on hover or keyboard focus.
+Open [`deck.html`](../../../examples/sau-10/deck.html) in a browser. Scroll, swipe, or use the arrow keys, Page Up/Down, Home, and End. The floating controls appear on hover or keyboard focus.
 
 ## Project notes
 
 - This is a concept project, not a description of a real product. Stops and times on slide 7 are illustrative.
-- The three images in `assets/` are generated concept artwork. They do not document real venues or events.
+- The ten images embedded in `deck.html` are generated concept artwork. They do not document real venues or events.
 - CSS motion runs in the browser version. PresentLab's deterministic PNG, PDF, and PPTX renderer disables animation, so those exports are static.
 
 ## Visual prompt set
 
 Generated with the built-in ImageGen tool. These prompts are kept with the project so the visuals can be regenerated or adapted.
 
-### `assets/saigon-night-concept.png`
+### `embedded image: saigon-night-concept.png`
 
 ```text
 Use case: photorealistic-natural
@@ -29,7 +29,7 @@ Constraints: purely conceptual artwork, not a documentary photograph or record o
 Avoid: recognizable real people, distorted vehicles, oversaturated cyberpunk neon, fake interface elements, sharp readable signs
 ```
 
-### `assets/night-food-concept.png`
+### `embedded image: night-food-concept.png`
 
 ```text
 Use case: photorealistic-natural
@@ -41,7 +41,7 @@ Lighting/mood: amber tungsten light, deep navy shadows, a trace of teal reflecte
 Constraints: conceptual generated scene only, no visible faces, no logos, no text, no watermark, no collage or graphic overlay
 ```
 
-### `assets/night-music-concept.png`
+### `embedded image: night-music-concept.png`
 
 ```text
 Use case: photorealistic-natural

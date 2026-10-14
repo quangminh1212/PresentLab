@@ -26,7 +26,7 @@
   }
   .pl-slide::before {
     content: ""; position: absolute; inset: 0; z-index: -1;
-    background-image: linear-gradient(0deg, var(--veil), var(--veil)), var(--art);
+    background-image: linear-gradient(0deg, var(--veil), var(--veil));
     background-size: cover; background-position: center; opacity: 1;
     transform: scale(1.035); transition: transform 1.2s cubic-bezier(.2,.75,.2,1), filter 1.2s ease;
     filter: saturate(.86);
@@ -123,6 +123,11 @@
   html[data-style="tres-riches"] .inner { outline: 1px solid color-mix(in srgb, var(--accent2) 40%, transparent); outline-offset: -44px; }
   html[data-style="arnolfini"] .slide--cover::before { background-position: center right; }
   html[data-style="merode"] .slide--split::after { width: 34%; background-position: 64% center; }
+  .slide--split[data-slide-id$="-05"] .inner { display: flex; justify-content: center; }
+  .slide--split[data-slide-id$="-05"] .copy { max-width: 1050px; margin-inline: auto; }
+  .slide--split[data-slide-id$="-05"]::before { background-image: none; }
+  .slide--split[data-slide-id$="-05"]::after { display: none; }
+
   @media (max-width: 760px) {
     .inner { padding: 48px 32px 70px; }
     .slide-title { font-size: clamp(40px, 10vw, 68px); }

@@ -6,7 +6,7 @@
 **Medium:** Icon encaustic trên bảng gỗ  
 **Visual treatment:** Icon Byzantine · vàng trầm, đối xứng và ánh nhìn trực diện
 
-Standalone animated HTML presentation with 20 slides. Open deck.html in a browser; use the arrow keys, Page Up/Down, Home/End, or the on-screen controls. The PDF export is static; transitions and reveal animations remain in the HTML.
+Standalone animated HTML presentation with 20 slides. Open [deck.html](../../../../examples/medieval-series/02-sinai/deck.html) in a browser; use the arrow keys, Page Up/Down, Home/End, or the on-screen controls. The PDF export is static; transitions and reveal animations remain in the HTML.
 
 ## Slide outline
 

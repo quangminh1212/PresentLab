@@ -6,7 +6,7 @@
 **Medium:** Tranh fresco phủ gần như toàn bộ tường nhà nguyện  
 **Visual treatment:** Fresco Padova · xanh lam, thạch cao ấm và cử chỉ rõ
 
-Standalone animated HTML presentation with 20 slides. Open deck.html in a browser; use the arrow keys, Page Up/Down, Home/End, or the on-screen controls. The PDF export is static; transitions and reveal animations remain in the HTML.
+Standalone animated HTML presentation with 20 slides. Open [deck.html](../../../../examples/medieval-series/06-giotto/deck.html) in a browser; use the arrow keys, Page Up/Down, Home/End, or the on-screen controls. The PDF export is static; transitions and reveal animations remain in the HTML.
 
 ## Slide outline
 

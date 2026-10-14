@@ -6,7 +6,7 @@
 **Medium:** Thủ bản Phúc Âm có minh họa  
 **Visual treatment:** Thủ bản Insular · giấy da, xanh khoáng và đỏ đất
 
-Standalone animated HTML presentation with 20 slides. Open deck.html in a browser; use the arrow keys, Page Up/Down, Home/End, or the on-screen controls. The PDF export is static; transitions and reveal animations remain in the HTML.
+Standalone animated HTML presentation with 20 slides. Open [deck.html](../../../../examples/medieval-series/01-kells/deck.html) in a browser; use the arrow keys, Page Up/Down, Home/End, or the on-screen controls. The PDF export is static; transitions and reveal animations remain in the HTML.
 
 ## Slide outline
 
