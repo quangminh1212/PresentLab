@@ -36,4 +36,4 @@ Standalone animated HTML presentation with 20 slides. Open [book-of-kells.html](
 - [Trinity College Dublin, Chi-Rho page](https://www.visittrinity.ie/blog/symbolism-in-the-book-of-kells-the-chi-rho-page/)
 - [Trinity College Dublin Digital Collections, Book of Kells](https://digitalcollections.tcd.ie/)
 
-Each slide uses a distinct public-domain or Creative Commons artwork. Its source and license appear in the slide footer; images load on demand from Wikimedia Commons and are resized for presentation use.
+Each slide has its own AI-generated illustration panel, embedded in the standalone HTML file. No external image requests are needed, so every illustration remains visible offline.

@@ -36,4 +36,4 @@ Standalone animated HTML presentation with 20 slides. Open [pantocrator-sinai.ht
 - [St Catherine's Monastery, Christ Pantocrator](https://mused.com/stories/50/christ-pantocrator-palladion-of-the-monastery-of-sinai/)
 - [Library of Congress, manuscripts at St Catherine's Monastery](https://www.loc.gov/collections/manuscripts-in-st-catherines-monastery-mount-sinai/about-this-collection/)
 
-Each slide uses a distinct public-domain or Creative Commons artwork. Its source and license appear in the slide footer; images load on demand from Wikimedia Commons and are resized for presentation use.
+Each slide has its own AI-generated illustration panel, embedded in the standalone HTML file. No external image requests are needed, so every illustration remains visible offline.

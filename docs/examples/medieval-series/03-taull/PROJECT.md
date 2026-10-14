@@ -36,4 +36,4 @@ Standalone animated HTML presentation with 20 slides. Open [sant-climent-taull.h
 - [MNAC, Paintings from Sant Climent de Taüll](https://www.museunacional.cat/en/colleccio/paintings-sant-climent-de-taull/master-taull/015966-cjt)
 - [MNAC, collection and conservation record](https://www.museunacional.cat/en/colleccio/paintings-sant-climent-de-taull/master-taull/015966-cjt)
 
-Each slide uses a distinct public-domain or Creative Commons artwork. Its source and license appear in the slide footer; images load on demand from Wikimedia Commons and are resized for presentation use.
+Each slide has its own AI-generated illustration panel, embedded in the standalone HTML file. No external image requests are needed, so every illustration remains visible offline.

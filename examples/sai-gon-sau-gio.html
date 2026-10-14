@@ -911,6 +911,50 @@
         }
       }
     </style>
+    <style id="presentlab-motion-enhancements">
+      @media (prefers-reduced-motion: no-preference) {
+        .pl-slide .slide-background-photo {
+          transform: scale(1.025);
+          transition: transform 1.8s cubic-bezier(.2,.75,.2,1), filter 1.2s ease;
+          filter: saturate(.9);
+        }
+        .pl-slide.is-active .slide-background-photo {
+          transform: scale(1.105) translate3d(-.4%, .25%, 0);
+          filter: saturate(1.12) contrast(1.04);
+        }
+        .pl-slide.is-active h1,
+        .pl-slide.is-active h2 {
+          animation: sai-title-arrive .92s cubic-bezier(.2,.75,.2,1) both;
+        }
+        .pl-slide.is-active p:not(.folio):not(.pl-number),
+        .pl-slide.is-active .slide-copy,
+        .pl-slide.is-active .slide-kicker {
+          animation: sai-copy-arrive .78s cubic-bezier(.2,.75,.2,1) both;
+          animation-delay: 100ms;
+        }
+        .pl-slide.is-active li:nth-child(1) { animation: sai-item-arrive .68s ease 140ms both; }
+        .pl-slide.is-active li:nth-child(2) { animation: sai-item-arrive .68s ease 230ms both; }
+        .pl-slide.is-active li:nth-child(3) { animation: sai-item-arrive .68s ease 320ms both; }
+        .pl-slide.is-active .slide-number,
+        .pl-slide.is-active .folio { animation: sai-number-arrive .8s cubic-bezier(.2,.75,.2,1) 180ms both; }
+      }
+      @keyframes sai-title-arrive {
+        from { opacity: 0; transform: translateY(28px); filter: blur(6px); }
+        to { opacity: 1; transform: translateY(0); filter: blur(0); }
+      }
+      @keyframes sai-copy-arrive {
+        from { opacity: 0; transform: translateY(18px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes sai-item-arrive {
+        from { opacity: 0; transform: translateX(-14px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+      @keyframes sai-number-arrive {
+        from { opacity: 0; letter-spacing: .28em; }
+        to { opacity: 1; letter-spacing: inherit; }
+      }
+    </style>
   </head>
   <body>
     <main class="deck" id="deck">

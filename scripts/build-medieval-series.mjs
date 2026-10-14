@@ -7,37 +7,23 @@ const outputRoot = join(root, "examples");
 const docsRoot = join(root, "docs", "examples", "medieval-series");
 const indexFileName = "bo-slide-nghe-thuat-trung-co.html";
 
-const decodeHtmlAttribute = (value = "") => value
-  .replace(/&quot;/g, '"')
-  .replace(/&#39;|&#x27;/gi, "'")
-  .replace(/&lt;/g, "<")
-  .replace(/&gt;/g, ">")
-  .replace(/&amp;/g, "&");
+const spritePosition = (index) => {
+  const column = index % 4;
+  const row = Math.floor(index / 4);
+  const x = 3.125 + column * 31.25;
+  const y = ((row * 1.02 + 0.01) / 4.1) * 100;
+  return `${x}% ${y.toFixed(3)}%`;
+};
 
 async function embeddedArtworks(slug, fileName, expectedCount) {
-  const html = await readFile(join(outputRoot, `${fileName}.html`), "utf8");
-  const sections = [...html.matchAll(/<section\b[^>]*data-slide-id="([^"]+)"[^>]*>/g)];
-  const artworks = sections.map((sectionMatch) => {
-    const slideId = sectionMatch[1];
-    const tag = sectionMatch[0];
-    const url = tag.match(/data-art-url="([^"]+)"/);
-    const title = tag.match(/data-artwork-title="([^"]*)"/);
-    const artist = tag.match(/data-artwork-artist="([^"]*)"/);
-    const source = tag.match(/data-artwork-source="([^"]*)"/);
-    const license = tag.match(/data-artwork-license="([^"]*)"/);
-    return url && {
-      slideId,
-      url: decodeHtmlAttribute(url?.[1] || ""),
-      title: decodeHtmlAttribute(title?.[1] || ""),
-      artist: decodeHtmlAttribute(artist?.[1] || ""),
-      source: decodeHtmlAttribute(source?.[1] || ""),
-      license: decodeHtmlAttribute(license?.[1] || ""),
-    };
-  });
-  if (artworks.length !== expectedCount || artworks.some((art) => !art?.url)) {
-    throw new Error(`${slug}.html must contain one embedded artwork for each of its ${expectedCount} slides.`);
-  }
-  return artworks;
+  if (expectedCount !== 20) throw new Error(`${slug} needs exactly 20 generated artwork panels.`);
+  const spritePath = join(root, "assets", "slide-artwork", `${fileName}-grid.jpg`);
+  const sprite = await readFile(spritePath);
+  if (sprite.length < 100_000) throw new Error(`Generated artwork sprite is missing or too small: ${spritePath}`);
+  return {
+    base64: sprite.toString("base64"),
+    positions: Array.from({ length: expectedCount }, (_, index) => spritePosition(index)),
+  };
 }
 
 const S = (kind, kicker, title, body, points = []) => ({
@@ -524,20 +510,24 @@ const css = `
   .pl-slide {
     isolation: isolate; position: relative; display: flex; width: 100vw; height: 100vh;
     min-height: 560px; overflow: hidden; scroll-snap-align: start; scroll-snap-stop: always;
-    background: var(--paper); page-break-after: always;
+    background: var(--paper); page-break-after: always; opacity: .72;
+    filter: saturate(.84) brightness(.9); transition: opacity .72s ease, filter .82s ease;
   }
+  .pl-slide.active { opacity: 1; filter: saturate(1.04) brightness(1); }
   .pl-slide::before {
     content: ""; position: absolute; inset: 0; z-index: -1;
-    background-image: linear-gradient(0deg, var(--veil), var(--veil)), var(--art);
-    background-size: cover; background-position: center; opacity: 1;
-    transform: scale(1.035); transition: transform 1.2s cubic-bezier(.2,.75,.2,1), filter 1.2s ease;
-    filter: saturate(.86);
+    background-image: linear-gradient(0deg, color-mix(in srgb, var(--veil) 55%, transparent), color-mix(in srgb, var(--veil) 55%, transparent)), var(--art);
+    background-size: cover, var(--art-size, cover); background-position: center, var(--art-position, center); background-repeat: no-repeat;
+    opacity: .98; transform: scale(1.055); transition: transform 1.4s cubic-bezier(.2,.75,.2,1), filter 1.2s ease, opacity .8s ease;
+    filter: saturate(.96) contrast(1.04);
   }
-  .pl-slide.active::before { transform: scale(1); filter: saturate(1); }
+  .pl-slide.active::before { transform: scale(1.015); filter: saturate(1.12) contrast(1.06); animation: art-drift 18s ease-in-out infinite alternate; }
   .inner {
     position: relative; width: 100%; height: 100%; padding: 86px 112px 80px;
     display: flex; flex-direction: column; justify-content: space-between; z-index: 1;
   }
+  .inner::before { content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none; background: linear-gradient(108deg, transparent 34%, rgba(255,255,255,.2) 49%, transparent 62%); transform: translateX(-120%); }
+  .inner > * { position: relative; z-index: 1; }
   .copy { max-width: 1180px; }
   .eyebrow, .folio, .cover-meta, .source-label {
     font-size: 15px; line-height: 1.35; font-weight: 750; letter-spacing: .19em; text-transform: uppercase;
@@ -574,22 +564,19 @@ const css = `
     color: rgba(255,249,232,.7);
   }
   .slide--cover::before {
-    inset: 0 0 0 42%; background-image: var(--art);
-    background-size: cover; background-position: center; opacity: 1; filter: none;
+    inset: 0; background-image: var(--art);
+    background-size: var(--art-size, cover); background-position: var(--art-position, center); opacity: 1; filter: none;
   }
   .slide--interlude::before {
-    inset: 0 0 0 42%; background-image: var(--art);
-    background-size: cover; background-position: center; opacity: 1; filter: none;
+    inset: 0; background-image: var(--art);
+    background-size: var(--art-size, cover); background-position: var(--art-position, center); opacity: 1; filter: none;
   }
   .slide--interlude .slide-title, .slide--interlude .slide-body, .slide--interlude .eyebrow { color: #fff9e8; }
   .slide--interlude .slide-body { color: rgba(255,249,232,.82); }
   .slide--thesis .inner, .slide--statement .inner { justify-content: center; }
   .slide--thesis .copy, .slide--statement .copy { max-width: 1000px; }
   .slide--split .inner { display: grid; grid-template-columns: 1.2fr .8fr; gap: 64px; align-items: center; }
-  .slide--split::after {
-    content: ""; position: absolute; z-index: 0; top: 0; right: 0; bottom: 0; width: 39%;
-    background-image: var(--art); background-size: cover; background-position: center; opacity: 1;
-  }
+  .slide--split::after { display: none; }
   .slide--split .copy { position: relative; z-index: 1; }
   .slide--split .slide-body { max-width: 760px; }
   .slide--sequence .inner { justify-content: center; }
@@ -609,12 +596,23 @@ const css = `
   .control-button { border: 0; background: transparent; color: inherit; cursor: pointer; padding: 8px; font: 700 18px/1 var(--sans); }
   .counter { min-width: 68px; text-align: right; font: 700 12px/1 var(--sans); letter-spacing: .14em; }
   .reveal { opacity: 1; transform: none; }
-  .active .reveal { animation: rise-in .78s cubic-bezier(.2,.75,.2,1) both; }
-  .active .reveal:nth-child(2) { animation-delay: 90ms; }
-  .active .reveal:nth-child(3) { animation-delay: 170ms; }
-  .active .reveal:nth-child(4) { animation-delay: 250ms; }
-  @keyframes rise-in { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
-  @keyframes image-breathe { from { transform: scale(1.055); } to { transform: scale(1); } }
+  .active .reveal { animation: rise-in .82s cubic-bezier(.2,.75,.2,1) both; }
+  .active .reveal:nth-child(2) { animation-delay: 100ms; }
+  .active .reveal:nth-child(3) { animation-delay: 190ms; }
+  .active .reveal:nth-child(4) { animation-delay: 280ms; }
+  .active .slide-title { animation: title-focus 1.05s cubic-bezier(.2,.75,.2,1) both; }
+  .active .points li { animation: point-rise .72s cubic-bezier(.2,.75,.2,1) both; animation-delay: calc(120ms + var(--point-index, 0) * 110ms); }
+  .active .inner::before { animation: light-sweep 1.25s cubic-bezier(.2,.75,.2,1) .08s both; }
+  .active.slide--cover .cover-copy { animation: cover-arrive 1s cubic-bezier(.2,.75,.2,1) both; }
+  .control-button { transition: transform .25s ease, color .25s ease, opacity .25s ease; }
+  .control-button:hover { transform: scale(1.2); color: var(--accent2); }
+  .controls { backdrop-filter: blur(10px); }
+  @keyframes rise-in { from { opacity: 0; transform: translateY(28px); filter: blur(5px); } to { opacity: 1; transform: translateY(0); filter: blur(0); } }
+  @keyframes title-focus { from { opacity: 0; transform: translateY(34px) scale(.975); filter: blur(8px); } to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); } }
+  @keyframes point-rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes cover-arrive { from { opacity: 0; transform: translateX(-34px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes light-sweep { 0% { opacity: 0; transform: translateX(-120%); } 18% { opacity: .8; } 100% { opacity: 0; transform: translateX(120%); } }
+  @keyframes art-drift { from { transform: scale(1.015) translate3d(0,0,0); } to { transform: scale(1.075) translate3d(-.35%,.25%,0); } }
   html[data-style="kells"] .inner { outline: 1px solid color-mix(in srgb, var(--accent2) 38%, transparent); outline-offset: -34px; }
   html[data-style="byzantine"] .slide--thesis .copy, html[data-style="byzantine"] .slide--statement .copy { margin-inline: auto; text-align: center; }
   html[data-style="byzantine"] .slide-title { letter-spacing: -.025em; }
@@ -625,8 +623,7 @@ const css = `
   html[data-style="giotto"] .slide--split::after { width: 43%; }
   html[data-style="siena"] .slide-title { font-style: italic; }
   html[data-style="tres-riches"] .inner { outline: 1px solid color-mix(in srgb, var(--accent2) 40%, transparent); outline-offset: -44px; }
-  html[data-style="arnolfini"] .slide--cover::before { background-position: center right; }
-  html[data-style="merode"] .slide--split::after { width: 34%; background-position: 64% center; }
+  html[data-style="arnolfini"] .slide--cover::before { background-position: var(--art-position, center); }
   @media (max-width: 760px) {
     .inner { padding: 48px 32px 70px; }
     .slide-title { font-size: clamp(40px, 10vw, 68px); }
@@ -641,7 +638,7 @@ const css = `
     .cover-copy .slide-title { font-size: clamp(56px, 12vw, 86px); }
   }
   @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   }
   @media print {
     html, body { margin: 0 !important; padding: 0 !important; overflow: visible !important; scroll-snap-type: none !important; }
@@ -649,10 +646,18 @@ const css = `
     .pl-slide { width: 100vw; height: 100vh; min-height: 0; overflow: hidden; break-after: page; page-break-after: always; }
     .pl-slide:last-of-type { break-after: auto; page-break-after: auto; }
     .reveal, .active .reveal { opacity: 1 !important; transform: none !important; animation: none !important; }
-    .pl-slide::before { display: none !important; background-image: none !important; transform: none !important; transition: none !important; filter: none !important; }
+    .pl-slide::before {
+      display: block !important;
+      background-image: linear-gradient(0deg, color-mix(in srgb, var(--veil) 55%, transparent), color-mix(in srgb, var(--veil) 55%, transparent)), var(--art) !important;
+      background-size: cover, var(--art-size, cover) !important;
+      background-position: center, var(--art-position, center) !important;
+      background-repeat: no-repeat !important;
+      transform: none !important; transition: none !important; filter: none !important; opacity: 1 !important;
+    }
     .slide--cover::before, .slide--interlude::before {
-      display: block !important; inset: 0 0 0 42% !important; background-image: var(--art) !important;
-      background-size: cover !important; background-position: center !important; opacity: 1 !important;
+      display: block !important; inset: 0 !important;
+      background-image: linear-gradient(0deg, color-mix(in srgb, var(--veil) 55%, transparent), color-mix(in srgb, var(--veil) 55%, transparent)), var(--art) !important;
+      background-size: var(--art-size, cover) !important; background-position: var(--art-position, center) !important; opacity: 1 !important;
     }
     .slide--split::after { background-image: var(--art) !important; background-size: cover !important; background-position: center !important; opacity: 1 !important; filter: none !important; }
     .slide--cover .cover-copy, .slide--interlude .copy { opacity: 1 !important; background: var(--deep) !important; }
@@ -661,10 +666,10 @@ const css = `
 
 function pointsMarkup(points) {
   if (!points?.length) return "";
-  return `<ol class="points reveal">${points.map((point) => `<li>${escapeHtml(point)}</li>`).join("")}</ol>`;
+  return `<ol class="points reveal">${points.map((point, index) => `<li style="--point-index:${index}">${escapeHtml(point)}</li>`).join("")}</ol>`;
 }
 
-function slideMarkup(deck, slide, index, artwork) {
+function slideMarkup(deck, slide, index, artworkPosition) {
   const number = String(index + 1).padStart(2, "0");
   const kind = escapeHtml(slide.kind);
   const cover = slide.kind === "cover";
@@ -674,13 +679,10 @@ function slideMarkup(deck, slide, index, artwork) {
     ? `<ul class="sources reveal">${deck.sources.map(([label, url]) => `<li><a href="${escapeHtml(url)}">${escapeHtml(label)}</a></li>`).join("")}</ul>`
     : `<p class="slide-body reveal">${escapeHtml(slide.body)}</p>`;
   const endContent = sources
-    ? `<p class="slide-body reveal">Mỗi slide có một hình ảnh tác phẩm riêng; tên, tác giả, nguồn và giấy phép được ghi dưới từng trang.</p>`
+    ? `<p class="slide-body reveal">Mỗi trang dùng một minh họa riêng được tạo cho bộ slide và nhúng sẵn trong HTML, nên vẫn hiển thị khi không có kết nối Internet.</p>`
     : pointsMarkup(slide.points);
-  const artworkCredit = [...[artwork.title, artwork.artist, artwork.license].filter(Boolean), "resized"].join(" · ");
-  const artworkCreditMarkup = artwork.source
-    ? `<a class="art-credit" href="${escapeHtml(artwork.source)}" target="_blank" rel="noopener noreferrer" title="${escapeHtml(`${artworkCredit}. Resized and compressed for this slide.`)}">${escapeHtml(artworkCredit)}</a>`
-    : `<span class="art-credit">${escapeHtml(artworkCredit)}</span>`;
-  return `<section class="pl-slide slide--${kind}" data-pl-slide data-slide-id="${deck.slug}-${number}" style="--art:none" data-art-url="${escapeHtml(artwork.url)}" data-artwork-title="${escapeHtml(artwork.title)}" data-artwork-artist="${escapeHtml(artwork.artist)}" data-artwork-source="${escapeHtml(artwork.source)}" data-artwork-license="${escapeHtml(artwork.license)}" aria-label="Trang ${number}: ${escapeHtml(slide.title)}">
+  const artworkCreditMarkup = `<span class="art-credit">Minh họa AI · PresentLab</span>`;
+  return `<section class="pl-slide slide--${kind}" data-pl-slide data-slide-id="${deck.slug}-${number}" data-art-panel="${index + 1}" style="--art-position:${artworkPosition}" aria-label="Trang ${number}: ${escapeHtml(slide.title)}">
     <div class="inner">
       <div class="${contentClass}">
         <p class="eyebrow reveal">${escapeHtml(slide.kicker)}</p>
@@ -694,10 +696,10 @@ function slideMarkup(deck, slide, index, artwork) {
   </section>`;
 }
 
-function deckHtml(deck, artworks) {
+function deckHtml(deck, artworkSprite) {
   const themeStyle = Object.entries(deck.theme).map(([key, value]) => `--${key}:${value}`).join(";");
   return `<!doctype html>
-<html lang="vi" data-pl-format="16:9" data-pl-title="${escapeHtml(deck.title)}" data-pl-author="PresentLab concept project" data-pl-theme="${deck.style}" data-style="${deck.style}" style="${themeStyle}">
+<html lang="vi" data-pl-format="16:9" data-pl-title="${escapeHtml(deck.title)}" data-pl-author="PresentLab concept project" data-pl-theme="${deck.style}" data-style="${deck.style}" style="${themeStyle};--art:url('data:image/jpeg;base64,${artworkSprite.base64}');--art-size:500% 510%">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -708,7 +710,7 @@ function deckHtml(deck, artworks) {
 </head>
 <body>
   <main aria-label="${escapeHtml(deck.title)}">
-    ${deck.slides.map((slide, index) => slideMarkup(deck, slide, index, artworks[index])).join("\n")}
+    ${deck.slides.map((slide, index) => slideMarkup(deck, slide, index, artworkSprite.positions[index])).join("\n")}
   </main>
   <nav class="controls" aria-label="Điều hướng slide">
     <button class="control-button" id="previous" aria-label="Trang trước">←</button>
@@ -736,7 +738,11 @@ function deckHtml(deck, artworks) {
       });
       const observer = new IntersectionObserver((entries) => {
         for (const entry of entries) {
-          if (!entry.isIntersecting) continue;
+          if (!entry.isIntersecting) {
+            entry.target.classList.remove("active");
+            continue;
+          }
+          slides.forEach((slide) => { if (slide !== entry.target) slide.classList.remove("active"); });
           current = slides.indexOf(entry.target);
           entry.target.classList.add("active");
           progress.style.transform = "scaleX(" + ((current + 1) / slides.length) + ")";
@@ -744,15 +750,6 @@ function deckHtml(deck, artworks) {
         }
       }, { threshold: 0.52 });
       slides.forEach((slide, index) => { observer.observe(slide); if (index === 0) slide.classList.add("active"); });
-      const artworkObserver = new IntersectionObserver((entries, artworkObserver) => {
-        for (const entry of entries) {
-          if (!entry.isIntersecting) continue;
-          const url = entry.target.dataset.artUrl;
-          if (url) entry.target.style.setProperty("--art", "url(\"" + url + "\")");
-          artworkObserver.unobserve(entry.target);
-        }
-      }, { rootMargin: "100% 0px" });
-      slides.forEach((slide) => artworkObserver.observe(slide));
     })();
   </script>
 </body>
@@ -766,7 +763,7 @@ function projectReadme(deck) {
     `**Artwork:** ${deck.work}  \n**Maker:** ${deck.maker}  \n**Date:** ${deck.date}  \n**Medium:** ${deck.medium}  \n**Visual treatment:** ${deck.styleName}\n\n` +
     `Standalone animated HTML presentation with 20 slides. Open [${deck.fileName}.html](../../../../examples/${deck.fileName}.html) in a browser; use the arrow keys, Page Up/Down, Home/End, or the on-screen controls. The PDF export is static; transitions and reveal animations remain in the HTML.\n\n` +
     `## Slide outline\n\n${outline}\n\n## Sources\n\n${sources}\n\n` +
-    `Each slide uses a distinct public-domain or Creative Commons artwork. Its source and license appear in the slide footer; images load on demand from Wikimedia Commons and are resized for presentation use.\n`;
+    `Each slide has its own AI-generated illustration panel, embedded in the standalone HTML file. No external image requests are needed, so every illustration remains visible offline.\n`;
 }
 
 function indexHtml(cards) {
@@ -779,10 +776,10 @@ await mkdir(docsRoot, { recursive: true });
 const cards = [];
 for (const deck of decks) {
   if (deck.slides.length !== 20) throw new Error(`${deck.slug} has ${deck.slides.length} slides; expected 20.`);
-  const artworks = await embeddedArtworks(deck.slug, deck.fileName, deck.slides.length);
+  const artworkSprite = await embeddedArtworks(deck.slug, deck.fileName, deck.slides.length);
   const projectDocsDir = join(docsRoot, deck.slug);
   await mkdir(projectDocsDir, { recursive: true });
-  await writeFile(join(outputRoot, `${deck.fileName}.html`), deckHtml(deck, artworks), "utf8");
+  await writeFile(join(outputRoot, `${deck.fileName}.html`), deckHtml(deck, artworkSprite), "utf8");
   await writeFile(join(projectDocsDir, "PROJECT.md"), projectReadme(deck), "utf8");
   const cardStyle = `style="--accent:${deck.theme.accent};--accent2:${deck.theme.accent2}"`;
   cards.push(`<a class="card" ${cardStyle} href="./${deck.fileName}.html"><div><span class="num">20 SLIDES</span><h2>${escapeHtml(deck.title)}</h2><p>${escapeHtml(deck.work)}<br>${escapeHtml(deck.styleName)}</p></div><span class="open">Mở project ↗</span></a>`);
@@ -790,7 +787,7 @@ for (const deck of decks) {
 
 await writeFile(join(outputRoot, indexFileName), indexHtml(cards), "utf8");
 await writeFile(join(docsRoot, "README.md"), `# Mười bộ slide: nghệ thuật Trung cổ\n\n` +
-  `Mỗi file HTML trong examples là một project độc lập, gồm 20 trang và animation. Mỗi trang dùng một tác phẩm khác nhau; tên tác phẩm, tác giả, giấy phép và liên kết nguồn được ghi ở chân trang. Ảnh tải theo nhu cầu từ Wikimedia Commons nên cần kết nối Internet. PROJECT.md chứa dàn ý slide và nguồn tham khảo. Mở [bo-slide-nghe-thuat-trung-co.html](../../../examples/${indexFileName}) để vào từng deck.\n\n` +
+  `Mỗi file HTML trong examples là một project độc lập, gồm 20 trang và animation. Mỗi trang có một minh họa AI riêng, được nhúng trực tiếp trong HTML để luôn hiển thị kể cả khi offline. PROJECT.md chứa dàn ý slide và nguồn tham khảo. Mở [bo-slide-nghe-thuat-trung-co.html](../../../examples/${indexFileName}) để vào từng deck.\n\n` +
   `PDF tĩnh được xuất vào output/pdf/medieval-series/. Animation chỉ chạy trong HTML.\n`, "utf8");
 
 console.log(`Built ${decks.length} standalone decks (${decks.reduce((sum, deck) => sum + deck.slides.length, 0)} slides) in ${outputRoot}`);

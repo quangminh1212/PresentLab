@@ -36,4 +36,4 @@ Standalone animated HTML presentation with 20 slides. Open [tres-riches-heures.h
 - [Château de Chantilly, Très Riches Heures du duc de Berry](https://chateaudechantilly.fr/categ-collection/manuscrits/les-tres-riches-heures-du-duc-de-berry/)
 - [Château de Chantilly, Cabinet des Livres](https://chateaudechantilly.fr/chateau/le-cabinet-des-livres/)
 
-Each slide uses a distinct public-domain or Creative Commons artwork. Its source and license appear in the slide footer; images load on demand from Wikimedia Commons and are resized for presentation use.
+Each slide has its own AI-generated illustration panel, embedded in the standalone HTML file. No external image requests are needed, so every illustration remains visible offline.

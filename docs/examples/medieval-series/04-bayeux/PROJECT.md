@@ -36,4 +36,4 @@ Standalone animated HTML presentation with 20 slides. Open [bayeux-tapestry.html
 - [Bayeux Museum, Tapestry or embroidery?](https://www.bayeuxmuseum.com/en/the-bayeux-tapestry/discover-the-bayeux-tapestry/tapestry-or-embroidery/)
 - [Bayeux Museum, discover the Bayeux Tapestry](https://www.bayeuxmuseum.com/en/the-bayeux-tapestry/)
 
-Each slide uses a distinct public-domain or Creative Commons artwork. Its source and license appear in the slide footer; images load on demand from Wikimedia Commons and are resized for presentation use.
+Each slide has its own AI-generated illustration panel, embedded in the standalone HTML file. No external image requests are needed, so every illustration remains visible offline.
