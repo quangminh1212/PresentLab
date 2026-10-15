@@ -31,6 +31,15 @@ const specPath = resolve(ROOT, "scripts/specs", `${slug}.json`);
 const manifestPath = resolve(ROOT, "assets/slide-artwork2", `${slug}.json`);
 const spec = JSON.parse(readFileSync(specPath, "utf-8"));
 const manifest = JSON.parse(readFileSync(manifestPath, "utf-8"));
+const editorialPath = resolve(ROOT, "scripts/specs", "renaissance-editorial.json");
+const editorialSet = JSON.parse(readFileSync(editorialPath, "utf-8"));
+const editorial = editorialSet[slug] || {};
+Object.assign(spec, editorial);
+spec.works = spec.works.map((work, index) => ({
+  ...work,
+  note: editorial.notes?.[index] || work.note || "",
+}));
+const showcaseStyle = readFileSync(resolve(ROOT, "examples/renaissance-showcase.css"), "utf-8");
 
 const pal = { paper: "#efe7d6", ink: "#2b2722", muted: "#7a6f5f", accent: "#8a6a3b", accent2: "#37566e", deep: "#23323f", ...(spec.palette || {}) };
 const works = spec.works || [];
@@ -49,12 +58,12 @@ const b64 = (im) => (im && im.data ? `data:${im.mime};base64,${im.data}` : "");
 function artPanel(im, opts = {}) {
   const src = b64(im);
   if (!src) return "";
-  const { rounded = true, shadow = true, filter = "" } = opts;
+  const { rounded = true, shadow = true, filter = "", fit = "contain" } = opts;
   const style = [
     rounded ? "border-radius:14px" : "",
     shadow ? "box-shadow:0 30px 80px rgb(20 18 16 / 28%)" : "",
     filter,
-    "object-fit:cover;width:100%;height:100%;display:block",
+    `object-fit:${fit};width:100%;height:100%;display:block`,
   ].filter(Boolean).join(";");
   return `<img class="plate" src="${src}" alt="${(im.alt || "").replace(/"/g, "&quot;")}" loading="lazy" style="${style}">`;
 }
@@ -70,56 +79,93 @@ function esc(s) {
 const slides = [];
 
 /* 1 — Cover (hero) */
-slides.push({ cls: "slide--cover", hero: true, html: `
+slides.push({ cls: "slide--cover", hero: true, anim: "fade", html: `
   <div class="cover-copy">
-    <p class="eyebrow reveal">PHỤC HƯNG · ${esc(spec.subtitle || "")}</p>
-    <h1 class="slide-title reveal">${esc(spec.title)}</h1>
-    <p class="slide-body reveal">${esc((spec.intro || "Một hành trình qua những kiệt tác của thời Phục hưng — mỗi trang là một tác phẩm, mỗi tác phẩm là một câu chuyện về ánh sáng, hình thể và con người."))}</p>
+    <p class="eyebrow reveal" style="--i:0">PHỤC HƯNG · ${esc(spec.subtitle || "")}</p>
+    <h1 class="slide-title reveal" style="--i:1">${esc(spec.title)}</h1>
+    <p class="slide-body reveal" style="--i:2">${esc((spec.intro || "Một hành trình qua những kiệt tác của thời Phục hưng — mỗi trang là một tác phẩm, mỗi tác phẩm là một câu chuyện về ánh sáng, hình thể và con người."))}</p>
   </div>
   ${footer(1, esc(spec.title))}
 ` });
 
 /* 2 — Opening statement / context */
-slides.push({ cls: "slide--statement", html: `
+slides.push({ cls: "slide--statement", anim: "rise", html: `
   <div class="copy">
-    <p class="eyebrow reveal">BỐI CẢNH</p>
-    <h1 class="slide-title reveal">${esc(spec.openingTitle || "Ai là người nghệ sĩ này?")}</h1>
-    <p class="slide-body reveal">${esc(spec.openingBody || `Bộ sưu tập gồm 20 tác phẩm tiêu biểu của ${spec.title}, chọn lọc từ các bảo tàng và bộ sưu tập công cộng trên toàn thế giới.`)}</p>
+    <p class="eyebrow reveal" style="--i:0">BỐI CẢNH</p>
+    <h1 class="slide-title reveal" style="--i:1">${esc(spec.openingTitle || "Ai là người nghệ sĩ này?")}</h1>
+    <p class="slide-body reveal" style="--i:2">${esc(spec.openingBody || `Bộ sưu tập gồm 20 tác phẩm tiêu biểu của ${spec.title}, chọn lọc từ các bảo tàng và bộ sưu tập công cộng trên toàn thế giới.`)}</p>
     <ul class="points">
-      ${(spec.openingPoints || ["Hình ảnh thật, độ phân giải cao từ Wikimedia Commons.", "Mỗi tác phẩm đi kèm năm sáng tác và nơi lưu giữ.", "Tựu chung lại: một cách nhìn trọn vẹn về phong cách của ông."]).map((p, i) => `<li class="reveal" style="--point-index:${i}">${esc(p)}</li>`).join("")}
+      ${(spec.openingPoints || ["Hình ảnh thật, độ phân giải cao từ Wikimedia Commons.", "Mỗi tác phẩm đi kèm năm sáng tác và nơi lưu giữ.", "Tựu chung lại: một cách nhìn trọn vẹn về phong cách của ông."]).map((p, i) => `<li class="reveal" style="--i:${i + 3}">${esc(p)}</li>`).join("")}
     </ul>
   </div>
   ${footer(2, esc(spec.title))}
 ` });
 
-/* 3..18 — one work per slide (the 16 central works) */
+/* 3..18 — 16 works, each with a varied layout + a distinct entrance motion */
+const LAYOUTS = ["split","reverse","spotlight","fullbleed","split","reverse","fullbleed","dual","split","spotlight","reverse","fullbleed","split","dual","reverse","spotlight"];
+const ANIMS   = ["zoom","rise","left","fade","right","rise","blur","left","zoom","right","rise","fade","left","blur","rise","zoom"];
+function workCopy(w, n, meta, extra = "") {
+  const idx = String(n - 2).padStart(2, "0");
+  return `
+        <p class="eyebrow reveal" style="--i:0">TÁC PHẨM ${idx}${extra}</p>
+        <h1 class="slide-title reveal" style="--i:1">${esc(w.title)}</h1>
+        <p class="slide-body reveal" style="--i:2">${w.note ? esc(w.note) : ""}</p>
+        <p class="work-line reveal" style="--i:3">${meta ? esc(meta) : ""}</p>`;
+}
 for (let i = 0; i < 16; i++) {
   const w = works[i];
   const im = images[i];
   const n = i + 3;
   const meta = [w.year, w.where].filter(Boolean).join(" · ");
-  slides.push({ cls: "slide--split", images: [im], html: `
+  const layout = LAYOUTS[i];
+  const anim = ANIMS[i];
+  let inner;
+  if (layout === "reverse") {
+    inner = `
+    <div class="inner reverse">
+      <figure class="art-frame reveal">${artPanel(im)}</figure>
+      <div class="copy">${workCopy(w, n, meta)}</div>
+    </div>`;
+  } else if (layout === "spotlight") {
+    inner = `
+    <div class="inner spotlight">
+      <figure class="art-frame spotlight-art reveal">${artPanel(im, { rounded: false })}</figure>
+      <div class="copy center">${workCopy(w, n, meta)}</div>
+    </div>`;
+  } else if (layout === "fullbleed") {
+    inner = `
+    <div class="inner fullbleed">
+      <figure class="art-frame fullbleed-art">${artPanel(im, { rounded: false, shadow: false })}</figure>
+      <div class="copy fullbleed-copy">${workCopy(w, n, meta)}</div>
+    </div>`;
+  } else if (layout === "dual") {
+    const im2 = images[(i + 5) % 16];
+    inner = `
+    <div class="inner dual">
+      <div class="dual-pair">
+        <figure class="art-frame dual-main reveal">${artPanel(im)}</figure>
+        <figure class="art-frame dual-side reveal">${artPanel(im2)}</figure>
+      </div>
+      <div class="copy">${workCopy(w, n, meta, " · CÙNG TÁC GIẢ")}</div>
+    </div>`;
+  } else {
+    inner = `
     <div class="inner">
       <figure class="art-frame reveal">${artPanel(im)}</figure>
-      <div class="copy">
-        <p class="eyebrow reveal">TÁC PHẨM ${String(n - 2).padStart(2, "0")}</p>
-        <h1 class="slide-title reveal">${esc(w.title)}</h1>
-        <p class="slide-body reveal">${w.note ? esc(w.note) : ""}</p>
-        <p class="work-line reveal">${meta ? esc(meta) : ""}</p>
-      </div>
-    </div>
-    ${footer(n, esc(meta))}
-  ` });
+      <div class="copy">${workCopy(w, n, meta)}</div>
+    </div>`;
+  }
+  slides.push({ cls: `slide--${layout}`, anim, html: inner + footer(n, "") });
 }
 
 /* 19 — Gallery (4-up grid of remaining emphasis works) */
 {
   const picks = [0, 4, 9, 14].map((idx) => images[idx]).filter(Boolean);
-  slides.push({ cls: "slide--gallery", html: `
+  slides.push({ cls: "slide--gallery", anim: "left", html: `
     <div class="copy wide">
-      <p class="eyebrow reveal">BỨC TRANH TOÀN CẢNH</p>
-      <h1 class="slide-title reveal">Bốn nhịp điệu trong tay ${esc(spec.title.split(" ").slice(0, 2).join(" "))}</h1>
-      <div class="gallery-grid reveal">
+      <p class="eyebrow reveal" style="--i:0">BỨC TRANH TOÀN CẢNH</p>
+      <h1 class="slide-title reveal" style="--i:1">${esc(spec.galleryTitle || `Bốn nhịp điệu trong tay ${spec.title.split(" ").slice(0, 2).join(" ")}`)}</h1>
+      <div class="gallery-grid reveal" style="--i:2">
         ${picks.map((im) => `<figure class="g-thumb">${artPanel(im, { rounded: true, shadow: false })}<figcaption>${esc(im.alt || "")}</figcaption></figure>`).join("")}
       </div>
     </div>
@@ -128,12 +174,12 @@ for (let i = 0; i < 16; i++) {
 }
 
 /* 20 — Closing / legacy */
-slides.push({ cls: "slide--closing", hero: !!hero, html: `
+slides.push({ cls: "slide--closing", hero: !!hero, anim: "blur", html: `
   <div class="copy">
-    <p class="eyebrow reveal">DI SẢN</p>
-    <h1 class="slide-title reveal">${esc(spec.closingTitle || "Điều còn lại sau năm thế kỷ")}</h1>
-    <p class="slide-body reveal">${esc(spec.closingBody || `${spec.title} để lại một ngôn ngữ hình ảnh vẫn còn vang vọng — trong ánh sáng, trong hình thể người, và trong cách chúng ta nhìn thế giới.`)}</p>
-    <p class="credit reveal">Hình ảnh: Wikimedia Commons (phạm vi công cộng) · Thiết kế trình chiếu: PresentLab</p>
+    <p class="eyebrow reveal" style="--i:0">DI SẢN</p>
+    <h1 class="slide-title reveal" style="--i:1">${esc(spec.closingTitle || "Điều còn lại sau năm thế kỷ")}</h1>
+    <p class="slide-body reveal" style="--i:2">${esc(spec.closingBody || `${spec.title} để lại một ngôn ngữ hình ảnh vẫn còn vang vọng — trong ánh sáng, trong hình thể người, và trong cách chúng ta nhìn thế giới.`)}</p>
+    <p class="credit reveal" style="--i:3">Nguồn hình ảnh: Wikimedia Commons · Thiết kế trình chiếu: PresentLab</p>
   </div>
   ${footer(20, esc(spec.title))}
 ` });
@@ -157,7 +203,7 @@ const cssVars = [
 ].filter(Boolean).join(";");
 
 const sections = slides.map((s, idx) => `
-<section class="pl-slide ${s.cls}" data-pl-slide data-slide-id="${String(idx + 1).padStart(2, "0")}-${slug}" aria-label="${esc((s.aria || ""))}">
+<section class="pl-slide ${s.cls}" data-pl-slide data-anim="${s.anim || "rise"}" data-slide-id="${String(idx + 1).padStart(2, "0")}-${slug}" aria-label="${esc(s.aria || `${spec.title}, slide ${idx + 1} of ${slides.length}`)}">
   ${s.html}
 </section>`).join("\n");
 
@@ -185,9 +231,30 @@ body{background:var(--deep);font-family:var(--sans);color:var(--ink);overflow:hi
 .folio{color:var(--accent)}
 .work-meta{color:var(--muted)}
 .art-frame{position:relative;flex:0 0 auto;width:min(50vw,940px);height:100%;display:flex;align-items:center;justify-content:center;padding:clamp(30px,4vw,72px)}
-.art-frame .plate{max-width:100%;max-height:84%;aspect-ratio:attr(data-ar);border-radius:14px;box-shadow:0 30px 80px rgb(20 18 16 / 30%);filter:saturate(1.1) contrast(1.06)}
+ .art-frame .plate{max-width:100%;max-height:100%;aspect-ratio:attr(data-ar);border-radius:14px;box-shadow:0 30px 80px rgb(20 18 16 / 30%);filter:saturate(1.04) contrast(1.03)}
 .slide--split .inner{flex-direction:row;align-items:center;gap:clamp(24px,3vw,60px)}
 .slide--split .copy{width:min(34vw,640px)}
+.slide--reverse .inner{flex-direction:row-reverse;align-items:center;gap:clamp(24px,3vw,60px)}
+.slide--reverse .copy{width:min(34vw,640px)}
+.slide--spotlight .inner{flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:clamp(16px,2.2vw,38px)}
+.slide--spotlight .spotlight-art{padding:clamp(14px,2vw,34px)}
+.slide--spotlight .copy.center{width:min(64vw,1100px);margin-inline:auto}
+.slide--spotlight .slide-title{max-width:18ch;margin-inline:auto}
+.slide--fullbleed .inner{position:absolute;inset:0;padding:0;display:block}
+.slide--fullbleed .fullbleed-art{position:absolute;inset:0;width:100%;height:100%;padding:0}
+.slide--fullbleed .fullbleed-art .plate{width:100%;height:100%;max-width:100%;max-height:100%;object-fit:cover;border-radius:0;box-shadow:none;filter:saturate(1.08) contrast(1.04) brightness(.82)}
+.slide--fullbleed .fullbleed-copy{position:absolute;left:clamp(40px,6vw,108px);right:clamp(40px,6vw,108px);bottom:clamp(58px,9vh,118px);width:auto;max-width:min(70vw,1000px);z-index:3;color:#f3ead8}
+.slide--fullbleed .fullbleed-copy .eyebrow,.slide--fullbleed .fullbleed-copy .slide-title{color:#f4ecda;text-shadow:0 2px 22px rgba(0,0,0,.55)}
+.slide--fullbleed .fullbleed-copy .slide-body{color:#e7ddc7}
+.slide--fullbleed .fullbleed-copy .work-line{color:var(--accent2)}
+.slide--dual .inner{flex-direction:column;justify-content:center;align-items:center;gap:clamp(18px,2.4vw,42px)}
+.slide--dual .dual-pair{display:flex;align-items:center;justify-content:center;gap:clamp(16px,2vw,36px);width:min(84vw,1520px);height:min(60vh,880px)}
+.slide--dual .dual-main{width:min(58vw,1040px);height:100%}
+.slide--dual .dual-side{width:min(30vw,540px);height:100%}
+.slide--dual .dual-main .plate,.slide--dual .dual-side .plate{max-height:100%}
+.slide--dual .copy{width:min(72vw,1120px);text-align:center}
+.slide--dual .slide-title{max-width:18ch;margin-inline:auto}
+@media (max-width:780px){.slide--reverse .inner{flex-direction:column-reverse}.slide--dual .dual-pair{flex-direction:column;height:auto}.slide--dual .dual-main,.slide--dual .dual-side{width:min(88vw,560px);height:auto}}
 .slide--cover::before{content:"";position:absolute;inset:0;z-index:0;background-image:var(--hero-art);background-size:cover;background-position:center 30%;filter:saturate(1.08) contrast(1.05) brightness(.62)}
 .slide--cover::after{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(10,8,6,.86) 0%,rgba(10,8,6,.5) 42%,rgba(10,8,6,.12) 70%,transparent 100%)}
 .slide--cover .cover-copy{position:relative;z-index:2;width:min(60vw,900px);padding:clamp(40px,6vw,108px)}
@@ -203,14 +270,21 @@ body{background:var(--deep);font-family:var(--sans);color:var(--ink);overflow:hi
 .slide--closing .copy{position:relative;z-index:2}
 .slide--closing .slide-title{color:var(--deep)}
 @media (max-width:780px){.slide--split .inner{flex-direction:column;justify-content:flex-start;gap:18px}.art-frame{width:100%;height:42%}.copy{width:100%}.gallery-grid{grid-template-columns:repeat(2,1fr)}}
-/* reveal animations */
-.reveal{opacity:0;transform:translateY(22px);filter:blur(4px)}
-.active .reveal{animation:rise .82s cubic-bezier(.2,.75,.2,1) forwards}
-.active .reveal:nth-child(2){animation-delay:.09s}
-.active .reveal:nth-child(3){animation-delay:.18s}
-.active .reveal:nth-child(4){animation-delay:.27s}
-.active .reveal:nth-child(5){animation-delay:.36s}
-@keyframes rise{to{opacity:1;transform:none;filter:blur(0)}}
+/* reveal animations — varied entrance per slide, staggered within */
+.reveal{opacity:0;will-change:transform,opacity,filter}
+.active .reveal{transform:translateY(22px);filter:blur(4px);animation:rise .82s cubic-bezier(.2,.75,.2,1) forwards;animation-delay:calc(var(--i,0) * .09s)}
+[data-anim="fade"] .reveal{animation-name:fade;transform:none;filter:none}
+[data-anim="blur"] .reveal{animation-name:blurIn}
+[data-anim="left"] .reveal{animation-name:fromLeft;transform:translateX(-46px);filter:none}
+[data-anim="right"] .reveal{animation-name:fromRight;transform:translateX(46px);filter:none}
+[data-anim="zoom"] .reveal{animation-name:zoomIn;transform:scale(.86);filter:blur(3px)}
+[data-anim="rise"] .reveal{animation-name:rise;transform:translateY(22px);filter:blur(4px)}
+@keyframes rise{to{opacity:1;transform:translateY(0);filter:blur(0)}}
+@keyframes fade{from{opacity:0}to{opacity:1;transform:none;filter:none}}
+@keyframes blurIn{from{opacity:0}to{opacity:1;transform:none;filter:blur(0)}}
+@keyframes fromLeft{to{opacity:1;transform:translateX(0);filter:none}}
+@keyframes fromRight{to{opacity:1;transform:translateX(0);filter:none}}
+@keyframes zoomIn{to{opacity:1;transform:scale(1);filter:blur(0)}}
 /* controls */
 .controls{position:fixed;z-index:20;right:30px;bottom:24px;display:flex;align-items:center;gap:12px;color:#f3ead8;font:700 12px/1 var(--sans);letter-spacing:.12em}
 .progress{width:160px;height:2px;background:rgba(255,255,255,.22);overflow:hidden}
@@ -226,6 +300,7 @@ const html = `<!doctype html>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(spec.title)} · PresentLab</title>
 <style>${style}</style>
+<style>${showcaseStyle}</style>
 </head>
 <body>
 <div class="stage"><div class="deck" id="deck">
@@ -257,6 +332,7 @@ ${sections}
 const outDir = resolve(ROOT, "examples");
 mkdirSync(outDir, { recursive: true });
 const outPath = resolve(outDir, `${slug}.html`);
-writeFileSync(outPath, html, "utf-8");
-const sizeKB = Buffer.byteLength(html) / 1024;
+const cleanHtml = html.replace(/[ \t]+$/gm, "");
+writeFileSync(outPath, cleanHtml, "utf-8");
+const sizeKB = Buffer.byteLength(cleanHtml) / 1024;
 console.log(`Wrote ${outPath} (${sizeKB.toFixed(0)} KB) with ${slides.length} slides.`);
