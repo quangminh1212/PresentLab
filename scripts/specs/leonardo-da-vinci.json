@@ -1,7 +1,7 @@
 {
   "slug": "leonardo-da-vinci",
   "title": "Leonardo da Vinci",
-  "subtitle": "Thiên tài của sự quan sát và bí ẩn",
+  "subtitle": "Tài quan sát và những điều bí ẩn",
   "palette": { "paper": "#efe7d6", "ink": "#2b2722", "muted": "#7a6f5f", "accent": "#8a6a3b", "accent2": "#37566e", "deep": "#23323f" },
   "hero": { "search": "Mona Lisa Leonardo da Vinci C2RMF", "alt": "Mona Lisa, Leonardo da Vinci" },
   "works": [

@@ -35,8 +35,10 @@ const editorialPath = resolve(ROOT, "scripts/specs", "renaissance-editorial.json
 const editorialSet = JSON.parse(readFileSync(editorialPath, "utf-8"));
 const editorial = editorialSet[slug] || {};
 Object.assign(spec, editorial);
+const displayTitles = editorial.displayTitles || {};
 spec.works = spec.works.map((work, index) => ({
   ...work,
+  displayTitle: displayTitles[work.title] || work.displayTitle || work.title,
   note: editorial.notes?.[index] || work.note || "",
 }));
 const showcaseStyle = readFileSync(resolve(ROOT, "examples/renaissance-showcase.css"), "utf-8");
@@ -89,7 +91,7 @@ const slides = [];
 slides.push({ cls: "slide--cover", hero: true, anim: "fade", html: `
   <div class="cover-copy">
     <p class="eyebrow reveal" style="--i:0">PHỤC HƯNG · ${esc(spec.subtitle || "")}</p>
-    <h1 class="slide-title reveal" style="--i:1">${esc(spec.title)}</h1>
+    <h1 class="slide-title reveal" style="--i:1">${esc(spec.displayTitle || spec.title)}</h1>
     <p class="slide-body reveal" style="--i:2">${esc((spec.intro || "Một hành trình qua những kiệt tác của thời Phục hưng — mỗi trang là một tác phẩm, mỗi tác phẩm là một câu chuyện về ánh sáng, hình thể và con người."))}</p>
   </div>
   ${footer(1, esc(spec.title))}
@@ -141,7 +143,7 @@ function workCopy(w, n, meta, extra = "") {
   const idx = String(n - 2).padStart(2, "0");
   return `
         <p class="eyebrow reveal" style="--i:0">${esc(WORK_LABELS[slug] || "TÁC PHẨM")} · ${idx}${extra}</p>
-        <h1 class="slide-title reveal" style="--i:1">${esc(w.title)}</h1>
+        <h1 class="slide-title reveal" style="--i:1">${esc(w.displayTitle || w.title)}</h1>
         <p class="slide-body reveal" style="--i:2">${w.note ? esc(w.note) : ""}</p>
         <p class="work-line reveal" style="--i:3">${meta ? esc(meta) : ""}</p>`;
 }
@@ -349,6 +351,10 @@ const html = `<!doctype html>
 <title>${esc(spec.title)} · PresentLab</title>
 <style>${style}</style>
 <style>${showcaseStyle}</style>
+<style>
+.slide-title,.eyebrow,.g-thumb figcaption{text-wrap:balance}
+.slide-body,.points li,.work-line,.footer .work-meta{text-wrap:pretty}
+</style>
 </head>
 <body>
 <div class="stage"><div class="deck" id="deck">
