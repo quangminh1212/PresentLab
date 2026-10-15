@@ -1,0 +1,122 @@
+{
+    "slug":  "titian",
+    "title":  "Tiziano Vecellio (Titian)",
+    "subtitle":  "MÃ u sáº¯c lÃ m nÃªn khÃ´ng khÃ­ vÃ  thá»i gian",
+    "palette":  {
+                    "paper":  "#efe6d3",
+                    "ink":  "#2b221a",
+                    "muted":  "#7a6a54",
+                    "accent":  "#9a4b2c",
+                    "accent2":  "#3a6076",
+                    "deep":  "#34251b"
+                },
+    "hero":  {
+                 "search":  "Titian Bacchus and Ariadne",
+                 "alt":  "Bacchus and Ariadne, Titian"
+             },
+    "works":  [
+                  {
+                      "title":  "Bacchus and Ariadne",
+                      "search":  "Bacchus and Ariadne Titian",
+                      "year":  "1522â€“1523"
+                  },
+                  {
+                      "title":  "Assumption of the Virgin",
+                      "search":  "Assumption of the Virgin Titian",
+                      "year":  "1516â€“1518"
+                  },
+                  {
+                      "title":  "Venus of Urbino",
+                      "search":  "Venus of Urbino Titian",
+                      "year":  "1534"
+                  },
+                  {
+                      "title":  "Pesaro Madonna (Madonna di Ca\u0027 Pesaro)",
+                      "search":  "Pesaro Madonna Titian",
+                      "year":  "1519â€“1526"
+                  },
+                  {
+                      "title":  "The Worship of Venus",
+                      "search":  "Worship of Venus Titian",
+                      "year":  "1518â€“1519"
+                  },
+                  {
+                      "title":  "Bacchanal of the Andrians",
+                      "search":  "Bacchanal of the Andrians Titian",
+                      "year":  "1523â€“1526"
+                  },
+                  {
+                      "title":  "Diana and Actaeon",
+                      "search":  "Diana and Actaeon Titian",
+                      "year":  "1556â€“1559"
+                  },
+                  {
+                      "title":  "Diana and Callisto",
+                      "search":  "Diana and Callisto Titian",
+                      "year":  "1558â€“1559"
+                  },
+                  {
+                      "title":  "The Madonna of the Pesaro Family",
+                      "search":  "Titian portrait Charles V",
+                      "year":  "1548"
+                  },
+                  {
+                      "title":  "Portrait of a Man (Ariosto)",
+                      "search":  "Titian Ariosto portrait",
+                      "year":  "c. 1508â€“1510"
+                  },
+                  {
+                      "title":  "Flora",
+                      "search":  "Flora Titian",
+                      "year":  "c. 1515"
+                  },
+                  {
+                      "title":  "The Entombment of Christ",
+                      "search":  "Entombment of Christ Titian",
+                      "year":  "1525â€“1530"
+                  },
+                  {
+                      "title":  "Salome with the Head of John the Baptist",
+                      "search":  "Salome with the Head of John the Baptist Titian",
+                      "year":  "c. 1515"
+                  },
+                  {
+                      "title":  "The Gypsy Madonna",
+                      "search":  "Gypsy Madonna Titian",
+                      "year":  "c. 1510"
+                  },
+                  {
+                      "title":  "Noli me Tangere",
+                      "search":  "Noli me Tangere Titian",
+                      "year":  "c. 1511â€“1515"
+                  },
+                  {
+                      "title":  "The Rape of Europa",
+                      "search":  "Rape of Europa Titian",
+                      "year":  "1559â€“1562"
+                  },
+                  {
+                      "title":  "Ecce Homo",
+                      "search":  "Ecce Homo Titian",
+                      "year":  "c. 1543"
+                  },
+                  {
+                      "title":  "Self-Portrait",
+                      "search":  "Titian self portrait",
+                      "year":  "c. 1560"
+                  },
+                  {
+                      "title":  "The Crown of Thorns (Mocking of Christ)",
+                      "file":   "File:Titian - Christ crowned with Thorns - Louvre.jpg",
+                      "search":  "Titian Christ mockers crown thorns",
+                      "year":  "c. 1570"
+                  },
+                  {
+                      "title":  "PietÃ  (with Palma Giovane)",
+                      "search":  "Titian Pieta",
+                      "year":  "1575â€“1576"
+                  }
+              ]
+}
+
+

@@ -1,0 +1,29 @@
+{
+  "slug": "leonardo-da-vinci",
+  "title": "Leonardo da Vinci",
+  "subtitle": "Thiên tài của sự quan sát và bí ẩn",
+  "palette": { "paper": "#efe7d6", "ink": "#2b2722", "muted": "#7a6f5f", "accent": "#8a6a3b", "accent2": "#37566e", "deep": "#23323f" },
+  "hero": { "search": "Mona Lisa Leonardo da Vinci C2RMF", "alt": "Mona Lisa, Leonardo da Vinci" },
+  "works": [
+    { "title": "Mona Lisa (La Gioconda)", "search": "Mona Lisa Leonardo da Vinci", "year": "c. 1503–1519" },
+    { "title": "The Last Supper", "search": "The Last Supper Leonardo da Vinci", "year": "1495–1498" },
+    { "title": "Vitruvian Man", "search": "Vitruvian Man Leonardo da Vinci", "year": "c. 1490" },
+    { "title": "Lady with an Ermine", "search": "Lady with an Ermine Leonardo da Vinci", "year": "c. 1489–1491" },
+    { "title": "Annunciation", "search": "Annunciation Leonardo da Vinci Uffizi", "year": "c. 1472–1476" },
+    { "title": "Virgin of the Rocks (London)", "search": "Virgin of the Rocks National Gallery", "year": "c. 1491–1508" },
+    { "title": "Virgin of the Rocks (Paris)", "search": "Virgin of the Rocks Louvre Leonardo", "year": "c. 1483–1486" },
+    { "title": "Salvator Mundi", "search": "Salvator Mundi Leonardo da Vinci", "year": "c. 1499–1510" },
+    { "title": "Ginevra de' Benci", "search": "Ginevra de Benci Leonardo da Vinci", "year": "c. 1474–1478" },
+    { "title": "Saint John the Baptist", "search": "Saint John the Baptist Leonardo da Vinci", "year": "c. 1513–1516" },
+    { "title": "The Baptism of Christ", "search": "The Baptism of Christ Verrocchio Leonardo", "year": "c. 1472–1475" },
+    { "title": "Adoration of the Magi", "search": "Adoration of the Magi Leonardo da Vinci Uffizi", "year": "1481" },
+    { "title": "Virgin and Child with St. Anne", "search": "Virgin and Child with Saint Anne Leonardo", "year": "c. 1503–1519" },
+    { "title": "Benois Madonna", "search": "Benois Madonna Leonardo da Vinci", "year": "c. 1478–1480" },
+    { "title": "Madonna of the Yarnwinder", "search": "Madonna of the Yarnwinder Leonardo", "year": "c. 1499–1501" },
+    { "title": "La Belle Ferronnière", "search": "La Belle Ferronnière Leonardo da Vinci", "year": "c. 1490–1497" },
+    { "title": "Portrait of a Man (Red Chalk)", "search": "Leonardo da Vinci self portrait red chalk", "year": "c. 1512" },
+    { "title": "Studies of the Foetus", "search": "Studies of the foetus Leonardo da Vinci", "year": "c. 1510–1513" },
+    { "title": "A Study for the Trattato", "search": "Leonardo da Vinci anatomical drawings", "year": "c. 1489–1510" },
+    { "title": "The Battle of Anghiari (copy)", "search": "Battle of Anghiari Leonardo da Vinci", "year": "1503–1506" }
+  ]
+}

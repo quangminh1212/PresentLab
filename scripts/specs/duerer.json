@@ -1,0 +1,29 @@
+{
+  "slug": "duerer",
+  "title": "Albrecht Dürer",
+  "subtitle": "Sự chính xác phương Bắc và khát vọng Ý",
+  "palette": { "paper": "#e9e4d6", "ink": "#2a2620", "muted": "#756b58", "accent": "#7a5a2c", "accent2": "#3f5d6e", "deep": "#2f2a1f" },
+  "hero": { "search": "Dürer Self-Portrait 1500", "alt": "Self-Portrait at Twenty-Eight, Albrecht Dürer" },
+  "works": [
+    { "title": "Self-Portrait at Twenty-Eight (1500)", "search": "Dürer Self-Portrait 1500", "year": "1500" },
+    { "title": "Young Hare (Field Hare)", "search": "Young Hare Dürer", "year": "1502" },
+    { "title": "Great Piece of Turf", "search": "Great Piece of Turf Dürer", "year": "1503" },
+    { "title": "Melencolia I", "search": "Melencolia I Dürer", "year": "1514" },
+    { "title": "Knight, Death and the Devil", "search": "Knight Death and the Devil Dürer", "year": "1513" },
+    { "title": "St. Jerome in His Study", "search": "St Jerome in his study Dürer", "year": "1514" },
+    { "title": "Adam and Eve", "search": "Adam and Eve Dürer", "year": "1507" },
+    { "title": "The Four Apostles", "search": "Four Apostles Dürer", "year": "1526" },
+    { "title": "The Adoration of the Magi (Paumgartner Altarpiece)", "search": "Dürer Adoration of the Magi", "year": "c. 1504" },
+    { "title": "The Feast of the Rosary", "search": "Feast of the Rosary Dürer", "year": "1506" },
+    { "title": "The Martyrdom of the Ten Thousand", "search": "Martyrdom of the Ten Thousand Dürer", "year": "1508" },
+    { "title": "Self-Portrait at Thirteen", "search": "Dürer self portrait 1484", "year": "1484" },
+    { "title": "Portrait of Emperor Maximilian I", "search": "Dürer Emperor Maximilian", "year": "c. 1519" },
+    { "title": "The Rhinoceros", "search": "Dürer Rhinoceros", "year": "1515" },
+    { "title": "The Wing of a Roller (Blue Roller)", "search": "Dürer Wing of a Roller", "year": "c. 1500–1512" },
+    { "title": "The Madonna with the Siskin", "search": "Dürer Madonna with the Siskin", "year": "c. 1506" },
+    { "title": "The Paumgartner Altarpiece (St. Eustace)", "search": "Dürer St Eustace", "year": "c. 1501" },
+    { "title": "Nemesis (The Great Fortune)", "search": "Dürer Nemesis Great Fortune", "year": "c. 1501–1502" },
+    { "title": "The Virgin and Child with a Pear", "search": "Dürer Virgin and Child with a pear", "year": "c. 1512" },
+    { "title": "The Men's Bath (Das Männerbad)", "search": "Dürer mens bath", "year": "c. 1496" }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "slug": "raphael",
+  "title": "Raffaello Sanzio (Raphael)",
+  "subtitle": "Sự hài hòa và vẻ đẹp thanh thản",
+  "palette": { "paper": "#eef0e6", "ink": "#2c2a22", "muted": "#76735f", "accent": "#3f6b7a", "accent2": "#b2853f", "deep": "#273733" },
+  "hero": { "search": "Raphael School of Athens", "alt": "The School of Athens, Raphael" },
+  "works": [
+    { "title": "The School of Athens", "search": "School of Athens Raphael", "year": "1509–1511" },
+    { "title": "The Madonna of the Meadow", "search": "Madonna of the Meadow Raphael", "year": "1506" },
+    { "title": "Sistine Madonna", "search": "Sistine Madonna Raphael", "year": "c. 1512" },
+    { "title": "Transfiguration", "search": "Transfiguration Raphael", "year": "1516–1520" },
+    { "title": "The Marriage of the Virgin (Sposalizio)", "search": "Marriage of the Virgin Raphael", "year": "1504" },
+    { "title": "Portrait of Baldassare Castiglione", "search": "Baldassare Castiglione Raphael", "year": "c. 1514–1515" },
+    { "title": "La Belle Jardinière", "search": "La Belle Jardinière Raphael", "year": "1507–1508" },
+    { "title": "Madonna of the Pinks", "search": "Madonna of the Pinks Raphael", "year": "c. 1506–1507" },
+    { "title": "The Triumph of Galatea", "search": "Triumph of Galatea Raphael", "year": "c. 1512" },
+    { "title": "Self-Portrait", "search": "Raphael self portrait Uffizi", "year": "c. 1506" },
+    { "title": "Portrait of Pope Julius II", "search": "Pope Julius II Raphael", "year": "1511–1512" },
+    { "title": "The Madonna of Foligno", "search": "Madonna of Foligno Raphael", "year": "c. 1511–1512" },
+    { "title": "Disputation of the Holy Sacrament", "search": "Disputation of the Holy Sacrament Raphael", "year": "1509–1510" },
+    { "title": "Parnassus", "search": "Parnassus Raphael", "year": "1509–1511" },
+    { "title": "Cardinal and Theological Virtues", "search": "Cardinal and Theological Virtues Raphael", "year": "1511" },
+    { "title": "Portrait of a Young Woman (La Fornarina)", "search": "La Fornarina Raphael", "year": "c. 1518–1519" },
+    { "title": "The Holy Family with a Lamb", "search": "Holy Family with a Lamb Raphael", "year": "c. 1507" },
+    { "title": "Madonna del Granduca", "search": "Madonna del Granduca Raphael", "year": "c. 1505" },
+    { "title": "St. Catherine of Alexandria", "search": "Saint Catherine of Alexandria Raphael", "year": "c. 1507" },
+    { "title": "The Small Cowper Madonna", "search": "Small Cowper Madonna Raphael", "year": "c. 1505" }
+  ]
+}

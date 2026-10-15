@@ -1,0 +1,29 @@
+{
+  "slug": "botticelli",
+  "title": "Sandro Botticelli",
+  "subtitle": "Thần thoại, đường cong và vàng lá",
+  "palette": { "paper": "#f1ead8", "ink": "#2e2a20", "muted": "#7b715a", "accent": "#9c6a2e", "accent2": "#3f6a55", "deep": "#3a3322" },
+  "hero": { "search": "Botticelli Birth of Venus", "alt": "The Birth of Venus, Botticelli" },
+  "works": [
+    { "title": "The Birth of Venus", "search": "Birth of Venus Botticelli", "year": "c. 1484–1486" },
+    { "title": "Primavera (Allegory of Spring)", "search": "Primavera Botticelli", "year": "c. 1477–1482" },
+    { "title": "The Annunciation", "search": "Annunciation Botticelli", "year": "c. 1489–1490" },
+    { "title": "Pallas and the Centaur", "search": "Pallas and the Centaur Botticelli", "year": "c. 1482" },
+    { "title": "Madonna of the Magnificat", "search": "Madonna of the Magnificat Botticelli", "year": "c. 1483" },
+    { "title": "Madonna del Libro", "search": "Madonna del Libro Botticelli", "year": "c. 1480–1481" },
+    { "title": "Venus and Mars", "search": "Venus and Mars Botticelli", "year": "c. 1485" },
+    { "title": "The Madonna of the Pomegranate", "search": "Madonna of the Pomegranate Botticelli", "year": "c. 1487" },
+    { "title": "Portrait of a Young Woman", "search": "Portrait of a young woman Botticelli", "year": "c. 1480" },
+    { "title": "The Mystical Nativity", "search": "Mystical Nativity Botticelli", "year": "1500" },
+    { "title": "The Calumny of Apelles", "search": "Calumny of Apelles Botticelli", "year": "c. 1494–1495" },
+    { "title": "La Bella Simonetta", "search": "Botticelli Simonetta Vespucci", "year": "c. 1480" },
+    { "title": "The Story of Nastagio degli Onesti", "search": "Nastagio degli Onesti Botticelli", "year": "c. 1483" },
+    { "title": "Madonna of the Rose Garden", "search": "Madonna of the Rose Garden Botticelli", "year": "c. 1469–1470" },
+    { "title": "Fortitude", "search": "Fortitude Botticelli", "year": "1470" },
+    { "title": "The Adoration of the Magi", "search": "Adoration of the Magi Botticelli Uffizi", "year": "c. 1475–1476" },
+    { "title": "Saint Sebastian", "search": "Saint Sebastian Botticelli", "year": "1474" },
+    { "title": "The Madonna and Child with Two Angels", "search": "Botticelli Madonna child two angels", "year": "c. 1468–1469" },
+    { "title": "The Tragedy of Lucretia", "search": "Tragedy of Lucretia Botticelli", "year": "c. 1496–1500" },
+    { "title": "The Coronation of the Virgin", "search": "Coronation of the Virgin Botticelli", "year": "c. 1488–1490" }
+  ]
+}

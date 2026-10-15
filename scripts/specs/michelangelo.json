@@ -1,0 +1,29 @@
+{
+  "slug": "michelangelo",
+  "title": "Michelangelo Buonarroti",
+  "subtitle": "Khối đá, cơ thể và sự vĩnh cửu",
+  "palette": { "paper": "#ece3d4", "ink": "#2a2620", "muted": "#796e5c", "accent": "#8d4a36", "accent2": "#3c5d6e", "deep": "#33291f" },
+  "hero": { "search": "Michelangelo Creation of Adam Sistine Chapel", "alt": "The Creation of Adam, Michelangelo" },
+  "works": [
+    { "title": "The Creation of Adam (Sistine Chapel)", "search": "Creation of Adam Sistine Chapel", "year": "c. 1512" },
+    { "title": "The Sistine Chapel Ceiling", "search": "Sistine Chapel ceiling Michelangelo", "year": "1508–1512" },
+    { "title": "The Last Judgment", "search": "Last Judgment Michelangelo Sistine", "year": "1536–1541" },
+    { "title": "David", "search": "Michelangelo David sculpture", "year": "1501–1504" },
+    { "title": "Pietà (St. Peter's)", "search": "Michelangelo Pietà St Peter", "year": "1498–1499" },
+    { "title": "Moses (Tomb of Julius II)", "search": "Michelangelo Moses sculpture", "year": "c. 1513–1515" },
+    { "title": "Doni Tondo (Holy Family)", "search": "Doni Tondo Michelangelo", "year": "c. 1504–1506" },
+    { "title": "The Torment of Saint Anthony", "search": "Torment of Saint Anthony Michelangelo", "year": "c. 1487–1488" },
+    { "title": "Madonna of the Stairs", "search": "Madonna of the Stairs Michelangelo", "year": "c. 1490–1492" },
+    { "title": "Battle of the Centaurs", "search": "Battle of the Centaurs Michelangelo", "year": "c. 1492" },
+    { "title": "Bacchus", "search": "Bacchus Michelangelo", "year": "1496–1497" },
+    { "title": "Dying Slave", "search": "Dying Slave Michelangelo", "year": "c. 1513–1515" },
+    { "title": "Rebellious Slave", "search": "Rebellious Slave Michelangelo", "year": "c. 1513–1515" },
+    { "title": "The Prophet Isaiah", "search": "Prophet Isaiah Sistine Michelangelo", "year": "c. 1508–1510" },
+    { "title": "The Libyan Sibyl", "search": "Libyan Sibyl Michelangelo", "year": "c. 1511" },
+    { "title": "The Delphic Sibyl", "search": "Delphic Sibyl Michelangelo", "year": "c. 1509" },
+    { "title": "Crucifixion of St. Peter", "search": "Crucifixion of Saint Peter Michelangelo", "year": "1546–1550" },
+    { "title": "Conversion of Saul", "search": "Conversion of Saul Michelangelo Pauline Chapel", "year": "1542–1545" },
+    { "title": "Self-Portrait (Tondo Doni)", "search": "Michelangelo self portrait", "year": "c. 1508" },
+    { "title": "Studies for the Libyan Sibyl", "search": "Studies for the Libyan Sibyl Michelangelo", "year": "c. 1510" }
+  ]
+}
