@@ -354,6 +354,9 @@ const html = `<!doctype html>
 <style>
 .slide-title,.eyebrow,.g-thumb figcaption{text-wrap:balance}
 .slide-body,.points li,.work-line,.footer .work-meta{text-wrap:pretty}
+.slide--spotlight .slide-body,.slide--dual .slide-body{margin-inline:auto}
+.slide--fullbleed[data-composition="right"] .fullbleed-copy .slide-title,
+.slide--fullbleed[data-composition="right"] .fullbleed-copy .slide-body{margin-inline-start:auto}
 </style>
 </head>
 <body>
