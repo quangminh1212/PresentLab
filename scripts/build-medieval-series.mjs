@@ -10,18 +10,21 @@ const indexFileName = "bo-slide-nghe-thuat-trung-co.html";
 const spritePosition = (index) => {
   const column = index % 4;
   const row = Math.floor(index / 4);
-  const x = 3.125 + column * 31.25;
-  const y = ((row * 1.02 + 0.01) / 4.1) * 100;
-  return `${x}% ${y.toFixed(3)}%`;
+  const x = (column / 3) * 100;
+  const y = (row / 4) * 100;
+  return `${x.toFixed(3)}% ${y.toFixed(3)}%`;
 };
 
 async function embeddedArtworks(slug, fileName, expectedCount) {
   if (expectedCount !== 20) throw new Error(`${slug} needs exactly 20 generated artwork panels.`);
-  const spritePath = join(root, "assets", "slide-artwork", `${fileName}-grid.jpg`);
-  const sprite = await readFile(spritePath);
+  const spritePath = join(root, "assets", "slide-artwork", `${fileName}-hd-grid.webp`);
+  const heroPath = join(root, "assets", "slide-artwork", `${fileName}-hero.png`);
+  const [sprite, hero] = await Promise.all([readFile(spritePath), readFile(heroPath)]);
   if (sprite.length < 100_000) throw new Error(`Generated artwork sprite is missing or too small: ${spritePath}`);
+  if (hero.length < 100_000) throw new Error(`Generated hero artwork is missing or too small: ${heroPath}`);
   return {
     base64: sprite.toString("base64"),
+    heroBase64: hero.toString("base64"),
     positions: Array.from({ length: expectedCount }, (_, index) => spritePosition(index)),
   };
 }
@@ -695,6 +698,127 @@ const css = `
     .slide--split::after { background-image: var(--art) !important; background-size: cover !important; background-position: center !important; opacity: 1 !important; filter: none !important; }
     .slide--cover .cover-copy, .slide--interlude .copy { opacity: 1 !important; background: var(--deep) !important; }
   }
+  .pl-slide {
+    background:
+      radial-gradient(ellipse at 85% 48%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 34%),
+      var(--paper);
+  }
+  .pl-slide::before {
+    inset: auto 5% auto auto;
+    top: 50%;
+    width: min(46vw, 1000px);
+    height: auto;
+    aspect-ratio: 16 / 9;
+    translate: 0 -50%;
+    background-image: var(--art);
+    background-size: var(--art-size, 400% 500%);
+    background-position: var(--art-position, center);
+    background-repeat: no-repeat;
+    border: 1px solid color-mix(in srgb, var(--accent2) 66%, white);
+    border-radius: 14px;
+    outline: 1px solid color-mix(in srgb, var(--accent2) 28%, transparent);
+    outline-offset: 8px;
+    box-shadow: 0 34px 86px rgb(20 18 16 / 28%);
+    opacity: 1;
+    filter: saturate(1.14) contrast(1.08);
+    transform: scale(1.015);
+  }
+  .pl-slide.active::before { filter: saturate(1.18) contrast(1.1); }
+  .slide--cover::before {
+    inset: 0;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto;
+    translate: none;
+    background-image: var(--hero-art);
+    background-size: cover;
+    background-position: center;
+    border: 0;
+    border-radius: 0;
+    outline: 0;
+    outline-offset: 0;
+    box-shadow: none;
+    filter: saturate(1.08) contrast(1.06);
+  }
+  .slide--cover.active::before { filter: saturate(1.12) contrast(1.08); }
+  .slide--cover .cover-copy {
+    width: 52%;
+    padding: clamp(42px, 6vw, 112px) clamp(36px, 3.5vw, 66px) clamp(46px, 7vh, 90px) clamp(42px, 6vw, 112px);
+  }
+  .slide--interlude .copy { width: 48%; padding-inline: clamp(42px, 6vw, 112px) 36px; }
+  .inner { padding: clamp(42px, 6vw, 112px); }
+  .copy { width: min(42vw, 780px); max-width: min(42vw, 780px); }
+  .slide-title { max-width: 100%; font-size: clamp(44px, 5.2vw, 88px); line-height: 1.02; }
+  .slide-body { max-width: none; margin-top: 24px; font-size: clamp(18px, 1.55vw, 25px); line-height: 1.45; }
+  .points { gap: 18px; max-width: 100%; margin-top: 26px; }
+  .points li { min-width: 0; font-size: clamp(16px, 1.18vw, 20px); }
+  .footer,
+  .slide--sequence .footer,
+  .slide--cover .footer,
+  .slide--interlude .footer {
+    left: clamp(42px, 6vw, 112px);
+    right: auto;
+    bottom: clamp(26px, 4vh, 46px);
+    width: min(42vw, 780px);
+  }
+  .slide--split .inner { display: flex; }
+  .slide--archive .inner { margin-left: 0; width: 100%; border-left: 0; }
+  .slide--thesis .copy, .slide--statement .copy { max-width: min(42vw, 780px); }
+  html[data-style="byzantine"] .slide--thesis .copy,
+  html[data-style="byzantine"] .slide--statement .copy { margin-inline: 0; text-align: left; }
+  .slide--cover .slide-title { font-size: clamp(54px, 6.2vw, 104px); }
+  .slide--cover .slide-body { max-width: 610px; font-size: clamp(20px, 1.6vw, 26px); }
+  @media (max-width: 760px) {
+    .pl-slide::before {
+      inset: auto 7% 18% auto;
+      top: auto;
+      width: min(86vw, 620px);
+      translate: none;
+      aspect-ratio: 16 / 9;
+    }
+    .inner { padding: 32px 24px 72px; justify-content: flex-start; }
+    .copy { width: min(84vw, 600px); max-width: min(84vw, 600px); padding: 18px; background: color-mix(in srgb, var(--paper) 90%, transparent); border-left: 2px solid var(--accent2); }
+    .slide-title { font-size: clamp(38px, 8.8vw, 62px); }
+    .slide-body { font-size: 17px; }
+    .slide--cover::before { inset: 0; width: 100%; height: 100%; }
+    .slide--cover .cover-copy, .slide--interlude .copy { width: min(78vw, 600px); max-width: min(78vw, 600px); background: var(--deep); }
+    .slide--cover .slide-title { font-size: clamp(48px, 10vw, 76px); }
+    .footer, .slide--sequence .footer, .slide--cover .footer, .slide--interlude .footer { left: 24px; bottom: 18px; width: calc(100% - 48px); }
+    .work-meta { font-size: 12px; }
+  }
+  @media print {
+    .pl-slide { background: var(--paper) !important; }
+    .pl-slide::before {
+      inset: auto 5% auto auto !important;
+      top: 50% !important;
+      width: min(46vw, 1000px) !important;
+      height: auto !important;
+      aspect-ratio: 16 / 9 !important;
+      translate: 0 -50% !important;
+      background-image: var(--art) !important;
+      background-size: var(--art-size, 400% 500%) !important;
+      background-position: var(--art-position, center) !important;
+      border-radius: 14px !important;
+      opacity: 1 !important;
+      filter: none !important;
+      transform: none !important;
+    }
+    .slide--cover::before {
+      inset: 0 !important;
+      top: 0 !important;
+      right: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      aspect-ratio: auto !important;
+      translate: none !important;
+      background-image: var(--hero-art) !important;
+      background-size: cover !important;
+      background-position: center !important;
+      border-radius: 0 !important;
+    }
+  }
 `;
 
 function pointsMarkup(points) {
@@ -735,7 +859,7 @@ function slideMarkup(deck, slide, index, artworkPosition) {
 function deckHtml(deck, artworkSprite) {
   const themeStyle = Object.entries(deck.theme).map(([key, value]) => `--${key}:${value}`).join(";");
   return `<!doctype html>
-<html lang="vi" data-pl-format="16:9" data-pl-title="${escapeHtml(deck.title)}" data-pl-author="PresentLab concept project" data-pl-theme="${deck.style}" data-style="${deck.style}" style="${themeStyle};--art:url('data:image/jpeg;base64,${artworkSprite.base64}');--art-size:500% 510%">
+<html lang="vi" data-pl-format="16:9" data-pl-title="${escapeHtml(deck.title)}" data-pl-author="PresentLab concept project" data-pl-theme="${deck.style}" data-style="${deck.style}" style="${themeStyle};--art:url('data:image/webp;base64,${artworkSprite.base64}');--hero-art:url('data:image/png;base64,${artworkSprite.heroBase64}');--art-size:400% 500%">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
