@@ -103,11 +103,36 @@ slides.push({ cls: "slide--statement", anim: "rise", html: `
 
 /* 3..18 — 16 works, each with a varied layout + a distinct entrance motion */
 const LAYOUTS = ["split","reverse","spotlight","fullbleed","split","reverse","fullbleed","dual","split","spotlight","reverse","fullbleed","split","dual","reverse","spotlight"];
-const ANIMS   = ["zoom","rise","left","fade","right","rise","blur","left","zoom","right","rise","fade","left","blur","rise","zoom"];
+const ANIMS   = ["zoom","rise","left","fade","right","rise","blur","wipe","drift","right","curtain","rise","flip","blur","left","zoom"];
+const MOTION_OFFSETS = {
+  botticelli: 0,
+  duerer: 3,
+  "leonardo-da-vinci": 6,
+  michelangelo: 9,
+  raphael: 12,
+  titian: 15,
+};
+const WORK_LABELS = {
+  botticelli: "ĐƯỜNG NÉT",
+  duerer: "QUAN SÁT",
+  "leonardo-da-vinci": "NGHIÊN CỨU",
+  michelangelo: "HÌNH THỂ",
+  raphael: "BỐ CỤC",
+  titian: "SẮC ĐỘ",
+};
+// Deliberately vary the image side across artists while preserving every original work slide.
+const COMPOSITION_PATTERNS = {
+  botticelli: "LRRLRLLRLRLLRLRR",
+  duerer: "RLRLRLLRRLRLRLLR",
+  "leonardo-da-vinci": "RRLLRLRLRRLLRLRR",
+  michelangelo: "LRRLLRLRRLRLLRRL",
+  raphael: "LRLRLLRLRLRRLLRL",
+  titian: "RLRLLRRLRLRLLRLR",
+};
 function workCopy(w, n, meta, extra = "") {
   const idx = String(n - 2).padStart(2, "0");
   return `
-        <p class="eyebrow reveal" style="--i:0">TÁC PHẨM ${idx}${extra}</p>
+        <p class="eyebrow reveal" style="--i:0">${esc(WORK_LABELS[slug] || "TÁC PHẨM")} · ${idx}${extra}</p>
         <h1 class="slide-title reveal" style="--i:1">${esc(w.title)}</h1>
         <p class="slide-body reveal" style="--i:2">${w.note ? esc(w.note) : ""}</p>
         <p class="work-line reveal" style="--i:3">${meta ? esc(meta) : ""}</p>`;
@@ -118,7 +143,8 @@ for (let i = 0; i < 16; i++) {
   const n = i + 3;
   const meta = [w.year, w.where].filter(Boolean).join(" · ");
   const layout = LAYOUTS[i];
-  const anim = ANIMS[i];
+  const anim = ANIMS[(i + (MOTION_OFFSETS[slug] || 0)) % ANIMS.length];
+  const composition = COMPOSITION_PATTERNS[slug]?.[i] === "R" ? "right" : "left";
   let inner;
   if (layout === "reverse") {
     inner = `
@@ -155,7 +181,7 @@ for (let i = 0; i < 16; i++) {
       <div class="copy">${workCopy(w, n, meta)}</div>
     </div>`;
   }
-  slides.push({ cls: `slide--${layout}`, anim, html: inner + footer(n, "") });
+  slides.push({ cls: `slide--${layout}`, anim, composition, html: inner + footer(n, "") });
 }
 
 /* 19 — Gallery (4-up grid of remaining emphasis works) */
@@ -203,7 +229,7 @@ const cssVars = [
 ].filter(Boolean).join(";");
 
 const sections = slides.map((s, idx) => `
-<section class="pl-slide ${s.cls}" data-pl-slide data-anim="${s.anim || "rise"}" data-slide-id="${String(idx + 1).padStart(2, "0")}-${slug}" aria-label="${esc(s.aria || `${spec.title}, slide ${idx + 1} of ${slides.length}`)}">
+<section class="pl-slide ${s.cls}" data-pl-slide${s.composition ? ` data-composition="${s.composition}"` : ""} data-anim="${s.anim || "rise"}" data-slide-id="${String(idx + 1).padStart(2, "0")}-${slug}" aria-label="${esc(s.aria || `${spec.title}, slide ${idx + 1} of ${slides.length}`)}">
   ${s.html}
 </section>`).join("\n");
 
@@ -269,7 +295,7 @@ body{background:var(--deep);font-family:var(--sans);color:var(--ink);overflow:hi
 .slide--closing::before{content:"";position:absolute;inset:0;z-index:0;opacity:.22;background-image:var(--hero-art);background-size:cover;background-position:center;filter:grayscale(.3) contrast(1.1)}
 .slide--closing .copy{position:relative;z-index:2}
 .slide--closing .slide-title{color:var(--deep)}
-@media (max-width:780px){.slide--split .inner{flex-direction:column;justify-content:flex-start;gap:18px}.art-frame{width:100%;height:42%}.copy{width:100%}.gallery-grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:780px){.slide--split .inner{flex-direction:row;justify-content:center;gap:2vw;padding:5vw}.slide--reverse .inner{flex-direction:row-reverse;justify-content:center;gap:2vw;padding:5vw}.slide--dual .dual-pair{flex-direction:row}.gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 /* reveal animations — varied entrance per slide, staggered within */
 .reveal{opacity:0;will-change:transform,opacity,filter}
 .active .reveal{transform:translateY(22px);filter:blur(4px);animation:rise .82s cubic-bezier(.2,.75,.2,1) forwards;animation-delay:calc(var(--i,0) * .09s)}
@@ -278,6 +304,10 @@ body{background:var(--deep);font-family:var(--sans);color:var(--ink);overflow:hi
 [data-anim="left"] .reveal{animation-name:fromLeft;transform:translateX(-46px);filter:none}
 [data-anim="right"] .reveal{animation-name:fromRight;transform:translateX(46px);filter:none}
 [data-anim="zoom"] .reveal{animation-name:zoomIn;transform:scale(.86);filter:blur(3px)}
+[data-anim="wipe"] .reveal{animation-name:wipeIn;clip-path:inset(0 100% 0 0);transform:none;filter:none}
+[data-anim="drift"] .reveal{animation-name:driftIn;transform:translateX(42px) rotate(1.5deg);filter:blur(3px)}
+[data-anim="curtain"] .reveal{animation-name:curtainIn;clip-path:inset(0 0 100% 0);transform:translateY(18px);filter:blur(2px)}
+[data-anim="flip"] .reveal{animation-name:flipIn;transform:perspective(900px) rotateY(-34deg);transform-origin:left center;filter:blur(2px)}
 [data-anim="rise"] .reveal{animation-name:rise;transform:translateY(22px);filter:blur(4px)}
 @keyframes rise{to{opacity:1;transform:translateY(0);filter:blur(0)}}
 @keyframes fade{from{opacity:0}to{opacity:1;transform:none;filter:none}}
@@ -285,11 +315,15 @@ body{background:var(--deep);font-family:var(--sans);color:var(--ink);overflow:hi
 @keyframes fromLeft{to{opacity:1;transform:translateX(0);filter:none}}
 @keyframes fromRight{to{opacity:1;transform:translateX(0);filter:none}}
 @keyframes zoomIn{to{opacity:1;transform:scale(1);filter:blur(0)}}
+@keyframes wipeIn{from{opacity:0;clip-path:inset(0 100% 0 0)}to{opacity:1;clip-path:inset(0);transform:none;filter:none}}
+@keyframes driftIn{from{opacity:0;transform:translateX(42px) rotate(1.5deg);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}
+@keyframes curtainIn{from{opacity:0;clip-path:inset(0 0 100% 0);transform:translateY(18px);filter:blur(2px)}to{opacity:1;clip-path:inset(0);transform:none;filter:none}}
+@keyframes flipIn{from{opacity:0;transform:perspective(900px) rotateY(-34deg)}to{opacity:1;transform:none;filter:none}}
 /* controls */
 .controls{position:fixed;z-index:20;right:30px;bottom:24px;display:flex;align-items:center;gap:12px;color:#f3ead8;font:700 12px/1 var(--sans);letter-spacing:.12em}
 .progress{width:160px;height:2px;background:rgba(255,255,255,.22);overflow:hidden}
 .progress-fill{height:100%;background:var(--accent2);transform:scaleX(0);transform-origin:left;transition:transform .4s ease}
-.control-button{border:0;background:transparent;color:inherit;Claude-Fable:pointer;padding:6px;font:700 18px/1 var(--sans)}
+.control-button{border:0;background:transparent;color:inherit;cursor:pointer;padding:6px;font:700 18px/1 var(--sans)}
 .control-button:hover{color:var(--accent2)}
 `;
 
