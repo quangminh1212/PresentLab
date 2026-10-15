@@ -912,6 +912,14 @@
       }
     </style>
     <style id="presentlab-motion-enhancements">
+      .pl-slide { --sai-enter: sai-enter-rise; --sai-photo-motion: sai-photo-drift; --sai-image-open: photo-open; }
+      .pl-slide[data-motion="left"] { --sai-enter: sai-enter-left; --sai-photo-motion: sai-photo-pan-left; --sai-image-open: sai-photo-pan-left; }
+      .pl-slide[data-motion="right"] { --sai-enter: sai-enter-right; --sai-photo-motion: sai-photo-pan-right; --sai-image-open: sai-photo-pan-right; }
+      .pl-slide[data-motion="zoom"] { --sai-enter: sai-enter-zoom; --sai-photo-motion: sai-photo-zoom; --sai-image-open: sai-photo-zoom; }
+      .pl-slide[data-motion="wipe"] { --sai-enter: sai-enter-wipe; --sai-photo-motion: sai-photo-drift; --sai-image-open: photo-open; }
+      .pl-slide[data-motion="flip"] { --sai-enter: sai-enter-flip; --sai-photo-motion: sai-photo-tilt; --sai-image-open: sai-photo-flip; }
+      .pl-slide[data-motion="swing"] { --sai-enter: sai-enter-swing; --sai-photo-motion: sai-photo-pan-left; --sai-image-open: sai-photo-swing; }
+      .pl-slide[data-motion="soft"] { --sai-enter: sai-enter-soft; --sai-photo-motion: sai-photo-drift; --sai-image-open: sai-photo-soft; }
       @media (prefers-reduced-motion: no-preference) {
         .pl-slide .slide-background-photo {
           transform: scale(1.025);
@@ -921,6 +929,7 @@
         .pl-slide.is-active .slide-background-photo {
           transform: scale(1.105) translate3d(-.4%, .25%, 0);
           filter: saturate(1.12) contrast(1.04);
+          animation: var(--sai-photo-motion, sai-photo-drift) 12s ease-in-out infinite alternate;
         }
         .pl-slide.is-active h1,
         .pl-slide.is-active h2 {
@@ -937,7 +946,28 @@
         .pl-slide.is-active li:nth-child(3) { animation: sai-item-arrive .68s ease 320ms both; }
         .pl-slide.is-active .slide-number,
         .pl-slide.is-active .folio { animation: sai-number-arrive .8s cubic-bezier(.2,.75,.2,1) 180ms both; }
+        .pl-slide.is-active[data-motion] .reveal,
+        .pl-slide.is-active[data-motion] li:nth-child(1),
+        .pl-slide.is-active[data-motion] li:nth-child(2),
+        .pl-slide.is-active[data-motion] li:nth-child(3) { animation-name: var(--sai-enter, sai-enter-rise); }
+        .pl-slide.is-active[data-motion] .image-reveal { animation-name: var(--sai-image-open, photo-open); }
       }
+      @keyframes sai-enter-rise { from { opacity: 0; transform: translateY(30px); filter: blur(6px); } to { opacity: 1; transform: translateY(0); filter: blur(0); } }
+      @keyframes sai-enter-left { from { opacity: 0; transform: translateX(-52px); filter: blur(5px); } to { opacity: 1; transform: translateX(0); filter: blur(0); } }
+      @keyframes sai-enter-right { from { opacity: 0; transform: translateX(52px); filter: blur(5px); } to { opacity: 1; transform: translateX(0); filter: blur(0); } }
+      @keyframes sai-enter-zoom { from { opacity: 0; transform: scale(.84); filter: blur(8px); } to { opacity: 1; transform: scale(1); filter: blur(0); } }
+      @keyframes sai-enter-wipe { from { opacity: .25; clip-path: inset(0 100% 0 0); transform: translateX(-14px); } to { opacity: 1; clip-path: inset(0); transform: translateX(0); } }
+      @keyframes sai-enter-flip { from { opacity: 0; transform: perspective(900px) rotateY(-15deg); filter: blur(5px); } to { opacity: 1; transform: perspective(900px) rotateY(0); filter: blur(0); } }
+      @keyframes sai-enter-swing { 0% { opacity: 0; transform: translateY(24px) rotate(-2deg); } 75% { opacity: 1; transform: translateY(-3px) rotate(.5deg); } 100% { transform: none; } }
+      @keyframes sai-enter-soft { from { opacity: 0; transform: scale(1.04); filter: blur(16px); } to { opacity: 1; transform: scale(1); filter: blur(0); } }
+      @keyframes sai-photo-drift { from { transform: scale(1.045) translate3d(.35%,0,0); } to { transform: scale(1.09) translate3d(-.45%,.3%,0); } }
+      @keyframes sai-photo-pan-left { from { transform: scale(1.09) translateX(1.15%); } to { transform: scale(1.09) translateX(-1.15%); } }
+      @keyframes sai-photo-pan-right { from { transform: scale(1.09) translateX(-1.15%); } to { transform: scale(1.09) translateX(1.15%); } }
+      @keyframes sai-photo-zoom { from { transform: scale(1.025); } to { transform: scale(1.12); } }
+      @keyframes sai-photo-tilt { from { transform: scale(1.08) rotate(-.45deg); } to { transform: scale(1.08) rotate(.45deg); } }
+      @keyframes sai-photo-flip { from { opacity: .65; transform: perspective(1200px) rotateY(-4deg) scale(1.07); } to { opacity: 1; transform: perspective(1200px) rotateY(0) scale(1.03); } }
+      @keyframes sai-photo-swing { 0% { clip-path: inset(0 100% 0 0); transform: scale(1.1) translateX(-1%); } 100% { clip-path: inset(0); transform: scale(1.06) translateX(0); } }
+      @keyframes sai-photo-soft { from { filter: blur(7px) saturate(.75); transform: scale(1.1); } to { filter: blur(0) saturate(1); transform: scale(1.04); } }
       @keyframes sai-title-arrive {
         from { opacity: 0; transform: translateY(28px); filter: blur(6px); }
         to { opacity: 1; transform: translateY(0); filter: blur(0); }
@@ -1184,6 +1214,8 @@
 
     <script>
       const slides = [...document.querySelectorAll("[data-pl-slide]")];
+      const motionTypes = ["rise", "left", "zoom", "wipe", "flip", "right", "swing", "soft"];
+      slides.forEach((slide, index) => { slide.dataset.motion = motionTypes[index % motionTypes.length]; });
       const currentSlide = document.querySelector("[data-current-slide]");
       const progress = document.querySelector(".deck-progress");
       const progressFill = document.querySelector("[data-progress-fill]");

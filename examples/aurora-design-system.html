@@ -46,20 +46,35 @@
       .aurora-progress { height: 2px; flex: 1; overflow: hidden; background: rgb(255 255 255 / 20%); }
       .aurora-progress > span { display: block; width: 100%; height: 100%; background: var(--aurora-accent); transform: scaleX(.333); transform-origin: left; transition: transform .45s var(--aurora-ease); }
       .aurora-counter { min-width: 52px; color: var(--aurora-muted); font-size: 11px; font-weight: 800; letter-spacing: .12em; text-align: right; }
+      .pl-slide { --aurora-copy-motion: aurora-copy-in; --aurora-title-motion: aurora-title-in; --aurora-card-motion: aurora-card-in; --aurora-overlay-motion: aurora-light-pass; }
+      .pl-slide[data-motion="zoom"] { --aurora-copy-motion: aurora-copy-zoom; --aurora-title-motion: aurora-title-zoom; --aurora-card-motion: aurora-card-stamp; }
+      .pl-slide[data-motion="wipe"] { --aurora-copy-motion: aurora-copy-wipe; --aurora-title-motion: aurora-title-wipe; --aurora-card-motion: aurora-card-wipe; --aurora-overlay-motion: aurora-overlay-wipe; }
+      .pl-slide[data-motion="right"] { --aurora-copy-motion: aurora-copy-right; --aurora-title-motion: aurora-title-right; --aurora-card-motion: aurora-card-float; --aurora-overlay-motion: aurora-overlay-sweep; }
       @media (prefers-reduced-motion: no-preference) {
-        .pl-slide.is-active .pl-eyebrow { animation: aurora-copy-in .7s var(--aurora-ease) both; }
-        .pl-slide.is-active .pl-title { animation: aurora-title-in .95s var(--aurora-ease) 90ms both; }
-        .pl-slide.is-active .pl-subtitle { animation: aurora-copy-in .8s var(--aurora-ease) 210ms both; }
-        .pl-slide.is-active .pl-footer { animation: aurora-copy-in .75s var(--aurora-ease) 280ms both; }
-        .pl-slide.is-active .pl-card { animation: aurora-card-in .75s var(--aurora-ease) both; }
+        .pl-slide.is-active .pl-eyebrow { animation: var(--aurora-copy-motion) .7s var(--aurora-ease) both; }
+        .pl-slide.is-active .pl-title { animation: var(--aurora-title-motion) .95s var(--aurora-ease) 90ms both; }
+        .pl-slide.is-active .pl-subtitle { animation: var(--aurora-copy-motion) .8s var(--aurora-ease) 210ms both; }
+        .pl-slide.is-active .pl-footer { animation: var(--aurora-copy-motion) .75s var(--aurora-ease) 280ms both; }
+        .pl-slide.is-active .pl-card { animation: var(--aurora-card-motion) .75s var(--aurora-ease) both; }
         .pl-slide.is-active .pl-card:nth-child(2) { animation-delay: 110ms; }
         .pl-slide.is-active .pl-card:nth-child(3) { animation-delay: 220ms; }
-        .pl-slide.is-active::before { animation: aurora-light-pass 1.4s var(--aurora-ease) both; }
+        .pl-slide.is-active::before { animation: var(--aurora-overlay-motion) 1.4s var(--aurora-ease) both; }
       }
       @keyframes aurora-copy-in { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
       @keyframes aurora-title-in { from { opacity: 0; transform: translateY(34px) scale(.98); filter: blur(8px); } to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); } }
       @keyframes aurora-card-in { from { opacity: 0; transform: translateY(22px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
       @keyframes aurora-light-pass { from { opacity: .55; } to { opacity: 1; } }
+      @keyframes aurora-copy-zoom { from { opacity: 0; transform: scale(.82); filter: blur(9px); } to { opacity: 1; transform: scale(1); filter: blur(0); } }
+      @keyframes aurora-title-zoom { 0% { opacity: 0; transform: scale(.68); filter: blur(18px); } 72% { opacity: 1; transform: scale(1.025); filter: blur(0); } 100% { transform: scale(1); } }
+      @keyframes aurora-card-stamp { 0% { opacity: 0; transform: translateY(30px) rotate(-3deg) scale(.82); } 75% { opacity: 1; transform: translateY(-4px) rotate(.5deg) scale(1.015); } 100% { transform: none; } }
+      @keyframes aurora-copy-wipe { from { opacity: .15; clip-path: inset(0 100% 0 0); transform: translateX(-18px); } to { opacity: 1; clip-path: inset(0); transform: translateX(0); } }
+      @keyframes aurora-title-wipe { from { opacity: .15; clip-path: inset(0 100% 0 0); letter-spacing: -.11em; } to { opacity: 1; clip-path: inset(0); letter-spacing: -.06em; } }
+      @keyframes aurora-card-wipe { from { opacity: .2; clip-path: inset(100% 0 0 0); transform: translateY(18px); } to { opacity: 1; clip-path: inset(0); transform: translateY(0); } }
+      @keyframes aurora-overlay-wipe { from { opacity: 0; transform: translateX(-5%); } to { opacity: 1; transform: translateX(0); } }
+      @keyframes aurora-copy-right { from { opacity: 0; transform: translateX(58px); filter: blur(6px); } to { opacity: 1; transform: translateX(0); filter: blur(0); } }
+      @keyframes aurora-title-right { from { opacity: 0; transform: translateX(90px) rotate(1deg); filter: blur(10px); } 80% { opacity: 1; transform: translateX(-3px) rotate(0); filter: blur(0); } to { transform: none; } }
+      @keyframes aurora-card-float { 0% { opacity: 0; transform: translateY(44px) scale(.94); } 78% { opacity: 1; transform: translateY(-5px) scale(1.01); } 100% { transform: none; } }
+      @keyframes aurora-overlay-sweep { from { opacity: .25; transform: translateX(3%); } to { opacity: 1; transform: translateX(0); } }
       @media (max-width: 760px) {
         .pl-slide { min-height: 580px; padding: 48px 28px 86px; }
         .pl-title { font-size: clamp(50px, 13vw, 78px); }
@@ -133,6 +148,8 @@
     <script>
       (() => {
         const slides = [...document.querySelectorAll("[data-pl-slide]")];
+        const motionTypes = ["zoom", "wipe", "right"];
+        slides.forEach((slide, index) => { slide.dataset.motion = motionTypes[index % motionTypes.length]; });
         const counter = document.querySelector("[data-counter]");
         const progress = document.querySelector("[data-progress]");
         let current = 0;

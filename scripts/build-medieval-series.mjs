@@ -513,6 +513,14 @@ const css = `
     background: var(--paper); page-break-after: always; opacity: .72;
     filter: saturate(.84) brightness(.9); transition: opacity .72s ease, filter .82s ease;
   }
+  .pl-slide { --reveal-motion: rise-in; --title-motion: title-focus; --item-motion: point-rise; --art-motion: art-drift; }
+  .pl-slide[data-motion="left"] { --reveal-motion: reveal-left; --title-motion: title-left; --item-motion: point-left; --art-motion: art-pan-left; }
+  .pl-slide[data-motion="right"] { --reveal-motion: reveal-right; --title-motion: title-right; --item-motion: point-right; --art-motion: art-pan-right; }
+  .pl-slide[data-motion="zoom"] { --reveal-motion: reveal-zoom; --title-motion: title-focus; --item-motion: point-zoom; --art-motion: art-zoom; }
+  .pl-slide[data-motion="wipe"] { --reveal-motion: reveal-wipe; --title-motion: title-wipe; --item-motion: point-wipe; --art-motion: art-pan-up; }
+  .pl-slide[data-motion="flip"] { --reveal-motion: reveal-flip; --title-motion: title-flip; --item-motion: point-flip; --art-motion: art-tilt; }
+  .pl-slide[data-motion="swing"] { --reveal-motion: reveal-swing; --title-motion: title-swing; --item-motion: point-swing; --art-motion: art-drift; }
+  .pl-slide[data-motion="soft"] { --reveal-motion: reveal-soft; --title-motion: title-soft; --item-motion: point-soft; --art-motion: art-pan-up; }
   .pl-slide.active { opacity: 1; filter: saturate(1.04) brightness(1); }
   .pl-slide::before {
     content: ""; position: absolute; inset: 0; z-index: -1;
@@ -521,7 +529,7 @@ const css = `
     opacity: .98; transform: scale(1.055); transition: transform 1.4s cubic-bezier(.2,.75,.2,1), filter 1.2s ease, opacity .8s ease;
     filter: saturate(.96) contrast(1.04);
   }
-  .pl-slide.active::before { transform: scale(1.015); filter: saturate(1.12) contrast(1.06); animation: art-drift 18s ease-in-out infinite alternate; }
+  .pl-slide.active::before { transform: scale(1.015); filter: saturate(1.12) contrast(1.06); animation: var(--art-motion, art-drift) 11s ease-in-out infinite alternate; }
   .inner {
     position: relative; width: 100%; height: 100%; padding: 86px 112px 80px;
     display: flex; flex-direction: column; justify-content: space-between; z-index: 1;
@@ -596,12 +604,12 @@ const css = `
   .control-button { border: 0; background: transparent; color: inherit; cursor: pointer; padding: 8px; font: 700 18px/1 var(--sans); }
   .counter { min-width: 68px; text-align: right; font: 700 12px/1 var(--sans); letter-spacing: .14em; }
   .reveal { opacity: 1; transform: none; }
-  .active .reveal { animation: rise-in .82s cubic-bezier(.2,.75,.2,1) both; }
+  .active .reveal { animation: var(--reveal-motion, rise-in) .82s cubic-bezier(.2,.75,.2,1) both; }
   .active .reveal:nth-child(2) { animation-delay: 100ms; }
   .active .reveal:nth-child(3) { animation-delay: 190ms; }
   .active .reveal:nth-child(4) { animation-delay: 280ms; }
-  .active .slide-title { animation: title-focus 1.05s cubic-bezier(.2,.75,.2,1) both; }
-  .active .points li { animation: point-rise .72s cubic-bezier(.2,.75,.2,1) both; animation-delay: calc(120ms + var(--point-index, 0) * 110ms); }
+  .active .slide-title { animation: var(--title-motion, title-focus) 1.05s cubic-bezier(.2,.75,.2,1) both; }
+  .active .points li { animation: var(--item-motion, point-rise) .72s cubic-bezier(.2,.75,.2,1) both; animation-delay: calc(120ms + var(--point-index, 0) * 110ms); }
   .active .inner::before { animation: light-sweep 1.25s cubic-bezier(.2,.75,.2,1) .08s both; }
   .active.slide--cover .cover-copy { animation: cover-arrive 1s cubic-bezier(.2,.75,.2,1) both; }
   .control-button { transition: transform .25s ease, color .25s ease, opacity .25s ease; }
@@ -613,6 +621,31 @@ const css = `
   @keyframes cover-arrive { from { opacity: 0; transform: translateX(-34px); } to { opacity: 1; transform: translateX(0); } }
   @keyframes light-sweep { 0% { opacity: 0; transform: translateX(-120%); } 18% { opacity: .8; } 100% { opacity: 0; transform: translateX(120%); } }
   @keyframes art-drift { from { transform: scale(1.015) translate3d(0,0,0); } to { transform: scale(1.075) translate3d(-.35%,.25%,0); } }
+  @keyframes reveal-left { from { opacity: 0; transform: translate3d(-52px,0,0); filter: blur(6px); } to { opacity: 1; transform: translate3d(0,0,0); filter: blur(0); } }
+  @keyframes reveal-right { from { opacity: 0; transform: translate3d(52px,0,0); filter: blur(6px); } to { opacity: 1; transform: translate3d(0,0,0); filter: blur(0); } }
+  @keyframes reveal-zoom { from { opacity: 0; transform: scale(.82); filter: blur(9px); } to { opacity: 1; transform: scale(1); filter: blur(0); } }
+  @keyframes reveal-wipe { from { opacity: .2; clip-path: inset(0 100% 0 0); transform: translateX(-18px); } to { opacity: 1; clip-path: inset(0); transform: translateX(0); } }
+  @keyframes reveal-flip { from { opacity: 0; transform: perspective(900px) rotateY(-16deg) scale(.96); filter: blur(4px); } to { opacity: 1; transform: perspective(900px) rotateY(0) scale(1); filter: blur(0); } }
+  @keyframes reveal-swing { 0% { opacity: 0; transform: translateY(24px) rotate(-2.8deg); } 72% { opacity: 1; transform: translateY(-3px) rotate(.6deg); } 100% { transform: translateY(0) rotate(0); } }
+  @keyframes reveal-soft { from { opacity: 0; transform: scale(1.035); filter: blur(15px); } to { opacity: 1; transform: scale(1); filter: blur(0); } }
+  @keyframes title-left { from { opacity: 0; transform: translateX(-68px); filter: blur(9px); } to { opacity: 1; transform: translateX(0); filter: blur(0); } }
+  @keyframes title-right { from { opacity: 0; transform: translateX(68px); filter: blur(9px); } to { opacity: 1; transform: translateX(0); filter: blur(0); } }
+  @keyframes title-wipe { from { opacity: .2; clip-path: inset(0 100% 0 0); letter-spacing: -.09em; } to { opacity: 1; clip-path: inset(0); letter-spacing: -.052em; } }
+  @keyframes title-flip { from { opacity: 0; transform: perspective(1000px) rotateX(18deg) translateY(24px); filter: blur(8px); } to { opacity: 1; transform: perspective(1000px) rotateX(0) translateY(0); filter: blur(0); } }
+  @keyframes title-swing { 0% { opacity: 0; transform: translateY(32px) rotate(-2deg) scale(.97); } 75% { opacity: 1; transform: translateY(-4px) rotate(.5deg) scale(1.005); } 100% { transform: none; } }
+  @keyframes title-soft { from { opacity: 0; transform: scale(1.06); filter: blur(18px); } to { opacity: 1; transform: scale(1); filter: blur(0); } }
+  @keyframes point-left { from { opacity: 0; transform: translateX(-22px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes point-right { from { opacity: 0; transform: translateX(22px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes point-zoom { from { opacity: 0; transform: scale(.78); } to { opacity: 1; transform: scale(1); } }
+  @keyframes point-wipe { from { opacity: .2; clip-path: inset(0 100% 0 0); } to { opacity: 1; clip-path: inset(0); } }
+  @keyframes point-flip { from { opacity: 0; transform: perspective(700px) rotateY(-18deg); } to { opacity: 1; transform: perspective(700px) rotateY(0); } }
+  @keyframes point-swing { 0% { opacity: 0; transform: translateY(14px) rotate(-1.5deg); } 75% { opacity: 1; transform: translateY(-2px) rotate(.3deg); } 100% { transform: none; } }
+  @keyframes point-soft { from { opacity: 0; filter: blur(8px); transform: translateY(6px); } to { opacity: 1; filter: blur(0); transform: none; } }
+  @keyframes art-pan-left { from { transform: scale(1.075) translateX(1.2%); } to { transform: scale(1.075) translateX(-1.2%); } }
+  @keyframes art-pan-right { from { transform: scale(1.075) translateX(-1.2%); } to { transform: scale(1.075) translateX(1.2%); } }
+  @keyframes art-pan-up { from { transform: scale(1.07) translateY(1%); } to { transform: scale(1.07) translateY(-1%); } }
+  @keyframes art-zoom { from { transform: scale(1.015); } to { transform: scale(1.095); } }
+  @keyframes art-tilt { from { transform: scale(1.075) rotate(-.5deg); } to { transform: scale(1.075) rotate(.5deg); } }
   html[data-style="kells"] .inner { outline: 1px solid color-mix(in srgb, var(--accent2) 38%, transparent); outline-offset: -34px; }
   html[data-style="byzantine"] .slide--thesis .copy, html[data-style="byzantine"] .slide--statement .copy { margin-inline: auto; text-align: center; }
   html[data-style="byzantine"] .slide-title { letter-spacing: -.025em; }
@@ -669,9 +702,12 @@ function pointsMarkup(points) {
   return `<ol class="points reveal">${points.map((point, index) => `<li style="--point-index:${index}">${escapeHtml(point)}</li>`).join("")}</ol>`;
 }
 
+const slideMotions = ["rise", "left", "zoom", "wipe", "flip", "right", "swing", "soft"];
+
 function slideMarkup(deck, slide, index, artworkPosition) {
   const number = String(index + 1).padStart(2, "0");
   const kind = escapeHtml(slide.kind);
+  const motion = slideMotions[index % slideMotions.length];
   const cover = slide.kind === "cover";
   const contentClass = cover ? "copy cover-copy" : "copy";
   const sources = slide.kind === "sources";
@@ -682,7 +718,7 @@ function slideMarkup(deck, slide, index, artworkPosition) {
     ? `<p class="slide-body reveal">Mỗi trang dùng một minh họa riêng được tạo cho bộ slide và nhúng sẵn trong HTML, nên vẫn hiển thị khi không có kết nối Internet.</p>`
     : pointsMarkup(slide.points);
   const artworkCreditMarkup = `<span class="art-credit">Minh họa AI · PresentLab</span>`;
-  return `<section class="pl-slide slide--${kind}" data-pl-slide data-slide-id="${deck.slug}-${number}" data-art-panel="${index + 1}" style="--art-position:${artworkPosition}" aria-label="Trang ${number}: ${escapeHtml(slide.title)}">
+  return `<section class="pl-slide slide--${kind}" data-pl-slide data-slide-id="${deck.slug}-${number}" data-art-panel="${index + 1}" data-motion="${motion}" style="--art-position:${artworkPosition}" aria-label="Trang ${number}: ${escapeHtml(slide.title)}">
     <div class="inner">
       <div class="${contentClass}">
         <p class="eyebrow reveal">${escapeHtml(slide.kicker)}</p>

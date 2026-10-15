@@ -258,12 +258,35 @@
         }
       }
 
+      .pl-slide[data-motion="left"] { --world-reveal-motion: world-reveal-left; --world-art-motion: world-art-pan-left; }
+      .pl-slide[data-motion="right"] { --world-reveal-motion: world-reveal-right; --world-art-motion: world-art-pan-right; }
+      .pl-slide[data-motion="zoom"] { --world-reveal-motion: world-reveal-zoom; --world-art-motion: world-art-zoom; }
+      .pl-slide[data-motion="wipe"] { --world-reveal-motion: world-reveal-wipe; --world-art-motion: world-art-wipe; }
+      .pl-slide[data-motion="flip"] { --world-reveal-motion: world-reveal-flip; --world-art-motion: world-art-flip; }
+      .pl-slide[data-motion="swing"] { --world-reveal-motion: world-reveal-swing; --world-art-motion: world-art-swing; }
+      .pl-slide[data-motion="soft"] { --world-reveal-motion: world-reveal-soft; --world-art-motion: world-art-soft; }
+
+      @keyframes world-reveal-left { from { opacity: 0; transform: translateX(-54px); filter: blur(6px); } to { opacity: 1; transform: translateX(0); filter: blur(0); } }
+      @keyframes world-reveal-right { from { opacity: 0; transform: translateX(54px); filter: blur(6px); } to { opacity: 1; transform: translateX(0); filter: blur(0); } }
+      @keyframes world-reveal-zoom { from { opacity: 0; transform: scale(.82); filter: blur(10px); } to { opacity: 1; transform: scale(1); filter: blur(0); } }
+      @keyframes world-reveal-wipe { from { opacity: .2; clip-path: inset(0 100% 0 0); } to { opacity: 1; clip-path: inset(0); } }
+      @keyframes world-reveal-flip { from { opacity: 0; transform: perspective(900px) rotateY(-16deg); } to { opacity: 1; transform: perspective(900px) rotateY(0); } }
+      @keyframes world-reveal-swing { 0% { opacity: 0; transform: translateY(26px) rotate(-2.6deg); } 76% { opacity: 1; transform: translateY(-4px) rotate(.5deg); } 100% { transform: none; } }
+      @keyframes world-reveal-soft { from { opacity: 0; transform: scale(1.05); filter: blur(16px); } to { opacity: 1; transform: scale(1); filter: blur(0); } }
+      @keyframes world-art-pan-left { from { opacity: .2; transform: translateX(42px) scale(1.04); } to { opacity: 1; transform: translateX(0) scale(1); } }
+      @keyframes world-art-pan-right { from { opacity: .2; transform: translateX(-42px) scale(1.04); } to { opacity: 1; transform: translateX(0) scale(1); } }
+      @keyframes world-art-zoom { from { opacity: .5; transform: scale(1.16); filter: saturate(.72); } to { opacity: 1; transform: scale(1); filter: saturate(1); } }
+      @keyframes world-art-wipe { from { clip-path: inset(0 0 0 100%); transform: scale(1.06); } to { clip-path: inset(0); transform: scale(1); } }
+      @keyframes world-art-flip { from { opacity: .2; transform: perspective(900px) rotateY(-13deg) scale(.96); } to { opacity: 1; transform: perspective(900px) rotateY(0) scale(1); } }
+      @keyframes world-art-swing { 0% { opacity: .2; transform: rotate(-3deg) scale(.95); } 75% { opacity: 1; transform: rotate(.6deg) scale(1.01); } 100% { transform: none; } }
+      @keyframes world-art-soft { from { opacity: .35; transform: scale(1.08); filter: blur(8px); } to { opacity: 1; transform: scale(1); filter: blur(0); } }
+
       .is-active .reveal {
-        animation: rise-in 760ms var(--ease) var(--delay, 0ms) both;
+        animation: var(--world-reveal-motion, rise-in) 760ms var(--ease) var(--delay, 0ms) both;
       }
 
       .is-active .slide-art {
-        animation: open-folio 1050ms var(--ease) 100ms both;
+        animation: var(--world-art-motion, open-folio) 1050ms var(--ease) 100ms both;
       }
 
       /* 01 — Insular manuscript / Book of Kells */
@@ -1838,6 +1861,8 @@
     <script>
       (() => {
         const slides = Array.from(document.querySelectorAll("[data-pl-slide]"));
+        const motionTypes = ["rise", "left", "zoom", "wipe", "flip", "right", "swing", "soft"];
+        slides.forEach((slide, index) => { slide.dataset.motion = motionTypes[index % motionTypes.length]; });
         let current = 0;
 
         function activate(index) {
