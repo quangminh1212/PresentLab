@@ -826,3 +826,83 @@
   .slide--cover .slide-body { font-size: clamp(11px, 2vw, 16px); line-height: 1.3; }
   .slide--closing .inner { padding: 0 5%; }
 }
+
+/* Keep typography sized to the 16:9 slide canvas, not the browser viewport. */
+.deck .slide-title { font-size: clamp(48px, 5.8cqw, 92px); }
+.deck .slide-body { font-size: clamp(22px, 1.9cqw, 28px); }
+.deck .eyebrow { font-size: clamp(13px, 1.05cqw, 16px); }
+.deck .points li { font-size: clamp(18px, 1.4cqw, 23px); }
+.deck .work-line { font-size: clamp(16px, 1.2cqw, 18px); }
+.deck .credit { font-size: clamp(14px, 1.05cqw, 16px); }
+.deck .footer { font-size: clamp(13px, 1cqw, 15px); }
+.deck .g-thumb figcaption { font-size: clamp(13px, 1.1cqw, 15px); }
+.deck .slide--cover .slide-title { font-size: clamp(62px, 7.6cqw, 120px); }
+.deck .slide--cover .slide-body { font-size: clamp(22px, 2cqw, 30px); }
+.deck .slide--cover .eyebrow {
+  font-size: clamp(12px, .95cqw, 14px);
+  letter-spacing: .14em;
+  text-wrap: balance;
+}
+.deck .slide--cover .eyebrow::before { margin-right: 8px; }
+.deck .slide--split .slide-title,
+.deck .slide--reverse .slide-title,
+.deck .slide--statement .slide-title,
+.deck .slide--dual .slide-title,
+.deck .slide--gallery .slide-title { font-size: clamp(46px, 5.5cqw, 82px); }
+.deck .slide--split .slide-body,
+.deck .slide--reverse .slide-body { font-size: clamp(21px, 1.8cqw, 26px); }
+.deck .slide--statement .points li { font-size: clamp(18px, 1.4cqw, 22px); }
+.deck .slide--spotlight .slide-title { font-size: clamp(44px, 5.2cqw, 78px); }
+.deck .slide--spotlight .slide-body { font-size: clamp(21px, 1.8cqw, 26px); }
+.deck .slide--fullbleed .fullbleed-copy .slide-title { font-size: clamp(56px, 6.4cqw, 86px); }
+.deck .slide--fullbleed .fullbleed-copy .slide-body { font-size: clamp(21px, 1.8cqw, 26px); }
+
+@media (max-width: 780px) {
+  .deck .slide-title { font-size: clamp(30px, 5.6cqw, 48px); }
+  .deck .slide-body { font-size: clamp(17px, 2.8cqw, 21px); }
+  .deck .eyebrow { font-size: clamp(12px, 1.3cqw, 14px); }
+  .deck .points li { font-size: clamp(16px, 2.4cqw, 19px); }
+  .deck .work-line { font-size: clamp(14px, 1.8cqw, 17px); }
+  .deck .credit { font-size: clamp(12px, 1.6cqw, 15px); }
+  .deck .footer { font-size: clamp(11px, 1.4cqw, 13px); }
+  .deck .g-thumb figcaption { font-size: clamp(11px, 1.6cqw, 14px); }
+  .deck .slide--cover .slide-title { font-size: clamp(42px, 8.2cqw, 68px); }
+  .deck .slide--cover .slide-body { font-size: clamp(18px, 2.8cqw, 22px); }
+  .deck .slide--split .slide-title,
+  .deck .slide--reverse .slide-title,
+  .deck .slide--statement .slide-title,
+  .deck .slide--dual .slide-title,
+  .deck .slide--gallery .slide-title { font-size: clamp(36px, 4.9cqw, 48px); }
+  .deck .slide--split .slide-body,
+  .deck .slide--reverse .slide-body { font-size: clamp(18px, 2.4cqw, 21px); }
+  .deck .slide--statement .points li { font-size: clamp(16px, 2.4cqw, 19px); }
+  .deck .slide--spotlight .slide-title { font-size: clamp(30px, 4.6cqw, 42px); }
+  .deck .slide--spotlight .slide-body { font-size: clamp(17px, 2.3cqw, 21px); }
+  .deck .slide--fullbleed .fullbleed-copy .slide-title { font-size: clamp(38px, 6cqw, 52px); }
+  .deck .slide--fullbleed .fullbleed-copy .slide-body { font-size: clamp(18px, 2.4cqw, 21px); }
+}
+
+@media (max-width: 520px) {
+  .deck .slide-title { font-size: clamp(24px, 5.8cqw, 32px); }
+  .deck .slide-body { font-size: clamp(16px, 3.2cqw, 19px); }
+  .deck .eyebrow { font-size: clamp(11px, 1.6cqw, 13px); }
+  .deck .points li { font-size: clamp(14px, 2.8cqw, 17px); }
+  .deck .work-line { font-size: clamp(12px, 2.3cqw, 14px); }
+  .deck .credit { font-size: clamp(11px, 1.9cqw, 13px); }
+  .deck .footer { font-size: clamp(10px, 1.8cqw, 12px); }
+  .deck .g-thumb figcaption { font-size: clamp(10px, 1.8cqw, 13px); }
+  .deck .slide--cover .slide-title { font-size: clamp(36px, 8cqw, 46px); }
+  .deck .slide--cover .slide-body { font-size: clamp(16px, 3.8cqw, 19px); }
+  .deck .slide--split .slide-title,
+  .deck .slide--reverse .slide-title,
+  .deck .slide--statement .slide-title,
+  .deck .slide--dual .slide-title,
+  .deck .slide--gallery .slide-title { font-size: clamp(26px, 5.4cqw, 32px); }
+  .deck .slide--split .slide-body,
+  .deck .slide--reverse .slide-body { font-size: clamp(15px, 3.1cqw, 18px); }
+  .deck .slide--statement .points li { font-size: clamp(14px, 2.8cqw, 17px); }
+  .deck .slide--spotlight .slide-title { font-size: clamp(24px, 5.2cqw, 31px); }
+  .deck .slide--spotlight .slide-body { font-size: clamp(15px, 3cqw, 18px); }
+  .deck .slide--fullbleed .fullbleed-copy .slide-title { font-size: clamp(30px, 6.7cqw, 40px); }
+  .deck .slide--fullbleed .fullbleed-copy .slide-body { font-size: clamp(15px, 3.4cqw, 18px); }
+}
