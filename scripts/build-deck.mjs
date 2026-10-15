@@ -58,14 +58,21 @@ const b64 = (im) => (im && im.data ? `data:${im.mime};base64,${im.data}` : "");
 function artPanel(im, opts = {}) {
   const src = b64(im);
   if (!src) return "";
-  const { rounded = true, shadow = true, filter = "", fit = "contain" } = opts;
-  const style = [
-    rounded ? "border-radius:14px" : "",
-    shadow ? "box-shadow:0 30px 80px rgb(20 18 16 / 28%)" : "",
-    filter,
-    `object-fit:${fit};width:100%;height:100%;display:block`,
-  ].filter(Boolean).join(";");
-  return `<img class="plate" src="${src}" alt="${(im.alt || "").replace(/"/g, "&quot;")}" loading="lazy" style="${style}">`;
+  const { rounded = false, shadow = false, filter = "", fit = "contain" } = opts;
+  const classes = ["plate", rounded ? "plate--rounded" : "", shadow ? "plate--shadow" : ""]
+    .filter(Boolean).join(" ");
+  const style = [`object-fit:${fit};width:100%;height:100%;display:block`, filter]
+    .filter(Boolean).join(";");
+  return `<img class="${classes}" src="${src}" alt="${(im.alt || "").replace(/"/g, "&quot;")}" loading="lazy" style="${style}">`;
+}
+
+function artFrame(im, classes = "", opts = {}) {
+  const width = Number(im?.width);
+  const height = Number(im?.height);
+  const ratio = Number(im?.aspect) || (width > 0 && height > 0 ? width / height : 1.5);
+  const safeRatio = Number(ratio.toFixed(5));
+  const inverse = Number((1 / safeRatio).toFixed(5));
+  return `<figure class="art-frame ${classes}" data-art-ratio="${safeRatio}" style="--art-ratio:${safeRatio};--art-inverse:${inverse}">${artPanel(im, opts)}</figure>`;
 }
 
 function footer(n, meta) {
@@ -90,6 +97,7 @@ slides.push({ cls: "slide--cover", hero: true, anim: "fade", html: `
 
 /* 2 — Opening statement / context */
 slides.push({ cls: "slide--statement", anim: "rise", html: `
+  ${artFrame(hero || images[0], "statement-art", { rounded: false })}
   <div class="copy">
     <p class="eyebrow reveal" style="--i:0">BỐI CẢNH</p>
     <h1 class="slide-title reveal" style="--i:1">${esc(spec.openingTitle || "Ai là người nghệ sĩ này?")}</h1>
@@ -103,7 +111,7 @@ slides.push({ cls: "slide--statement", anim: "rise", html: `
 
 /* 3..18 — 16 works, each with a varied layout + a distinct entrance motion */
 const LAYOUTS = ["split","reverse","spotlight","fullbleed","split","reverse","fullbleed","dual","split","spotlight","reverse","fullbleed","split","dual","reverse","spotlight"];
-const ANIMS   = ["zoom","rise","left","fade","right","rise","blur","wipe","drift","right","curtain","rise","flip","blur","left","zoom"];
+const ANIMS   = ["fade","rise","left","fade","right","rise","blur","wipe","drift","right","curtain","rise","flip","blur","left","fade"];
 const MOTION_OFFSETS = {
   botticelli: 0,
   duerer: 3,
@@ -149,19 +157,19 @@ for (let i = 0; i < 16; i++) {
   if (layout === "reverse") {
     inner = `
     <div class="inner reverse">
-      <figure class="art-frame reveal">${artPanel(im)}</figure>
+      ${artFrame(im, "reveal")}
       <div class="copy">${workCopy(w, n, meta)}</div>
     </div>`;
   } else if (layout === "spotlight") {
     inner = `
     <div class="inner spotlight">
-      <figure class="art-frame spotlight-art reveal">${artPanel(im, { rounded: false })}</figure>
+      ${artFrame(im, "spotlight-art reveal")}
       <div class="copy center">${workCopy(w, n, meta)}</div>
     </div>`;
   } else if (layout === "fullbleed") {
     inner = `
     <div class="inner fullbleed">
-      <figure class="art-frame fullbleed-art">${artPanel(im, { rounded: false, shadow: false })}</figure>
+      ${artFrame(im, "fullbleed-art")}
       <div class="copy fullbleed-copy">${workCopy(w, n, meta)}</div>
     </div>`;
   } else if (layout === "dual") {
@@ -169,30 +177,36 @@ for (let i = 0; i < 16; i++) {
     inner = `
     <div class="inner dual">
       <div class="dual-pair">
-        <figure class="art-frame dual-main reveal">${artPanel(im)}</figure>
-        <figure class="art-frame dual-side reveal">${artPanel(im2)}</figure>
+        ${artFrame(im, "dual-main reveal")}
+        ${artFrame(im2, "dual-side reveal")}
       </div>
       <div class="copy">${workCopy(w, n, meta, " · CÙNG TÁC GIẢ")}</div>
     </div>`;
   } else {
     inner = `
     <div class="inner">
-      <figure class="art-frame reveal">${artPanel(im)}</figure>
+      ${artFrame(im, "reveal")}
       <div class="copy">${workCopy(w, n, meta)}</div>
     </div>`;
   }
-  slides.push({ cls: `slide--${layout}`, anim, composition, html: inner + footer(n, "") });
+  slides.push({
+    cls: `slide--${layout}`,
+    anim,
+    composition,
+    artBg: layout === "fullbleed" ? im : null,
+    html: inner + footer(n, ""),
+  });
 }
 
 /* 19 — Gallery (4-up grid of remaining emphasis works) */
 {
-  const picks = [0, 4, 9, 14].map((idx) => images[idx]).filter(Boolean);
+  const picks = images.slice(16, 20).filter(Boolean);
   slides.push({ cls: "slide--gallery", anim: "left", html: `
     <div class="copy wide">
       <p class="eyebrow reveal" style="--i:0">BỨC TRANH TOÀN CẢNH</p>
       <h1 class="slide-title reveal" style="--i:1">${esc(spec.galleryTitle || `Bốn nhịp điệu trong tay ${spec.title.split(" ").slice(0, 2).join(" ")}`)}</h1>
       <div class="gallery-grid reveal" style="--i:2">
-        ${picks.map((im) => `<figure class="g-thumb">${artPanel(im, { rounded: true, shadow: false })}<figcaption>${esc(im.alt || "")}</figcaption></figure>`).join("")}
+        ${picks.map((im) => `<figure class="g-thumb">${artPanel(im, { rounded: true, fit: "cover" })}<figcaption>${esc(im.alt || "")}</figcaption></figure>`).join("")}
       </div>
     </div>
     ${footer(19, esc(spec.title))}
@@ -229,7 +243,7 @@ const cssVars = [
 ].filter(Boolean).join(";");
 
 const sections = slides.map((s, idx) => `
-<section class="pl-slide ${s.cls}" data-pl-slide${s.composition ? ` data-composition="${s.composition}"` : ""} data-anim="${s.anim || "rise"}" data-slide-id="${String(idx + 1).padStart(2, "0")}-${slug}" aria-label="${esc(s.aria || `${spec.title}, slide ${idx + 1} of ${slides.length}`)}">
+<section class="pl-slide ${s.cls}"${s.artBg ? ` style="--slide-art-bg:url('${b64(s.artBg)}')"` : ""} data-pl-slide${s.composition ? ` data-composition="${s.composition}"` : ""} data-anim="${s.anim || "rise"}" data-slide-id="${String(idx + 1).padStart(2, "0")}-${slug}" aria-label="${esc(s.aria || `${spec.title}, slide ${idx + 1} of ${slides.length}`)}">
   ${s.html}
 </section>`).join("\n");
 
@@ -239,7 +253,7 @@ const style = `
 html,body{height:100%}
 body{background:var(--deep);font-family:var(--sans);color:var(--ink);overflow:hidden}
 .stage{position:fixed;inset:0;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 0%,color-mix(in srgb,var(--accent) 14%,transparent),transparent 60%),var(--deep)}
-.deck{position:relative;width:min(100vw,177.78vh);height:min(56.25vw,100vh);background:var(--paper);overflow:hidden;box-shadow:0 40px 120px rgb(0 0 0 / 45%)}
+.deck{position:relative;width:min(100vw,177.77777778vh);height:min(56.25vw,100vh);aspect-ratio:16/9;container-type:size;background:var(--paper);overflow:hidden;box-shadow:0 40px 120px rgb(0 0 0 / 45%)}
 .pl-slide{position:absolute;inset:0;display:none;background:radial-gradient(ellipse at 88% 46%,color-mix(in srgb,var(--accent) 12%,transparent),transparent 38%),var(--paper)}
 .pl-slide.active{display:block}
 .inner{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:center;padding:clamp(40px,6vw,108px)}
@@ -256,19 +270,19 @@ body{background:var(--deep);font-family:var(--sans);color:var(--ink);overflow:hi
 .footer{position:absolute;left:clamp(40px,6vw,108px);bottom:clamp(26px,4vh,44px);z-index:3;display:flex;gap:18px;align-items:baseline;font:600 12px/1 var(--sans);letter-spacing:.14em;color:var(--muted)}
 .folio{color:var(--accent)}
 .work-meta{color:var(--muted)}
-.art-frame{position:relative;flex:0 0 auto;width:min(50vw,940px);height:100%;display:flex;align-items:center;justify-content:center;padding:clamp(30px,4vw,72px)}
- .art-frame .plate{max-width:100%;max-height:100%;aspect-ratio:attr(data-ar);border-radius:14px;box-shadow:0 30px 80px rgb(20 18 16 / 30%);filter:saturate(1.04) contrast(1.03)}
+.art-frame{position:relative;flex:0 0 auto;min-width:0;min-height:0;display:flex;align-items:center;justify-content:center;padding:0}
+ .art-frame .plate{display:block;width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;border-radius:0;box-shadow:none;filter:saturate(1.04) contrast(1.03)}
 .slide--split .inner{flex-direction:row;align-items:center;gap:clamp(24px,3vw,60px)}
 .slide--split .copy{width:min(34vw,640px)}
 .slide--reverse .inner{flex-direction:row-reverse;align-items:center;gap:clamp(24px,3vw,60px)}
 .slide--reverse .copy{width:min(34vw,640px)}
-.slide--spotlight .inner{flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:clamp(16px,2.2vw,38px)}
+.slide--spotlight .inner{flex-direction:row;align-items:center;justify-content:center;text-align:center;gap:clamp(16px,2.2vw,38px)}
 .slide--spotlight .spotlight-art{padding:clamp(14px,2vw,34px)}
 .slide--spotlight .copy.center{width:min(64vw,1100px);margin-inline:auto}
 .slide--spotlight .slide-title{max-width:18ch;margin-inline:auto}
 .slide--fullbleed .inner{position:absolute;inset:0;padding:0;display:block}
 .slide--fullbleed .fullbleed-art{position:absolute;inset:0;width:100%;height:100%;padding:0}
-.slide--fullbleed .fullbleed-art .plate{width:100%;height:100%;max-width:100%;max-height:100%;object-fit:cover;border-radius:0;box-shadow:none;filter:saturate(1.08) contrast(1.04) brightness(.82)}
+.slide--fullbleed .fullbleed-art .plate{width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;border-radius:0;box-shadow:none;filter:saturate(1.08) contrast(1.04) brightness(.82)}
 .slide--fullbleed .fullbleed-copy{position:absolute;left:clamp(40px,6vw,108px);right:clamp(40px,6vw,108px);bottom:clamp(58px,9vh,118px);width:auto;max-width:min(70vw,1000px);z-index:3;color:#f3ead8}
 .slide--fullbleed .fullbleed-copy .eyebrow,.slide--fullbleed .fullbleed-copy .slide-title{color:#f4ecda;text-shadow:0 2px 22px rgba(0,0,0,.55)}
 .slide--fullbleed .fullbleed-copy .slide-body{color:#e7ddc7}
@@ -290,7 +304,7 @@ body{background:var(--deep);font-family:var(--sans);color:var(--ink);overflow:hi
 .slide--statement .copy{max-width:min(70vw,1100px)}
 .slide--gallery .gallery-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:30px}
 .g-thumb{position:relative;aspect-ratio:1/1;overflow:hidden;border-radius:12px;background:color-mix(in srgb,var(--ink) 8%,var(--paper))}
-.g-thumb .plate{width:100%;height:100%;object-fit:cover}
+.g-thumb .plate{width:100%;height:100%;object-fit:contain}
 .g-thumb figcaption{position:absolute;left:0;right:0;bottom:0;padding:10px 12px;font:600 11px/1.25 var(--sans);color:#f3ead8;background:linear-gradient(0deg,rgba(8,6,4,.82),transparent);letter-spacing:.02em}
 .slide--closing::before{content:"";position:absolute;inset:0;z-index:0;opacity:.22;background-image:var(--hero-art);background-size:cover;background-position:center;filter:grayscale(.3) contrast(1.1)}
 .slide--closing .copy{position:relative;z-index:2}
@@ -303,7 +317,7 @@ body{background:var(--deep);font-family:var(--sans);color:var(--ink);overflow:hi
 [data-anim="blur"] .reveal{animation-name:blurIn}
 [data-anim="left"] .reveal{animation-name:fromLeft;transform:translateX(-46px);filter:none}
 [data-anim="right"] .reveal{animation-name:fromRight;transform:translateX(46px);filter:none}
-[data-anim="zoom"] .reveal{animation-name:zoomIn;transform:scale(.86);filter:blur(3px)}
+[data-anim="zoom"] .reveal{animation-name:fade;transform:none;filter:none}
 [data-anim="wipe"] .reveal{animation-name:wipeIn;clip-path:inset(0 100% 0 0);transform:none;filter:none}
 [data-anim="drift"] .reveal{animation-name:driftIn;transform:translateX(42px) rotate(1.5deg);filter:blur(3px)}
 [data-anim="curtain"] .reveal{animation-name:curtainIn;clip-path:inset(0 0 100% 0);transform:translateY(18px);filter:blur(2px)}
@@ -314,17 +328,17 @@ body{background:var(--deep);font-family:var(--sans);color:var(--ink);overflow:hi
 @keyframes blurIn{from{opacity:0}to{opacity:1;transform:none;filter:blur(0)}}
 @keyframes fromLeft{to{opacity:1;transform:translateX(0);filter:none}}
 @keyframes fromRight{to{opacity:1;transform:translateX(0);filter:none}}
-@keyframes zoomIn{to{opacity:1;transform:scale(1);filter:blur(0)}}
 @keyframes wipeIn{from{opacity:0;clip-path:inset(0 100% 0 0)}to{opacity:1;clip-path:inset(0);transform:none;filter:none}}
 @keyframes driftIn{from{opacity:0;transform:translateX(42px) rotate(1.5deg);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}
 @keyframes curtainIn{from{opacity:0;clip-path:inset(0 0 100% 0);transform:translateY(18px);filter:blur(2px)}to{opacity:1;clip-path:inset(0);transform:none;filter:none}}
 @keyframes flipIn{from{opacity:0;transform:perspective(900px) rotateY(-34deg)}to{opacity:1;transform:none;filter:none}}
 /* controls */
-.controls{position:fixed;z-index:20;right:30px;bottom:24px;display:flex;align-items:center;gap:12px;color:#f3ead8;font:700 12px/1 var(--sans);letter-spacing:.12em}
+.controls{position:absolute;z-index:20;right:clamp(22px,3vw,44px);bottom:clamp(16px,2.8vh,30px);display:flex;align-items:center;gap:12px;color:#f3ead8;font:700 12px/1 var(--sans);letter-spacing:.12em}
 .progress{width:160px;height:2px;background:rgba(255,255,255,.22);overflow:hidden}
 .progress-fill{height:100%;background:var(--accent2);transform:scaleX(0);transform-origin:left;transition:transform .4s ease}
 .control-button{border:0;background:transparent;color:inherit;cursor:pointer;padding:6px;font:700 18px/1 var(--sans)}
 .control-button:hover{color:var(--accent2)}
+@media(max-width:520px){.controls{right:12px;bottom:10px;gap:8px}.progress{width:clamp(72px,22vw,96px)}.control-button{padding:3px;font-size:15px}.counter{font-size:10px}}
 `;
 
 const html = `<!doctype html>
@@ -339,13 +353,13 @@ const html = `<!doctype html>
 <body>
 <div class="stage"><div class="deck" id="deck">
 ${sections}
-</div></div>
 <div class="controls">
   <button class="control-button" id="prev" aria-label="Trước">‹</button>
   <div class="progress"><div class="progress-fill" id="bar"></div></div>
   <button class="control-button" id="next" aria-label="Sau">›</button>
   <span id="count" class="counter"></span>
 </div>
+</div></div>
 <script>
 (function(){
   var slides=[].slice.call(document.querySelectorAll('[data-pl-slide]'));
@@ -354,7 +368,7 @@ ${sections}
   function next(){show(i+1);}function prev(){show(i-1);}
   document.getElementById('next').addEventListener('click',next);
   document.getElementById('prev').addEventListener('click',prev);
-  document.querySelector('.deck').addEventListener('click',function(e){if(e.target.closest('.control-button'))return;next();});
+  document.querySelector('.deck').addEventListener('click',function(e){if(e.target.closest('.controls'))return;next();});
   document.addEventListener('keydown',function(e){if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){e.preventDefault();next();}else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();prev();}else if(e.key==='Home'){show(0);}else if(e.key==='End'){show(slides.length-1);}});
   document.addEventListener('touchstart',function(e){var x=e.touches[0].clientX;document.addEventListener('touchend',function handler(ev){var dx=ev.changedTouches[0].clientX-x;if(Math.abs(dx)>40){dx<0?next():prev();}document.removeEventListener('touchend',handler);},{once:true});});
   show(0);
