@@ -345,7 +345,7 @@ const html = `<!doctype html>
 <html lang="vi" data-pl-format="16:9" data-pl-title="${esc(spec.title)}" data-pl-author="PresentLab" data-pl-theme="${slug}" data-style="${slug}">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>${esc(spec.title)} · PresentLab</title>
 <style>${style}</style>
 <style>${showcaseStyle}</style>
@@ -364,6 +364,12 @@ ${sections}
 (function(){
   var slides=[].slice.call(document.querySelectorAll('[data-pl-slide]'));
   var i=0;
+  function blockZoom(e){if(e.cancelable)e.preventDefault();}
+  window.addEventListener('wheel',function(e){if(e.ctrlKey||e.metaKey)blockZoom(e);},{capture:true,passive:false});
+  window.addEventListener('keydown',function(e){var keys=['+','-','=','_'];var codes=['Equal','Minus','NumpadAdd','NumpadSubtract'];if((e.ctrlKey||e.metaKey)&&(keys.indexOf(e.key)!==-1||codes.indexOf(e.code)!==-1)){e.preventDefault();e.stopImmediatePropagation();}},true);
+  window.addEventListener('gesturestart',blockZoom,{capture:true,passive:false});
+  window.addEventListener('gesturechange',blockZoom,{capture:true,passive:false});
+  window.addEventListener('touchmove',function(e){if(e.touches&&e.touches.length>1)blockZoom(e);},{capture:true,passive:false});
   function show(n){n=Math.max(0,Math.min(slides.length-1,n));slides.forEach(function(s,k){s.classList.toggle('active',k===n)});i=n;var f=(n+1)/slides.length;document.getElementById('bar').style.transform='scaleX('+f+')';document.getElementById('count').textContent=(n+1)+' / '+slides.length;}
   function next(){show(i+1);}function prev(){show(i-1);}
   document.getElementById('next').addEventListener('click',next);
